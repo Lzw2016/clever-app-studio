@@ -27,10 +27,19 @@ enum Language {
     enUS = 'en-US',
 }
 
+/** 配置式函数(字符串函数代码) */
+interface FunctionConfig {
+    /** 函数参数名 */
+    params?: Array<string> | string;
+    /** 函数代码 */
+    code: string;
+}
+
 export type {
     ComponentInstance,
     ComponentWatchOptionItem,
     ErrorCapturedHook,
+    FunctionConfig,
 }
 
 export {

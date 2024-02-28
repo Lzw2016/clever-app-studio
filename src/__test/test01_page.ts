@@ -1,4 +1,4 @@
-import {BlockDesign} from "@/draggable/types/BlockCoding";
+import {BlockDesign} from "@/draggable/types/Block";
 
 function defineBlock<T extends BlockDesign>(block: T): T {
     return block;
@@ -16,6 +16,7 @@ const page = defineBlock({
     type: "Block",
     props: {
         style: {},
+        class: "",
     },
     data: {
         a: "aaa",
@@ -27,7 +28,9 @@ const page = defineBlock({
         e: (oldValue, cmp) => {
             return cmp.$data.a + '-bbb';
         },
-        f: {
+        f(oldValue, cmp) {
+        },
+        g: {
             params: ["oldValue", "cmp"],
             code: "",
         },
@@ -43,20 +46,30 @@ const page = defineBlock({
             flush: "pre",
         },
         d: {
-            params: [],
+            params: ["value", "oldValue", "onCleanup"],
             code: "",
         },
         e: [
-            {
-                handler: (value, oldValue, onCleanup) => {
-                },
-            },
-            {
-                handler: (value, oldValue, onCleanup) => {
-                },
+            (value, oldValue, onCleanup) => {
             },
             "fun01",
-            (value, oldValue, onCleanup) => {
+            {
+                handler: (value, oldValue, onCleanup) => {
+                },
+                deep: false,
+                flush: "pre",
+            },
+            {
+                params: ["value", "oldValue", "onCleanup"],
+                code: "",
+            },
+            {
+                handler: {
+                    params: ["value", "oldValue", "onCleanup"],
+                    code: "",
+                },
+                deep: false,
+                flush: "pre",
             },
         ],
         f: {
@@ -64,8 +77,9 @@ const page = defineBlock({
                 params: ["value", "oldValue", "onCleanup"],
                 code: "",
             },
+            deep: false,
+            flush: "pre",
         },
-
     },
     methods: {
         fun01: () => {
@@ -95,12 +109,38 @@ const page = defineBlock({
     items: [
         {
             id: "02",
-            ref: "",
-            type: "",
+            type: "button",
+            ref: "b01",
             props: {
                 a: "a",
+                b: "b",
+                c: 0,
+                d: false,
+                e: new Date(),
             },
-            listeners: {},
+            bind: {
+                // 直接返回 data/computed 中的属性
+                f: "this.a.b",
+                // 计算表达式
+                g: "this.a.b + 1",
+                // 返回对象
+                h: {
+                    a: "this.a",
+                    b: "this.c",
+                },
+            },
+            listeners: {
+                click: e => {
+                },
+                keydown(e) {
+                },
+                blur: "func01",
+                change: {
+                    params: ["e"],
+                    code: "",
+                },
+            },
+            items: [],
         },
     ],
     i18n: {
