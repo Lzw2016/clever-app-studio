@@ -74,27 +74,27 @@ interface BlockMeta {
 /** 区块生命周期 */
 interface BlockLifeCycles {
     /** 区块实例初始化完成之后立即调用 */
-    beforeCreate?: () => void;
+    beforeCreate?: (() => void) | FunctionConfig;
     /** 区块实例处理完所有与状态相关的选项后调用 */
-    created?: () => void;
+    created?: (() => void) | FunctionConfig;
     /** 区块被挂载之前调用 */
-    beforeMount?: () => void;
+    beforeMount?: (() => void) | FunctionConfig;
     /** 区块挂载完成后执行 */
-    mounted?: () => void;
+    mounted?: (() => void) | FunctionConfig;
     /** 区块即将因为一个响应式状态变更而更新其 DOM 树之前调用 */
-    beforeUpdate?: () => void;
+    beforeUpdate?: (() => void) | FunctionConfig;
     /** 区块因为一个响应式状态变更而更新其 DOM 树之后调用 */
-    updated?: () => void;
+    updated?: (() => void) | FunctionConfig;
     /** 区块实例被卸载之前调用 */
-    beforeUnmount?: () => void;
+    beforeUnmount?: (() => void) | FunctionConfig;
     /** 区块实例被卸载之后调用 */
-    unmounted?: () => void;
+    unmounted?: (() => void) | FunctionConfig;
     /** 在捕获了后代组件传递的错误时调用 */
-    errorCaptured?: ErrorCapturedHook<Error>;
+    errorCaptured?: ErrorCapturedHook<Error> | FunctionConfig;
     /** 若区块实例是 <KeepAlive> 缓存树的一部分，当组件被插入到 DOM 中时调用 */
-    activated?: () => void;
+    activated?: (() => void) | FunctionConfig;
     /** 若区块实例是 <KeepAlive> 缓存树的一部分，当组件从 DOM 中被移除时调用 */
-    deactivated?: () => void;
+    deactivated?: (() => void) | FunctionConfig;
 }
 
 /** computed函数定义 */
@@ -110,7 +110,7 @@ type BlockWatchItem = WatchOptionItem | WatchOptionItem[];
 /** 配置试函数(函数代码) */
 interface FunctionConfig {
     /** 函数参数名 */
-    params: Array<string> | string;
+    params?: Array<string> | string;
     /** 函数代码 */
     code: string;
 }

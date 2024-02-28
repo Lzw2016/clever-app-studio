@@ -1,4 +1,4 @@
-import {BlockDesign} from "@/draggable/types/BlockDesign";
+import {BlockDesign} from "@/draggable/types/BlockCoding";
 
 function defineBlock<T extends BlockDesign>(block: T): T {
     return block;
@@ -86,6 +86,10 @@ const page = defineBlock({
         mounted: () => {
         },
         updated() {
+        },
+        unmounted: {
+            params: [],
+            code: "",
         },
     },
     items: [
