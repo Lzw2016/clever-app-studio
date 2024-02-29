@@ -1,5 +1,5 @@
 import {CSSProperties, WatchCallback, WatchOptions} from "vue";
-import {ComponentInstance, ErrorCapturedHook, FunctionConfig, Language} from "@/draggable/types/Base";
+import {AnyFunction, ComponentInstance, ErrorCapturedHook, FunctionConfig, Language} from "@/draggable/types/Base";
 
 // -------------------------------------------------------------------------------------------------------------------
 // 组件
@@ -17,36 +17,43 @@ interface BaseProps {
 
 /** 组件基础事件 */
 interface BaseEvent {
-    [name: string]: Function;
+    [name: string]: AnyFunction;
 }
 
-// /** 组件基础指令 */
-// interface BaseDirectives {
-//     /** 组件的的可见性(表达式，值为boolean) */
-//     show?: string;
-//     /** 条件性的渲染组件(表达式，值为boolean) */
-//     if?: string;
-//     /** 条件性的渲染组件(表达式，值为boolean) */
-//     once?: string;
-//     /** 缓存一个模板的子树(值为: 固定长度的依赖值数组) */
-//     memo?: Array<string>;
-//
-//     [name: string]: any;
-// }
+/** 组件基础指令 */
+interface BaseDirectives {
+    // /** 组件的的可见性(表达式，值为boolean) */
+    // show?: string;
+    // /** 条件性的渲染组件(表达式，值为boolean) */
+    // if?: string;
+    // /** 条件性的渲染组件(表达式，值为boolean) */
+    // once?: string;
+    // /** 缓存一个模板的子树(值为: 固定长度的依赖值数组) */
+    // memo?: Array<string>;
+
+    [name: string]: any;
+}
 
 /** Bind的对象形式 */
 interface BindObject {
     [name: string]: BindObject | string;
 }
 
-/** 组件 bind(props的数据绑定) */
-type ComponentBind = string | BindObject;
+// /** 组件 bind(props的数据绑定) */
+// type ComponentBind = string | BindObject;
+
+/** Listener的对象形式 */
+interface ListenerFunctionConfig {
+    handler: AnyFunction | FunctionConfig | string;
+    /** 事件修饰符 */
+    modifiers?: Array<string>;
+}
 
 /** 组件 listeners(事件监听函数) */
-type ComponentListener = ((...args: any[]) => any) | FunctionConfig | string;
+type ComponentListener = AnyFunction | (FunctionConfig & { modifiers?: Array<string>; }) | ListenerFunctionConfig | string;
 
 /** 组件节点 */
-interface ComponentNode<Props extends BaseProps = BaseProps, Event extends BaseEvent = BaseEvent> {
+interface ComponentNode<Props extends BaseProps = BaseProps, Event extends BaseEvent = BaseEvent, Directives extends BaseDirectives = BaseDirectives> {
     /** 组件唯一id */
     id?: string;
     /** 组件类型 */
@@ -55,12 +62,12 @@ interface ComponentNode<Props extends BaseProps = BaseProps, Event extends BaseE
     ref?: string;
     /** 组件属性 */
     props?: Props;
-    /**  */
-    bind?: Record<keyof Props, ComponentBind>;
+    // /**  */
+    // bind?: Record<keyof Props, ComponentBind>;
     /** 监听的事件 */
     listeners?: Record<keyof Event, ComponentListener>;
-    // /** 组件指令 */
-    // directives?: ComponentDirectives;
+    /** 组件指令 */
+    directives?: Directives;
     // /** 组件插槽 */
     // slots?: Record<string, Array<ComponentNode>>;
     /** 子组件集合 */
@@ -104,7 +111,7 @@ type WatchOptionItem = string | WatchCallback | FunctionConfig | ObjectWatchOpti
 type BlockWatchItem = WatchOptionItem | WatchOptionItem[];
 
 /** 区块 methods(自定义函数) */
-type BlockMethod = ((...args: any[]) => any) | FunctionConfig;
+type BlockMethod = AnyFunction | FunctionConfig;
 
 /** 区块 lifeCycles(生命周期) */
 interface BlockLifeCycles {

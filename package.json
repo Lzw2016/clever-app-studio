@@ -1,84 +1,84 @@
 {
-  "name": "clever-app-studio",
-  "version": "1.0.0",
-  "description": "clever-app-studio",
-  "author": {
-    "name": "lizw",
-    "email": "1183409807@qq.com",
-    "url": "https://github.com/"
-  },
-  "license": "MIT",
-  "homepage": "",
-  "repository": {
-    "type": "git",
-    "url": ""
-  },
-  "bugs": {
-    "url": "https://github.com/"
-  },
-  "scripts": {
-    "init": "pnpm i",
-    "ncu": "ncu -u",
-    "tsc": "tsc",
-    "dev": "vite -m development",
-    "build:dev": "vue-tsc && vite build --mode development",
-    "build:pro": "vue-tsc && vite build --mode production",
-    "build:test": "vue-tsc && vite build --mode test",
-    "preview": "vite preview",
-    "type:check": "vue-tsc --noEmit --skipLibCheck"
-  },
-  "dependencies": {
-    "vue": "^3.4.20",
-    "vue-router": "^4.3.0",
-    "vue-i18n": "^9.9.1",
-    "pinia": "^2.1.7",
-    "pinia-plugin-persistedstate": "^3.2.1",
-    "@vueuse/core": "^10.9.0",
-    "@vueuse/components": "^10.9.0",
-    "csstype": "^3.1.3",
-    "lodash": "^4.17.21",
-    "dayjs": "^1.11.10",
-    "localforage": "^1.10.0",
-    "numeral": "^2.0.6",
-    "axios": "^1.6.7",
-    "qs": "^6.11.2",
-    "mitt": "^3.0.1"
-  },
-  "dependencies_bak": {
-    "primevue": "^3.49.0",
-    "naive-ui": "^2.38.1",
-    "vexip-ui": "^2.3.3",
-    "@arco-design/web-vue": "^2.54.5",
-
-    "ant-design-vue": "^4.1.2",
-    "@idux/components": "^2.0.0",
-    "@opentiny/vue": "^3.13.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.3.3",
-    "@types/node": "^20.11.21",
-    "@types/lodash": "^4.14.202",
-    "@vue/language-server": "^1.8.27",
-    "vite": "^5.1.4",
-    "@vitejs/plugin-vue": "^5.0.4",
-    "@vitejs/plugin-vue-jsx": "^3.1.0",
-    "@vitejs/plugin-legacy": "^5.3.1",
-    "vite-plugin-html": "^3.2.2",
-    "vite-plugin-compression2": "^0.12.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "browserslist": {
-    "production": [
-      "> 1%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 5 chrome version",
-      "last 5 firefox version",
-      "last 5 safari version"
-    ]
-  }
+    "name": "clever-app-studio",
+    "version": "1.0.0",
+    "description": "clever-app-studio",
+    "author": {
+        "name": "lizw",
+        "email": "1183409807@qq.com",
+        "url": "https://github.com/"
+    },
+    "license": "MIT",
+    "homepage": "",
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "bugs": {
+        "url": "https://github.com/"
+    },
+    "scripts": {
+        "init": "pnpm i",
+        "ncu": "ncu -u",
+        "tsc": "tsc",
+        "dev": "vite -m development",
+        "build:dev": "vue-tsc && vite build --mode development",
+        "build:pro": "vue-tsc && vite build --mode production",
+        "build:test": "vue-tsc && vite build --mode test",
+        "preview": "vite preview",
+        "type:check": "vue-tsc --noEmit --skipLibCheck"
+    },
+    "dependencies": {
+        "vue": "^3.4.20",
+        "vue-router": "^4.3.0",
+        "vue-i18n": "^9.9.1",
+        "pinia": "^2.1.7",
+        "pinia-plugin-persistedstate": "^3.2.1",
+        "@vueuse/core": "^10.9.0",
+        "@vueuse/components": "^10.9.0",
+        "csstype": "^3.1.3",
+        "lodash": "^4.17.21",
+        "dayjs": "^1.11.10",
+        "localforage": "^1.10.0",
+        "numeral": "^2.0.6",
+        "axios": "^1.6.7",
+        "qs": "^6.11.2",
+        "mitt": "^3.0.1"
+    },
+    "dependencies_bak": {
+        "primevue": "^3.49.0",
+        "naive-ui": "^2.38.1",
+        "vexip-ui": "^2.3.3",
+        "@arco-design/web-vue": "^2.54.5",
+        "ant-design-vue": "^4.1.2",
+        "@idux/components": "^2.0.0",
+        "@opentiny/vue": "^3.13.0"
+    },
+    "devDependencies": {
+        "typescript": "^5.3.3",
+        "@types/node": "^20.11.21",
+        "@types/lodash": "^4.14.202",
+        "vue-tsc": "^1.8.27",
+        "@vue/language-server": "^1.8.27",
+        "vite": "^5.1.4",
+        "@vitejs/plugin-vue": "^5.0.4",
+        "@vitejs/plugin-vue-jsx": "^3.1.0",
+        "@vitejs/plugin-legacy": "^5.3.1",
+        "vite-plugin-html": "^3.2.2",
+        "vite-plugin-compression2": "^0.12.0"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "browserslist": {
+        "production": [
+            "> 1%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 5 chrome version",
+            "last 5 firefox version",
+            "last 5 safari version"
+        ]
+    }
 }

@@ -1,10 +1,10 @@
-import { resolve } from "path";
-import { defineConfig, UserConfig } from "vite";
+import {resolve} from "path";
+import {defineConfig, UserConfig} from "vite";
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import legacy from "@vitejs/plugin-legacy";
-import { createHtmlPlugin } from 'vite-plugin-html';
-import { compression } from 'vite-plugin-compression2'
+import {createHtmlPlugin} from 'vite-plugin-html';
+import {compression} from 'vite-plugin-compression2'
 import dayjs from "dayjs";
 import allEnv from "./env.config";
 import pkg from "./package.json";
@@ -74,6 +74,7 @@ export default defineConfig(env => {
             }),
         ],
         build: {
+             target: 'es2015',
             outDir: 'dist',
             assetsInlineLimit: 4096,
             sourcemap: true,

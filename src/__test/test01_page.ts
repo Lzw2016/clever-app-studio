@@ -95,6 +95,9 @@ const page = defineBlock({
         },
         fun05(a, b) {
         },
+        fun06: (a: string, b: number, c: Date) => {
+
+        },
     },
     lifeCycles: {
         mounted: () => {
@@ -117,12 +120,10 @@ const page = defineBlock({
                 c: 0,
                 d: false,
                 e: new Date(),
-            },
-            bind: {
                 // 直接返回 data/computed 中的属性
-                f: "this.a.b",
+                f: "｛｛ this.a.b ｝｝",
                 // 计算表达式
-                g: "this.a.b + 1",
+                g: "{{ this.a.b + 1 }}",
                 // 返回对象
                 h: {
                     a: "this.a",
@@ -132,13 +133,33 @@ const page = defineBlock({
             listeners: {
                 click: e => {
                 },
-                keydown(e) {
-                },
                 blur: "func01",
                 change: {
                     params: ["e"],
                     code: "",
+                    modifiers: ['stop', 'prevent'],
                 },
+                keydown: {
+                    handler: e => {
+                    },
+                    modifiers: ['stop', 'prevent'],
+                },
+                contextmenu: {
+                    handler: "func01",
+                    modifiers: ['stop', 'prevent'],
+                },
+                drag: {
+                    handler: {
+                        params: ["e"],
+                        code: "",
+                    },
+                    modifiers: ['stop', 'prevent'],
+                },
+            },
+            directives: {
+                once: "{{ this.a===1 }}",
+                show: "{{ !!this.show }}",
+                for: {},
             },
             items: [],
         },

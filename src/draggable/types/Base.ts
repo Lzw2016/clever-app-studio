@@ -35,11 +35,15 @@ interface FunctionConfig {
     code: string;
 }
 
+/** 通用函数 */
+type AnyFunction<R = any> = (...args: any[]) => R;
+
 export type {
     ComponentInstance,
     ComponentWatchOptionItem,
     ErrorCapturedHook,
     FunctionConfig,
+    AnyFunction,
 }
 
 export {
