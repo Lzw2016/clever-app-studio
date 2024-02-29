@@ -1,4 +1,5 @@
 import {AsyncVueComponent, VueComponent} from "@/draggable/types/Base";
+import {ComponentMeta} from "@/draggable/types/ComponentMeta";
 
 /** 组件管理 */
 interface ComponentManage {
@@ -40,10 +41,17 @@ interface ComponentManage {
      */
     getComponent(type: string, def: VueComponent): VueComponent;
 
-    /**  */
-    /**  */
-    /**  */
-    /**  */
+    /**
+     * 注册组件元信息
+     * @param componentMeta 组件元信息对象
+     */
+    registerComponentMeta(componentMeta: ComponentMeta): void;
+
+    /**
+     * 获取组件元信息
+     * @param type 组件类型(唯一值)
+     */
+    getComponentMeta(type: string): ComponentMeta | undefined;
 }
 
 export type {
