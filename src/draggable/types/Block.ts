@@ -1,5 +1,5 @@
 import {CSSProperties, WatchCallback, WatchOptions} from "vue";
-import {AnyFunction, ComponentInstance, ErrorCapturedHook, FunctionConfig, Language} from "@/draggable/types/Base";
+import {AnyFunction, ComponentInstance, ErrorCapturedHook, FunctionConfig, I18N} from "@/draggable/types/Base";
 
 // -------------------------------------------------------------------------------------------------------------------
 // 组件
@@ -172,7 +172,7 @@ interface BlockDesign<Props extends BaseProps = BaseProps> {
     /** 区块的子组件 */
     items?: Array<ComponentNode>;
     /** 多语言词条 */
-    i18n?: Record<Language, Record<string, string>>;
+    i18n?: I18N;
 }
 
 export type {

@@ -1,6 +1,6 @@
 import {BlockDesign} from "@/draggable/types/Block";
 
-function defineBlock<T extends BlockDesign>(block: T): T {
+function defineBlock(block: BlockDesign): BlockDesign {
     return block;
 }
 
