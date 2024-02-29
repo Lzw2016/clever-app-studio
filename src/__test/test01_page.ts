@@ -160,7 +160,8 @@ const page = defineBlock({
                 once: "{{ this.a===1 }}",
                 show: "{{ !!this.show }}",
                 for: {
-                    data: "｛｛ this.c ｝｝",
+                    data: "{{ this.c }}",
+                    key: "id",
                     index: "",
                     item: "",
                 },
