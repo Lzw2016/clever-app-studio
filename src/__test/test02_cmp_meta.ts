@@ -1,3 +1,5 @@
+// noinspection HtmlUnknownAttribute
+
 import {ComponentMeta} from "@/draggable/types/ComponentMeta";
 
 function defineComponentMeta(meta: ComponentMeta) {
@@ -65,7 +67,7 @@ const componentMeta = defineComponentMeta({
                         title: "简单使用",
                         description: "自定义标题",
                         code: [
-                            '<template #header="slotProps">',
+                            '<template v-slot:header="slotProps">',
                             '    <div class="flex align-options-center">',
                             '        当前值 {{ slotProps.value }}',
                             '    </div>',
