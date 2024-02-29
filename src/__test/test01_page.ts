@@ -159,7 +159,11 @@ const page = defineBlock({
             directives: {
                 once: "{{ this.a===1 }}",
                 show: "{{ !!this.show }}",
-                for: {},
+                for: {
+                    data: "｛｛ this.c ｝｝",
+                    index: "",
+                    item: "",
+                },
             },
             slots: {
                 icon: {

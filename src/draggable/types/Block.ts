@@ -22,14 +22,27 @@ interface BaseEvent {
 
 /** 组件基础指令 */
 interface BaseDirectives {
-    // /** 组件的的可见性(表达式，值为boolean) */
-    // show?: string;
-    // /** 条件性的渲染组件(表达式，值为boolean) */
-    // if?: string;
-    // /** 条件性的渲染组件(表达式，值为boolean) */
-    // once?: string;
-    // /** 缓存一个模板的子树(值为: 固定长度的依赖值数组) */
-    // memo?: Array<string>;
+    /** 组件的的可见性(表达式，值为boolean) */
+    show?: string;
+    /** 条件性的渲染组件(表达式，值为boolean) */
+    if?: string;
+    /** 基于原始数据多次渲染组件 */
+    for?: {
+        /** 原始数据表达式 */
+        data: string;
+        /**
+         * index 变量名
+         * 当原始数据是数组时，数组的index
+         * 当原始数据是对象时，对象的key
+         */
+        index: string,
+       /**
+        * item 变量名
+         * 当原始数据是数组时，数组的item
+         * 当原始数据是对象时，对象的value
+         */
+        item: string;
+    };
 
     [name: string]: any;
 }
