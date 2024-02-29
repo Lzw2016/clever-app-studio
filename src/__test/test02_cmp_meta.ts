@@ -8,12 +8,74 @@ const componentMeta = defineComponentMeta({
     type: "Input",
     component: "[Input]",
     // 设计时显示的组件
-    designComponent: "[DesignInput]",
+    designComponent: "[DesignInput]" as any,
     name: "文本输入",
     description: "单行文本输入",
     version: "0.0.1",
     icon: "input",
-
+    defComponentNode: {
+        props: {},
+        listeners: {},
+        directives: {},
+        slots: {},
+        items: [],
+    },
+    schema: {
+        events: {
+            change: {
+                title: "输入值值更改事件",
+                description: "值更改时调用的回调。",
+                params: [
+                    {
+                        name: "event",
+                        type: "AutoCompleteChangeEvent",
+                    },
+                ],
+                return: "void",
+                examples: [
+                    {
+                        title: "简单使用",
+                        description: "读取变化后的值",
+                        code: [
+                            'function demo1(event) {',
+                            '    // 打印当前值',
+                            '    console.log(event.value)',
+                            '}',
+                        ],
+                    },
+                ],
+            },
+        },
+        slots: {
+            header: {
+                title: "标题插槽",
+                description: "面板的自定义标题模板。",
+                slotProps: {
+                    value: {
+                        type: "object",
+                        note: "组件的值",
+                    },
+                    suggestions: {
+                        type: "object",
+                        note: "显示选项",
+                    },
+                },
+                examples: [
+                    {
+                        title: "简单使用",
+                        description: "自定义标题",
+                        code: [
+                            '<template #header="slotProps">',
+                            '    <div class="flex align-options-center">',
+                            '        当前值 {{ slotProps.value }}',
+                            '    </div>',
+                            '</template>',
+                        ],
+                    },
+                ]
+            },
+        },
+    },
     // 组件配置设置器
     setter: {
         // 组件属性设置
@@ -33,19 +95,18 @@ const componentMeta = defineComponentMeta({
                             },
                             // 设置更新的属性值
                             propsName: "addonAfter",
-                            defValue: "",
                             // 自定义控制如何更新属性
-                            setProp: function (props: any, value: string) {
+                            setProps: function (props: any, value: string) {
                             },
                             // 自定义控制如何显示属性
-                            getProp: function (props: any): any {
+                            getProps: function (props: any): any {
                                 return {};
                             },
                             // 属性变化，更新当前组件
-                            propsChange: [
+                            watchProps: [
                                 {
                                     propsNames: [],
-                                    onChange: function (props: any, value: any, oldValue: any, cmpInstance: 'Component') {
+                                    onChange(a, b, c, d) {
                                     },
                                 },
                             ],
@@ -56,8 +117,8 @@ const componentMeta = defineComponentMeta({
                                 label: "设置后置标签",
                                 length: 30,
                             },
-                            setProp: function (props: any, value: string) {
-                            },
+                            // setProp: function (props: any, value: string) {
+                            // },
                         },
                     ],
                 },
@@ -95,13 +156,6 @@ const componentMeta = defineComponentMeta({
             // 循环
             groups: [],
         },
-    },
-
-    // 默认值
-    defNode: {
-        props: {},
-        events: {},
-        directives: {},
     },
 
     i18n: {

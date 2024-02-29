@@ -47,6 +47,77 @@ interface FunctionConfig {
 /** 通用函数 */
 type AnyFunction<R = any> = (...args: any[]) => R;
 
+/** 代码示例 */
+interface CodeExample {
+    /** 示例标题 */
+    title: string;
+    /** 详细描述 */
+    description?: string;
+    /** 示例代码 */
+    code: string | Array<string>;
+}
+
+/** 变量类型 */
+enum VarType {
+    Void = 'void',
+    Boolean = 'boolean',
+    Number = 'number',
+    String = 'string',
+    Symbol = 'symbol',
+    Bigint = 'bigint',
+    Object = 'object',
+    Array = 'array',
+    Date = 'date',
+    Function = 'function',
+    RegExp = 'regexp',
+    Map = 'map',
+    Set = 'set',
+    Promise = 'promise',
+}
+
+/** 变量类型 */
+type FunctionVarType = VarType | string;
+
+/** 函数参数信息 */
+interface FunctionParamMeta {
+    /** 函数参数名称 */
+    name: string;
+    /** 参数类型 */
+    type: FunctionVarType;
+    /** 参数描述 */
+    note?: string
+}
+
+/** 函数元信息 */
+interface FunctionMeta {
+    /** 简单说明 */
+    title: string;
+    /** 函数描述 */
+    description?: string;
+    /** 函数名称 */
+    name: string;
+    /** 函数参数 */
+    params?: Array<FunctionParamMeta>;
+    /** 返回值类型 */
+    return?: FunctionVarType;
+    /** 使用示例(代码片段) */
+    examples?: Array<CodeExample>;
+}
+
+/** 组件插槽元信息 */
+interface ComponentSlotMeta {
+    /** 简单说明 */
+    title: string;
+    /** 插槽描述 */
+    description?: string;
+    /** 插槽名称 */
+    name: string;
+    /** 插槽属性 */
+    slotProps?: Record<string, Omit<FunctionParamMeta, 'name'>>;
+    /** 使用示例(代码片段) */
+    examples?: Array<CodeExample>;
+}
+
 export type {
     ComponentInstance,
     ErrorCapturedHook,
@@ -56,8 +127,14 @@ export type {
     I18N,
     FunctionConfig,
     AnyFunction,
+    CodeExample,
+    FunctionVarType,
+    FunctionParamMeta,
+    FunctionMeta,
+    ComponentSlotMeta,
 }
 
 export {
     Language,
+    VarType,
 }

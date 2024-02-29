@@ -1,5 +1,71 @@
-import {I18N, VueComponent} from "@/draggable/types/Base";
+import {ComponentInstance, ComponentSlotMeta, FunctionMeta, I18N, VueComponent} from "@/draggable/types/Base";
+import {BaseProps, ComponentListener, ComponentNode} from "@/draggable/types/Block";
 
+
+/** 组件节点默认配置 */
+type DefComponentNode = Partial<Omit<ComponentNode, 'id' | 'type' | 'ref'>>
+
+
+/** 主键Schema */
+interface ComponentSchema {
+    /** 组件事件元信息 */
+    events: Record<string, Omit<FunctionMeta, 'name'>>;
+    slots: Record<string, Omit<ComponentSlotMeta, 'name'>>;
+}
+
+/** 监听属性值变化逻辑配置 */
+interface WatchPropsConfig<TargetProps> {
+    /** 监听的属性名 */
+    propsNames: Array<string>;
+
+    /**
+     * 属性值变化时的回调
+     * @param props     目标组件的 props 对象
+     * @param value     当前属性值
+     * @param oldValue  之前的属性值
+     * @param setter    当前设置器对象
+     */
+    onChange(props: TargetProps, value: any, oldValue: any, setter: ComponentInstance): void;
+
+    /** 在侦听器创建时立即触发回调 */
+    immediate?: boolean;
+    /** 调整回调的刷新时机 */
+    flush?: 'pre' | 'post' | 'sync';
+    /** 如果源是对象或数组，则强制深度遍历源，以便在深度变更时触发回调 */
+    deep?: boolean;
+    /** 一次性侦听器 */
+    once?: boolean;
+}
+
+/** 设置器 */
+interface Setter<SetterProps extends BaseProps = BaseProps, TargetProps = any> {
+    /** 设置器组件 */
+    cmp: VueComponent | string;
+    /** 设置器组件实例的引用名称 */
+    ref?: string;
+    /** 设置器组件属性 */
+    cmpProps?: SetterProps;
+    /** 被设置的属性名称 */
+    propsName?: string;
+    /**
+     * 自定义设置属性值逻辑
+     * @param props     目标组件的 props 对象
+     * @param value     设置器的当前值
+     * @param name      设置器的 propsName 配置
+     * @param setter    当前设置器对象
+     */
+    setProps?: (props: TargetProps, value: any, name: string, setter: ComponentInstance) => void;
+    /**
+     * 自定义获取属性值逻辑
+     * @param props 目标组件的 props 对象
+     * @param name  设置器的当前值
+     */
+    getProps?: (props: TargetProps, name: string) => any;
+    /** 监听属性值变化逻辑 */
+    watchProps?: Array<WatchPropsConfig<TargetProps>>;
+    /** 监听设置器的事件 */
+    listeners?: Record<keyof Event, ComponentListener>;
+}
 
 /** 设置器分组 */
 interface SetterGroup {
@@ -8,9 +74,8 @@ interface SetterGroup {
     /** 是否展开状态(默认为true) */
     expand?: boolean;
     /** 设置器集合 */
-    items: Array<any>;
+    items: Array<Setter>;
 }
-
 
 /** 设置器面板 */
 interface SetterPanel {
@@ -36,10 +101,10 @@ interface ComponentSetter {
 interface ComponentMeta {
     /** 组件类型(唯一值) */
     type: string;
-    /** 运行时的组件对象 */
+    /** 运行时的组件对象(可以是html原生标签) */
     component: VueComponent | string;
     /** 设计时的组件对象 */
-    designComponent: VueComponent | string;
+    designComponent: VueComponent;
     /** 组件名称 */
     name: string;
     /** 组件介绍描述 */
@@ -48,17 +113,19 @@ interface ComponentMeta {
     version: string;
     /** 组件图标 */
     icon: VueComponent | string;
+    /** 默认的组件节点配置 */
+    defComponentNode: DefComponentNode;
+    // /** 组件元数据(定义属性、事件等) */
+    schema: ComponentSchema;
+
     /** 组件设计器 */
     setter: ComponentSetter;
 
 
-    /** 组件元数据(定义属性、事件等) */
-    schema: any;
-    /** 组件的属性信息 */
-    config: any;
+    // /** 组件的属性信息 */
+    // config: any;
 
     // props
-    // methods
     // events
     // slots
 
