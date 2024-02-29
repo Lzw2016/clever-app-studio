@@ -31,6 +31,7 @@ enum Language {
     enUS = 'en-US',
 }
 
+/** 语言字符串名称 */
 type LanguageName = (typeof Language)[keyof typeof Language];
 
 /** 多语言词条 */

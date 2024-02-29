@@ -1,6 +1,5 @@
 import {AsyncVueComponent, VueComponent} from "@/draggable/types/Base";
 
-
 /** 组件管理 */
 interface ComponentManage {
     /** 异步组件 */
@@ -42,21 +41,11 @@ interface ComponentManage {
     getComponent(type: string, def: VueComponent): VueComponent;
 
     /**  */
-
     /**  */
     /**  */
     /**  */
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
+export type {
+    ComponentManage,
+}

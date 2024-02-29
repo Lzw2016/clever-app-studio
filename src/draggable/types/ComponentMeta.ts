@@ -1,15 +1,14 @@
 import {ComponentInstance, ComponentSlotMeta, FunctionMeta, I18N, VueComponent} from "@/draggable/types/Base";
 import {BaseProps, ComponentListener, ComponentNode} from "@/draggable/types/Block";
 
-
 /** 组件节点默认配置 */
 type DefComponentNode = Partial<Omit<ComponentNode, 'id' | 'type' | 'ref'>>
-
 
 /** 主键Schema */
 interface ComponentSchema {
     /** 组件事件元信息 */
     events: Record<string, Omit<FunctionMeta, 'name'>>;
+    /** 组件插槽元信息 */
     slots: Record<string, Omit<ComponentSlotMeta, 'name'>>;
 }
 
@@ -115,20 +114,10 @@ interface ComponentMeta {
     icon: VueComponent | string;
     /** 默认的组件节点配置 */
     defComponentNode: DefComponentNode;
-    // /** 组件元数据(定义属性、事件等) */
+    /** 组件Schema(定义的事件、插槽等) */
     schema: ComponentSchema;
-
     /** 组件设计器 */
     setter: ComponentSetter;
-
-
-    // /** 组件的属性信息 */
-    // config: any;
-
-    // props
-    // events
-    // slots
-
     /** 多语言词条 */
     i18n?: I18N;
 }
