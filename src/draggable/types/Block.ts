@@ -34,14 +34,6 @@ interface BaseDirectives {
     [name: string]: any;
 }
 
-/** Bind的对象形式 */
-interface BindObject {
-    [name: string]: BindObject | string;
-}
-
-// /** 组件 bind(props的数据绑定) */
-// type ComponentBind = string | BindObject;
-
 /** Listener的对象形式 */
 interface ListenerFunctionConfig {
     handler: AnyFunction | FunctionConfig | string;
@@ -62,14 +54,12 @@ interface ComponentNode<Props extends BaseProps = BaseProps, Event extends BaseE
     ref?: string;
     /** 组件属性 */
     props?: Props;
-    // /**  */
-    // bind?: Record<keyof Props, ComponentBind>;
     /** 监听的事件 */
     listeners?: Record<keyof Event, ComponentListener>;
     /** 组件指令 */
     directives?: Directives;
-    // /** 组件插槽 */
-    // slots?: Record<string, Array<ComponentNode>>;
+    /** 组件插槽(default插槽其实就是children) */
+    slots?: Record<string, ComponentNode | Array<ComponentNode>>;
     /** 子组件集合 */
     items?: Array<ComponentNode>;
 }

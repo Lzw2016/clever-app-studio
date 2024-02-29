@@ -161,7 +161,30 @@ const page = defineBlock({
                 show: "{{ !!this.show }}",
                 for: {},
             },
-            items: [],
+            slots: {
+                icon: {
+                    type: "image",
+                    props: {
+                        src: "",
+                    },
+                },
+                suffix: [
+                    {
+                        type: "div",
+                    },
+                    {
+                        type: "div",
+                    },
+                ],
+            },
+            items: [
+                {
+                    type: "div",
+                },
+                {
+                    type: "div",
+                },
+            ],
         },
     ],
     i18n: {
