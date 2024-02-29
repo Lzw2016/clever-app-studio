@@ -36,8 +36,8 @@ interface BaseDirectives {
          * 当原始数据是对象时，对象的key
          */
         index: string,
-       /**
-        * item 变量名
+        /**
+         * item 变量名
          * 当原始数据是数组时，数组的item
          * 当原始数据是对象时，对象的value
          */
@@ -101,8 +101,15 @@ interface BlockMeta {
     [name: string]: any;
 }
 
+/** 内置的区块实现 */
+enum BuiltInBlock {
+    Block = "Block",
+    // PageBlock = "PageBlock",
+    // DialogBlock = "DialogBlock",
+}
+
 /** 区块 type(实现组件) */
-type BlockType = "Block" /*| "PageBlock" | "DialogBlock"*/ | string;
+type BlockType = BuiltInBlock | string;
 
 /** 区块 computed(计算数据) */
 type ComputedFunction<T = any> = (this: ComponentInstance, oldValue: T, cmp: ComponentInstance) => T;
@@ -169,5 +176,23 @@ interface BlockDesign<Props extends BaseProps = BaseProps> {
 }
 
 export type {
+    BaseProps,
+    BaseEvent,
+    BaseDirectives,
+    ListenerFunctionConfig,
+    ComponentListener,
+    ComponentNode,
+    BlockMeta,
+    BlockType,
+    ComputedFunction,
+    ObjectWatchOptionItem,
+    WatchOptionItem,
+    BlockWatchItem,
+    BlockMethod,
+    BlockLifeCycles,
     BlockDesign,
+}
+
+export {
+    BuiltInBlock,
 }

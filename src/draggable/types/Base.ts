@@ -1,4 +1,4 @@
-import {ComponentPublicInstance, WatchCallback, WatchOptions} from "vue";
+import {ComponentPublicInstance} from "vue";
 
 // -------------------------------------------------------------------------------------------------------------------
 // 参考vue类型定义(vue内部的类型定义，直接复制过来的)
@@ -7,12 +7,7 @@ import {ComponentPublicInstance, WatchCallback, WatchOptions} from "vue";
 /** 通用的vue组件实例 */
 type ComponentInstance = ComponentPublicInstance<any, any, any, any, any, any, any, any, any, any, any, any>;
 
-/** watch项 */
-type ObjectWatchOptionItem = { handler: WatchCallback | string; } & WatchOptions;
-type WatchOptionItem = string | WatchCallback | ObjectWatchOptionItem;
-type ComponentWatchOptionItem = WatchOptionItem | WatchOptionItem[];
-
-
+/** 错误处理函数 */
 type ErrorCapturedHook<TError = unknown> = (err: TError, instance: ComponentPublicInstance | null, info: string) => boolean | void;
 
 // -------------------------------------------------------------------------------------------------------------------
@@ -40,7 +35,6 @@ type AnyFunction<R = any> = (...args: any[]) => R;
 
 export type {
     ComponentInstance,
-    ComponentWatchOptionItem,
     ErrorCapturedHook,
     FunctionConfig,
     AnyFunction,
