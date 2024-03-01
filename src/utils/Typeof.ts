@@ -67,11 +67,14 @@ const isFun = isType<(...args: any[]) => any>(['Function', 'AsyncFunction', 'Gen
 /** 变量是否是 Function(普通函数) */
 const isFunction = isType<(...args: any[]) => any>('Function');
 
-/** 变量是否是 AsyncFunction(异步函数，返回Promise) */
+/** 变量是否是 AsyncFunction(异步函数，返回Promise的函数) */
 const isAsyncFunction = isType<(...args: any[]) => any>('AsyncFunction');
 
-/** 变量是否是 GeneratorFunction(异步函数，返回Generator) */
+/** 变量是否是 GeneratorFunction(异步函数，返回Generator的函数) */
 const isGeneratorFunction = isType<(...args: any[]) => any>('GeneratorFunction');
+
+/** 变量是否是 Promise */
+const isPromise = isType<Promise<any>>("Promise");
 
 /** 变量是否是 普通Object(对象的内部属性 [Class] 为 Object) */
 const isPlainObj = isType<object>('Object');
@@ -120,6 +123,7 @@ export {
     isFunction,
     isAsyncFunction,
     isGeneratorFunction,
+    isPromise,
     isPlainObj,
     isObj,
     isJSON,

@@ -14,6 +14,7 @@ const componentMeta = defineComponentMeta({
     name: "文本输入",
     description: "单行文本输入",
     version: "0.0.1",
+    docLink: "",
     icon: "input",
     defComponentNode: {
         props: {},

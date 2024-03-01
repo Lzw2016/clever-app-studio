@@ -17,7 +17,7 @@ type VueComponent = Component | DefineComponent;
  * 异步vue组件，
  * 推荐使用 () => import("@/component/Component.vue") 方式，自动切分打包文件
  */
-type AsyncVueComponent = () => Promise<VueComponent>;
+type AsyncVueComponent = (type: string) => Promise<VueComponent>;
 
 // -------------------------------------------------------------------------------------------------------------------
 // 共用类型定义

@@ -110,6 +110,8 @@ interface ComponentMeta {
     description: string;
     /** 组件版本 */
     version: string;
+    /** 组件文档连接 */
+    docLink?: string;
     /** 组件图标 */
     icon: VueComponent | string;
     /** 默认的组件节点配置 */
@@ -122,6 +124,17 @@ interface ComponentMeta {
     i18n?: I18N;
 }
 
+/** 异步获取“组件元信息” */
+type AsyncComponentMeta = (type: string) => Promise<ComponentMeta>;
+
 export type {
+    DefComponentNode,
+    ComponentSchema,
+    WatchPropsConfig,
+    Setter,
+    SetterGroup,
+    SetterPanel,
+    ComponentSetter,
     ComponentMeta,
+    AsyncComponentMeta,
 }
