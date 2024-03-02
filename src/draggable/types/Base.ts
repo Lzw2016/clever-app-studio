@@ -48,7 +48,7 @@ interface FunctionConfig {
 }
 
 /** 通用函数 */
-type AnyFunction<R = any> = (...args: any[]) => R;
+type AnyFunction<T = any, R = any> = (this: T, ...args: any[]) => R;
 
 /** 代码示例 */
 interface CodeExample {

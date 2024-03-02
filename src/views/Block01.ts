@@ -1,3 +1,4 @@
+import {ComponentInstance} from "@/draggable/types/Base";
 import {createBlock} from "@/draggable/components/BlockFactory";
 
 const Block01 = createBlock({
@@ -13,13 +14,9 @@ const Block01 = createBlock({
     data: {
         count: 0,
     },
-    computed: {},
-    watch: {},
-    methods: {},
-    lifeCycles: {
-        mounted(block) {
-            console.log("this.$refs.div01", block.$refs.div01)
-        },
+    computed: {
+        // a: function (oldValue, block) {
+        // },
     },
     items: [
         {
@@ -32,8 +29,34 @@ const Block01 = createBlock({
                     backgroundColor: "#ccc"
                 },
             },
+            listeners: {
+                onClick: function (this: ComponentInstance) {
+                    console.log("onClick", this.count++);
+                },
+                onContextmenu: {
+                    handler: function () {
+                        console.log("handler", this.count++);
+                    },
+                    modifiers: ['prevent'],
+                },
+            },
+            items: [
+                "BBB",
+                "CCC",
+            ],
         },
+        "AAA",
     ],
+    watch: {},
+    methods: {
+        test: function () {
+        },
+    },
+    lifeCycles: {
+        mounted: function (block) {
+            console.log("this.$refs.div01", block.$refs.div01);
+        },
+    },
 });
 
 export {

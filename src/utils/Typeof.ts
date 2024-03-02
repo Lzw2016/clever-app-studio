@@ -80,7 +80,7 @@ const isPromise = isType<Promise<any>>("Promise");
 const isPlainObj = isType<object>('Object');
 
 /** 变量是否是 Object(非 number、string、undefined、boolean、bigint、symbol、function 类型的都是 object) */
-const isObj = <T = object>(val: unknown): val is T => (typeof val === 'object');
+const isObj = <T = any>(val: unknown): val is T => (typeof val === 'object');
 
 /** 变量是否是 JSON */
 const isJSON = isType<JSON>('JSON');

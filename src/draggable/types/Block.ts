@@ -51,13 +51,13 @@ interface BaseDirectives {
 
 /** Listener的对象形式 */
 interface ListenerFunctionConfig {
-    handler: AnyFunction | FunctionConfig | string;
+    handler: AnyFunction<ComponentInstance> | FunctionConfig | string;
     /** 事件修饰符 */
     modifiers?: Array<string>;
 }
 
 /** 组件 listeners(事件监听函数) */
-type ComponentListener = AnyFunction | (FunctionConfig & { modifiers?: Array<string>; }) | ListenerFunctionConfig | string;
+type ComponentListener = AnyFunction<ComponentInstance> | (FunctionConfig & { modifiers?: Array<string>; }) | ListenerFunctionConfig | string;
 
 /** 组件节点 */
 interface ComponentNode<Props extends BaseProps = BaseProps, Event extends BaseEvent = BaseEvent, Directives extends BaseDirectives = BaseDirectives> {
@@ -74,9 +74,9 @@ interface ComponentNode<Props extends BaseProps = BaseProps, Event extends BaseE
     /** 组件指令 */
     directives?: Directives;
     /** 组件插槽(default插槽其实就是children) */
-    slots?: Record<string, ComponentNode | Array<ComponentNode>>;
+    slots?: Record<string, ComponentNode | string | Array<ComponentNode | string>>;
     /** 子组件集合 */
-    items?: Array<ComponentNode>;
+    items?: Array<ComponentNode | string>;
 }
 
 // -------------------------------------------------------------------------------------------------------------------
@@ -123,7 +123,7 @@ type WatchOptionItem = string | WatchCallback | FunctionConfig | ObjectWatchOpti
 type BlockWatchItem = WatchOptionItem | WatchOptionItem[];
 
 /** 区块 methods(自定义函数) */
-type BlockMethod = AnyFunction | FunctionConfig;
+type BlockMethod = AnyFunction<ComponentInstance> | FunctionConfig;
 
 /** 常规生命周期函数 */
 type LifeCycleFunction = (this: ComponentInstance, block: ComponentInstance) => void;
@@ -175,7 +175,7 @@ interface BlockDesign<Props extends BaseProps = BaseProps> {
     /** 生命周期 */
     lifeCycles?: BlockLifeCycles;
     /** 区块的子组件 */
-    items?: Array<ComponentNode>;
+    items?: Array<ComponentNode | string>;
     /** 多语言词条 */
     i18n?: I18N;
 }

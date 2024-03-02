@@ -35,80 +35,6 @@ const page = defineBlock({
             code: "",
         },
     },
-    watch: {
-        a: (value, oldValue, onCleanup) => {
-        },
-        b: "fun01",
-        c: {
-            handler: (value, oldValue, onCleanup) => {
-            },
-            deep: false,
-            flush: "pre",
-        },
-        d: {
-            params: ["value", "oldValue", "onCleanup"],
-            code: "",
-        },
-        e: [
-            (value, oldValue, onCleanup) => {
-            },
-            "fun01",
-            {
-                handler: (value, oldValue, onCleanup) => {
-                },
-                deep: false,
-                flush: "pre",
-            },
-            {
-                params: ["value", "oldValue", "onCleanup"],
-                code: "",
-            },
-            {
-                handler: {
-                    params: ["value", "oldValue", "onCleanup"],
-                    code: "",
-                },
-                deep: false,
-                flush: "pre",
-            },
-        ],
-        f: {
-            handler: {
-                params: ["value", "oldValue", "onCleanup"],
-                code: "",
-            },
-            deep: false,
-            flush: "pre",
-        },
-    },
-    methods: {
-        fun01: () => {
-
-        },
-        fun02() {
-        },
-        fun03: {
-            params: ["a", "b", "c"],
-            code: "",
-        },
-        fun04: (a, b, c, d) => {
-        },
-        fun05(a, b) {
-        },
-        fun06: (a: string, b: number, c: Date) => {
-
-        },
-    },
-    lifeCycles: {
-        mounted: () => {
-        },
-        updated() {
-        },
-        unmounted: {
-            params: ["block"],
-            code: "",
-        },
-    },
     items: [
         {
             id: "02",
@@ -192,6 +118,80 @@ const page = defineBlock({
             ],
         },
     ],
+    watch: {
+        a: (value, oldValue, onCleanup) => {
+        },
+        b: "fun01",
+        c: {
+            handler: (value, oldValue, onCleanup) => {
+            },
+            deep: false,
+            flush: "pre",
+        },
+        d: {
+            params: ["value", "oldValue", "onCleanup"],
+            code: "",
+        },
+        e: [
+            (value, oldValue, onCleanup) => {
+            },
+            "fun01",
+            {
+                handler: (value, oldValue, onCleanup) => {
+                },
+                deep: false,
+                flush: "pre",
+            },
+            {
+                params: ["value", "oldValue", "onCleanup"],
+                code: "",
+            },
+            {
+                handler: {
+                    params: ["value", "oldValue", "onCleanup"],
+                    code: "",
+                },
+                deep: false,
+                flush: "pre",
+            },
+        ],
+        f: {
+            handler: {
+                params: ["value", "oldValue", "onCleanup"],
+                code: "",
+            },
+            deep: false,
+            flush: "pre",
+        },
+    },
+    methods: {
+        fun01: () => {
+
+        },
+        fun02() {
+        },
+        fun03: {
+            params: ["a", "b", "c"],
+            code: "",
+        },
+        fun04: (a, b, c, d) => {
+        },
+        fun05(a, b) {
+        },
+        fun06: (a: string, b: number, c: Date) => {
+
+        },
+    },
+    lifeCycles: {
+        mounted: () => {
+        },
+        updated() {
+        },
+        unmounted: {
+            params: ["block"],
+            code: "",
+        },
+    },
     i18n: {
         "zh-CN": {
             "aaa": "中文",

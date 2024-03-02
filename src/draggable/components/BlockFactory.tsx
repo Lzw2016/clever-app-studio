@@ -1,11 +1,11 @@
-import {createVNode, defineComponent} from "vue";
-import {isFun, isObj, noValue} from "@/utils/Typeof";
+import {createVNode, defineComponent, withModifiers} from "vue";
+import {isArray, isFun, isObj, isStr, noValue} from "@/utils/Typeof";
 import {AnyFunction, FunctionConfig} from "@/draggable/types/Base";
-import {BlockDesign, BlockWatchItem, ComponentNode} from "@/draggable/types/Block";
+import {BlockDesign, BlockWatchItem, ComponentNode, ListenerFunctionConfig} from "@/draggable/types/Block";
 import {ComponentManageModel} from "@/draggable/models/ComponentManageModel";
 import {AsyncFunction} from "@/utils/UseType";
-import {isArray, isString} from "lodash";
 import {createVNodeID} from "@/utils/IDCreate";
+import {isString} from "lodash";
 
 /** 所有的html标签 */
 const htmlTags = [
@@ -46,18 +46,57 @@ function isHtmlTag(htmlTag: string): boolean {
 const componentManage = new ComponentManageModel();
 
 /** 给 ComponentNode 对象属性设置默认值 */
-function fillNodeDefValue(node: ComponentNode) {
+function fillNodeDefValue(node: ComponentNode): Required<ComponentNode> {
     if (!node.id) node.id = createVNodeID();
     if (!node.props) node.props = {};
     if (!node.listeners) node.listeners = {};
     if (!node.directives) node.directives = {};
     if (!node.slots) node.slots = {};
+    if (!node.items) node.items = [];
+    return node as any;
+}
+
+/**
+ * 处理 Block/ComponentNode 的 listeners 属性，使它符合 vue 组件的规范
+ */
+function listenersTransform(listeners: ComponentNode["listeners"], instance: any) {
+    const vueListeners: any = {};
+    for (let name in listeners) {
+        const value = listeners[name];
+        const listener: Partial<ListenerFunctionConfig> = {};
+        if (isStr(value) && isFun(instance[value])) {
+            listener.handler = instance[value];
+        } else if (isFun(value)) {
+            listener.handler = value;
+        } else if (isObj(value) && !isArray(value)) {
+            const {handler, async, params, code, modifiers} = value as any;
+            if (isStr(handler) && isFun(instance[handler])) {
+                listener.handler = instance[handler];
+            } else if (isFun(handler)) {
+                listener.handler = handler;
+            } else if (isObj(handler) && !isArray(handler) && isString(handler.code)) {
+                listener.handler = createFunction(handler);
+            } else if (isStr(code)) {
+                listener.handler = createFunction({async, params, code});
+            }
+            if (isArray(modifiers)) listener.modifiers = modifiers;
+        }
+        if (!isFun(listener.handler)) {
+            throw new Error(`listeners 定义错误(${name}=${value})`);
+        }
+        if (isArray(listener.modifiers) && listener.modifiers.length > 0) {
+            listener.handler = withModifiers(listener.handler.bind(instance), listener.modifiers);
+        }
+        vueListeners[name] = listener.handler.bind(instance);
+    }
+    return vueListeners;
 }
 
 /**
  * 基于 ComponentNode 创建 VNode
  */
-function createComponentVNode(node: ComponentNode) {
+function createComponentVNode(node: ComponentNode | string, instance: any) {
+    if (isStr(node)) return node;
     // 填充基本属性
     fillNodeDefValue(node);
     // 加载当前组件
@@ -66,16 +105,24 @@ function createComponentVNode(node: ComponentNode) {
     if (!component) {
         throw new Error(`UI组件未注册也不是html原生标签，组件: ${type}`);
     }
-    if (node.ref) node.props!['ref'] = node.ref;
-
+    // 配置 ref 属性
+    if (node.ref) node.props!.ref = node.ref;
+    // TODO 设置属性的绑定
+    // 处理 listeners
+    const listeners = listenersTransform(node.listeners, instance);
+    //
+    const children: any = {
+        default: () => {
+            return [];
+        }
+    };
     return createVNode(
         component,
-        node.props,
         {
-            default: () => {
-                return [];
-            }
-        }
+            ...node.props,
+            ...listeners,
+        },
+        children,
     );
 }
 
@@ -164,13 +211,19 @@ function watchTransform(watch: BlockDesign['watch']) {
     if (!watch) return vueWatch;
     const watchItemTransform = (watchItem: BlockWatchItem) => {
         let item: any;
-        if (isString(watchItem) || isFun(watchItem)) {
+        if (isStr(watchItem) || isFun(watchItem)) {
             item = watchItem;
         } else if (isObj(watchItem) && !isArray(watchItem)) {
             const watchObj: any = watchItem;
-            if (isString(watchObj.handler) || isFun(watchObj.handler)) {
+            if (isStr(watchObj.handler) || isFun(watchObj.handler)) {
                 item = watchObj;
-            } else if (isString(watchObj.code)) {
+            } else if (isObj(watchObj.handler) && !isArray(watchObj.handler) && isString(watchObj.handler.code)) {
+                const {handler, ...other} = watchObj;
+                item = {
+                    ...other,
+                    handler: createFunction(handler),
+                };
+            } else if (isStr(watchObj.code)) {
                 const {async, params, code, ...other} = watchObj;
                 item = {
                     ...other,
@@ -242,7 +295,7 @@ function createBlock(block: BlockDesign) {
         render() {
             return (
                 <div {...block.props} {...this.$.attrs} {...this.$props}>
-                    {block.items!.map(node => createComponentVNode(node))}
+                    {block.items!.map(node => createComponentVNode(node, this))}
                 </div>
             )
         },
