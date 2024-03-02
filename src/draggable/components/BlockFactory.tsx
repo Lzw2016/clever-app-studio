@@ -110,12 +110,20 @@ function createComponentVNode(node: ComponentNode | string, instance: any) {
     // TODO 设置属性的绑定
     // 处理 listeners
     const listeners = listenersTransform(node.listeners, instance);
-    //
-    const children: any = {
-        default: () => {
-            return [];
+    // 插槽和子组件(default插槽其实就是子组件)
+    const children: any = {};
+    // TODO 设置插槽 待验证
+    for (let name in node.slots) {
+        const slot = node.slots[name];
+        if (isArray(slot)) {
+            children[name] = () => slot.map(item => createComponentVNode(item, instance));
+        } else {
+            children[name] = () => createComponentVNode(slot, instance);
         }
-    };
+    }
+    // 设置子组件
+    const defaultVNodes = node.items?.map(item => createComponentVNode(item, instance));
+    children.default = () => defaultVNodes;
     return createVNode(
         component,
         {
@@ -124,6 +132,21 @@ function createComponentVNode(node: ComponentNode | string, instance: any) {
         },
         children,
     );
+    // TODO 应用指令
+    // vnode = withDirectives(
+    //     vnode,
+    //     [
+    //         [
+    //             // 不能使用内置指令
+    //             resolveDirective('focus'),
+    //             // {},
+    //             // "",
+    //             // {},
+    //         ],
+    //     ],
+    // )
+    // return vnode;
+
 }
 
 /** 根据 FunctionConfig 动态创建函数对象 */
