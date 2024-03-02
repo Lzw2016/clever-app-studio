@@ -1,7 +1,7 @@
 import {AsyncVueComponent, VueComponent} from "@/draggable/types/Base";
 import {AsyncComponentMeta, ComponentMeta} from "@/draggable/types/ComponentMeta";
 
-/** 组件管理 */
+/** 组件管理器 */
 interface ComponentManage {
     /**
      * 注册组件

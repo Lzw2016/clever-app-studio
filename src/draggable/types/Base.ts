@@ -8,7 +8,7 @@ import {Component, ComponentPublicInstance, DefineComponent} from "vue";
 type ComponentInstance = ComponentPublicInstance<any, any, any, any, any, any, any, any, any, any, any, any>;
 
 /** 错误处理函数 */
-type ErrorCapturedHook<TError = unknown> = (err: TError, instance: ComponentPublicInstance | null, info: string) => boolean | void;
+type ErrorCapturedHook<TError = unknown> = (this: ComponentInstance, err: TError, instance: ComponentPublicInstance | null, info: string) => boolean | void;
 
 /** vue组件 */
 type VueComponent = Component | DefineComponent;
@@ -39,6 +39,8 @@ type I18N = Partial<Record<LanguageName, Record<string, string>>>;
 
 /** 配置式函数(字符串函数代码) */
 interface FunctionConfig {
+    /** 是否是异步函数 */
+    async?: boolean;
     /** 函数参数名 */
     params?: Array<string> | string;
     /** 函数代码 */

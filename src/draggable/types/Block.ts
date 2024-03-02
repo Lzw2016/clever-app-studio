@@ -114,7 +114,7 @@ enum BuiltInBlock {
 type BlockType = BuiltInBlock | string;
 
 /** 区块 computed(计算数据) */
-type ComputedFunction<T = any> = (this: ComponentInstance, oldValue: T, cmp: ComponentInstance) => T;
+type ComputedFunction<T = any> = (this: ComponentInstance, oldValue: T, block: ComponentInstance) => T;
 type BlockComputed = ComputedFunction | FunctionConfig;
 
 /** 区块 watch(数据监听器) */
@@ -125,30 +125,33 @@ type BlockWatchItem = WatchOptionItem | WatchOptionItem[];
 /** 区块 methods(自定义函数) */
 type BlockMethod = AnyFunction | FunctionConfig;
 
+/** 常规生命周期函数 */
+type LifeCycleFunction = (this: ComponentInstance, block: ComponentInstance) => void;
+
 /** 区块 lifeCycles(生命周期) */
 interface BlockLifeCycles {
     /** 区块实例初始化完成之后立即调用 */
-    beforeCreate?: (() => void) | FunctionConfig;
+    beforeCreate?: LifeCycleFunction | FunctionConfig;
     /** 区块实例处理完所有与状态相关的选项后调用 */
-    created?: (() => void) | FunctionConfig;
+    created?: LifeCycleFunction | FunctionConfig;
     /** 区块被挂载之前调用 */
-    beforeMount?: (() => void) | FunctionConfig;
+    beforeMount?: LifeCycleFunction | FunctionConfig;
     /** 区块挂载完成后执行 */
-    mounted?: (() => void) | FunctionConfig;
+    mounted?: LifeCycleFunction | FunctionConfig;
     /** 区块即将因为一个响应式状态变更而更新其 DOM 树之前调用 */
-    beforeUpdate?: (() => void) | FunctionConfig;
+    beforeUpdate?: LifeCycleFunction | FunctionConfig;
     /** 区块因为一个响应式状态变更而更新其 DOM 树之后调用 */
-    updated?: (() => void) | FunctionConfig;
+    updated?: LifeCycleFunction | FunctionConfig;
     /** 区块实例被卸载之前调用 */
-    beforeUnmount?: (() => void) | FunctionConfig;
+    beforeUnmount?: LifeCycleFunction | FunctionConfig;
     /** 区块实例被卸载之后调用 */
-    unmounted?: (() => void) | FunctionConfig;
+    unmounted?: LifeCycleFunction | FunctionConfig;
     /** 在捕获了后代组件传递的错误时调用 */
     errorCaptured?: ErrorCapturedHook<Error> | FunctionConfig;
     /** 若区块实例是 <KeepAlive> 缓存树的一部分，当组件被插入到 DOM 中时调用 */
-    activated?: (() => void) | FunctionConfig;
+    activated?: LifeCycleFunction | FunctionConfig;
     /** 若区块实例是 <KeepAlive> 缓存树的一部分，当组件从 DOM 中被移除时调用 */
-    deactivated?: (() => void) | FunctionConfig;
+    deactivated?: LifeCycleFunction | FunctionConfig;
 }
 
 /** 区块 */

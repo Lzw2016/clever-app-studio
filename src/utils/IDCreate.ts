@@ -20,6 +20,17 @@ function randomUID(len?: number): string {
     return str;
 }
 
+let vnodeCount = 0;
+
+/**
+ * 生成新的 VNode ID
+ * @param prefix 自定义ID前缀
+ */
+function createVNodeID(prefix: string = "node") {
+    return `${prefix}_${vnodeCount++}`;
+}
+
 export {
     randomUID,
+    createVNodeID,
 }

@@ -2,6 +2,9 @@ import {ComponentManage} from "@/draggable/types/ComponentManage";
 import {AsyncVueComponent, VueComponent} from "../types/Base";
 import {AsyncComponentMeta, ComponentMeta} from "../types/ComponentMeta";
 
+/**
+ * 组件管理器模型
+ */
 class ComponentManageModel implements ComponentManage {
     private readonly asyncComponents: Map<string, AsyncVueComponent> = new Map<string, AsyncVueComponent>();
     private readonly components: Map<string, VueComponent> = new Map<string, VueComponent>();

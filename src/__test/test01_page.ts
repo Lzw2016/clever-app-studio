@@ -25,13 +25,13 @@ const page = defineBlock({
         d: 0,
     },
     computed: {
-        e: (oldValue, cmp) => {
-            return cmp.$data.a + '-bbb';
+        e: (oldValue, block) => {
+            return block.$data.a + '-bbb';
         },
-        f(oldValue, cmp) {
+        f(oldValue, block) {
         },
         g: {
-            params: ["oldValue", "cmp"],
+            params: ["oldValue", "block"],
             code: "",
         },
     },
@@ -105,7 +105,7 @@ const page = defineBlock({
         updated() {
         },
         unmounted: {
-            params: [],
+            params: ["block"],
             code: "",
         },
     },
@@ -121,7 +121,7 @@ const page = defineBlock({
                 d: false,
                 e: new Date(),
                 // 直接返回 data/computed 中的属性
-                f: "｛｛ this.a.b ｝｝",
+                f: "{{ this.a.b }}",
                 // 计算表达式
                 g: "{{ this.a.b + 1 }}",
                 // 返回对象
