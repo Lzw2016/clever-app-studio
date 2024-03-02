@@ -155,7 +155,7 @@ interface BlockLifeCycles {
 }
 
 /** 区块 */
-interface BlockDesign<Props extends BaseProps = BaseProps> {
+interface BlockDesign<Props extends BaseProps = BaseProps, Event extends BaseEvent = BaseEvent> {
     /** 唯一id */
     id: string;
     /** 元信息 */
@@ -172,6 +172,8 @@ interface BlockDesign<Props extends BaseProps = BaseProps> {
     watch?: Record<string, BlockWatchItem>;
     /** 自定义函数 */
     methods?: Record<string, BlockMethod>;
+    /** 监听的事件 */
+    listeners?: Record<keyof Event, ComponentListener>;
     /** 生命周期 */
     lifeCycles?: BlockLifeCycles;
     /** 区块的子组件 */

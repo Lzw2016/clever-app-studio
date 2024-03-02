@@ -52,6 +52,17 @@ const Block01 = createBlock({
         test: function () {
         },
     },
+    listeners: {
+        onClick: function (this: ComponentInstance) {
+            console.log("root onClick", this.count++);
+        },
+        onContextmenu: {
+            handler: function () {
+                console.log("root handler", this.count++);
+            },
+            modifiers: ['prevent'],
+        },
+    },
     lifeCycles: {
         mounted: function (block) {
             console.log("this.$refs.div01", block.$refs.div01);

@@ -57,42 +57,6 @@ function fillNodeDefValue(node: ComponentNode): Required<ComponentNode> {
 }
 
 /**
- * 处理 Block/ComponentNode 的 listeners 属性，使它符合 vue 组件的规范
- */
-function listenersTransform(listeners: ComponentNode["listeners"], instance: any) {
-    const vueListeners: any = {};
-    for (let name in listeners) {
-        const value = listeners[name];
-        const listener: Partial<ListenerFunctionConfig> = {};
-        if (isStr(value) && isFun(instance[value])) {
-            listener.handler = instance[value];
-        } else if (isFun(value)) {
-            listener.handler = value;
-        } else if (isObj(value) && !isArray(value)) {
-            const {handler, async, params, code, modifiers} = value as any;
-            if (isStr(handler) && isFun(instance[handler])) {
-                listener.handler = instance[handler];
-            } else if (isFun(handler)) {
-                listener.handler = handler;
-            } else if (isObj(handler) && !isArray(handler) && isString(handler.code)) {
-                listener.handler = createFunction(handler);
-            } else if (isStr(code)) {
-                listener.handler = createFunction({async, params, code});
-            }
-            if (isArray(modifiers)) listener.modifiers = modifiers;
-        }
-        if (!isFun(listener.handler)) {
-            throw new Error(`listeners 定义错误(${name}=${value})`);
-        }
-        if (isArray(listener.modifiers) && listener.modifiers.length > 0) {
-            listener.handler = withModifiers(listener.handler.bind(instance), listener.modifiers);
-        }
-        vueListeners[name] = listener.handler.bind(instance);
-    }
-    return vueListeners;
-}
-
-/**
  * 基于 ComponentNode 创建 VNode
  */
 function createComponentVNode(node: ComponentNode | string, instance: any) {
@@ -278,6 +242,42 @@ function watchTransform(watch: BlockDesign['watch']) {
     return vueWatch;
 }
 
+/**
+ * 处理 Block/ComponentNode 的 listeners 属性，使它符合 vue 组件的规范
+ */
+function listenersTransform(listeners: BlockDesign["listeners"], instance: any) {
+    const vueListeners: any = {};
+    for (let name in listeners) {
+        const value = listeners[name];
+        const listener: Partial<ListenerFunctionConfig> = {};
+        if (isStr(value) && isFun(instance[value])) {
+            listener.handler = instance[value];
+        } else if (isFun(value)) {
+            listener.handler = value;
+        } else if (isObj(value) && !isArray(value)) {
+            const {handler, async, params, code, modifiers} = value as any;
+            if (isStr(handler) && isFun(instance[handler])) {
+                listener.handler = instance[handler];
+            } else if (isFun(handler)) {
+                listener.handler = handler;
+            } else if (isObj(handler) && !isArray(handler) && isString(handler.code)) {
+                listener.handler = createFunction(handler);
+            } else if (isStr(code)) {
+                listener.handler = createFunction({async, params, code});
+            }
+            if (isArray(modifiers)) listener.modifiers = modifiers;
+        }
+        if (!isFun(listener.handler)) {
+            throw new Error(`listeners 定义错误(${name}=${value})`);
+        }
+        if (isArray(listener.modifiers) && listener.modifiers.length > 0) {
+            listener.handler = withModifiers(listener.handler.bind(instance), listener.modifiers);
+        }
+        vueListeners[name] = listener.handler.bind(instance);
+    }
+    return vueListeners;
+}
+
 /** 给 Block 对象属性设置默认值 */
 function fillBlockDefValue(block: BlockDesign): Required<BlockDesign> {
     if (!block.props) block.props = {};
@@ -285,6 +285,7 @@ function fillBlockDefValue(block: BlockDesign): Required<BlockDesign> {
     if (!block.computed) block.computed = {};
     if (!block.watch) block.watch = {};
     if (!block.methods) block.methods = {};
+    if (!block.listeners) block.listeners = {};
     if (!block.lifeCycles) block.lifeCycles = {};
     return block as any;
 }
@@ -297,9 +298,7 @@ function createBlock(block: BlockDesign) {
     const computed = computedTransform(block.computed);
     const methods = methodsTransform(block.methods);
     const watch = watchTransform(block.watch);
-    //
-
-
+    let listeners: any = undefined;
     // 定义 vue 组件
     return defineComponent({
         ...lifeCycles,
@@ -316,8 +315,9 @@ function createBlock(block: BlockDesign) {
         methods: methods,
         watch: watch,
         render() {
+            if (!listeners) listeners = listenersTransform(block.listeners, this);
             return (
-                <div {...block.props} {...this.$.attrs} {...this.$props}>
+                <div {...block.props} {...this.$.attrs} {...this.$props} {...listeners}>
                     {block.items!.map(node => createComponentVNode(node, this))}
                 </div>
             )
