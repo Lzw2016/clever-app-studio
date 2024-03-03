@@ -77,6 +77,8 @@ interface ComponentNode<Props extends BaseProps = BaseProps, Event extends BaseE
     slots?: Record<string, ComponentNode | string | Array<ComponentNode | string>>;
     /** 子组件集合 */
     items?: Array<ComponentNode | string>;
+    /** html模版(优先级低于 items) */
+    tpl?: string | Array<string>;
 }
 
 // -------------------------------------------------------------------------------------------------------------------

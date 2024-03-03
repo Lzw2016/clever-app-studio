@@ -1,11 +1,11 @@
-import {createVNode, defineComponent, withModifiers} from "vue";
+import {createStaticVNode, createVNode, defineComponent, withModifiers} from "vue";
 import {isArray, isFun, isObj, isStr, noValue} from "@/utils/Typeof";
 import {AnyFunction, FunctionConfig} from "@/draggable/types/Base";
 import {BlockDesign, BlockWatchItem, ComponentNode, ListenerFunctionConfig} from "@/draggable/types/Block";
 import {ComponentManageModel} from "@/draggable/models/ComponentManageModel";
 import {AsyncFunction} from "@/utils/UseType";
 import {createVNodeID} from "@/utils/IDCreate";
-import {isString} from "lodash";
+import {compileTpl} from "@/utils/Template";
 
 /** 所有的html标签 */
 const htmlTags = [
@@ -53,19 +53,22 @@ function fillNodeDefValue(node: ComponentNode): Required<ComponentNode> {
     if (!node.directives) node.directives = {};
     if (!node.slots) node.slots = {};
     if (!node.items) node.items = [];
+    if (!node.tpl) node.tpl = [];
     return node as any;
 }
 
 /**
  * 基于 ComponentNode 创建 VNode
  */
-function createComponentVNode(node: ComponentNode | string, instance: any) {
-    if (isStr(node)) return node;
+function createComponentVNode(node: ComponentNode | string, instance: any, nodeIdx: number) {
+    // 静态 html 文本
+    if (isStr(node)) return createStaticVNode(node, nodeIdx);
     // 填充基本属性
     fillNodeDefValue(node);
     // 加载当前组件
     const type = node.type.trim();
-    const component: any = isHtmlTag(type) ? type : componentManage.getComponent(type);
+    const htmlTag = isHtmlTag(type);
+    const component: any = htmlTag ? type : componentManage.getComponent(type);
     if (!component) {
         throw new Error(`UI组件未注册也不是html原生标签，组件: ${type}`);
     }
@@ -75,19 +78,34 @@ function createComponentVNode(node: ComponentNode | string, instance: any) {
     // 处理 listeners
     const listeners = listenersTransform(node.listeners, instance);
     // 插槽和子组件(default插槽其实就是子组件)
-    const children: any = {};
-    // TODO 设置插槽 待验证
+    const children: Record<string, AnyFunction<any, Array<any>>> = {};
+    // TODO 设置插槽 待验证，需要使用 withCtx(slotProps=> [...VNode])
     for (let name in node.slots) {
         const slot = node.slots[name];
         if (isArray(slot)) {
-            children[name] = () => slot.map(item => createComponentVNode(item, instance));
+            children[name] = () => slot.map((item, idx) => createComponentVNode(item, instance, idx));
         } else {
-            children[name] = () => createComponentVNode(slot, instance);
+            children[name] = () => [createComponentVNode(slot, instance, 0)];
         }
     }
     // 设置子组件
-    const defaultVNodes = node.items?.map(item => createComponentVNode(item, instance));
-    children.default = () => defaultVNodes;
+    if (node.items && node.items.length > 0) {
+        // 组件
+        children.default = () => node.items!.map((item, idx) => createComponentVNode(item, instance, idx));
+    } else if (node.tpl) {
+        // html模版
+        if (isStr(node.tpl)) node.tpl = [node.tpl];
+        // 编译并执行模版
+        const tplFun = compileTpl(node.tpl, {cache: false});
+        // children.default = () => ([createStaticVNode(tplFun({...instance.$data}), 0)]);
+        const data = {
+            ...instance.$props,
+            ...instance.$attrs,
+            ...instance.$data,
+        }
+        children.default = () => ([createStaticVNode(tplFun(data), 0)]);
+    }
+    // 创建 VNode
     return createVNode(
         component,
         {
@@ -110,7 +128,6 @@ function createComponentVNode(node: ComponentNode | string, instance: any) {
     //     ],
     // )
     // return vnode;
-
 }
 
 /** 根据 FunctionConfig 动态创建函数对象 */
@@ -204,7 +221,7 @@ function watchTransform(watch: BlockDesign['watch']) {
             const watchObj: any = watchItem;
             if (isStr(watchObj.handler) || isFun(watchObj.handler)) {
                 item = watchObj;
-            } else if (isObj(watchObj.handler) && !isArray(watchObj.handler) && isString(watchObj.handler.code)) {
+            } else if (isObj(watchObj.handler) && !isArray(watchObj.handler) && isStr(watchObj.handler.code)) {
                 const {handler, ...other} = watchObj;
                 item = {
                     ...other,
@@ -260,7 +277,7 @@ function listenersTransform(listeners: BlockDesign["listeners"], instance: any) 
                 listener.handler = instance[handler];
             } else if (isFun(handler)) {
                 listener.handler = handler;
-            } else if (isObj(handler) && !isArray(handler) && isString(handler.code)) {
+            } else if (isObj(handler) && !isArray(handler) && isStr(handler.code)) {
                 listener.handler = createFunction(handler);
             } else if (isStr(code)) {
                 listener.handler = createFunction({async, params, code});
@@ -318,7 +335,7 @@ function createBlock(block: BlockDesign) {
             if (!listeners) listeners = listenersTransform(block.listeners, this);
             return (
                 <div {...block.props} {...this.$.attrs} {...this.$props} {...listeners}>
-                    {block.items!.map(node => createComponentVNode(node, this))}
+                    {block.items!.map((node, idx) => createComponentVNode(node, this, idx))}
                 </div>
             )
         },
@@ -328,6 +345,3 @@ function createBlock(block: BlockDesign) {
 export {
     createBlock,
 }
-
-
-

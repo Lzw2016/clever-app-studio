@@ -24,8 +24,8 @@ const Block01 = createBlock({
             ref: "div01",
             props: {
                 style: {
-                    width: "100px",
-                    height: "32px",
+                    width: "100%",
+                    height: "100px",
                     backgroundColor: "#ccc"
                 },
             },
@@ -43,6 +43,14 @@ const Block01 = createBlock({
             items: [
                 "BBB",
                 "CCC",
+                "<div style='color: red;'>CCC</div>",
+                {
+                    type: "div",
+                    tpl: [
+                        '<div><%= count %></div>',
+                        '<div><%= count * 2 %></div>',
+                    ],
+                },
             ],
         },
         "AAA",
