@@ -77,7 +77,7 @@ const Block01 = createBlock({
         },
         onContextmenu: {
             handler: function () {
-                console.log("root handler", this.count++);
+                console.log("root onContextmenu handler", this.count++);
             },
             modifiers: ['prevent'],
         },

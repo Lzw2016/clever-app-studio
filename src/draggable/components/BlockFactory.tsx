@@ -1,4 +1,5 @@
 import {createStaticVNode, createVNode, defineComponent, withModifiers} from "vue";
+import lodash from "lodash";
 import {isArray, isFun, isObj, isStr, noValue} from "@/utils/Typeof";
 import {AnyFunction, FunctionConfig} from "@/draggable/types/Base";
 import {BlockDesign, BlockWatchItem, ComponentNode, ListenerFunctionConfig} from "@/draggable/types/Block";
@@ -303,8 +304,6 @@ function fillBlockDefValue(block: BlockDesign): Required<BlockDesign> {
 }
 
 function createBlock(block: BlockDesign) {
-    console.log("@@@ createBlock", block);
-
     // 填充基本属性
     fillBlockDefValue(block);
     // 处理 Block 属性，使它符合 vue 组件的规范
@@ -312,7 +311,6 @@ function createBlock(block: BlockDesign) {
     const computed = computedTransform(block.computed);
     const methods = methodsTransform(block.methods);
     const watch = watchTransform(block.watch);
-    let listeners: any = undefined;
     // 定义 vue 组件
     return defineComponent({
         ...lifeCycles,
@@ -323,20 +321,28 @@ function createBlock(block: BlockDesign) {
         props: {
             style: Object,
             class: String,
+            block: Object,
         },
         setup(props, ctx) {
-            console.log("@@@ defineComponent setup");
+            // const instance = getCurrentInstance()!;
+            // 定义 computed methods watch lifeCycles
+            // onUnmounted(() => {
+            //     console.log("unmounted ### ", block);
+            // });
         },
-        data(vm) {
-            return block.data;
+        data(vm: any) {
+            // 当前组件的事件监听
+            vm.__listeners = listenersTransform(block.listeners, vm);
+            // 这里通过克隆深 props data 属性，达到每次创建 Block 时，都会使用最初的状态值
+            vm.__props = lodash.cloneDeep(block.props);
+            return lodash.cloneDeep(block.data);
         },
         computed: computed,
         methods: methods,
         watch: watch,
         render() {
-            if (!listeners) listeners = listenersTransform(block.listeners, this);
             return (
-                <div {...block.props} {...this.$.attrs} {...this.$props} {...listeners}>
+                <div {...this.__props} {...this.$.attrs} {...this.$props} {...this.__listeners}>
                     {block.items!.map((node, idx) => createComponentVNode(node, this, idx))}
                 </div>
             )
