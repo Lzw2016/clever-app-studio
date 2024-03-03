@@ -9,14 +9,16 @@ const Block01 = createBlock({
             width: "300px",
             height: "200px",
             border: "1px solid #ccc",
+            userSelect: "none",
         },
     },
     data: {
         count: 0,
     },
     computed: {
-        // a: function (oldValue, block) {
-        // },
+        count2: function (oldValue, block) {
+            return block.count * 2;
+        },
     },
     items: [
         {
@@ -47,7 +49,7 @@ const Block01 = createBlock({
                 {
                     type: "div",
                     tpl: [
-                        '<div><%= count %></div>',
+                        '<div><%= count %> * 2 = <%= count2 %></div>',
                         '<div><%= this.count * 2 %></div>',
                     ],
                 },

@@ -47,6 +47,18 @@ function isHtmlTag(htmlTag: string): boolean {
 /** 组件管理器实例 */
 const componentManage = new ComponentManageModel();
 
+/** Block vue 组件的内部属性名 */
+const innerPropsName = {
+    /** 原始的 Block 配置对象 */
+    rawBlock: /*    */ Symbol('__raw_block__'),
+    /** vue 组件实例的事件监听 */
+    listeners: /*   */ Symbol('__instance_listeners__'),
+    /** vue 组件实例的props */
+    props: /*       */ Symbol('__instance_props__'),
+    /** vue 组件实例的data */
+    data: /*        */ Symbol('__instance_data__'),
+}
+
 /** 给 ComponentNode 对象属性设置默认值 */
 function fillNodeDefValue(node: ComponentNode): Required<ComponentNode> {
     if (!node.id) node.id = createVNodeID();
@@ -57,6 +69,26 @@ function fillNodeDefValue(node: ComponentNode): Required<ComponentNode> {
     if (!node.items) node.items = [];
     if (!node.tpl) node.tpl = [];
     return node as any;
+}
+
+/** 生成表达式函数或模版函数的参数 */
+function getExpOrTplParam(instance: any): any {
+    const block: BlockDesign = instance[innerPropsName.rawBlock];
+    const params: any = {...instance.$props, ...instance.$attrs, ...instance.$data};
+    // 计算数据
+    if (block.computed) {
+        for (let name in block.computed) {
+            params[name] = instance[name];
+        }
+    }
+    // 自定义函数
+    if (block.methods) {
+        for (let name in block.methods) {
+            params[name] = instance[name];
+        }
+    }
+    params.$block = instance;
+    return params;
 }
 
 /**
@@ -75,7 +107,7 @@ function createComponentVNode(node: ComponentNode | string, instance: any, nodeI
         throw new Error(`UI组件未注册也不是html原生标签，组件: ${type}`);
     }
     // 处理 props 表达式(属性的绑定)
-    const props = calcExpression(node.props, {...instance.$props, ...instance.$attrs, ...instance.$data, $block: instance}, {thisArg: instance, cache: false});
+    const props = calcExpression(node.props, getExpOrTplParam(instance), {thisArg: instance, cache: false});
     // 配置 ref 属性
     if (node.ref) props!.ref = node.ref;
     // 处理 listeners
@@ -100,7 +132,7 @@ function createComponentVNode(node: ComponentNode | string, instance: any, nodeI
         if (isStr(node.tpl)) node.tpl = [node.tpl];
         // 编译并执行模版
         const tplFun = compileTpl(node.tpl, {cache: true}).bind(instance);
-        children.default = () => ([createStaticVNode(tplFun({...instance.$props, ...instance.$attrs, ...instance.$data, $block: instance}), 0)]);
+        children.default = () => ([createStaticVNode(tplFun(getExpOrTplParam(instance)), 0)]);
     }
     // 创建 VNode
     return createVNode(
@@ -334,18 +366,20 @@ function createBlock(block: BlockDesign) {
             // });
         },
         data(vm: any) {
+            vm[innerPropsName.rawBlock] = block;
             // 当前组件的事件监听
-            vm.__listeners = listenersTransform(block.listeners, vm);
+            vm[innerPropsName.listeners] = listenersTransform(block.listeners, vm);
             // 这里通过克隆深 props data 属性，达到每次创建 Block 时，都会使用最初的状态值
-            vm.__props = lodash.cloneDeep(block.props);
-            return lodash.cloneDeep(block.data);
+            vm[innerPropsName.props] = lodash.cloneDeep(block.props);
+            vm[innerPropsName.data] = lodash.cloneDeep(block.data);
+            return vm[innerPropsName.data];
         },
         computed: computed,
         methods: methods,
         watch: watch,
         render() {
             return (
-                <div {...this.__props} {...this.$.attrs} {...this.$props} {...this.__listeners}>
+                <div {...this[innerPropsName.props]} {...this.$attrs} {...this.$props} {...this[innerPropsName.listeners]}>
                     {block.items!.map((node, idx) => createComponentVNode(node, this, idx))}
                 </div>
             )
