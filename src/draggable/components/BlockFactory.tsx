@@ -7,6 +7,7 @@ import {ComponentManageModel} from "@/draggable/models/ComponentManageModel";
 import {AsyncFunction} from "@/utils/UseType";
 import {createVNodeID} from "@/utils/IDCreate";
 import {compileTpl} from "@/utils/Template";
+import {calcExpression} from "@/utils/Expression";
 
 /** 所有的html标签 */
 const htmlTags = [
@@ -73,10 +74,10 @@ function createComponentVNode(node: ComponentNode | string, instance: any, nodeI
     if (!component) {
         throw new Error(`UI组件未注册也不是html原生标签，组件: ${type}`);
     }
+    // 处理 props 表达式(属性的绑定)
+    const props = calcExpression(node.props, {...instance.$props, ...instance.$attrs, ...instance.$data, $block: instance}, {thisArg: instance, cache: false});
     // 配置 ref 属性
-    if (node.ref) node.props!.ref = node.ref;
-    // TODO 设置属性的绑定
-
+    if (node.ref) props!.ref = node.ref;
     // 处理 listeners
     const listeners = listenersTransform(node.listeners, instance);
     // 插槽和子组件(default插槽其实就是子组件)
@@ -105,7 +106,7 @@ function createComponentVNode(node: ComponentNode | string, instance: any, nodeI
     return createVNode(
         component,
         {
-            ...node.props,
+            ...props,
             ...listeners,
         },
         children,
@@ -303,6 +304,8 @@ function fillBlockDefValue(block: BlockDesign): Required<BlockDesign> {
     return block as any;
 }
 
+// TODO 1. createBlock 改成无参数函数
+// TODO 2. block 里的 Transform 尽可能的在 setup 或 data 函数中统一处理(只需处理一次)
 function createBlock(block: BlockDesign) {
     // 填充基本属性
     fillBlockDefValue(block);

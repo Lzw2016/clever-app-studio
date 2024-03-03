@@ -13,7 +13,7 @@ import {isArray} from "@/utils/Typeof";
 //     ...lodash.templateSettings.imports,
 // };
 
-type TplOptions = TemplateOptions & { cache?: boolean };
+type TplOptions = TemplateOptions & { cache?: boolean; };
 
 /** 模版编译结果缓存 */
 const tplFunCache: Map<string, TemplateExecutor> = new Map<string, TemplateExecutor>();
@@ -21,16 +21,16 @@ const tplFunCache: Map<string, TemplateExecutor> = new Map<string, TemplateExecu
 /**
  * 编译模版
  * @param tpl       模版内容
- * @param options   模版选项
+ * @param options   编译选项
  */
 function compileTpl(tpl: string | string[], options?: TplOptions): TemplateExecutor {
     if (isArray(tpl)) {
         tpl = tpl.join("\n");
     }
-    const cache = options?.cache;
-    if (cache && tplFunCache.has(tpl)) {
+    if (tplFunCache.has(tpl)) {
         return tplFunCache.get(tpl)!;
     }
+    const cache = options?.cache;
     try {
         // 这里暂时使用 lodash 的 template 功能，后面有需要可以换成 art-template
         // art-template 相对于 lodash template 优势:

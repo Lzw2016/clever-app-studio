@@ -9,6 +9,48 @@ const block01ref = ref();
 onMounted(() => {
     console.log("block01", block01ref);
 });
+
+// const data = {
+//     a: "a",
+//     b: 1,
+//     c: true,
+//     d: new Date(),
+//     e: /aa/,
+//     f: [1, 2, 3],
+//     g: {
+//         h: [4, 5, 6, { j: "BBB" }],
+//         i: "AAA",
+//     },
+// };
+//
+// let value = calcExpression("{{b+123}}", data);
+// console.log("@@@ 1", value);
+//
+// value = calcExpression("{{f[2]}}", data);
+// console.log("@@@ 2", value);
+//
+// value = calcExpression("{{g?.h[3].j}}", data);
+// console.log("@@@ 3", value);
+//
+// value = calcExpression([
+//     '{{b+123}}',
+//     '{{f[2]}}',
+//     '{{g?.h[3].j}}',
+// ], data);
+// console.log("@@@ 4", value)
+//
+// value = calcExpression({
+//     a: '{{b+123}}',
+//     b: '{{g?.h[3].j}}',
+//     c: ['{{b+123}}', '{{f[2]}}',],
+//     d: {
+//         e: '{{c}}',
+//         f: '{{d}}',
+//         g: 999,
+//     },
+//     h: false,
+// }, data);
+// console.log("@@@ 5", value);
 </script>
 
 <template>

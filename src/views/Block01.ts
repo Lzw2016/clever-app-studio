@@ -26,7 +26,7 @@ const Block01 = createBlock({
                 style: {
                     width: "100%",
                     height: "100px",
-                    backgroundColor: "#ccc"
+                    backgroundColor: "{{ this.count%2===0 ? '#ccc' : '#880' }}"
                 },
             },
             listeners: {
