@@ -48,7 +48,7 @@ const Block01 = createBlock({
                     type: "div",
                     tpl: [
                         '<div><%= count %></div>',
-                        '<div><%= count * 2 %></div>',
+                        '<div><%= this.count * 2 %></div>',
                     ],
                 },
             ],

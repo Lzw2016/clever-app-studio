@@ -96,14 +96,8 @@ function createComponentVNode(node: ComponentNode | string, instance: any, nodeI
         // html模版
         if (isStr(node.tpl)) node.tpl = [node.tpl];
         // 编译并执行模版
-        const tplFun = compileTpl(node.tpl, {cache: false});
-        // children.default = () => ([createStaticVNode(tplFun({...instance.$data}), 0)]);
-        const data = {
-            ...instance.$props,
-            ...instance.$attrs,
-            ...instance.$data,
-        }
-        children.default = () => ([createStaticVNode(tplFun(data), 0)]);
+        const tplFun = compileTpl(node.tpl, {cache: false}).bind(instance);
+        children.default = () => ([createStaticVNode(tplFun({...instance.$props, ...instance.$attrs, ...instance.$data, $block: instance}), 0)]);
     }
     // 创建 VNode
     return createVNode(
