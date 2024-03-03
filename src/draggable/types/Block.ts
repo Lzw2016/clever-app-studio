@@ -8,7 +8,7 @@ import {AnyFunction, ComponentInstance, ErrorCapturedHook, FunctionConfig, I18N}
 /** 组件基础属性 */
 interface BaseProps {
     /** 组件内联样式 */
-    style?: CSSProperties;
+    style?: CSSProperties | Partial<Record<keyof CSSProperties, string>>;
     /** 组件class样式 */
     class?: string;
 

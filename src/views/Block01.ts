@@ -14,6 +14,7 @@ const Block01 = createBlock({
     },
     data: {
         count: 0,
+        hiddenDiv01: false,
     },
     computed: {
         count2: function (oldValue, block) {
@@ -28,7 +29,8 @@ const Block01 = createBlock({
                 style: {
                     width: "100%",
                     height: "100px",
-                    backgroundColor: "{{ this.count%2===0 ? '#ccc' : '#880' }}"
+                    backgroundColor: "{{ this.count%2===0 ? '#ccc' : '#880' }}",
+                    visibility: "{{ hiddenDiv01 ? 'hidden': 'unset' }}",
                 },
             },
             listeners: {
@@ -58,10 +60,27 @@ const Block01 = createBlock({
         "AAA",
         {
             type: "div",
-            tpl: [
-                '<%= count %>',
+            items: [
+                {
+                    type: "div",
+                    tpl: [
+                        '<%= count %>',
+                    ],
+                },
+                {
+                    type: "button",
+                    tpl: "<%= hiddenDiv01 ? '显示': '隐藏' %>",
+                    listeners: {
+                        onClick: {
+                            handler: function (this: ComponentInstance) {
+                                this.hiddenDiv01 = !this.hiddenDiv01;
+                            },
+                            modifiers: ['stop'],
+                        },
+                    },
+                }
             ],
-        }
+        },
     ],
     watch: {
         count: {
