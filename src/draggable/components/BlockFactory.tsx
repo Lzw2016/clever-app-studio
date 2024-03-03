@@ -75,6 +75,7 @@ function createComponentVNode(node: ComponentNode | string, instance: any, nodeI
     // 配置 ref 属性
     if (node.ref) node.props!.ref = node.ref;
     // TODO 设置属性的绑定
+
     // 处理 listeners
     const listeners = listenersTransform(node.listeners, instance);
     // 插槽和子组件(default插槽其实就是子组件)
@@ -96,7 +97,7 @@ function createComponentVNode(node: ComponentNode | string, instance: any, nodeI
         // html模版
         if (isStr(node.tpl)) node.tpl = [node.tpl];
         // 编译并执行模版
-        const tplFun = compileTpl(node.tpl, {cache: false}).bind(instance);
+        const tplFun = compileTpl(node.tpl, {cache: true}).bind(instance);
         children.default = () => ([createStaticVNode(tplFun({...instance.$props, ...instance.$attrs, ...instance.$data, $block: instance}), 0)]);
     }
     // 创建 VNode
@@ -302,6 +303,8 @@ function fillBlockDefValue(block: BlockDesign): Required<BlockDesign> {
 }
 
 function createBlock(block: BlockDesign) {
+    console.log("@@@ createBlock", block);
+
     // 填充基本属性
     fillBlockDefValue(block);
     // 处理 Block 属性，使它符合 vue 组件的规范
@@ -313,11 +316,16 @@ function createBlock(block: BlockDesign) {
     // 定义 vue 组件
     return defineComponent({
         ...lifeCycles,
+        unmounted() {
+            if (lifeCycles.unmounted) lifeCycles.unmounted.bind(this).apply();
+            // 组件卸载时释放资源
+        },
         props: {
             style: Object,
             class: String,
         },
         setup(props, ctx) {
+            console.log("@@@ defineComponent setup");
         },
         data(vm) {
             return block.data;

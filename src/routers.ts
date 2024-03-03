@@ -1,4 +1,4 @@
-import { Router, RouteRecordRaw } from "vue-router";
+import {Router, RouteRecordRaw} from "vue-router";
 
 const staticRouters: RouteRecordRaw[] = [
     {
@@ -12,6 +12,12 @@ const staticRouters: RouteRecordRaw[] = [
                 path: '/test',
                 strict: true,
                 component: () => import("@/views/Page01.vue"),
+            },
+            {
+                name: 'test2',
+                path: '/test2',
+                strict: true,
+                component: () => import("@/views/Page02.vue"),
             },
         ],
     },

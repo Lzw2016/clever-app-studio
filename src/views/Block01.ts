@@ -54,8 +54,19 @@ const Block01 = createBlock({
             ],
         },
         "AAA",
+        {
+            type: "div",
+            tpl: [
+                '<%= count %>',
+            ],
+        }
     ],
-    watch: {},
+    watch: {
+        count: {
+            params: ["value", "oldValue", "onCleanup"],
+            code: 'console.log("watch count", value, oldValue);'
+        },
+    },
     methods: {
         test: function () {
         },
@@ -74,6 +85,9 @@ const Block01 = createBlock({
     lifeCycles: {
         mounted: function (block) {
             console.log("this.$refs.div01", block.$refs.div01);
+        },
+        unmounted: function (block) {
+            console.log("unmounted", block);
         },
     },
 });
