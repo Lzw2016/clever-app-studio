@@ -1,12 +1,14 @@
-import {withModifiers} from "vue";
+import {Fragment, withModifiers} from "vue";
 import lodash from "lodash";
 import {isArray, isFun, isObj, isStr, noValue} from "@/utils/Typeof";
 import {AsyncFunction} from "@/utils/UseType";
 import {calcExpression} from "@/utils/Expression";
 import {createVNodeID} from "@/utils/IDCreate";
-import {BlockDesign, BlockWatchItem, ComponentNode, ListenerFunctionConfig} from "@/draggable/types/Block";
 import {AnyFunction, FunctionConfig} from "@/draggable/types/Base";
-import {RuntimeBlock} from "@/draggable/types/RuntimeBlock";
+import {BlockDesign, BlockWatchItem, ComponentNode, ListenerFunctionConfig} from "@/draggable/types/Block";
+import {RuntimeBlock, RuntimeBlockWatchItem} from "@/draggable/types/RuntimeBlock";
+import {ComponentManage} from "@/draggable/types/ComponentManage";
+import {isHtmlTag} from "@/draggable/utils/HtmlTag";
 
 /**
  * 根据 FunctionConfig 动态创建函数对象
@@ -18,30 +20,9 @@ function createFunction(functionConfig: FunctionConfig): AnyFunction {
 }
 
 /**
- * 生成表达式函数或模版函数的参数
+ * 给 Block 对象属性设置默认值
  */
-function getExpOrTplParam(instance: any, currBlock: BlockDesign): any {
-    const params: any = {...instance.$props, ...instance.$attrs, ...instance.$data};
-    // 计算数据
-    if (currBlock.computed) {
-        for (let name in currBlock.computed) {
-            params[name] = instance[name];
-        }
-    }
-    // 自定义函数
-    if (currBlock.methods) {
-        for (let name in currBlock.methods) {
-            params[name] = instance[name];
-        }
-    }
-    // 内置属性
-    params.$block = instance;
-    params._ = lodash;
-    return params;
-}
-
-/** 给 Block 对象属性设置默认值 */
-function fillBlockDefValue(block: BlockDesign): Required<BlockDesign> {
+function fillBlockDefValue(block: Partial<BlockDesign>): Required<BlockDesign> {
     if (!block.id) block.id = createVNodeID();
     if (!block.props) block.props = {};
     if (!block.listeners) block.listeners = {};
@@ -111,7 +92,7 @@ function lifeCyclesTransform(lifeCycles: BlockDesign['lifeCycles'], methods: Rec
 /**
  * 处理 Block 的 computed 属性，使它符合 vue 组件的规范
  */
-function computedTransform(computed: BlockDesign['computed'], methods: Record<string, any>): Record<string, any> {
+function computedTransform(computed: BlockDesign['computed'], methods: Record<string, any>): Record<string, Function> {
     const vueComputed: any = {};
     if (!computed) return vueComputed;
     for (let name in computed) {
@@ -139,7 +120,7 @@ function computedTransform(computed: BlockDesign['computed'], methods: Record<st
 /**
  * 处理 Block 的 watch 属性，使它符合 vue 组件的规范
  */
-function watchTransform(watch: BlockDesign['watch']): Record<string, any> {
+function watchTransform(watch: BlockDesign['watch']): Record<string, RuntimeBlockWatchItem> {
     const vueWatch: any = {};
     if (!watch) return vueWatch;
     const watchItemTransform = (watchItem: BlockWatchItem) => {
@@ -226,49 +207,69 @@ function listenersTransform(listeners: BlockDesign["listeners"], instance: any):
 }
 
 /**
- * 处理 Block/ComponentNode 的 props 属性，计算出表达式值
- */
-function propsTransform(props: BlockDesign["props"], instance: any, currBlock: BlockDesign): Record<string, any> {
-    return calcExpression(props, getExpOrTplParam(instance, currBlock), {thisArg: instance, cache: false});
-}
-
-/** 转换 ComponentNode 的 items 和 slots 成运行时对象 */
-function itemsOrSlotsTransform(itemsOrSlots: ComponentNode['items'], propName: 'items' | 'slots', slotName: string): RuntimeBlock["items"] {
-    let result: any;
-    if (isStr(itemsOrSlots)) {
-        result = itemsOrSlots;
-    } else if (isArray(itemsOrSlots)) {
-        result = itemsOrSlots.map((item: any, idx) => {
-            if (isStr(item)) {
-                return item;
-            } else if (isObj(item) && !isArray(item)) {
-                return blockDeepTransform(item);
-            } else {
-                throw new Error(`Block ${propName} 定义错误(${slotName}[${idx}]=${JSON.stringify(item)})`);
-            }
-        });
-    } else if (isObj(itemsOrSlots)) {
-        result = blockDeepTransform(itemsOrSlots as any);
-    } else {
-        throw new Error(`Block ${propName} 定义错误(${slotName}=${JSON.stringify(itemsOrSlots)})`);
-    }
-    return result;
-}
-
-/**
  * 深度转换 BlockDesign
  */
-function blockDeepTransform(block: BlockDesign): RuntimeBlock {
+function blockDeepTransform(block: BlockDesign, componentManage: ComponentManage): RuntimeBlock {
     const {
-        methods,
-        lifeCycles,
-        computed,
-        watch,
+        type,
         slots,
         items,
+        tpl,
+        computed,
+        watch,
+        methods,
+        lifeCycles,
         ...other
     } = fillBlockDefValue(block);
     const runtime: any = {};
+    // 读取组件类型
+    if (type) {
+        runtime.type = type.trim();
+        const htmlTag = isHtmlTag(runtime.type);
+        if (!htmlTag) {
+            runtime.type = componentManage.getComponent(runtime.type);
+        }
+    } else {
+        runtime.type = Fragment;
+    }
+    if (!runtime.type) {
+        throw new Error(`UI组件未注册也不是html原生标签，组件: ${type}`);
+    }
+    // 处理 slots 或者 items
+    const transformSlotsOrItems = function (itemsOrSlots: ComponentNode['items'], propName: 'items' | 'slots', slotName: string): RuntimeBlock["items"] {
+        let result: Array<any>;
+        if (isStr(itemsOrSlots)) {
+            result = [itemsOrSlots];
+        } else if (isArray(itemsOrSlots)) {
+            result = itemsOrSlots.map((item: any, idx) => {
+                if (isStr(item)) {
+                    return item;
+                } else if (isObj(item) && !isArray(item)) {
+                    return blockDeepTransform(item, componentManage);
+                } else {
+                    throw new Error(`Block ${propName} 定义错误(${slotName}[${idx}]=${JSON.stringify(item)})`);
+                }
+            });
+        } else if (isObj(itemsOrSlots)) {
+            result = [blockDeepTransform(itemsOrSlots as any, componentManage)];
+        } else {
+            throw new Error(`Block ${propName} 定义错误(${slotName}=${JSON.stringify(itemsOrSlots)})`);
+        }
+        return result;
+    }
+    // 递归处理 slots
+    runtime.slots = {};
+    for (let name in slots) {
+        const slot = slots[name];
+        runtime.slots[name] = transformSlotsOrItems(slot, "slots", name);
+    }
+    // 递归处理 items
+    runtime.items = transformSlotsOrItems(items, "items", "items");
+    // 处理 tpl 属性
+    runtime.tpl = tpl;
+    if (isStr(tpl)) {
+        runtime.tpl = [tpl];
+    }
     // 处理 Block 属性
     if (block.block) {
         runtime.methods = methodsTransform(methods);
@@ -276,14 +277,6 @@ function blockDeepTransform(block: BlockDesign): RuntimeBlock {
         runtime.computed = computedTransform(computed, methods);
         runtime.watch = watchTransform(watch);
     }
-    // 递归处理 slots
-    runtime.slots = {};
-    for (let name in slots) {
-        const slot = slots[name];
-        runtime.slots[name] = itemsOrSlotsTransform(slot, "slots", name);
-    }
-    // 递归处理 items
-    runtime.items = itemsOrSlotsTransform(items, "items", "items");
     // 返回数据
     return {...other, ...runtime};
 }
@@ -328,15 +321,46 @@ function nodeDeepTransform(cmpNode: ComponentNode, instance: any) {
     }
 }
 
+/**
+ * 生成表达式函数或模版函数的参数
+ */
+function getExpOrTplParam(instance: any, currBlock: RuntimeBlock): any {
+    const params: any = {...instance.$props, ...instance.$attrs, ...instance.$data};
+    // 计算数据
+    if (currBlock.computed) {
+        for (let name in currBlock.computed) {
+            params[name] = instance[name];
+        }
+    }
+    // 自定义函数
+    if (currBlock.methods) {
+        for (let name in currBlock.methods) {
+            params[name] = instance[name];
+        }
+    }
+    // 内置属性
+    params.$block = instance;
+    params._ = lodash;
+    return params;
+}
+
+/**
+ * 处理 Block/ComponentNode 的 props 属性，计算出表达式值
+ */
+function propsTransform(props: BlockDesign["props"], instance: any, currBlock: RuntimeBlock): Record<string, any> {
+    return calcExpression(props, getExpOrTplParam(instance, currBlock), {thisArg: instance, cache: false});
+}
+
 export {
     createFunction,
-    getExpOrTplParam,
+    fillBlockDefValue,
     methodsTransform,
     lifeCyclesTransform,
     computedTransform,
     watchTransform,
     listenersTransform,
-    propsTransform,
     blockDeepTransform,
     nodeDeepTransform,
+    getExpOrTplParam,
+    propsTransform,
 }

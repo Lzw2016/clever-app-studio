@@ -1,47 +1,77 @@
-import {createStaticVNode, createVNode, defineComponent} from "vue";
+import {ComponentPublicInstance, createStaticVNode, createVNode, defineComponent} from "vue";
 import lodash from "lodash";
-import {isArray, isStr} from "@/utils/Typeof";
+import {hasValue, isArray, isStr} from "@/utils/Typeof";
 import {AnyFunction} from "@/draggable/types/Base";
-import {BlockDesign, ComponentSlotsItem} from "@/draggable/types/Block";
+import {BlockDesign} from "@/draggable/types/Block";
 import {ComponentManageModel} from "@/draggable/models/ComponentManageModel";
 import {compileTpl} from "@/utils/Template";
-import {isHtmlTag} from "@/draggable/utils/HtmlTag";
 import {blockDeepTransform, getExpOrTplParam, nodeDeepTransform, propsTransform} from "@/draggable/utils/BlockPropsTransform";
+import {RuntimeBlock, RuntimeBlockNode, RuntimeComponentNode} from "@/draggable/types/RuntimeBlock";
 
 /** 组件管理器实例 */
 const componentManage = new ComponentManageModel();
 
 /** Block vue 组件的内部属性名 */
-const innerPropsName = {
-    /** 原始的 Block 配置对象：BlockDesign */
-    rawBlock: /*    */ Symbol('__raw_block__'),
-    /** 当前的(处理后的) Block 配置对象 */
-    currBlock: /*   */ Symbol('__curr_block__'),
-    /** vue 组件实例的事件监听 */
-    listeners: /*   */ Symbol('__instance_listeners__'),
+const innerName = {
+    /** BlockDesign 对象，只有顶层 Block 拥有此属性 */
+    designBlock: /*    */ Symbol('__design_block__'),
+    /** 当前层级 Block 所对应的 RuntimeBlock 对象 */
+    runtimeBlock: /*   */ Symbol('__runtime_block__'),
+    /** 当前层级 Block 组件的事件处理函数对象 */
+    listeners: /*   */ Symbol('__listeners__'),
 }
 
-// TODO 2. block 里的 Transform 尽可能的在 setup 或 data 函数中统一处理(只需处理一次)
-function createBlock(block: BlockDesign) {
-    const rawBlock: BlockDesign = block;
+/**
+ * 基于 BlockDesign 动态创建 vue 组件
+ */
+function createBlockComponent(block: BlockDesign) {
+    const designBlock: BlockDesign = block;
     // 深度克隆 block 对象，保护原始 block 对象不被篡改
-    block = lodash.cloneDeep(rawBlock);
+    block = lodash.cloneDeep(designBlock);
     // 递归处理 Block 属性，使它符合 vue 组件的规范
-    const currBlock = blockDeepTransform(block);
-    console.log("@@@ currBlock", currBlock);
-    // lifeCycles TODO 内置默认的异常处理
-    const Block = "div";
-    // 定义 vue 组件
+    const runtimeBlock = blockDeepTransform(block, componentManage);
+    // 创建组件
+    return createRuntimeBlockComponent(runtimeBlock, designBlock);
+}
+
+/**
+ * 基于 RuntimeBlock 动态创建 vue 组件
+ */
+function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, designBlock?: BlockDesign) {
+    // 当前 runtimeBlock 是否是根组件
+    const isRoot = hasValue(designBlock);
+    const {
+        id,
+        ref,
+        type,
+        props,
+        data,
+        computed,
+        methods,
+        watch,
+        lifeCycles,
+        items,
+        tpl,
+    } = runtimeBlock;
+    // 内置默认的异常处理
+    if (!lifeCycles.errorCaptured) {
+        lifeCycles.errorCaptured = function (err: Error, instance: ComponentPublicInstance | null, info: string) {
+            // 组件渲染报错时的默认处理
+        }
+    }
+    // 组件卸载时释放资源
+    const unmounted = lifeCycles.unmounted;
+    lifeCycles.unmounted = function () {
+        if (unmounted) unmounted.call(this);
+        // 可以在这里释放组件依赖的资源
+    };
+    // 当前组件类型
+    const Component: any = type;
     return defineComponent({
-        ...currBlock.lifeCycles,
-        unmounted() {
-            if (currBlock.lifeCycles.unmounted) currBlock.lifeCycles.unmounted.call(this);
-            // 组件卸载时释放资源
-        },
+        ...lifeCycles,
         props: {
             style: Object,
             class: String,
-            block: Object,
         },
         setup(props, ctx) {
             // const instance = getCurrentInstance()!;
@@ -49,78 +79,84 @@ function createBlock(block: BlockDesign) {
             // ctx.expose(exposed);
         },
         data(vm: any) {
-            // 递归处理 ComponentNode 属性，使它符合 vue 组件的规范
-            nodeDeepTransform(currBlock as any, vm);
-            // 保存原始的 block 对象
-            vm[innerPropsName.rawBlock] = rawBlock;
+            if (isRoot) {
+                // 递归处理 ComponentNode 属性，使它符合 vue 组件的规范
+                nodeDeepTransform(runtimeBlock as any, vm);
+                // 保存原始的 block 对象
+                vm[innerName.designBlock] = designBlock;
+            }
             // 保存当前运行时的 block 对象
-            vm[innerPropsName.currBlock] = currBlock;
+            vm[innerName.runtimeBlock] = runtimeBlock;
             // 当前组件的事件监听
-            vm[innerPropsName.listeners] = currBlock.listeners;
+            vm[innerName.listeners] = runtimeBlock.listeners;
             // 返回组件数据
-            return currBlock.data;
+            return data;
         },
-        computed: currBlock.computed,
-        methods: currBlock.methods,
-        watch: currBlock.watch,
+        computed: computed,
+        methods: methods,
+        watch: watch,
         render(this: any) {
-
-
-            const props = propsTransform(currBlock.props, this, this[innerPropsName.currBlock]);
+            const newProps = propsTransform(props, this, this[innerName.runtimeBlock]);
+            let children: any = undefined;
+            if (items.length > 0) {
+                // 子组件
+                children = items.map((node, idx) => createChildVNode(node, this, idx));
+            } else if (tpl.length > 0) {
+                // html模版
+                const staticHtml = compileTpl(tpl, {cache: true}).bind(this)(getExpOrTplParam(this, runtimeBlock));
+                children = [createStaticVNode(staticHtml, 0)]
+            }
             return (
-                <Block {...props} {...this.$attrs} {...this.$props} {...this[innerPropsName.listeners]} ref={"dd"}>
-                    {currBlock.items?.map((node, idx) => createComponentVNode(node, this, idx))}
-                </Block>
+                <Component {...newProps} {...this.$attrs} {...this.$props} {...this[innerName.listeners]} key={id} ref={ref}>
+                    {children}
+                </Component>
             );
         },
     });
 }
 
-/** 基于 ComponentNode 创建 VNode */
-function createComponentVNode(child: ComponentSlotsItem, instance: any, nodeIdx: number) {
+/**
+ * 基于 ComponentNode 创建 VNode
+ */
+function createChildVNode(child: RuntimeBlockNode, instance: any, nodeIdx: number) {
     // 静态 html 文本
     if (isStr(child)) return createStaticVNode(child, nodeIdx);
-
-
-    // 加载当前组件
-    const type = child.type.trim();
-    const htmlTag = isHtmlTag(type);
-    const component: any = htmlTag ? type : componentManage.getComponent(type);
-    if (!component) {
-        throw new Error(`UI组件未注册也不是html原生标签，组件: ${type}`);
-    }
-    const currBlock = instance[innerPropsName.currBlock];
-    // 处理 props 表达式(属性的绑定)
-    const props = propsTransform(child.props, instance, currBlock);
-    // 配置 ref 属性
-    if (child.ref) props!.ref = child.ref;
+    // RuntimeBlock
+    const runtimeBlock = child as RuntimeBlock;
+    if (runtimeBlock.block) return createVNode(createRuntimeBlockComponent(runtimeBlock));
+    // RuntimeComponentNode
+    const childNode = child as RuntimeComponentNode;
+    // 当前层级 Block 所对应的 RuntimeBlock 对象
+    const currBlock = instance[innerName.runtimeBlock];
     // 插槽和子组件(default插槽其实就是子组件)
-    const children: Record<string, AnyFunction<any, Array<any>>> = {};
+    const children: Record<string, AnyFunction<any, Array<any>>> = {
+        default: () => ([]),
+    };
     // TODO 设置插槽 待验证，需要使用 withCtx(slotProps=> [...VNode])
-    for (let name in child.slots) {
-        const slot = child.slots[name];
+    for (let name in childNode.slots) {
+        const slot = childNode.slots[name];
         if (isArray(slot)) {
-            children[name] = () => slot.map((item, idx) => createComponentVNode(item, instance, idx));
+            children[name] = () => slot.map((item, idx) => createChildVNode(item, instance, idx));
         } else {
-            children[name] = () => [createComponentVNode(slot, instance, 0)];
+            children[name] = () => [createChildVNode(slot, instance, 0)];
         }
     }
     // 设置子组件
-    if (child.items && child.items.length > 0) {
-        // 组件
-        children.default = () => child.items!.map((item, idx) => createComponentVNode(item, instance, idx));
-    } else if (child.tpl) {
+    if (childNode.items.length > 0) {
+        // 子组件
+        children.default = () => childNode.items.map((item, idx) => createChildVNode(item, instance, idx));
+    } else if (childNode.tpl.length > 0) {
         // html模版
-        if (isStr(child.tpl)) child.tpl = [child.tpl];
-        // 编译并执行模版
         const staticHtml = compileTpl(child.tpl, {cache: true}).bind(instance)(getExpOrTplParam(instance, currBlock));
-        // 静态 html 子节点
         children.default = () => ([createStaticVNode(staticHtml, 0)]);
     }
+    // 处理 props 表达式(属性的绑定)
+    const props = propsTransform(child.props, instance, currBlock);
     // 创建 VNode
     return createVNode(
-        component,
+        child.type,
         {
+            ref: child.ref,
             ...props,
             ...child.listeners,
         },
@@ -143,5 +179,5 @@ function createComponentVNode(child: ComponentSlotsItem, instance: any, nodeIdx:
 }
 
 export {
-    createBlock,
+    createBlockComponent,
 }

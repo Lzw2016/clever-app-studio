@@ -1,10 +1,10 @@
 import {ComponentInstance} from "@/draggable/types/Base";
-import {createBlock} from "@/draggable/BlockFactory";
+import {createBlockComponent} from "@/draggable/BlockFactory";
 
-const Block01 = createBlock({
+const Block01 = createBlockComponent({
     block: true,
     id: "001",
-    type: "Block",
+    type: "div",
     props: {
         style: {
             width: "300px",

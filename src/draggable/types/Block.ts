@@ -66,8 +66,8 @@ type ComponentSlotsItem = ComponentNode | Omit<BlockDesign, "meta" | "i18n"> | s
 interface ComponentNode<Props extends BaseProps = BaseProps, Event extends BaseEvent = BaseEvent, Directives extends BaseDirectives = BaseDirectives> {
     /** 组件唯一id */
     id?: string;
-    /** 组件类型 */
-    type: string;
+    /** 组件类型，默认是 Fragment */
+    type?: string;
     /** 当前组件实例的引用名称 */
     ref?: string;
     /** 组件属性 */
@@ -107,17 +107,6 @@ interface BlockMeta {
 
     [name: string]: any;
 }
-
-/** 内置的区块实现 */
-enum BuiltInBlock {
-    Block = "Block",
-    DivBlock = "DivBlock",
-    // PageBlock = "PageBlock",
-    // DialogBlock = "DialogBlock",
-}
-
-/** 区块 type(实现组件) */
-type BlockType = BuiltInBlock | string;
 
 /** 区块 computed(计算数据) */
 type ComputedFunction<T = any> = (this: ComponentInstance, oldValue: T, block: ComponentInstance) => T;
@@ -189,7 +178,6 @@ export type {
     ComponentSlotsItem,
     ComponentNode,
     BlockMeta,
-    BlockType,
     ComputedFunction,
     ObjectWatchOptionItem,
     WatchOptionItem,
@@ -197,8 +185,4 @@ export type {
     BlockMethod,
     BlockLifeCycles,
     BlockDesign,
-}
-
-export {
-    BuiltInBlock,
 }
