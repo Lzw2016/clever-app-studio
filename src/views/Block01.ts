@@ -2,6 +2,7 @@ import {ComponentInstance} from "@/draggable/types/Base";
 import {createBlock} from "@/draggable/BlockFactory";
 
 const Block01 = createBlock({
+    block: true,
     id: "001",
     type: "Block",
     props: {

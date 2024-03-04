@@ -59,6 +59,9 @@ interface ListenerFunctionConfig {
 /** 组件 listeners(事件监听函数) */
 type ComponentListener = AnyFunction<ComponentInstance> | (FunctionConfig & { modifiers?: Array<string>; }) | ListenerFunctionConfig | string;
 
+/** 组件插槽类型 */
+type ComponentSlotsItem = ComponentNode | Omit<BlockDesign, "meta" | "i18n"> | string;
+
 /** 组件节点 */
 interface ComponentNode<Props extends BaseProps = BaseProps, Event extends BaseEvent = BaseEvent, Directives extends BaseDirectives = BaseDirectives> {
     /** 组件唯一id */
@@ -74,11 +77,11 @@ interface ComponentNode<Props extends BaseProps = BaseProps, Event extends BaseE
     /** 组件指令 */
     directives?: Directives;
     /** 组件插槽(default插槽其实就是children) */
-    slots?: Record<string, ComponentNode | string | Array<ComponentNode | string>>;
+    slots?: Record<string, Array<ComponentSlotsItem> | ComponentSlotsItem>;
     /** 子组件集合 */
-    items?: Array<ComponentNode | string>;
+    items?: Array<ComponentSlotsItem> | ComponentSlotsItem;
     /** html模版(优先级低于 items) */
-    tpl?: string | Array<string>;
+    tpl?: Array<string> | string;
 }
 
 // -------------------------------------------------------------------------------------------------------------------
@@ -108,6 +111,7 @@ interface BlockMeta {
 /** 内置的区块实现 */
 enum BuiltInBlock {
     Block = "Block",
+    DivBlock = "DivBlock",
     // PageBlock = "PageBlock",
     // DialogBlock = "DialogBlock",
 }
@@ -117,7 +121,7 @@ type BlockType = BuiltInBlock | string;
 
 /** 区块 computed(计算数据) */
 type ComputedFunction<T = any> = (this: ComponentInstance, oldValue: T, block: ComponentInstance) => T;
-type BlockComputed = ComputedFunction | FunctionConfig;
+type BlockComputed = ComputedFunction | FunctionConfig | string;
 
 /** 区块 watch(数据监听器) */
 type ObjectWatchOptionItem = { handler: WatchCallback | string | FunctionConfig; } & WatchOptions;
@@ -133,39 +137,33 @@ type LifeCycleFunction = (this: ComponentInstance, block: ComponentInstance) => 
 /** 区块 lifeCycles(生命周期) */
 interface BlockLifeCycles {
     /** 区块实例初始化完成之后立即调用 */
-    beforeCreate?: LifeCycleFunction | FunctionConfig;
+    beforeCreate?: LifeCycleFunction | FunctionConfig | string;
     /** 区块实例处理完所有与状态相关的选项后调用 */
-    created?: LifeCycleFunction | FunctionConfig;
+    created?: LifeCycleFunction | FunctionConfig | string;
     /** 区块被挂载之前调用 */
-    beforeMount?: LifeCycleFunction | FunctionConfig;
+    beforeMount?: LifeCycleFunction | FunctionConfig | string;
     /** 区块挂载完成后执行 */
-    mounted?: LifeCycleFunction | FunctionConfig;
+    mounted?: LifeCycleFunction | FunctionConfig | string;
     /** 区块即将因为一个响应式状态变更而更新其 DOM 树之前调用 */
-    beforeUpdate?: LifeCycleFunction | FunctionConfig;
+    beforeUpdate?: LifeCycleFunction | FunctionConfig | string;
     /** 区块因为一个响应式状态变更而更新其 DOM 树之后调用 */
-    updated?: LifeCycleFunction | FunctionConfig;
+    updated?: LifeCycleFunction | FunctionConfig | string;
     /** 区块实例被卸载之前调用 */
-    beforeUnmount?: LifeCycleFunction | FunctionConfig;
+    beforeUnmount?: LifeCycleFunction | FunctionConfig | string;
     /** 区块实例被卸载之后调用 */
-    unmounted?: LifeCycleFunction | FunctionConfig;
+    unmounted?: LifeCycleFunction | FunctionConfig | string;
     /** 在捕获了后代组件传递的错误时调用 */
-    errorCaptured?: ErrorCapturedHook<Error> | FunctionConfig;
+    errorCaptured?: ErrorCapturedHook<Error> | FunctionConfig | string;
     /** 若区块实例是 <KeepAlive> 缓存树的一部分，当组件被插入到 DOM 中时调用 */
-    activated?: LifeCycleFunction | FunctionConfig;
+    activated?: LifeCycleFunction | FunctionConfig | string;
     /** 若区块实例是 <KeepAlive> 缓存树的一部分，当组件从 DOM 中被移除时调用 */
-    deactivated?: LifeCycleFunction | FunctionConfig;
+    deactivated?: LifeCycleFunction | FunctionConfig | string;
 }
 
 /** 区块(设计时) */
-interface BlockDesign<Props extends BaseProps = BaseProps, Event extends BaseEvent = BaseEvent> {
-    /** 唯一id */
-    id: string;
-    /** 元信息 */
-    meta?: BlockMeta;
-    /** 类型(区块的实现组件) */
-    type?: BlockType;
-    /** 属性 */
-    props?: Props;
+interface BlockDesign<Props extends BaseProps = BaseProps, Event extends BaseEvent = BaseEvent, Directives extends BaseDirectives = BaseDirectives> extends ComponentNode<Props, Event, Directives> {
+    /** 是否是Block */
+    block: boolean;
     /** 数据 */
     data?: Record<string, any>;
     /** 计算数据 */
@@ -174,19 +172,12 @@ interface BlockDesign<Props extends BaseProps = BaseProps, Event extends BaseEve
     watch?: Record<string, BlockWatchItem>;
     /** 自定义函数 */
     methods?: Record<string, BlockMethod>;
-    /** 监听的事件 */
-    listeners?: Record<keyof Event, ComponentListener>;
     /** 生命周期 */
     lifeCycles?: BlockLifeCycles;
-    /** 区块的子组件 */
-    items?: Array<ComponentNode | string>;
+    /** 元信息 */
+    meta?: BlockMeta;
     /** 多语言词条 */
     i18n?: I18N;
-}
-
-/** 区块(运行时) */
-interface BlockRuntime {
-
 }
 
 export type {
@@ -195,6 +186,7 @@ export type {
     BaseDirectives,
     ListenerFunctionConfig,
     ComponentListener,
+    ComponentSlotsItem,
     ComponentNode,
     BlockMeta,
     BlockType,
@@ -205,7 +197,6 @@ export type {
     BlockMethod,
     BlockLifeCycles,
     BlockDesign,
-    BlockRuntime,
 }
 
 export {

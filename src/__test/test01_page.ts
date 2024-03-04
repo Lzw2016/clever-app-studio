@@ -5,6 +5,7 @@ function defineBlock(block: BlockDesign): BlockDesign {
 }
 
 const page = defineBlock({
+    block: true,
     id: "01",
     meta: {
         title: "页面01",

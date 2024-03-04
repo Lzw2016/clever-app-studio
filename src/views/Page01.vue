@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 import { Block01 } from "./Block01";
 
-const show = ref(0);
+const show = ref(1);
 
 const block01ref = ref();
 
