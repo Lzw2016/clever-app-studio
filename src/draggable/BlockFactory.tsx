@@ -34,7 +34,6 @@ function fillNodeDefValue(node: ComponentNode): Required<ComponentNode> {
     return node as any;
 }
 
-
 /** 基于 ComponentNode 创建 VNode */
 function createComponentVNode(node: ComponentNode | string, instance: any, nodeIdx: number) {
     // 静态 html 文本
@@ -53,7 +52,7 @@ function createComponentVNode(node: ComponentNode | string, instance: any, nodeI
     const props = propsTransform(node.props, instance, currBlock);
     // 配置 ref 属性
     if (node.ref) props!.ref = node.ref;
-    // 处理 listeners
+    // 处理 listeners TODO 放在 createBlock 函数处理，不用每次渲染都处理
     const listeners = listenersTransform(node.listeners, instance);
     // 插槽和子组件(default插槽其实就是子组件)
     const children: Record<string, AnyFunction<any, Array<any>>> = {};
@@ -162,8 +161,9 @@ function createBlock(block: BlockDesign) {
         methods: methods,
         watch: watch,
         render(this: any) {
+            const props = propsTransform(block.props, this, this[innerPropsName.currBlock]);
             return (
-                <Block {...block.props} {...this.$attrs} {...this.$props} {...this[innerPropsName.listeners]}>
+                <Block {...props} {...this.$attrs} {...this.$props} {...this[innerPropsName.listeners]}>
                     {block.items?.map((node, idx) => createComponentVNode(node, this, idx))}
                 </Block>
             );

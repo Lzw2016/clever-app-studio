@@ -10,6 +10,7 @@ const Block01 = createBlock({
             height: "200px",
             border: "1px solid #ccc",
             userSelect: "none",
+            backgroundColor: "{{ this.count%2===0 ? '#fff' : '#066' }}",
         },
     },
     data: {
