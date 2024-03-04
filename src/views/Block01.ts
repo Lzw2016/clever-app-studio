@@ -1,5 +1,5 @@
 import {ComponentInstance} from "@/draggable/types/Base";
-import {createBlock} from "@/draggable/components/BlockFactory";
+import {createBlock} from "@/draggable/BlockFactory";
 
 const Block01 = createBlock({
     id: "001",

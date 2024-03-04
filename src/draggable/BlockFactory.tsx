@@ -53,10 +53,10 @@ const innerPropsName = {
     rawBlock: /*    */ Symbol('__raw_block__'),
     /** vue 组件实例的事件监听 */
     listeners: /*   */ Symbol('__instance_listeners__'),
-    /** vue 组件实例的props */
-    props: /*       */ Symbol('__instance_props__'),
-    /** vue 组件实例的data */
-    data: /*        */ Symbol('__instance_data__'),
+    // /** vue 组件实例的props */
+    // props: /*       */ Symbol('__instance_props__'),
+    // /** vue 组件实例的data */
+    // data: /*        */ Symbol('__instance_data__'),
 }
 
 /** 给 ComponentNode 对象属性设置默认值 */
@@ -88,6 +88,7 @@ function getExpOrTplParam(instance: any): any {
         }
     }
     params.$block = instance;
+    params._ = lodash;
     return params;
 }
 
@@ -193,7 +194,7 @@ function lifeCyclesTransform(lifeCycles: BlockDesign['lifeCycles']): Record<stri
 /**
  * 处理 Block 的 computed 属性，使它符合 vue 组件的规范
  */
-function computedTransform(computed: BlockDesign['computed']) {
+function computedTransform(computed: BlockDesign['computed']): Record<string, any> {
     const vueComputed: any = {};
     if (!computed) return vueComputed;
     for (let name in computed) {
@@ -209,7 +210,7 @@ function computedTransform(computed: BlockDesign['computed']) {
         // 实测在当前环境中的 computed 回调函数有两个参数: instance: vue组件实例, oldValue: 之前的计算返回值
         vueComputed[name] = function (instance: any, oldValue: any) {
             // 这里的 this 指向 vue 组件实例
-            return fun(oldValue, instance);
+            return fun.call(instance, oldValue, instance);
         };
     }
     return vueComputed;
@@ -218,7 +219,7 @@ function computedTransform(computed: BlockDesign['computed']) {
 /**
  * 处理 Block 的 methods 属性，使它符合 vue 组件的规范
  */
-function methodsTransform(methods: BlockDesign['methods']) {
+function methodsTransform(methods: BlockDesign['methods']): Record<string, Function> {
     const vueMethods: any = {};
     if (!methods) return vueMethods;
     for (let name in methods) {
@@ -239,7 +240,7 @@ function methodsTransform(methods: BlockDesign['methods']) {
 /**
  * 处理 Block 的 watch 属性，使它符合 vue 组件的规范
  */
-function watchTransform(watch: BlockDesign['watch']) {
+function watchTransform(watch: BlockDesign['watch']): Record<string, any> {
     const vueWatch: any = {};
     if (!watch) return vueWatch;
     const watchItemTransform = (watchItem: BlockWatchItem) => {
@@ -291,7 +292,7 @@ function watchTransform(watch: BlockDesign['watch']) {
 /**
  * 处理 Block/ComponentNode 的 listeners 属性，使它符合 vue 组件的规范
  */
-function listenersTransform(listeners: BlockDesign["listeners"], instance: any) {
+function listenersTransform(listeners: BlockDesign["listeners"], instance: object): Record<string, Function> {
     const vueListeners: any = {};
     for (let name in listeners) {
         const value = listeners[name];
@@ -316,6 +317,7 @@ function listenersTransform(listeners: BlockDesign["listeners"], instance: any) 
         if (!isFun(listener.handler)) {
             throw new Error(`listeners 定义错误(${name}=${value})`);
         }
+        // 应用事件修饰符
         if (isArray(listener.modifiers) && listener.modifiers.length > 0) {
             listener.handler = withModifiers(listener.handler.bind(instance), listener.modifiers);
         }
@@ -333,12 +335,16 @@ function fillBlockDefValue(block: BlockDesign): Required<BlockDesign> {
     if (!block.methods) block.methods = {};
     if (!block.listeners) block.listeners = {};
     if (!block.lifeCycles) block.lifeCycles = {};
+    if (!block.items) block.items = [];
     return block as any;
 }
 
-// TODO 1. createBlock 改成无参数函数
 // TODO 2. block 里的 Transform 尽可能的在 setup 或 data 函数中统一处理(只需处理一次)
+// TODO 3. 检查所有 Transform 中 this 指针的绑定
 function createBlock(block: BlockDesign) {
+    const rawBlock: BlockDesign = block;
+    // 深度克隆 block 对象，保护原始 block 对象不被篡改
+    block = lodash.cloneDeep(rawBlock);
     // 填充基本属性
     fillBlockDefValue(block);
     // 处理 Block 属性，使它符合 vue 组件的规范
@@ -346,6 +352,8 @@ function createBlock(block: BlockDesign) {
     const computed = computedTransform(block.computed);
     const methods = methodsTransform(block.methods);
     const watch = watchTransform(block.watch);
+    // lifeCycles TODO 内置默认的异常处理
+    const Block = "div";
     // 定义 vue 组件
     return defineComponent({
         ...lifeCycles,
@@ -360,29 +368,26 @@ function createBlock(block: BlockDesign) {
         },
         setup(props, ctx) {
             // const instance = getCurrentInstance()!;
-            // 定义 computed methods watch lifeCycles
-            // onUnmounted(() => {
-            //     console.log("unmounted ### ", block);
-            // });
+            // const exposed: Record<string, any> = {};
+            // ctx.expose(exposed);
         },
         data(vm: any) {
-            vm[innerPropsName.rawBlock] = block;
+            // 保存原始的 block 对象
+            vm[innerPropsName.rawBlock] = rawBlock;
             // 当前组件的事件监听
             vm[innerPropsName.listeners] = listenersTransform(block.listeners, vm);
-            // 这里通过克隆深 props data 属性，达到每次创建 Block 时，都会使用最初的状态值
-            vm[innerPropsName.props] = lodash.cloneDeep(block.props);
-            vm[innerPropsName.data] = lodash.cloneDeep(block.data);
-            return vm[innerPropsName.data];
+            // 返回组件数据
+            return block.data;
         },
         computed: computed,
         methods: methods,
         watch: watch,
-        render() {
+        render(this: any) {
             return (
-                <div {...this[innerPropsName.props]} {...this.$attrs} {...this.$props} {...this[innerPropsName.listeners]}>
-                    {block.items!.map((node, idx) => createComponentVNode(node, this, idx))}
-                </div>
-            )
+                <Block {...block.props} {...this.$attrs} {...this.$props} {...this[innerPropsName.listeners]}>
+                    {block.items?.map((node, idx) => createComponentVNode(node, this, idx))}
+                </Block>
+            );
         },
     });
 }
