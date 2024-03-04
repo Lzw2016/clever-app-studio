@@ -88,6 +88,9 @@ const Block01 = createBlock({
             params: ["value", "oldValue", "onCleanup"],
             code: 'console.log("watch count", value, oldValue);'
         },
+        count2: function (value, oldValue, onCleanup) {
+            console.log("count2=", value, this);
+        }
     },
     methods: {
         test: function () {

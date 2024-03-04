@@ -14,10 +14,10 @@ const componentManage = new ComponentManageModel();
 
 /** Block vue 组件的内部属性名 */
 const innerPropsName = {
-    /** 原始的 Block 配置对象 */
+    /** 原始的 Block 配置对象：BlockDesign */
     rawBlock: /*    */ Symbol('__raw_block__'),
     /** 当前的(处理后的) Block 配置对象 */
-    currBlock: /*    */ Symbol('__curr_block__'),
+    currBlock: /*   */ Symbol('__curr_block__'),
     /** vue 组件实例的事件监听 */
     listeners: /*   */ Symbol('__instance_listeners__'),
 }
@@ -32,6 +32,76 @@ function fillNodeDefValue(node: ComponentNode): Required<ComponentNode> {
     if (!node.items) node.items = [];
     if (!node.tpl) node.tpl = [];
     return node as any;
+}
+
+/** 给 Block 对象属性设置默认值 */
+function fillBlockDefValue(block: BlockDesign): Required<BlockDesign> {
+    if (!block.props) block.props = {};
+    if (!block.data) block.data = {};
+    if (!block.computed) block.computed = {};
+    if (!block.watch) block.watch = {};
+    if (!block.methods) block.methods = {};
+    if (!block.listeners) block.listeners = {};
+    if (!block.lifeCycles) block.lifeCycles = {};
+    if (!block.items) block.items = [];
+    return block as any;
+}
+
+// TODO 2. block 里的 Transform 尽可能的在 setup 或 data 函数中统一处理(只需处理一次)
+function createBlock(block: BlockDesign) {
+    const rawBlock: BlockDesign = block;
+    // 深度克隆 block 对象，保护原始 block 对象不被篡改
+    block = lodash.cloneDeep(rawBlock);
+
+
+    // 填充基本属性
+    fillBlockDefValue(block);
+    // 处理 Block 属性，使它符合 vue 组件的规范
+    const lifeCycles = lifeCyclesTransform(block.lifeCycles);
+    const computed = computedTransform(block.computed);
+    const methods = methodsTransform(block.methods);
+    const watch = watchTransform(block.watch);
+    // lifeCycles TODO 内置默认的异常处理
+    const Block = "div";
+    // 定义 vue 组件
+    return defineComponent({
+        ...lifeCycles,
+        unmounted() {
+            if (lifeCycles.unmounted) lifeCycles.unmounted.bind(this).apply();
+            // 组件卸载时释放资源
+        },
+        props: {
+            style: Object,
+            class: String,
+            block: Object,
+        },
+        setup(props, ctx) {
+            // const instance = getCurrentInstance()!;
+            // const exposed: Record<string, any> = {};
+            // ctx.expose(exposed);
+        },
+        data(vm: any) {
+            // 保存原始的 block 对象
+            vm[innerPropsName.rawBlock] = rawBlock;
+            // 保存当前运行时的 block 对象
+            vm[innerPropsName.currBlock] = block;
+            // 当前组件的事件监听
+            vm[innerPropsName.listeners] = listenersTransform(block.listeners, vm);
+            // 返回组件数据
+            return block.data;
+        },
+        computed: computed,
+        methods: methods,
+        watch: watch,
+        render(this: any) {
+            const props = propsTransform(block.props, this, this[innerPropsName.currBlock]);
+            return (
+                <Block {...props} {...this.$attrs} {...this.$props} {...this[innerPropsName.listeners]}>
+                    {block.items?.map((node, idx) => createComponentVNode(node, this, idx))}
+                </Block>
+            );
+        },
+    });
 }
 
 /** 基于 ComponentNode 创建 VNode */
@@ -100,75 +170,6 @@ function createComponentVNode(node: ComponentNode | string, instance: any, nodeI
     //     ],
     // )
     // return vnode;
-}
-
-/** 给 Block 对象属性设置默认值 */
-function fillBlockDefValue(block: BlockDesign): Required<BlockDesign> {
-    if (!block.props) block.props = {};
-    if (!block.data) block.data = {};
-    if (!block.computed) block.computed = {};
-    if (!block.watch) block.watch = {};
-    if (!block.methods) block.methods = {};
-    if (!block.listeners) block.listeners = {};
-    if (!block.lifeCycles) block.lifeCycles = {};
-    if (!block.items) block.items = [];
-    return block as any;
-}
-
-// TODO 2. block 里的 Transform 尽可能的在 setup 或 data 函数中统一处理(只需处理一次)
-// TODO 3. 检查所有 Transform 中 this 指针的绑定
-function createBlock(block: BlockDesign) {
-    const rawBlock: BlockDesign = block;
-    // 深度克隆 block 对象，保护原始 block 对象不被篡改
-    block = lodash.cloneDeep(rawBlock);
-    // 填充基本属性
-    fillBlockDefValue(block);
-    // 处理 Block 属性，使它符合 vue 组件的规范
-    const lifeCycles = lifeCyclesTransform(block.lifeCycles);
-    const computed = computedTransform(block.computed);
-    const methods = methodsTransform(block.methods);
-    const watch = watchTransform(block.watch);
-    // lifeCycles TODO 内置默认的异常处理
-    const Block = "div";
-    // 定义 vue 组件
-    return defineComponent({
-        ...lifeCycles,
-        unmounted() {
-            if (lifeCycles.unmounted) lifeCycles.unmounted.bind(this).apply();
-            // 组件卸载时释放资源
-        },
-        props: {
-            style: Object,
-            class: String,
-            block: Object,
-        },
-        setup(props, ctx) {
-            // const instance = getCurrentInstance()!;
-            // const exposed: Record<string, any> = {};
-            // ctx.expose(exposed);
-        },
-        data(vm: any) {
-            // 保存原始的 block 对象
-            vm[innerPropsName.rawBlock] = rawBlock;
-            // 保存当前运行时的 block 对象
-            vm[innerPropsName.currBlock] = block;
-            // 当前组件的事件监听
-            vm[innerPropsName.listeners] = listenersTransform(block.listeners, vm);
-            // 返回组件数据
-            return block.data;
-        },
-        computed: computed,
-        methods: methods,
-        watch: watch,
-        render(this: any) {
-            const props = propsTransform(block.props, this, this[innerPropsName.currBlock]);
-            return (
-                <Block {...props} {...this.$attrs} {...this.$props} {...this[innerPropsName.listeners]}>
-                    {block.items?.map((node, idx) => createComponentVNode(node, this, idx))}
-                </Block>
-            );
-        },
-    });
 }
 
 export {

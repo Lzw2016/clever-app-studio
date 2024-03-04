@@ -156,7 +156,7 @@ interface BlockLifeCycles {
     deactivated?: LifeCycleFunction | FunctionConfig;
 }
 
-/** 区块 */
+/** 区块(设计时) */
 interface BlockDesign<Props extends BaseProps = BaseProps, Event extends BaseEvent = BaseEvent> {
     /** 唯一id */
     id: string;
@@ -184,6 +184,11 @@ interface BlockDesign<Props extends BaseProps = BaseProps, Event extends BaseEve
     i18n?: I18N;
 }
 
+/** 区块(运行时) */
+interface BlockRuntime {
+
+}
+
 export type {
     BaseProps,
     BaseEvent,
@@ -200,6 +205,7 @@ export type {
     BlockMethod,
     BlockLifeCycles,
     BlockDesign,
+    BlockRuntime,
 }
 
 export {
