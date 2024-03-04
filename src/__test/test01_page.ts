@@ -1,6 +1,6 @@
-import {BlockDesign} from "@/draggable/types/Block";
+import {DesignBlock} from "@/draggable/types/DesignBlock";
 
-function defineBlock(block: BlockDesign): BlockDesign {
+function defineBlock(block: DesignBlock): DesignBlock {
     return block;
 }
 

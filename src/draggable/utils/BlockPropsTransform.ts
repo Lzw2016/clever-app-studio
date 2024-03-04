@@ -5,7 +5,7 @@ import {AsyncFunction} from "@/utils/UseType";
 import {calcExpression} from "@/utils/Expression";
 import {createVNodeID} from "@/utils/IDCreate";
 import {AnyFunction, FunctionConfig} from "@/draggable/types/Base";
-import {BlockDesign, BlockWatchItem, ComponentNode, ListenerFunctionConfig} from "@/draggable/types/Block";
+import {BlockWatchItem, ComponentNode, DesignBlock, ListenerFunctionConfig} from "@/draggable/types/DesignBlock";
 import {RuntimeBlock, RuntimeBlockWatchItem} from "@/draggable/types/RuntimeBlock";
 import {ComponentManage} from "@/draggable/types/ComponentManage";
 import {isHtmlTag} from "@/draggable/utils/HtmlTag";
@@ -22,7 +22,7 @@ function createFunction(functionConfig: FunctionConfig): AnyFunction {
 /**
  * 给 Block 对象属性设置默认值
  */
-function fillBlockDefValue(block: Partial<BlockDesign>): Required<BlockDesign> {
+function fillBlockDefValue(block: Partial<DesignBlock>): Required<DesignBlock> {
     if (!block.id) block.id = createVNodeID();
     if (!block.props) block.props = {};
     if (!block.listeners) block.listeners = {};
@@ -44,7 +44,7 @@ function fillBlockDefValue(block: Partial<BlockDesign>): Required<BlockDesign> {
 /**
  * 处理 Block 的 methods 属性，使它符合 vue 组件的规范
  */
-function methodsTransform(methods: BlockDesign['methods']): Record<string, Function> {
+function methodsTransform(methods: DesignBlock['methods']): Record<string, Function> {
     const vueMethods: any = {};
     if (!methods) return vueMethods;
     for (let name in methods) {
@@ -65,7 +65,7 @@ function methodsTransform(methods: BlockDesign['methods']): Record<string, Funct
 /**
  * 处理 Block 的 lifeCycles 属性，使它符合 vue 组件的规范
  */
-function lifeCyclesTransform(lifeCycles: BlockDesign['lifeCycles'], methods: Record<string, any>): Record<string, Function> {
+function lifeCyclesTransform(lifeCycles: DesignBlock['lifeCycles'], methods: Record<string, any>): Record<string, Function> {
     const vueLifeCycles: Record<string, Function> = {};
     if (!lifeCycles) return vueLifeCycles;
     for (let name in lifeCycles) {
@@ -92,7 +92,7 @@ function lifeCyclesTransform(lifeCycles: BlockDesign['lifeCycles'], methods: Rec
 /**
  * 处理 Block 的 computed 属性，使它符合 vue 组件的规范
  */
-function computedTransform(computed: BlockDesign['computed'], methods: Record<string, any>): Record<string, Function> {
+function computedTransform(computed: DesignBlock['computed'], methods: Record<string, any>): Record<string, Function> {
     const vueComputed: any = {};
     if (!computed) return vueComputed;
     for (let name in computed) {
@@ -120,7 +120,7 @@ function computedTransform(computed: BlockDesign['computed'], methods: Record<st
 /**
  * 处理 Block 的 watch 属性，使它符合 vue 组件的规范
  */
-function watchTransform(watch: BlockDesign['watch']): Record<string, RuntimeBlockWatchItem> {
+function watchTransform(watch: DesignBlock['watch']): Record<string, RuntimeBlockWatchItem> {
     const vueWatch: any = {};
     if (!watch) return vueWatch;
     const watchItemTransform = (watchItem: BlockWatchItem) => {
@@ -172,7 +172,7 @@ function watchTransform(watch: BlockDesign['watch']): Record<string, RuntimeBloc
 /**
  * 处理 Block/ComponentNode 的 listeners 属性，使它符合 vue 组件的规范
  */
-function listenersTransform(listeners: BlockDesign["listeners"], instance: any): Record<string, Function> {
+function listenersTransform(listeners: DesignBlock["listeners"], instance: any): Record<string, Function> {
     const vueListeners: any = {};
     for (let name in listeners) {
         const value = listeners[name];
@@ -209,7 +209,7 @@ function listenersTransform(listeners: BlockDesign["listeners"], instance: any):
 /**
  * 深度转换 BlockDesign
  */
-function blockDeepTransform(block: BlockDesign, componentManage: ComponentManage): RuntimeBlock {
+function blockDeepTransform(block: DesignBlock, componentManage: ComponentManage): RuntimeBlock {
     const {
         type,
         slots,
@@ -347,7 +347,7 @@ function getExpOrTplParam(instance: any, currBlock: RuntimeBlock): any {
 /**
  * 处理 Block/ComponentNode 的 props 属性，计算出表达式值
  */
-function propsTransform(props: BlockDesign["props"], instance: any, currBlock: RuntimeBlock): Record<string, any> {
+function propsTransform(props: DesignBlock["props"], instance: any, currBlock: RuntimeBlock): Record<string, any> {
     return calcExpression(props, getExpOrTplParam(instance, currBlock), {thisArg: instance, cache: false});
 }
 

@@ -2,7 +2,7 @@ import {ComponentPublicInstance, createStaticVNode, createVNode, defineComponent
 import lodash from "lodash";
 import {hasValue, isArray, isStr} from "@/utils/Typeof";
 import {AnyFunction} from "@/draggable/types/Base";
-import {BlockDesign} from "@/draggable/types/Block";
+import {DesignBlock} from "@/draggable/types/DesignBlock";
 import {ComponentManageModel} from "@/draggable/models/ComponentManageModel";
 import {compileTpl} from "@/utils/Template";
 import {blockDeepTransform, getExpOrTplParam, nodeDeepTransform, propsTransform} from "@/draggable/utils/BlockPropsTransform";
@@ -24,8 +24,8 @@ const innerName = {
 /**
  * 基于 BlockDesign 动态创建 vue 组件
  */
-function createBlockComponent(block: BlockDesign) {
-    const designBlock: BlockDesign = block;
+function createBlockComponent(block: DesignBlock) {
+    const designBlock: DesignBlock = block;
     // 深度克隆 block 对象，保护原始 block 对象不被篡改
     block = lodash.cloneDeep(designBlock);
     // 递归处理 Block 属性，使它符合 vue 组件的规范
@@ -37,7 +37,7 @@ function createBlockComponent(block: BlockDesign) {
 /**
  * 基于 RuntimeBlock 动态创建 vue 组件
  */
-function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, designBlock?: BlockDesign) {
+function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, designBlock?: DesignBlock) {
     // 当前 runtimeBlock 是否是根组件
     const isRoot = hasValue(designBlock);
     const {

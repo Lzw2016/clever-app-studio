@@ -60,7 +60,7 @@ interface ListenerFunctionConfig {
 type ComponentListener = AnyFunction<ComponentInstance> | (FunctionConfig & { modifiers?: Array<string>; }) | ListenerFunctionConfig | string;
 
 /** 组件插槽类型 */
-type ComponentSlotsItem = ComponentNode | Omit<BlockDesign, "meta" | "i18n"> | string;
+type ComponentSlotsItem = ComponentNode | Omit<DesignBlock, "meta" | "i18n"> | string;
 
 /** 组件节点 */
 interface ComponentNode<Props extends BaseProps = BaseProps, Event extends BaseEvent = BaseEvent, Directives extends BaseDirectives = BaseDirectives> {
@@ -150,7 +150,7 @@ interface BlockLifeCycles {
 }
 
 /** 区块(设计时) */
-interface BlockDesign<Props extends BaseProps = BaseProps, Event extends BaseEvent = BaseEvent, Directives extends BaseDirectives = BaseDirectives> extends ComponentNode<Props, Event, Directives> {
+interface DesignBlock<Props extends BaseProps = BaseProps, Event extends BaseEvent = BaseEvent, Directives extends BaseDirectives = BaseDirectives> extends ComponentNode<Props, Event, Directives> {
     /** 是否是Block */
     block: boolean;
     /** 数据 */
@@ -184,5 +184,5 @@ export type {
     BlockWatchItem,
     BlockMethod,
     BlockLifeCycles,
-    BlockDesign,
+    DesignBlock,
 }
