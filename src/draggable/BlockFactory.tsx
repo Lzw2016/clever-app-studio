@@ -1,48 +1,13 @@
-import {createStaticVNode, createVNode, defineComponent, withModifiers} from "vue";
+import {createStaticVNode, createVNode, defineComponent} from "vue";
 import lodash from "lodash";
-import {isArray, isFun, isObj, isStr, noValue} from "@/utils/Typeof";
-import {AnyFunction, FunctionConfig} from "@/draggable/types/Base";
-import {BlockDesign, BlockWatchItem, ComponentNode, ListenerFunctionConfig} from "@/draggable/types/Block";
+import {isArray, isStr} from "@/utils/Typeof";
+import {AnyFunction} from "@/draggable/types/Base";
+import {BlockDesign, ComponentNode} from "@/draggable/types/Block";
 import {ComponentManageModel} from "@/draggable/models/ComponentManageModel";
-import {AsyncFunction} from "@/utils/UseType";
 import {createVNodeID} from "@/utils/IDCreate";
 import {compileTpl} from "@/utils/Template";
-import {calcExpression} from "@/utils/Expression";
-
-/** 所有的html标签 */
-const htmlTags = [
-    // 主根元素 文档元数据 分区根元素
-    'html', 'base', 'head', 'link', 'meta', 'style', 'title', 'body',
-    // 内容分区
-    'address', 'article', 'aside', 'footer', 'header', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'main', 'nav', 'section',
-    // 文本内容
-    'blockquote', 'dd', 'div', 'dl', 'dt', 'figcaption', 'figure', 'hr', 'li', 'menu', 'ol', 'p', 'pre', 'ul',
-    // 内联文本语义
-    'a', 'abbr', 'b', 'bdi', 'bdo', 'br', 'cite', 'code', 'data', 'dfn', 'em', 'i', 'kbd', 'mark', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var', 'wbr',
-    // 图片和多媒体
-    'area', 'audio', 'img', 'map', 'track', 'video',
-    // 内嵌内容
-    'embed', 'iframe', 'object', 'picture', 'portal', 'source',
-    // SVG 和 MathML
-    'svg', 'math',
-    // 脚本
-    'canvas', 'noscript', 'script',
-    // 编辑标识
-    'del', 'ins',
-    // 表格内容
-    'caption', 'col', 'colgroup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr',
-    // 表单
-    'button', 'datalist', 'fieldset', 'form', 'input', 'label', 'legend', 'meter', 'optgroup', 'option', 'output', 'progress', 'select', 'textarea',
-    // 交互元素
-    'details', 'dialog', 'summary',
-    // Web 组件
-    'slot', 'template',
-];
-
-/** 判断字符串是否是HTML标签 */
-function isHtmlTag(htmlTag: string): boolean {
-    return htmlTags.includes(htmlTag);
-}
+import {isHtmlTag} from "@/draggable/utils/HtmlTag";
+import {computedTransform, getExpOrTplParam, lifeCyclesTransform, listenersTransform, methodsTransform, propsTransform, watchTransform} from "@/draggable/utils/BlockPropsTransform";
 
 /** 组件管理器实例 */
 const componentManage = new ComponentManageModel();
@@ -51,12 +16,10 @@ const componentManage = new ComponentManageModel();
 const innerPropsName = {
     /** 原始的 Block 配置对象 */
     rawBlock: /*    */ Symbol('__raw_block__'),
+    /** 当前的(处理后的) Block 配置对象 */
+    currBlock: /*    */ Symbol('__curr_block__'),
     /** vue 组件实例的事件监听 */
     listeners: /*   */ Symbol('__instance_listeners__'),
-    // /** vue 组件实例的props */
-    // props: /*       */ Symbol('__instance_props__'),
-    // /** vue 组件实例的data */
-    // data: /*        */ Symbol('__instance_data__'),
 }
 
 /** 给 ComponentNode 对象属性设置默认值 */
@@ -71,30 +34,8 @@ function fillNodeDefValue(node: ComponentNode): Required<ComponentNode> {
     return node as any;
 }
 
-/** 生成表达式函数或模版函数的参数 */
-function getExpOrTplParam(instance: any): any {
-    const block: BlockDesign = instance[innerPropsName.rawBlock];
-    const params: any = {...instance.$props, ...instance.$attrs, ...instance.$data};
-    // 计算数据
-    if (block.computed) {
-        for (let name in block.computed) {
-            params[name] = instance[name];
-        }
-    }
-    // 自定义函数
-    if (block.methods) {
-        for (let name in block.methods) {
-            params[name] = instance[name];
-        }
-    }
-    params.$block = instance;
-    params._ = lodash;
-    return params;
-}
 
-/**
- * 基于 ComponentNode 创建 VNode
- */
+/** 基于 ComponentNode 创建 VNode */
 function createComponentVNode(node: ComponentNode | string, instance: any, nodeIdx: number) {
     // 静态 html 文本
     if (isStr(node)) return createStaticVNode(node, nodeIdx);
@@ -107,8 +48,9 @@ function createComponentVNode(node: ComponentNode | string, instance: any, nodeI
     if (!component) {
         throw new Error(`UI组件未注册也不是html原生标签，组件: ${type}`);
     }
+    const currBlock = instance[innerPropsName.currBlock];
     // 处理 props 表达式(属性的绑定)
-    const props = calcExpression(node.props, getExpOrTplParam(instance), {thisArg: instance, cache: false});
+    const props = propsTransform(node.props, instance, currBlock);
     // 配置 ref 属性
     if (node.ref) props!.ref = node.ref;
     // 处理 listeners
@@ -132,8 +74,9 @@ function createComponentVNode(node: ComponentNode | string, instance: any, nodeI
         // html模版
         if (isStr(node.tpl)) node.tpl = [node.tpl];
         // 编译并执行模版
-        const tplFun = compileTpl(node.tpl, {cache: true}).bind(instance);
-        children.default = () => ([createStaticVNode(tplFun(getExpOrTplParam(instance)), 0)]);
+        const staticHtml = compileTpl(node.tpl, {cache: true}).bind(instance)(getExpOrTplParam(instance, currBlock));
+        // 静态 html 子节点
+        children.default = () => ([createStaticVNode(staticHtml, 0)]);
     }
     // 创建 VNode
     return createVNode(
@@ -158,172 +101,6 @@ function createComponentVNode(node: ComponentNode | string, instance: any, nodeI
     //     ],
     // )
     // return vnode;
-}
-
-/** 根据 FunctionConfig 动态创建函数对象 */
-function createFunction(functionConfig: FunctionConfig): AnyFunction {
-    const constructor = (functionConfig.async) ? AsyncFunction : Function;
-    const params = noValue(functionConfig.params) ? [] : isArray(functionConfig.params) ? functionConfig.params : [functionConfig.params];
-    return constructor(...params, functionConfig.code ?? "");
-}
-
-/**
- * 处理 Block 的 lifeCycles 属性，使它符合 vue 组件的规范
- */
-function lifeCyclesTransform(lifeCycles: BlockDesign['lifeCycles']): Record<string, Function> {
-    const vueLifeCycles: Record<string, Function> = {};
-    if (!lifeCycles) return vueLifeCycles;
-    for (let name in lifeCycles) {
-        const value = lifeCycles[name];
-        let fun: AnyFunction;
-        if (isFun(value)) {
-            fun = value;
-        } else if (isObj(value)) {
-            fun = createFunction(value as FunctionConfig);
-        } else {
-            throw new Error(`Block lifeCycles 定义错误(${name}=${value})`);
-        }
-        vueLifeCycles[name] = function () {
-            // 这里的 this 指向 vue 组件实例
-            return fun(this);
-        };
-    }
-    return vueLifeCycles;
-}
-
-/**
- * 处理 Block 的 computed 属性，使它符合 vue 组件的规范
- */
-function computedTransform(computed: BlockDesign['computed']): Record<string, any> {
-    const vueComputed: any = {};
-    if (!computed) return vueComputed;
-    for (let name in computed) {
-        const value = computed[name];
-        let fun: AnyFunction;
-        if (isFun(value)) {
-            fun = value;
-        } else if (isObj(value)) {
-            fun = createFunction(value);
-        } else {
-            throw new Error(`Block computed 定义错误(${name}=${value})`);
-        }
-        // 实测在当前环境中的 computed 回调函数有两个参数: instance: vue组件实例, oldValue: 之前的计算返回值
-        vueComputed[name] = function (instance: any, oldValue: any) {
-            // 这里的 this 指向 vue 组件实例
-            return fun.call(instance, oldValue, instance);
-        };
-    }
-    return vueComputed;
-}
-
-/**
- * 处理 Block 的 methods 属性，使它符合 vue 组件的规范
- */
-function methodsTransform(methods: BlockDesign['methods']): Record<string, Function> {
-    const vueMethods: any = {};
-    if (!methods) return vueMethods;
-    for (let name in methods) {
-        const value = methods[name];
-        let fun: AnyFunction;
-        if (isFun(value)) {
-            fun = value;
-        } else if (isObj(value)) {
-            fun = createFunction(value);
-        } else {
-            throw new Error(`Block methods 定义错误(${name}=${value})`);
-        }
-        vueMethods[name] = fun;
-    }
-    return vueMethods;
-}
-
-/**
- * 处理 Block 的 watch 属性，使它符合 vue 组件的规范
- */
-function watchTransform(watch: BlockDesign['watch']): Record<string, any> {
-    const vueWatch: any = {};
-    if (!watch) return vueWatch;
-    const watchItemTransform = (watchItem: BlockWatchItem) => {
-        let item: any;
-        if (isStr(watchItem) || isFun(watchItem)) {
-            item = watchItem;
-        } else if (isObj(watchItem) && !isArray(watchItem)) {
-            const watchObj: any = watchItem;
-            if (isStr(watchObj.handler) || isFun(watchObj.handler)) {
-                item = watchObj;
-            } else if (isObj(watchObj.handler) && !isArray(watchObj.handler) && isStr(watchObj.handler.code)) {
-                const {handler, ...other} = watchObj;
-                item = {
-                    ...other,
-                    handler: createFunction(handler),
-                };
-            } else if (isStr(watchObj.code)) {
-                const {async, params, code, ...other} = watchObj;
-                item = {
-                    ...other,
-                    handler: createFunction({async, params, code}),
-                };
-            }
-        }
-        return item;
-    };
-    for (let name in watch) {
-        const value = watch[name];
-        let watchItem: any;
-        if (isArray(value)) {
-            watchItem = value.map((item, idx) => {
-                const newItem = watchItemTransform(item);
-                if (!newItem) {
-                    throw new Error(`Block watch 定义错误(${name}[${idx}]=${JSON.stringify(item)})`);
-                }
-                return newItem;
-            });
-        } else {
-            watchItem = watchItemTransform(value);
-        }
-        if (!watchItem) {
-            throw new Error(`Block watch 定义错误(${name}=${JSON.stringify(watch)})`);
-        }
-        vueWatch[name] = watchItem;
-    }
-    return vueWatch;
-}
-
-/**
- * 处理 Block/ComponentNode 的 listeners 属性，使它符合 vue 组件的规范
- */
-function listenersTransform(listeners: BlockDesign["listeners"], instance: object): Record<string, Function> {
-    const vueListeners: any = {};
-    for (let name in listeners) {
-        const value = listeners[name];
-        const listener: Partial<ListenerFunctionConfig> = {};
-        if (isStr(value) && isFun(instance[value])) {
-            listener.handler = instance[value];
-        } else if (isFun(value)) {
-            listener.handler = value;
-        } else if (isObj(value) && !isArray(value)) {
-            const {handler, async, params, code, modifiers} = value as any;
-            if (isStr(handler) && isFun(instance[handler])) {
-                listener.handler = instance[handler];
-            } else if (isFun(handler)) {
-                listener.handler = handler;
-            } else if (isObj(handler) && !isArray(handler) && isStr(handler.code)) {
-                listener.handler = createFunction(handler);
-            } else if (isStr(code)) {
-                listener.handler = createFunction({async, params, code});
-            }
-            if (isArray(modifiers)) listener.modifiers = modifiers;
-        }
-        if (!isFun(listener.handler)) {
-            throw new Error(`listeners 定义错误(${name}=${value})`);
-        }
-        // 应用事件修饰符
-        if (isArray(listener.modifiers) && listener.modifiers.length > 0) {
-            listener.handler = withModifiers(listener.handler.bind(instance), listener.modifiers);
-        }
-        vueListeners[name] = listener.handler.bind(instance);
-    }
-    return vueListeners;
 }
 
 /** 给 Block 对象属性设置默认值 */
@@ -374,6 +151,8 @@ function createBlock(block: BlockDesign) {
         data(vm: any) {
             // 保存原始的 block 对象
             vm[innerPropsName.rawBlock] = rawBlock;
+            // 保存当前运行时的 block 对象
+            vm[innerPropsName.currBlock] = block;
             // 当前组件的事件监听
             vm[innerPropsName.listeners] = listenersTransform(block.listeners, vm);
             // 返回组件数据
