@@ -130,11 +130,13 @@ const Block01 = createBlockComponent({
     },
     methods: {
         test: function () {
+            console.log("test函数调用", arguments, this);
         },
     },
     listeners: {
         onClick: function (this: ComponentInstance) {
             this.count++;
+            this.test("aaa", 123);
             // console.log("root onClick", this.count);
         },
         onContextmenu: {
