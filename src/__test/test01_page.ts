@@ -1,4 +1,4 @@
-import {DesignBlock} from "@/draggable/types/DesignBlock";
+import { DesignBlock } from "@/draggable/types/DesignBlock";
 
 function defineBlock(block: DesignBlock): DesignBlock {
     return block;

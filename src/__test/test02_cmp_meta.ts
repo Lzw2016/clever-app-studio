@@ -1,6 +1,6 @@
 // noinspection HtmlUnknownAttribute
 
-import {ComponentMeta} from "@/draggable/types/ComponentMeta";
+import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 
 function defineComponentMeta(meta: ComponentMeta) {
     return meta;

@@ -1,4 +1,4 @@
-import {isArray, isObj, isStr} from "@/utils/Typeof";
+import { isArray, isObj, isStr } from "@/utils/Typeof";
 
 /** 编译表达式选项 */
 interface ExpOptions {
@@ -52,7 +52,7 @@ function compileExp(expression: string, options?: ExpOptions): ExpressionExecuto
         }
         return executor;
     } catch (e) {
-        throw new Error(`编译表达式失败，表达式内容: ${expression}`, {cause: e});
+        throw new Error(`编译表达式失败，表达式内容: ${expression}`, { cause: e });
     }
 }
 

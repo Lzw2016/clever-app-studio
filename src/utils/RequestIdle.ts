@@ -1,4 +1,4 @@
-import {globalThisPolyfill} from "@/utils/GlobalThisPolyfill";
+import { globalThisPolyfill } from "@/utils/GlobalThisPolyfill";
 
 interface IIdleDeadline {
     didTimeout: boolean;

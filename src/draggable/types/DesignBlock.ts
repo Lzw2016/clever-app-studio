@@ -1,5 +1,5 @@
-import {CSSProperties, WatchCallback, WatchOptions} from "vue";
-import {AnyFunction, ComponentInstance, ErrorCapturedHook, FunctionConfig, I18N} from "@/draggable/types/Base";
+import { CSSProperties, WatchCallback, WatchOptions } from "vue";
+import { AnyFunction, ComponentInstance, ErrorCapturedHook, FunctionConfig, I18N } from "@/draggable/types/Base";
 
 // -------------------------------------------------------------------------------------------------------------------
 // 组件

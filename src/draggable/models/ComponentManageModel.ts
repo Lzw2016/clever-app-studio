@@ -1,6 +1,6 @@
-import {ComponentManage} from "@/draggable/types/ComponentManage";
-import {AsyncVueComponent, VueComponent} from "../types/Base";
-import {AsyncComponentMeta, ComponentMeta} from "../types/ComponentMeta";
+import { ComponentManage } from "@/draggable/types/ComponentManage";
+import { AsyncVueComponent, VueComponent } from "../types/Base";
+import { AsyncComponentMeta, ComponentMeta } from "../types/ComponentMeta";
 
 /**
  * 组件管理器模型

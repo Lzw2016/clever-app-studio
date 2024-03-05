@@ -1,4 +1,4 @@
-import {Component, ComponentPublicInstance, DefineComponent} from "vue";
+import { Component, ComponentPublicInstance, DefineComponent } from "vue";
 
 // -------------------------------------------------------------------------------------------------------------------
 // 参考vue类型定义(vue内部的类型定义，直接复制过来的)

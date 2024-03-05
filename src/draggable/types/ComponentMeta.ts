@@ -1,5 +1,5 @@
-import {ComponentInstance, ComponentSlotMeta, FunctionMeta, I18N, VueComponent} from "@/draggable/types/Base";
-import {BaseProps, ComponentListener, ComponentNode} from "@/draggable/types/DesignBlock";
+import { ComponentInstance, ComponentSlotMeta, FunctionMeta, I18N, VueComponent } from "@/draggable/types/Base";
+import { BaseProps, ComponentListener, ComponentNode } from "@/draggable/types/DesignBlock";
 
 /** 组件节点默认配置 */
 type DefComponentNode = Partial<Omit<ComponentNode, 'id' | 'type' | 'ref'>>

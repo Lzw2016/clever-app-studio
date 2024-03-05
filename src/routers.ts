@@ -1,4 +1,4 @@
-import {Router, RouteRecordRaw} from "vue-router";
+import { Router, RouteRecordRaw } from "vue-router";
 
 const staticRouters: RouteRecordRaw[] = [
     {

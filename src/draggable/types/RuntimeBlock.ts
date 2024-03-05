@@ -1,6 +1,6 @@
-import {WatchCallback, WatchOptions} from "vue";
-import {AnyFunction, ComponentInstance, I18N, VueComponent} from "@/draggable/types/Base";
-import {BaseDirectives, BlockMeta} from "@/draggable/types/DesignBlock";
+import { WatchCallback, WatchOptions } from "vue";
+import { AnyFunction, ComponentInstance, I18N, VueComponent } from "@/draggable/types/Base";
+import { BaseDirectives, BlockMeta } from "@/draggable/types/DesignBlock";
 
 /** 组件插槽类型(运行时) */
 type RuntimeComponentSlotsItem = RuntimeComponentNode | Omit<RuntimeBlock, "meta" | "i18n"> | string;

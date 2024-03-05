@@ -1,15 +1,15 @@
-import {Fragment, withModifiers} from "vue";
+import { Fragment, withModifiers } from "vue";
 import lodash from "lodash";
-import {isArray, isFun, isObj, isStr, noValue} from "@/utils/Typeof";
-import {AsyncFunction} from "@/utils/UseType";
-import {calcExpression} from "@/utils/Expression";
-import {createRefID, createVNodeID} from "@/utils/IDCreate";
-import {AnyFunction, FunctionConfig} from "@/draggable/types/Base";
-import {BlockWatchItem, ComponentNode, DesignBlock} from "@/draggable/types/DesignBlock";
-import {RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentNode, RuntimeComponentSlotsItem, RuntimeListener} from "@/draggable/types/RuntimeBlock";
-import {ComponentManage} from "@/draggable/types/ComponentManage";
-import {isHtmlTag} from "@/draggable/utils/HtmlTag";
-import {compileTpl} from "@/utils/Template";
+import { isArray, isFun, isObj, isStr, noValue } from "@/utils/Typeof";
+import { AsyncFunction } from "@/utils/UseType";
+import { calcExpression } from "@/utils/Expression";
+import { createRefID, createVNodeID } from "@/utils/IDCreate";
+import { AnyFunction, FunctionConfig } from "@/draggable/types/Base";
+import { BlockWatchItem, ComponentNode, DesignBlock } from "@/draggable/types/DesignBlock";
+import { RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentNode, RuntimeComponentSlotsItem, RuntimeListener } from "@/draggable/types/RuntimeBlock";
+import { ComponentManage } from "@/draggable/types/ComponentManage";
+import { isHtmlTag } from "@/draggable/utils/HtmlTag";
+import { compileTpl } from "@/utils/Template";
 
 /**
  * 根据 FunctionConfig 动态创建函数对象
@@ -135,16 +135,16 @@ function watchTransform(watch: DesignBlock['watch']): Record<string, RuntimeBloc
             if (isStr(watchObj.handler) || isFun(watchObj.handler)) {
                 item = watchObj;
             } else if (isObj(watchObj.handler) && !isArray(watchObj.handler) && isStr(watchObj.handler.code)) {
-                const {handler, ...other} = watchObj;
+                const { handler, ...other } = watchObj;
                 item = {
                     ...other,
                     handler: createFunction(handler),
                 };
             } else if (isStr(watchObj.code)) {
-                const {async, params, code, ...other} = watchObj;
+                const { async, params, code, ...other } = watchObj;
                 item = {
                     ...other,
-                    handler: createFunction({async, params, code}),
+                    handler: createFunction({ async, params, code }),
                 };
             }
         }
@@ -185,7 +185,7 @@ function listenersTransform(listeners: DesignBlock["listeners"], methods: Record
         } else if (isFun(value)) {
             listener.handler = value;
         } else if (isObj(value) && !isArray(value)) {
-            const {handler, async, params, code, modifiers} = value as any;
+            const { handler, async, params, code, modifiers } = value as any;
             if (isStr(handler) && isFun(methods[handler])) {
                 listener.handler = methods[handler];
             } else if (isFun(handler)) {
@@ -193,7 +193,7 @@ function listenersTransform(listeners: DesignBlock["listeners"], methods: Record
             } else if (isObj(handler) && !isArray(handler) && isStr(handler.code)) {
                 listener.handler = createFunction(handler);
             } else if (isStr(code)) {
-                listener.handler = createFunction({async, params, code});
+                listener.handler = createFunction({ async, params, code });
             }
             if (isArray(modifiers)) listener.modifiers = modifiers;
         }
@@ -223,7 +223,7 @@ function blockDeepTransform(block: ComponentNode | DesignBlock, componentManage:
         lifeCycles,
         ...other
     } = fillBlockDefValue(block) as DesignBlock;
-    const runtime: any = {block: isBlock};
+    const runtime: any = { block: isBlock };
     // 如果没有父级 Block 强制让当前节点为 Block
     if (!parents) runtime.block = true;
     // 读取组件类型
@@ -263,7 +263,7 @@ function blockDeepTransform(block: ComponentNode | DesignBlock, componentManage:
     // 递归处理 items
     runtime.items = _deepTransformSlotsOrItems(items, componentManage, designBlock, "items", "items");
     // 返回数据
-    return {...other, ...runtime};
+    return { ...other, ...runtime };
 }
 
 // blockDeepTransform 处理 slots 或者 items
@@ -430,7 +430,7 @@ function getExpOrTplParam(instance: any, runtimeBlock: RuntimeBlock, extData?: o
  */
 function propsTransform(props: DesignBlock["props"], instance: any, runtimeBlock: RuntimeBlock, extData?: object): Record<string, any> {
     const data = getExpOrTplParam(instance, runtimeBlock, extData);
-    return calcExpression(props, data, {thisArg: instance, cache: false});
+    return calcExpression(props, data, { thisArg: instance, cache: false });
 }
 
 /**
@@ -438,7 +438,7 @@ function propsTransform(props: DesignBlock["props"], instance: any, runtimeBlock
  */
 function renderTpl(tpl: string[], instance: any, runtimeBlock: RuntimeBlock, extData?: object): string {
     const data = getExpOrTplParam(instance, runtimeBlock, extData);
-    return compileTpl(tpl, {cache: true}).bind(instance)(data);
+    return compileTpl(tpl, { cache: true }).bind(instance)(data);
 }
 
 export {

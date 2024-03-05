@@ -1,6 +1,6 @@
-import type {TemplateExecutor, TemplateOptions} from "lodash";
+import type { TemplateExecutor, TemplateOptions } from "lodash";
 import lodash from "lodash";
-import {isArray} from "@/utils/Typeof";
+import { isArray } from "@/utils/Typeof";
 
 // // 会输出动态内容的正则，默认：/<%=([\s\S]+?)%>/g
 // lodash.templateSettings.interpolate = /<%=([\s\S]+?)%>/g
@@ -44,7 +44,7 @@ function compileTpl(tpl: string | string[], options?: TplOptions): TemplateExecu
         }
         return tplFun;
     } catch (e) {
-        throw new Error(`编译模版失败，模版内容: ${tpl}`, {cause: e});
+        throw new Error(`编译模版失败，模版内容: ${tpl}`, { cause: e });
     }
 }
 

@@ -1,4 +1,4 @@
-import {CSSProperties} from "vue";
+import { CSSProperties } from "vue";
 
 /** 异步函数构造器 */
 const AsyncFunction = (async () => ({})).constructor;
