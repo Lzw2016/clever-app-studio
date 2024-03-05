@@ -19,7 +19,7 @@ interface RuntimeComponentNode {
     /** 组件类型 */
     type: string | VueComponent;
     /** 当前组件实例的引用名称 */
-    ref?: string;
+    ref: string;
     /** 组件属性 */
     props: Record<string, any>;
     /** 监听的事件(原函数) */

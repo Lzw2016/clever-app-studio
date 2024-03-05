@@ -9,7 +9,7 @@ const Block01 = createBlockComponent({
     props: {
         style: {
             width: "300px",
-            height: "200px",
+            height: "300px",
             border: "1px solid #ccc",
             userSelect: "none",
             backgroundColor: "{{ this.count%2===0 ? '#fff' : '#066' }}",
@@ -31,7 +31,6 @@ const Block01 = createBlockComponent({
             props: {
                 style: {
                     width: "100%",
-                    height: "100px",
                     backgroundColor: "{{ this.count%2===0 ? '#ccc' : '#880' }}",
                     visibility: "{{ hiddenDiv01 ? 'hidden': 'unset' }}",
                 },
@@ -51,13 +50,13 @@ const Block01 = createBlockComponent({
             },
             items: [
                 "BBB",
-                "CCC",
                 "<div style='color: red;'>CCC</div>",
                 {
                     type: "div",
                     tpl: [
                         '<div><%= count %> * 2 = <%= count2 %></div>',
                         '<div><%= this.count * 2 %></div>',
+                        '使用子Block数据 <%= $allBlock.innerDiv?.innerCount %>',
                     ],
                 },
             ],
@@ -102,7 +101,8 @@ const Block01 = createBlockComponent({
                 innerCount: 123,
             },
             tpl: [
-                "内部组件 <%= innerCount %>"
+                "内部组件 <%= innerCount %> | 父组件数据 <%= $parent.count %>",
+                "<div>使用$allBlock <%= $allBlock.outBlock.count %></div>",
             ],
             computed: {
                 innerCount2: function (this: ComponentInstance, oldValue, block) {

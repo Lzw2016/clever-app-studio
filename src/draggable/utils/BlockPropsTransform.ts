@@ -312,11 +312,10 @@ function deepBindThis(cmpNode: RuntimeComponentNode, instance: any) {
         cmpNode.__bindListeners[name] = listener.handler.bind(instance);
     }
     // 递归处理 slots
-    if (slots) {
-        for (let name in slots) {
-            const slot: any = slots[name];
-            _deepBindThisSlotsOrItems(slot, instance);
-        }
+    for (let name in slots) {
+        const slot = slots[name];
+        if (slot.length <= 0) continue;
+        _deepBindThisSlotsOrItems(slot, instance);
     }
     // 递归处理 items
     if (items && items.length > 0) {
@@ -335,12 +334,71 @@ function _deepBindThisSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, i
 }
 
 /**
+ * 深度提取 Block 的属性，模拟 Block 对应的 vue 组件的初始化状态
+ */
+function deepExtractBlock(nodeOrBlock: RuntimeComponentNode, allBlock: Record<string, object>, parentBlock?: any): void {
+    const {
+        ref,
+        props,
+        slots,
+        items,
+    } = nodeOrBlock;
+    const runtimeBlock = nodeOrBlock as RuntimeBlock;
+    const data = runtimeBlock.data ?? {};
+    const mockBlock: any = {
+        $props: props,
+        $attrs: props,
+        $data: data,
+        ...props,
+        ...data,
+        $root: {},
+        $parent: parentBlock ?? {},
+        $refs: {},
+    };
+    if (runtimeBlock.block || !parentBlock) {
+        allBlock[ref] = mockBlock;
+    } else {
+        parentBlock.$refs[ref] = mockBlock;
+    }
+    const nextParentBlock = runtimeBlock.block ? mockBlock : parentBlock;
+    // 递归处理 slots
+    for (let name in slots) {
+        const slot = slots[name];
+        if (slot.length <= 0) continue;
+        _deepExtractSlotsOrItems(slot, allBlock, nextParentBlock);
+    }
+    // 递归处理 items
+    if (items && items.length > 0) {
+        _deepExtractSlotsOrItems(items, allBlock, nextParentBlock)
+    }
+}
+
+// deepExtractBlock 处理 slots 或者 items
+function _deepExtractSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, allBlock: Record<string, object>, parentBlock?: any) {
+    for (let cmpNode of cmpNodes) {
+        const node = cmpNode as RuntimeComponentNode;
+        if (isObj(node) && !isArray(node)) {
+            deepExtractBlock(node, allBlock, parentBlock);
+        }
+    }
+}
+
+/**
  * 生成表达式函数或模版函数的参数
  */
-function getExpOrTplParam(instance: any, runtimeBlock: RuntimeBlock): any {
+function getExpOrTplParam(instance: any, runtimeBlock: RuntimeBlock, extData?: object): any {
     const data: any = {
+        $props: instance.$props,
+        $attrs: instance.$attrs,
+        $data: instance.$data,
+        $root: instance.$root,
+        $parent: instance.$parent,
+        $slots: instance.$slots,
+        $refs: instance.$refs,
+        $el: instance.$el,
+        $emit: instance.$emit,
+        $forceUpdate: instance.$forceUpdate,
         ...instance.$props,
-        ...instance.$attrs,
         ...instance.$data,
     };
     // 计算数据
@@ -355,6 +413,12 @@ function getExpOrTplParam(instance: any, runtimeBlock: RuntimeBlock): any {
             data[name] = instance[name];
         }
     }
+    // 自定义扩展属性
+    if (extData) {
+        for (let name in extData) {
+            data[name] = extData[name];
+        }
+    }
     // 内置属性
     data.$block = instance;
     data._ = lodash;
@@ -364,16 +428,16 @@ function getExpOrTplParam(instance: any, runtimeBlock: RuntimeBlock): any {
 /**
  * 处理 Block/ComponentNode 的 props 属性，计算出表达式值
  */
-function propsTransform(props: DesignBlock["props"], instance: any, runtimeBlock: RuntimeBlock): Record<string, any> {
-    const data = getExpOrTplParam(instance, runtimeBlock);
+function propsTransform(props: DesignBlock["props"], instance: any, runtimeBlock: RuntimeBlock, extData?: object): Record<string, any> {
+    const data = getExpOrTplParam(instance, runtimeBlock, extData);
     return calcExpression(props, data, {thisArg: instance, cache: false});
 }
 
 /**
  * 渲染 tpl 模版，返回渲染后的字符串
  */
-function renderTpl(tpl: string[], instance: any, runtimeBlock: RuntimeBlock): string {
-    const data = getExpOrTplParam(instance, runtimeBlock);
+function renderTpl(tpl: string[], instance: any, runtimeBlock: RuntimeBlock, extData?: object): string {
+    const data = getExpOrTplParam(instance, runtimeBlock, extData);
     return compileTpl(tpl, {cache: true}).bind(instance)(data);
 }
 
@@ -387,6 +451,7 @@ export {
     listenersTransform,
     blockDeepTransform,
     deepBindThis,
+    deepExtractBlock,
     getExpOrTplParam,
     propsTransform,
     renderTpl,

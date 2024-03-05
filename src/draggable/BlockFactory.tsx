@@ -1,10 +1,10 @@
 import {ComponentPublicInstance, createStaticVNode, createVNode, defineComponent} from "vue";
 import lodash from "lodash";
 import {hasValue, isArray, isStr} from "@/utils/Typeof";
-import {AnyFunction} from "@/draggable/types/Base";
+import {AnyFunction, VueComponent} from "@/draggable/types/Base";
 import {DesignBlock} from "@/draggable/types/DesignBlock";
 import {ComponentManageModel} from "@/draggable/models/ComponentManageModel";
-import {blockDeepTransform, deepBindThis, propsTransform, renderTpl} from "@/draggable/utils/BlockPropsTransform";
+import {blockDeepTransform, deepBindThis, deepExtractBlock, propsTransform, renderTpl} from "@/draggable/utils/BlockPropsTransform";
 import {RuntimeBlock, RuntimeBlockNode, RuntimeComponentNode} from "@/draggable/types/RuntimeBlock";
 
 /** 组件管理器实例 */
@@ -18,6 +18,21 @@ const innerName = {
     runtimeBlock: /*    */ Symbol('__runtime_block__'),
 }
 
+/** 创建 BlockComponent 时的全局上下文 */
+class FactoryContext {
+    /** 当前所有的 Block vue 组件 */
+    readonly allBlock: Record<string, VueComponent> = {};
+
+    /**
+     * “表达式”和“模版”的扩展参数
+     */
+    toExtData(): object {
+        return {
+            $allBlock: this.allBlock,
+        };
+    }
+}
+
 /**
  * 基于 DesignBlock 动态创建 vue 组件
  */
@@ -27,8 +42,11 @@ function createBlockComponent(block: DesignBlock) {
     block = lodash.cloneDeep(designBlock);
     // 递归处理 Block 属性，使它符合 vue 组件的规范
     const runtimeBlock = blockDeepTransform(block, componentManage);
+    const factoryContext = new FactoryContext();
+    // 递归初始化 allBlock
+    deepExtractBlock(runtimeBlock, factoryContext.allBlock);
     // 创建组件
-    const blockComponent = createRuntimeBlockComponent(runtimeBlock, designBlock);
+    const blockComponent = createRuntimeBlockComponent(runtimeBlock, factoryContext, designBlock);
     runtimeBlock.__blockComponent = blockComponent;
     return blockComponent;
 }
@@ -36,7 +54,7 @@ function createBlockComponent(block: DesignBlock) {
 /**
  * 基于 RuntimeBlock 动态创建 vue 组件
  */
-function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, designBlock?: DesignBlock) {
+function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: FactoryContext, designBlock?: DesignBlock) {
     const {
         id,
         ref,
@@ -84,6 +102,8 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, designBlock?: D
             }
             // 保存当前运行时的 block 对象
             vm[innerName.runtimeBlock] = runtimeBlock;
+            // 更新 context.allBlock
+            context.allBlock[runtimeBlock.ref] = vm;
             // 返回组件数据
             return data;
         },
@@ -91,14 +111,14 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, designBlock?: D
         methods: methods,
         watch: watch,
         render(this: any) {
-            const newProps = propsTransform(props, this, this[innerName.runtimeBlock]);
+            const newProps = propsTransform(props, this, this[innerName.runtimeBlock], context.toExtData());
             let children: any = undefined;
             if (items.length > 0) {
                 // 子组件
-                children = items.map((node, idx) => createChildVNode(node, this, idx));
+                children = items.map((node, idx) => createChildVNode(node, context, this, idx));
             } else if (tpl.length > 0) {
                 // html模版
-                const staticHtml = renderTpl(tpl, this, runtimeBlock);
+                const staticHtml = renderTpl(tpl, this, runtimeBlock, context.toExtData());
                 children = [createStaticVNode(staticHtml, 0)];
             }
             return (
@@ -113,14 +133,14 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, designBlock?: D
 /**
  * 基于 ComponentNode 创建 VNode
  */
-function createChildVNode(child: RuntimeBlockNode, instance: any, nodeIdx: number) {
+function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, instance: any, nodeIdx: number) {
     // 静态 html 文本
     if (isStr(child)) return createStaticVNode(child, nodeIdx);
     // RuntimeBlock
     const currBlock = child as RuntimeBlock;
     if (currBlock.block) {
         if (!currBlock.__blockComponent) {
-            currBlock.__blockComponent = createRuntimeBlockComponent(currBlock);
+            currBlock.__blockComponent = createRuntimeBlockComponent(currBlock, context);
         }
         return createVNode(currBlock.__blockComponent);
     }
@@ -136,22 +156,22 @@ function createChildVNode(child: RuntimeBlockNode, instance: any, nodeIdx: numbe
     for (let name in childNode.slots) {
         const slot = childNode.slots[name];
         if (isArray(slot)) {
-            children[name] = () => slot.map((item, idx) => createChildVNode(item, instance, idx));
+            children[name] = () => slot.map((item, idx) => createChildVNode(item, context, instance, idx));
         } else {
-            children[name] = () => [createChildVNode(slot, instance, 0)];
+            children[name] = () => [createChildVNode(slot, context, instance, 0)];
         }
     }
     // 设置子组件
     if (childNode.items.length > 0) {
         // 子组件
-        children.default = () => childNode.items.map((item, idx) => createChildVNode(item, instance, idx));
+        children.default = () => childNode.items.map((item, idx) => createChildVNode(item, context, instance, idx));
     } else if (childNode.tpl.length > 0) {
         // html模版
-        const staticHtml = renderTpl(child.tpl, instance, runtimeBlock);
+        const staticHtml = renderTpl(child.tpl, instance, runtimeBlock, context.toExtData());
         children.default = () => ([createStaticVNode(staticHtml, 0)]);
     }
     // 处理 props 表达式(属性的绑定)
-    const props = propsTransform(child.props, instance, runtimeBlock);
+    const props = propsTransform(child.props, instance, runtimeBlock, context.toExtData());
     // 创建 VNode
     return createVNode(
         child.type,
