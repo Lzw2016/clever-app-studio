@@ -14,9 +14,9 @@ const componentManage = new ComponentManageModel();
 /** Block vue 组件的内部属性名 */
 const innerName = {
     /** DesignBlock 对象，只有顶层 Block 拥有此属性 */
-    designBlock: /*    */ Symbol('__design_block__'),
+    designBlock: /*     */ Symbol('__design_block__'),
     /** 当前层级 Block 所对应的 RuntimeBlock 对象 */
-    runtimeBlock: /*   */ Symbol('__runtime_block__'),
+    runtimeBlock: /*    */ Symbol('__runtime_block__'),
 }
 
 /**

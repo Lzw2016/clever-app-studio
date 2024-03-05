@@ -6,7 +6,7 @@ import {calcExpression} from "@/utils/Expression";
 import {createRefID, createVNodeID} from "@/utils/IDCreate";
 import {AnyFunction, FunctionConfig} from "@/draggable/types/Base";
 import {BlockWatchItem, ComponentNode, DesignBlock} from "@/draggable/types/DesignBlock";
-import {RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener} from "@/draggable/types/RuntimeBlock";
+import {RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentNode, RuntimeComponentSlotsItem, RuntimeListener} from "@/draggable/types/RuntimeBlock";
 import {ComponentManage} from "@/draggable/types/ComponentManage";
 import {isHtmlTag} from "@/draggable/utils/HtmlTag";
 
@@ -85,10 +85,7 @@ function lifeCyclesTransform(lifeCycles: DesignBlock['lifeCycles'], methods: Rec
         if (noValue(fun)) {
             throw new Error(`Block lifeCycles 定义错误(${name}=${value})`);
         }
-        vueLifeCycles[name] = function () {
-            // 这里的 this 指向 vue 组件实例
-            return fun!(this);
-        };
+        vueLifeCycles[name] = fun;
     }
     return vueLifeCycles;
 }
@@ -114,7 +111,6 @@ function computedTransform(computed: DesignBlock['computed'], methods: Record<st
         }
         // 实测在当前环境中的 computed 回调函数有两个参数: instance: vue组件实例, oldValue: 之前的计算返回值
         vueComputed[name] = function (instance: any, oldValue: any) {
-            // 这里的 this 指向 vue 组件实例
             return fun!.call(instance, oldValue, instance);
         };
     }
@@ -291,25 +287,50 @@ function _deepTransformSlotsOrItems(itemsOrSlots: ComponentNode['items'], compon
 }
 
 /**
- * 深度绑定 listeners 函数的 this 指针。
- * 处理 Block/ComponentNode 的 listeners 属性，使它符合 vue 组件的规范
+ * 深度绑定 this 指针。
+ * 会绑定的函数：listeners、lifeCycles
  */
-function deepBindThis(cmpNode: RuntimeBlock, instance: any) {
+function deepBindThis(cmpNode: RuntimeComponentNode, instance: any) {
     const {
+        block,
         listeners,
+        computed,
+        lifeCycles,
         slots,
         items,
-    } = cmpNode;
-    if (cmpNode.__bindListeners) return;
-    cmpNode.__bindListeners = {};
-    for (let name in listeners) {
-        const listener = listeners[name];
-        // 应用事件修饰符
-        if (isArray(listener.modifiers) && listener.modifiers.length > 0) {
-            listener.handler = withModifiers(listener.handler.bind(instance), listener.modifiers);
+        __bindListeners,
+        __bindLifeCycles,
+    } = cmpNode as RuntimeBlock;
+    // RuntimeComponentNode 只需要处理 listeners
+    if (!block && __bindListeners) return;
+    // RuntimeBlock 需要处理 lifeCycles
+    if (block && __bindLifeCycles) return;
+    // RuntimeComponentNode
+    if (!__bindListeners) {
+        // 处理 listeners
+        cmpNode.__bindListeners = {};
+        for (let name in listeners) {
+            const listener = listeners[name];
+            // 应用事件修饰符
+            if (isArray(listener.modifiers) && listener.modifiers.length > 0) {
+                listener.handler = withModifiers(listener.handler.bind(instance), listener.modifiers);
+            }
+            cmpNode.__bindListeners[name] = listener.handler.bind(instance);
         }
-        cmpNode.__bindListeners[name] = listener.handler.bind(instance);
     }
+    // RuntimeBlock
+    const runtimeBlock = cmpNode as RuntimeBlock;
+    if (!__bindLifeCycles) {
+        // 处理 lifeCycles
+        runtimeBlock.__bindLifeCycles = {};
+        for (let name in lifeCycles) {
+            const fun = lifeCycles[name];
+            runtimeBlock.__bindLifeCycles[name] = function () {
+                return fun.call(instance, arguments);
+            };
+        }
+    }
+    // methods、watch、methods、
     // 递归处理 slots
     if (slots) {
         for (let name in slots) {

@@ -51,12 +51,18 @@ interface RuntimeBlock extends RuntimeComponentNode {
     data: Record<string, any>;
     /** 计算数据 */
     computed: Record<string, AnyFunction>;
+    // /** 计算数据(已绑定 this 指针的 lifeCycles 函数) */
+    // __bindComputed?: Record<string, AnyFunction>;
     /** 数据监听器(数据更改时的回调) */
     watch: Record<string, RuntimeBlockWatchItem>;
     /** 自定义函数 */
     methods: Record<string, AnyFunction>;
+    // /** 自定义函数 */
+    // __bindMethods: Record<string, AnyFunction>;
     /** 生命周期 */
     lifeCycles: Record<string, AnyFunction>;
+    /** 生命周期(已绑定 this 指针的 lifeCycles 函数) */
+    __bindLifeCycles?: Record<string, AnyFunction>;
     /** 元信息 */
     meta?: BlockMeta;
     /** 多语言词条 */
