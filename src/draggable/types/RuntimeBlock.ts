@@ -43,8 +43,8 @@ type RuntimeBlockWatchItem = WatchOptionItem | Array<WatchOptionItem>;
 
 /** 区块(运行时) */
 interface RuntimeBlock extends RuntimeComponentNode {
-    // /** 设计时的 Block 对象 */
-    // __designBlock: DesignBlock;
+    /** 当前 Block 生成的 vue 组件 */
+    __blockComponent?: VueComponent;
     /** 是否是Block */
     block: boolean;
     /** 数据 */

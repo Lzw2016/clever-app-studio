@@ -17,8 +17,6 @@ const innerName = {
     designBlock: /*    */ Symbol('__design_block__'),
     /** 当前层级 Block 所对应的 RuntimeBlock 对象 */
     runtimeBlock: /*   */ Symbol('__runtime_block__'),
-    /** 当前层级 Block 组件的事件处理函数对象 */
-    listeners: /*   */ Symbol('__listeners__'),
 }
 
 /**
@@ -31,7 +29,9 @@ function createBlockComponent(block: DesignBlock) {
     // 递归处理 Block 属性，使它符合 vue 组件的规范
     const runtimeBlock = blockDeepTransform(block, componentManage);
     // 创建组件
-    return createRuntimeBlockComponent(runtimeBlock, designBlock);
+    const blockComponent = createRuntimeBlockComponent(runtimeBlock, designBlock);
+    runtimeBlock.__blockComponent = blockComponent;
+    return blockComponent;
 }
 
 /**
@@ -77,17 +77,14 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, designBlock?: D
             // ctx.expose(exposed);
         },
         data(vm: any) {
-            console.log("@@@", vm);
-            if (hasValue(designBlock)) {
-                // 保存原始的 block 对象
-                vm[innerName.designBlock] = designBlock;
-            }
             // 深度绑定 this 指针
             deepBindThis(runtimeBlock, vm);
+            // 保存原始的 block 对象
+            if (hasValue(designBlock)) {
+                vm[innerName.designBlock] = designBlock;
+            }
             // 保存当前运行时的 block 对象
             vm[innerName.runtimeBlock] = runtimeBlock;
-            // 当前组件的事件监听
-            vm[innerName.listeners] = runtimeBlock.__bindListeners;
             // 返回组件数据
             return data;
         },
@@ -106,7 +103,7 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, designBlock?: D
                 children = [createStaticVNode(staticHtml, 0)];
             }
             return (
-                <Component {...newProps} {...this.$attrs} {...this.$props} {...this[innerName.listeners]} key={id} ref={ref}>
+                <Component {...newProps} {...this.$attrs} {...this.$props} {...runtimeBlock.__bindListeners} key={id} ref={ref}>
                     {children}
                 </Component>
             );
@@ -122,9 +119,11 @@ function createChildVNode(child: RuntimeBlockNode, instance: any, nodeIdx: numbe
     if (isStr(child)) return createStaticVNode(child, nodeIdx);
     // RuntimeBlock
     const runtimeBlock = child as RuntimeBlock;
-    console.log("runtimeBlock.block", runtimeBlock.block);
     if (runtimeBlock.block) {
-        return createVNode(createRuntimeBlockComponent(runtimeBlock));
+        if (!runtimeBlock.__blockComponent) {
+            runtimeBlock.__blockComponent = createRuntimeBlockComponent(runtimeBlock);
+        }
+        return createVNode(runtimeBlock.__blockComponent);
     }
     // RuntimeComponentNode
     const childNode = child as RuntimeComponentNode;
@@ -158,6 +157,7 @@ function createChildVNode(child: RuntimeBlockNode, instance: any, nodeIdx: numbe
     return createVNode(
         child.type,
         {
+            key: child.id,
             ref: child.ref,
             ...props,
             ...child.__bindListeners,

@@ -37,11 +37,13 @@ const Block01 = createBlockComponent({
             },
             listeners: {
                 onClick: function (this: ComponentInstance) {
-                    console.log("onClick", this.count++);
+                    this.count++;
+                    // console.log("onClick", this.count);
                 },
                 onContextmenu: {
                     handler: function () {
-                        console.log("handler", this.count++);
+                        this.count++;
+                        // console.log("handler", this.count);
                     },
                     modifiers: ['prevent'],
                 },
@@ -62,6 +64,7 @@ const Block01 = createBlockComponent({
         "AAA",
         {
             type: "div",
+            ref: "div02",
             items: [
                 {
                     type: "div",
@@ -70,12 +73,14 @@ const Block01 = createBlockComponent({
                     ],
                 },
                 {
+                    ref: "div03",
                     type: "button",
                     tpl: "<%= hiddenDiv01 ? '显示': '隐藏' %>",
                     listeners: {
                         onClick: {
                             handler: function (this: ComponentInstance) {
                                 this.hiddenDiv01 = !this.hiddenDiv01;
+                                console.log("显示/隐藏");
                             },
                             modifiers: ['stop'],
                         },
@@ -86,6 +91,7 @@ const Block01 = createBlockComponent({
         {
             block: true,
             type: "div",
+            ref: "innerDiv",
             data: {
                 innerCount: 123,
             },
@@ -101,7 +107,7 @@ const Block01 = createBlockComponent({
                 onClick: {
                     handler: function (this: ComponentInstance) {
                         this.innerCount++;
-                        console.log("this.innerCount", this.innerCount);
+                        // console.log("this.innerCount", this.innerCount);
                     },
                     modifiers: ['stop'],
                 },
@@ -116,11 +122,11 @@ const Block01 = createBlockComponent({
     watch: {
         count: {
             params: ["value", "oldValue", "onCleanup"],
-            code: 'console.log("watch count", value, oldValue);'
+            code: 'console.log("watch count=", value, oldValue);'
         },
         count2: function (value, oldValue, onCleanup) {
-            console.log("count2=", value, this);
-        }
+            console.log("watch count2=", value, this);
+        },
     },
     methods: {
         test: function () {
@@ -128,24 +134,26 @@ const Block01 = createBlockComponent({
     },
     listeners: {
         onClick: function (this: ComponentInstance) {
-            console.log("root onClick", this.count++);
+            this.count++;
+            // console.log("root onClick", this.count);
         },
         onContextmenu: {
             handler: function () {
-                console.log("root onContextmenu handler", this.count++);
+                this.count++;
+                // console.log("root onContextmenu handler", this.count);
             },
             modifiers: ['prevent'],
         },
     },
     lifeCycles: {
         mounted: function (block) {
-            console.log("this.$refs.div01", block.$refs.div01);
+            console.log("mounted", this);
         },
         unmounted: function (block) {
-            console.log("unmounted", block);
+            console.log("unmounted", this);
         },
         updated: function (block) {
-            console.log("外部组件更新");
+            console.log("外部组件更新", this);
         },
     },
 });

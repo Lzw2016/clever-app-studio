@@ -3,7 +3,7 @@ import lodash from "lodash";
 import {isArray, isFun, isObj, isStr, noValue} from "@/utils/Typeof";
 import {AsyncFunction} from "@/utils/UseType";
 import {calcExpression} from "@/utils/Expression";
-import {createVNodeID} from "@/utils/IDCreate";
+import {createRefID, createVNodeID} from "@/utils/IDCreate";
 import {AnyFunction, FunctionConfig} from "@/draggable/types/Base";
 import {BlockWatchItem, ComponentNode, DesignBlock} from "@/draggable/types/DesignBlock";
 import {RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener} from "@/draggable/types/RuntimeBlock";
@@ -25,7 +25,7 @@ function createFunction(functionConfig: FunctionConfig): AnyFunction {
 function fillBlockDefValue(block: ComponentNode | DesignBlock): Required<DesignBlock> | Required<ComponentNode> {
     // ComponentNode
     if (!block.id) block.id = createVNodeID();
-    if (!block.ref) block.ref = createVNodeID();
+    if (!block.ref) block.ref = createRefID();
     if (!block.props) block.props = {};
     if (!block.listeners) block.listeners = {};
     if (!block.directives) block.directives = {};
@@ -318,7 +318,7 @@ function deepBindThis(cmpNode: RuntimeBlock, instance: any) {
         }
     }
     // 递归处理 items
-    if (items) {
+    if (items && items.length > 0) {
         _deepBindThisSlotsOrItems(items, instance);
     }
 }
@@ -328,7 +328,7 @@ function _deepBindThisSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, i
     for (let cmpNode of cmpNodes) {
         const runtimeBlock = cmpNode as RuntimeBlock;
         if (!runtimeBlock.block && isObj(runtimeBlock) && !isArray(runtimeBlock)) {
-            return deepBindThis(runtimeBlock, instance);
+            deepBindThis(runtimeBlock, instance);
         }
     }
 }
