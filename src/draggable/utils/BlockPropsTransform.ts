@@ -9,6 +9,7 @@ import {BlockWatchItem, ComponentNode, DesignBlock} from "@/draggable/types/Desi
 import {RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentNode, RuntimeComponentSlotsItem, RuntimeListener} from "@/draggable/types/RuntimeBlock";
 import {ComponentManage} from "@/draggable/types/ComponentManage";
 import {isHtmlTag} from "@/draggable/utils/HtmlTag";
+import {compileTpl} from "@/utils/Template";
 
 /**
  * 根据 FunctionConfig 动态创建函数对象
@@ -336,31 +337,44 @@ function _deepBindThisSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, i
 /**
  * 生成表达式函数或模版函数的参数
  */
-function getExpOrTplParam(instance: any, currBlock: RuntimeBlock): any {
-    const params: any = {...instance.$props, ...instance.$attrs, ...instance.$data};
+function getExpOrTplParam(instance: any, runtimeBlock: RuntimeBlock): any {
+    const data: any = {
+        ...instance.$props,
+        ...instance.$attrs,
+        ...instance.$data,
+    };
     // 计算数据
-    if (currBlock.computed) {
-        for (let name in currBlock.computed) {
-            params[name] = instance[name];
+    if (runtimeBlock.computed) {
+        for (let name in runtimeBlock.computed) {
+            data[name] = instance[name];
         }
     }
     // 自定义函数
-    if (currBlock.methods) {
-        for (let name in currBlock.methods) {
-            params[name] = instance[name];
+    if (runtimeBlock.methods) {
+        for (let name in runtimeBlock.methods) {
+            data[name] = instance[name];
         }
     }
     // 内置属性
-    params.$block = instance;
-    params._ = lodash;
-    return params;
+    data.$block = instance;
+    data._ = lodash;
+    return data;
 }
 
 /**
  * 处理 Block/ComponentNode 的 props 属性，计算出表达式值
  */
-function propsTransform(props: DesignBlock["props"], instance: any, currBlock: RuntimeBlock): Record<string, any> {
-    return calcExpression(props, getExpOrTplParam(instance, currBlock), {thisArg: instance, cache: false});
+function propsTransform(props: DesignBlock["props"], instance: any, runtimeBlock: RuntimeBlock): Record<string, any> {
+    const data = getExpOrTplParam(instance, runtimeBlock);
+    return calcExpression(props, data, {thisArg: instance, cache: false});
+}
+
+/**
+ * 渲染 tpl 模版，返回渲染后的字符串
+ */
+function renderTpl(tpl: string[], instance: any, runtimeBlock: RuntimeBlock): string {
+    const data = getExpOrTplParam(instance, runtimeBlock);
+    return compileTpl(tpl, {cache: true}).bind(instance)(data);
 }
 
 export {
@@ -375,4 +389,5 @@ export {
     deepBindThis,
     getExpOrTplParam,
     propsTransform,
+    renderTpl,
 }

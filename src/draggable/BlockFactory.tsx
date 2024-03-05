@@ -4,8 +4,7 @@ import {hasValue, isArray, isStr} from "@/utils/Typeof";
 import {AnyFunction} from "@/draggable/types/Base";
 import {DesignBlock} from "@/draggable/types/DesignBlock";
 import {ComponentManageModel} from "@/draggable/models/ComponentManageModel";
-import {compileTpl} from "@/utils/Template";
-import {blockDeepTransform, deepBindThis, getExpOrTplParam, propsTransform} from "@/draggable/utils/BlockPropsTransform";
+import {blockDeepTransform, deepBindThis, propsTransform, renderTpl} from "@/draggable/utils/BlockPropsTransform";
 import {RuntimeBlock, RuntimeBlockNode, RuntimeComponentNode} from "@/draggable/types/RuntimeBlock";
 
 /** 组件管理器实例 */
@@ -99,7 +98,7 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, designBlock?: D
                 children = items.map((node, idx) => createChildVNode(node, this, idx));
             } else if (tpl.length > 0) {
                 // html模版
-                const staticHtml = compileTpl(tpl, {cache: true}).bind(this)(getExpOrTplParam(this, runtimeBlock));
+                const staticHtml = renderTpl(tpl, this, runtimeBlock);
                 children = [createStaticVNode(staticHtml, 0)];
             }
             return (
@@ -118,17 +117,17 @@ function createChildVNode(child: RuntimeBlockNode, instance: any, nodeIdx: numbe
     // 静态 html 文本
     if (isStr(child)) return createStaticVNode(child, nodeIdx);
     // RuntimeBlock
-    const runtimeBlock = child as RuntimeBlock;
-    if (runtimeBlock.block) {
-        if (!runtimeBlock.__blockComponent) {
-            runtimeBlock.__blockComponent = createRuntimeBlockComponent(runtimeBlock);
+    const currBlock = child as RuntimeBlock;
+    if (currBlock.block) {
+        if (!currBlock.__blockComponent) {
+            currBlock.__blockComponent = createRuntimeBlockComponent(currBlock);
         }
-        return createVNode(runtimeBlock.__blockComponent);
+        return createVNode(currBlock.__blockComponent);
     }
     // RuntimeComponentNode
     const childNode = child as RuntimeComponentNode;
     // 当前层级 Block 所对应的 RuntimeBlock 对象
-    const currBlock = instance[innerName.runtimeBlock];
+    const runtimeBlock = instance[innerName.runtimeBlock];
     // 插槽和子组件(default插槽其实就是子组件)
     const children: Record<string, AnyFunction<any, Array<any>>> = {
         default: () => ([]),
@@ -148,11 +147,11 @@ function createChildVNode(child: RuntimeBlockNode, instance: any, nodeIdx: numbe
         children.default = () => childNode.items.map((item, idx) => createChildVNode(item, instance, idx));
     } else if (childNode.tpl.length > 0) {
         // html模版
-        const staticHtml = compileTpl(child.tpl, {cache: true}).bind(instance)(getExpOrTplParam(instance, currBlock));
+        const staticHtml = renderTpl(child.tpl, instance, runtimeBlock);
         children.default = () => ([createStaticVNode(staticHtml, 0)]);
     }
     // 处理 props 表达式(属性的绑定)
-    const props = propsTransform(child.props, instance, currBlock);
+    const props = propsTransform(child.props, instance, runtimeBlock);
     // 创建 VNode
     return createVNode(
         child.type,

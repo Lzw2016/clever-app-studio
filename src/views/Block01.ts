@@ -4,6 +4,7 @@ import {createBlockComponent} from "@/draggable/BlockFactory";
 const Block01 = createBlockComponent({
     block: true,
     id: "001",
+    ref: "outBlock",
     type: "div",
     props: {
         style: {
@@ -118,7 +119,8 @@ const Block01 = createBlockComponent({
                 onClick: {
                     handler: function (this: ComponentInstance) {
                         this.innerCount++;
-                        // console.log("this.innerCount", this.innerCount);
+                        console.log("this.$parent", this.$parent);
+                        this.$parent.hiddenDiv01 = !this.$parent.hiddenDiv01;
                     },
                     modifiers: ['stop'],
                 },
