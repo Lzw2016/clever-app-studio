@@ -92,17 +92,28 @@ const Block01 = createBlockComponent({
             block: true,
             type: "div",
             ref: "innerDiv",
-            data: {
-                innerCount: 123,
-            },
             props: {
                 style: {
                     border: "1px solid #ccc",
                 },
             },
+            data: {
+                innerCount: 123,
+            },
             tpl: [
                 "内部组件 <%= innerCount %>"
             ],
+            computed: {
+                innerCount2: function (this: ComponentInstance, oldValue, block) {
+                    return this.innerCount + 1;
+                },
+            },
+            watch: {
+                innerCount2: function (this: ComponentInstance, value, oldValue, onCleanup) {
+                    this.test2(123, "abc");
+                    console.log("watch innerCount2=", value, this);
+                }
+            },
             listeners: {
                 onClick: {
                     handler: function (this: ComponentInstance) {
@@ -115,6 +126,11 @@ const Block01 = createBlockComponent({
             lifeCycles: {
                 updated: function (block) {
                     console.log("内部组件更新", this, block);
+                },
+            },
+            methods: {
+                test2() {
+                    console.log("test2函数调用", arguments, this);
                 },
             },
         },
