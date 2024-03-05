@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import { BlockCmp01 } from "./Block01";
+import { BlockCmp02 } from "./Block02";
 
 const show = ref(1);
-
 const block01ref = ref();
-
-onMounted(() => {
-    console.log("block01", block01ref);
-});
 
 </script>
 
@@ -21,6 +17,9 @@ onMounted(() => {
 
     <div style="height: 12px;"/>
     <BlockCmp01 v-if="show%2===0"/>
+
+    <div style="height: 12px;"/>
+    <BlockCmp02/>
 </template>
 
 <style scoped>

@@ -1,4 +1,4 @@
-import { ComponentPublicInstance, createStaticVNode, createVNode, defineComponent } from "vue";
+import { ComponentPublicInstance, createStaticVNode, createVNode, defineComponent, Fragment } from "vue";
 import lodash from "lodash";
 import { hasValue, isArray, isStr } from "@/utils/Typeof";
 import { AnyFunction, VueComponent } from "@/draggable/types/Base";
@@ -111,7 +111,6 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
         methods: methods,
         watch: watch,
         render(this: any) {
-            const newProps = propsTransform(props, this, this[innerName.runtimeBlock], context.toExtData());
             let children: any = undefined;
             if (items.length > 0) {
                 // 子组件
@@ -121,6 +120,10 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
                 const staticHtml = renderTpl(tpl, this, runtimeBlock, context.toExtData());
                 children = [createStaticVNode(staticHtml, 0)];
             }
+            if (Component === Fragment) {
+                return createVNode(Fragment, null, children);
+            }
+            const newProps = propsTransform(props, this, this[innerName.runtimeBlock], context.toExtData());
             return (
                 <Component {...newProps} {...this.$attrs} {...this.$props} {...runtimeBlock.__bindListeners} key={id} ref={ref}>
                     {children}
