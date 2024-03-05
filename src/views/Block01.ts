@@ -114,7 +114,7 @@ const Block01 = createBlockComponent({
             },
             lifeCycles: {
                 updated: function (block) {
-                    console.log("内部组件更新");
+                    console.log("内部组件更新", this, block);
                 },
             },
         },
@@ -147,13 +147,13 @@ const Block01 = createBlockComponent({
     },
     lifeCycles: {
         mounted: function (block) {
-            console.log("mounted", this);
+            console.log("mounted", this, block);
         },
         unmounted: function (block) {
             console.log("unmounted", this);
         },
         updated: function (block) {
-            console.log("外部组件更新", this);
+            console.log("外部组件更新", this, block);
         },
     },
 });

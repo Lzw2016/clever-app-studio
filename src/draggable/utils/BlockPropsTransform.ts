@@ -85,7 +85,9 @@ function lifeCyclesTransform(lifeCycles: DesignBlock['lifeCycles'], methods: Rec
         if (noValue(fun)) {
             throw new Error(`Block lifeCycles 定义错误(${name}=${value})`);
         }
-        vueLifeCycles[name] = fun;
+        vueLifeCycles[name] = function () {
+            return fun!.call(this, this);
+        };
     }
     return vueLifeCycles;
 }
@@ -292,45 +294,22 @@ function _deepTransformSlotsOrItems(itemsOrSlots: ComponentNode['items'], compon
  */
 function deepBindThis(cmpNode: RuntimeComponentNode, instance: any) {
     const {
-        block,
         listeners,
-        computed,
-        lifeCycles,
+        __bindListeners,
         slots,
         items,
-        __bindListeners,
-        __bindLifeCycles,
-    } = cmpNode as RuntimeBlock;
-    // RuntimeComponentNode 只需要处理 listeners
-    if (!block && __bindListeners) return;
-    // RuntimeBlock 需要处理 lifeCycles
-    if (block && __bindLifeCycles) return;
-    // RuntimeComponentNode
-    if (!__bindListeners) {
-        // 处理 listeners
-        cmpNode.__bindListeners = {};
-        for (let name in listeners) {
-            const listener = listeners[name];
-            // 应用事件修饰符
-            if (isArray(listener.modifiers) && listener.modifiers.length > 0) {
-                listener.handler = withModifiers(listener.handler.bind(instance), listener.modifiers);
-            }
-            cmpNode.__bindListeners[name] = listener.handler.bind(instance);
+    } = cmpNode;
+    if (__bindListeners) return;
+    // 处理 listeners
+    cmpNode.__bindListeners = {};
+    for (let name in listeners) {
+        const listener = listeners[name];
+        // 应用事件修饰符
+        if (isArray(listener.modifiers) && listener.modifiers.length > 0) {
+            listener.handler = withModifiers(listener.handler.bind(instance), listener.modifiers);
         }
+        cmpNode.__bindListeners[name] = listener.handler.bind(instance);
     }
-    // RuntimeBlock
-    const runtimeBlock = cmpNode as RuntimeBlock;
-    if (!__bindLifeCycles) {
-        // 处理 lifeCycles
-        runtimeBlock.__bindLifeCycles = {};
-        for (let name in lifeCycles) {
-            const fun = lifeCycles[name];
-            runtimeBlock.__bindLifeCycles[name] = function () {
-                return fun.call(instance, arguments);
-            };
-        }
-    }
-    // methods、watch、methods、
     // 递归处理 slots
     if (slots) {
         for (let name in slots) {
