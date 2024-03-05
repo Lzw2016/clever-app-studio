@@ -1,9 +1,16 @@
 import {WatchCallback, WatchOptions} from "vue";
-import {AnyFunction, I18N, VueComponent} from "@/draggable/types/Base";
+import {AnyFunction, ComponentInstance, I18N, VueComponent} from "@/draggable/types/Base";
 import {BaseDirectives, BlockMeta} from "@/draggable/types/DesignBlock";
 
 /** 组件插槽类型(运行时) */
 type RuntimeComponentSlotsItem = RuntimeComponentNode | Omit<RuntimeBlock, "meta" | "i18n"> | string;
+
+/** Listener的对象形式(运行时) */
+interface RuntimeListener {
+    handler: AnyFunction<ComponentInstance>;
+    /** 事件修饰符 */
+    modifiers?: Array<string>;
+}
 
 /** 组件节点(运行时) */
 interface RuntimeComponentNode {
@@ -15,8 +22,10 @@ interface RuntimeComponentNode {
     ref?: string;
     /** 组件属性 */
     props: Record<string, any>;
-    /** 监听的事件 */
-    listeners: Record<string, AnyFunction>;
+    /** 监听的事件(原函数) */
+    listeners: Record<string, RuntimeListener>;
+    /** 监听的事件(已绑定 this 指针的 listeners 函数) */
+    __bindListeners?: Record<string, AnyFunction<ComponentInstance>>;
     /** 组件指令 */
     directives: BaseDirectives;
     /** 组件插槽(default插槽其实就是children) */
@@ -35,7 +44,7 @@ type RuntimeBlockWatchItem = WatchOptionItem | Array<WatchOptionItem>;
 /** 区块(运行时) */
 interface RuntimeBlock extends RuntimeComponentNode {
     // /** 设计时的 Block 对象 */
-    // __designBlock: BlockDesign;
+    // __designBlock: DesignBlock;
     /** 是否是Block */
     block: boolean;
     /** 数据 */
@@ -60,6 +69,7 @@ type RuntimeBlockNode = RuntimeComponentSlotsItem | RuntimeBlock;
 export type {
     RuntimeComponentSlotsItem,
     RuntimeBlockWatchItem,
+    RuntimeListener,
     RuntimeComponentNode,
     RuntimeBlock,
     RuntimeBlockNode,

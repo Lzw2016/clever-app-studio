@@ -5,8 +5,8 @@ import {AsyncFunction} from "@/utils/UseType";
 import {calcExpression} from "@/utils/Expression";
 import {createVNodeID} from "@/utils/IDCreate";
 import {AnyFunction, FunctionConfig} from "@/draggable/types/Base";
-import {BlockWatchItem, ComponentNode, DesignBlock, ListenerFunctionConfig} from "@/draggable/types/DesignBlock";
-import {RuntimeBlock, RuntimeBlockWatchItem} from "@/draggable/types/RuntimeBlock";
+import {BlockWatchItem, ComponentNode, DesignBlock} from "@/draggable/types/DesignBlock";
+import {RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener} from "@/draggable/types/RuntimeBlock";
 import {ComponentManage} from "@/draggable/types/ComponentManage";
 import {isHtmlTag} from "@/draggable/utils/HtmlTag";
 
@@ -22,21 +22,25 @@ function createFunction(functionConfig: FunctionConfig): AnyFunction {
 /**
  * 给 Block 对象属性设置默认值
  */
-function fillBlockDefValue(block: Partial<DesignBlock>): Required<DesignBlock> {
+function fillBlockDefValue(block: ComponentNode | DesignBlock): Required<DesignBlock> | Required<ComponentNode> {
+    // ComponentNode
     if (!block.id) block.id = createVNodeID();
+    if (!block.ref) block.ref = createVNodeID();
     if (!block.props) block.props = {};
     if (!block.listeners) block.listeners = {};
     if (!block.directives) block.directives = {};
     if (!block.slots) block.slots = {};
     if (!block.items) block.items = [];
     if (!block.tpl) block.tpl = [];
-    if (block.block) {
-        if (!block.data) block.data = {};
-        if (!block.computed) block.computed = {};
-        if (!block.watch) block.watch = {};
-        if (!block.methods) block.methods = {};
-        if (!block.lifeCycles) block.lifeCycles = {};
-        if (!block.i18n) block.i18n = {};
+    // DesignBlock
+    const designBlock = block as DesignBlock;
+    if (designBlock.block) {
+        if (!designBlock.data) designBlock.data = {};
+        if (!designBlock.computed) designBlock.computed = {};
+        if (!designBlock.watch) designBlock.watch = {};
+        if (!designBlock.methods) designBlock.methods = {};
+        if (!designBlock.lifeCycles) designBlock.lifeCycles = {};
+        if (!designBlock.i18n) designBlock.i18n = {};
     }
     return block as any;
 }
@@ -170,21 +174,21 @@ function watchTransform(watch: DesignBlock['watch']): Record<string, RuntimeBloc
 }
 
 /**
- * 处理 Block/ComponentNode 的 listeners 属性，使它符合 vue 组件的规范
+ * 处理 Block/ComponentNode 的 listeners 属性
  */
-function listenersTransform(listeners: DesignBlock["listeners"], instance: any): Record<string, Function> {
+function listenersTransform(listeners: DesignBlock["listeners"], methods: Record<string, any>): Record<string, RuntimeListener> {
     const vueListeners: any = {};
     for (let name in listeners) {
         const value = listeners[name];
-        const listener: Partial<ListenerFunctionConfig> = {};
-        if (isStr(value) && isFun(instance[value])) {
-            listener.handler = instance[value];
+        const listener: Partial<RuntimeListener> = {};
+        if (isStr(value) && isFun(methods[value])) {
+            listener.handler = methods[value];
         } else if (isFun(value)) {
             listener.handler = value;
         } else if (isObj(value) && !isArray(value)) {
             const {handler, async, params, code, modifiers} = value as any;
-            if (isStr(handler) && isFun(instance[handler])) {
-                listener.handler = instance[handler];
+            if (isStr(handler) && isFun(methods[handler])) {
+                listener.handler = methods[handler];
             } else if (isFun(handler)) {
                 listener.handler = handler;
             } else if (isObj(handler) && !isArray(handler) && isStr(handler.code)) {
@@ -197,21 +201,20 @@ function listenersTransform(listeners: DesignBlock["listeners"], instance: any):
         if (!isFun(listener.handler)) {
             throw new Error(`listeners 定义错误(${name}=${value})`);
         }
-        // 应用事件修饰符
-        if (isArray(listener.modifiers) && listener.modifiers.length > 0) {
-            listener.handler = withModifiers(listener.handler.bind(instance), listener.modifiers);
-        }
-        vueListeners[name] = listener.handler.bind(instance);
+        vueListeners[name] = listener;
     }
     return vueListeners;
 }
 
 /**
- * 深度转换 BlockDesign
+ * 深度转换 DesignBlock。
+ * 会转换的属性：type、listeners、slots、items、tpl、computed、watch、methods、lifeCycles
  */
-function blockDeepTransform(block: DesignBlock, componentManage: ComponentManage): RuntimeBlock {
+function blockDeepTransform(block: ComponentNode | DesignBlock, componentManage: ComponentManage, parents?: RuntimeBlock): RuntimeBlock {
     const {
+        block: isBlock,
         type,
+        listeners,
         slots,
         items,
         tpl,
@@ -220,104 +223,113 @@ function blockDeepTransform(block: DesignBlock, componentManage: ComponentManage
         methods,
         lifeCycles,
         ...other
-    } = fillBlockDefValue(block);
-    const runtime: any = {};
+    } = fillBlockDefValue(block) as DesignBlock;
+    const runtime: any = {block: isBlock};
+    // 如果没有父级 Block 强制让当前节点为 Block
+    if (!parents) runtime.block = true;
     // 读取组件类型
     if (type) {
         runtime.type = type.trim();
         const htmlTag = isHtmlTag(runtime.type);
-        if (!htmlTag) {
-            runtime.type = componentManage.getComponent(runtime.type);
-        }
+        if (!htmlTag) runtime.type = componentManage.getComponent(runtime.type);
     } else {
         runtime.type = Fragment;
     }
     if (!runtime.type) {
         throw new Error(`UI组件未注册也不是html原生标签，组件: ${type}`);
     }
-    // 处理 slots 或者 items
-    const transformSlotsOrItems = function (itemsOrSlots: ComponentNode['items'], propName: 'items' | 'slots', slotName: string): RuntimeBlock["items"] {
-        let result: Array<any>;
-        if (isStr(itemsOrSlots)) {
-            result = [itemsOrSlots];
-        } else if (isArray(itemsOrSlots)) {
-            result = itemsOrSlots.map((item: any, idx) => {
-                if (isStr(item)) {
-                    return item;
-                } else if (isObj(item) && !isArray(item)) {
-                    return blockDeepTransform(item, componentManage);
-                } else {
-                    throw new Error(`Block ${propName} 定义错误(${slotName}[${idx}]=${JSON.stringify(item)})`);
-                }
-            });
-        } else if (isObj(itemsOrSlots)) {
-            result = [blockDeepTransform(itemsOrSlots as any, componentManage)];
-        } else {
-            throw new Error(`Block ${propName} 定义错误(${slotName}=${JSON.stringify(itemsOrSlots)})`);
-        }
-        return result;
+    // 处理 tpl 属性
+    runtime.tpl = tpl;
+    if (isStr(tpl)) runtime.tpl = [tpl];
+    // 处理 Block 属性
+    if (runtime.block) {
+        runtime.methods = methodsTransform(methods);
+        runtime.lifeCycles = lifeCyclesTransform(lifeCycles, runtime.methods);
+        runtime.computed = computedTransform(computed, runtime.methods);
+        runtime.watch = watchTransform(watch);
+    }
+    // 处理 listeners
+    if (runtime.block) {
+        runtime.listeners = listenersTransform(listeners, runtime.methods);
+    } else if (parents) {
+        runtime.listeners = listenersTransform(listeners, parents.methods);
     }
     // 递归处理 slots
     runtime.slots = {};
+    const designBlock: RuntimeBlock = (parents ? parents : runtime);
     for (let name in slots) {
         const slot = slots[name];
-        runtime.slots[name] = transformSlotsOrItems(slot, "slots", name);
+        runtime.slots[name] = _deepTransformSlotsOrItems(slot, componentManage, designBlock, "slots", name);
     }
     // 递归处理 items
-    runtime.items = transformSlotsOrItems(items, "items", "items");
-    // 处理 tpl 属性
-    runtime.tpl = tpl;
-    if (isStr(tpl)) {
-        runtime.tpl = [tpl];
-    }
-    // 处理 Block 属性
-    if (block.block) {
-        runtime.methods = methodsTransform(methods);
-        runtime.lifeCycles = lifeCyclesTransform(lifeCycles, methods);
-        runtime.computed = computedTransform(computed, methods);
-        runtime.watch = watchTransform(watch);
-    }
+    runtime.items = _deepTransformSlotsOrItems(items, componentManage, designBlock, "items", "items");
     // 返回数据
     return {...other, ...runtime};
 }
 
+// blockDeepTransform 处理 slots 或者 items
+function _deepTransformSlotsOrItems(itemsOrSlots: ComponentNode['items'], componentManage: ComponentManage, parents: RuntimeBlock, propName: 'items' | 'slots', slotName: string): Array<RuntimeComponentSlotsItem> {
+    let result: Array<RuntimeComponentSlotsItem>;
+    if (isStr(itemsOrSlots)) {
+        result = [itemsOrSlots];
+    } else if (isArray(itemsOrSlots)) {
+        result = itemsOrSlots.map((item: any, idx) => {
+            if (isStr(item)) {
+                return item;
+            } else if (isObj(item) && !isArray(item)) {
+                return blockDeepTransform(item, componentManage, parents);
+            } else {
+                throw new Error(`Block ${propName} 定义错误(${slotName}[${idx}]=${JSON.stringify(item)})`);
+            }
+        });
+    } else if (isObj(itemsOrSlots)) {
+        result = [blockDeepTransform(itemsOrSlots as any, componentManage, parents)];
+    } else {
+        throw new Error(`Block ${propName} 定义错误(${slotName}=${JSON.stringify(itemsOrSlots)})`);
+    }
+    return result;
+}
+
 /**
- * 深度转换 ComponentNode, 这个函数会直接改变参数值
+ * 深度绑定 listeners 函数的 this 指针。
+ * 处理 Block/ComponentNode 的 listeners 属性，使它符合 vue 组件的规范
  */
-function nodeDeepTransform(cmpNode: ComponentNode, instance: any) {
+function deepBindThis(cmpNode: RuntimeBlock, instance: any) {
     const {
         listeners,
         slots,
         items,
-        ...other
     } = cmpNode;
-    const runtime: any = cmpNode;
-    if (listeners) {
-        runtime.listeners = listenersTransform(listeners, instance);
-    }
-    // 处理 slots 或者 items
-    const transformSlotsOrItems = function (param: ComponentNode['items']) {
-        if (isArray(param)) {
-            param.map(item => {
-                if (isObj(item) && !isArray(item)) {
-                    return nodeDeepTransform(item as any, instance);
-                }
-                return item;
-            });
-        } else if (isObj(param)) {
-            nodeDeepTransform(param as any, instance);
+    if (cmpNode.__bindListeners) return;
+    cmpNode.__bindListeners = {};
+    for (let name in listeners) {
+        const listener = listeners[name];
+        // 应用事件修饰符
+        if (isArray(listener.modifiers) && listener.modifiers.length > 0) {
+            listener.handler = withModifiers(listener.handler.bind(instance), listener.modifiers);
         }
-    };
+        cmpNode.__bindListeners[name] = listener.handler.bind(instance);
+    }
     // 递归处理 slots
     if (slots) {
         for (let name in slots) {
             const slot: any = slots[name];
-            transformSlotsOrItems(slot);
+            _deepBindThisSlotsOrItems(slot, instance);
         }
     }
     // 递归处理 items
     if (items) {
-        transformSlotsOrItems(items);
+        _deepBindThisSlotsOrItems(items, instance);
+    }
+}
+
+// deepBindThis 处理 slots 或者 items
+function _deepBindThisSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, instance: any) {
+    for (let cmpNode of cmpNodes) {
+        const runtimeBlock = cmpNode as RuntimeBlock;
+        if (!runtimeBlock.block && isObj(runtimeBlock) && !isArray(runtimeBlock)) {
+            return deepBindThis(runtimeBlock, instance);
+        }
     }
 }
 
@@ -360,7 +372,7 @@ export {
     watchTransform,
     listenersTransform,
     blockDeepTransform,
-    nodeDeepTransform,
+    deepBindThis,
     getExpOrTplParam,
     propsTransform,
 }

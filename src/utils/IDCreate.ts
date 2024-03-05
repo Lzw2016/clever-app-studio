@@ -30,7 +30,18 @@ function createVNodeID(prefix: string = "node") {
     return `${prefix}_${vnodeCount++}`;
 }
 
+let refCount = 0;
+
+/**
+ * 生成新的 ref ID
+ * @param prefix 自定义ID前缀
+ */
+function createRefID(prefix: string = "ref") {
+    return `${prefix}_${refCount++}`;
+}
+
 export {
     randomUID,
     createVNodeID,
+    createRefID,
 }

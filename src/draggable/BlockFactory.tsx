@@ -5,7 +5,7 @@ import {AnyFunction} from "@/draggable/types/Base";
 import {DesignBlock} from "@/draggable/types/DesignBlock";
 import {ComponentManageModel} from "@/draggable/models/ComponentManageModel";
 import {compileTpl} from "@/utils/Template";
-import {blockDeepTransform, getExpOrTplParam, nodeDeepTransform, propsTransform} from "@/draggable/utils/BlockPropsTransform";
+import {blockDeepTransform, deepBindThis, getExpOrTplParam, propsTransform} from "@/draggable/utils/BlockPropsTransform";
 import {RuntimeBlock, RuntimeBlockNode, RuntimeComponentNode} from "@/draggable/types/RuntimeBlock";
 
 /** 组件管理器实例 */
@@ -13,7 +13,7 @@ const componentManage = new ComponentManageModel();
 
 /** Block vue 组件的内部属性名 */
 const innerName = {
-    /** BlockDesign 对象，只有顶层 Block 拥有此属性 */
+    /** DesignBlock 对象，只有顶层 Block 拥有此属性 */
     designBlock: /*    */ Symbol('__design_block__'),
     /** 当前层级 Block 所对应的 RuntimeBlock 对象 */
     runtimeBlock: /*   */ Symbol('__runtime_block__'),
@@ -22,7 +22,7 @@ const innerName = {
 }
 
 /**
- * 基于 BlockDesign 动态创建 vue 组件
+ * 基于 DesignBlock 动态创建 vue 组件
  */
 function createBlockComponent(block: DesignBlock) {
     const designBlock: DesignBlock = block;
@@ -38,8 +38,6 @@ function createBlockComponent(block: DesignBlock) {
  * 基于 RuntimeBlock 动态创建 vue 组件
  */
 function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, designBlock?: DesignBlock) {
-    // 当前 runtimeBlock 是否是根组件
-    const isRoot = hasValue(designBlock);
     const {
         id,
         ref,
@@ -79,16 +77,17 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, designBlock?: D
             // ctx.expose(exposed);
         },
         data(vm: any) {
-            if (isRoot) {
-                // 递归处理 ComponentNode 属性，使它符合 vue 组件的规范
-                nodeDeepTransform(runtimeBlock as any, vm);
+            console.log("@@@", vm);
+            if (hasValue(designBlock)) {
                 // 保存原始的 block 对象
                 vm[innerName.designBlock] = designBlock;
             }
+            // 深度绑定 this 指针
+            deepBindThis(runtimeBlock, vm);
             // 保存当前运行时的 block 对象
             vm[innerName.runtimeBlock] = runtimeBlock;
             // 当前组件的事件监听
-            vm[innerName.listeners] = runtimeBlock.listeners;
+            vm[innerName.listeners] = runtimeBlock.__bindListeners;
             // 返回组件数据
             return data;
         },
@@ -104,7 +103,7 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, designBlock?: D
             } else if (tpl.length > 0) {
                 // html模版
                 const staticHtml = compileTpl(tpl, {cache: true}).bind(this)(getExpOrTplParam(this, runtimeBlock));
-                children = [createStaticVNode(staticHtml, 0)]
+                children = [createStaticVNode(staticHtml, 0)];
             }
             return (
                 <Component {...newProps} {...this.$attrs} {...this.$props} {...this[innerName.listeners]} key={id} ref={ref}>
@@ -123,7 +122,10 @@ function createChildVNode(child: RuntimeBlockNode, instance: any, nodeIdx: numbe
     if (isStr(child)) return createStaticVNode(child, nodeIdx);
     // RuntimeBlock
     const runtimeBlock = child as RuntimeBlock;
-    if (runtimeBlock.block) return createVNode(createRuntimeBlockComponent(runtimeBlock));
+    console.log("runtimeBlock.block", runtimeBlock.block);
+    if (runtimeBlock.block) {
+        return createVNode(createRuntimeBlockComponent(runtimeBlock));
+    }
     // RuntimeComponentNode
     const childNode = child as RuntimeComponentNode;
     // 当前层级 Block 所对应的 RuntimeBlock 对象
@@ -158,7 +160,7 @@ function createChildVNode(child: RuntimeBlockNode, instance: any, nodeIdx: numbe
         {
             ref: child.ref,
             ...props,
-            ...child.listeners,
+            ...child.__bindListeners,
         },
         children,
     );

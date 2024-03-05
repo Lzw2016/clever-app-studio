@@ -83,6 +83,35 @@ const Block01 = createBlockComponent({
                 }
             ],
         },
+        {
+            block: true,
+            type: "div",
+            data: {
+                innerCount: 123,
+            },
+            props: {
+                style: {
+                    border: "1px solid #ccc",
+                },
+            },
+            tpl: [
+                "内部组件 <%= innerCount %>"
+            ],
+            listeners: {
+                onClick: {
+                    handler: function (this: ComponentInstance) {
+                        this.innerCount++;
+                        console.log("this.innerCount", this.innerCount);
+                    },
+                    modifiers: ['stop'],
+                },
+            },
+            lifeCycles: {
+                updated: function (block) {
+                    console.log("内部组件更新");
+                },
+            },
+        },
     ],
     watch: {
         count: {
@@ -114,6 +143,9 @@ const Block01 = createBlockComponent({
         },
         unmounted: function (block) {
             console.log("unmounted", block);
+        },
+        updated: function (block) {
+            console.log("外部组件更新");
         },
     },
 });
