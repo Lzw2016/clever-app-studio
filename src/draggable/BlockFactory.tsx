@@ -1,11 +1,11 @@
-import {ComponentPublicInstance, createStaticVNode, createVNode, defineComponent} from "vue";
+import { ComponentPublicInstance, createStaticVNode, createVNode, defineComponent } from "vue";
 import lodash from "lodash";
-import {hasValue, isArray, isStr} from "@/utils/Typeof";
-import {AnyFunction, VueComponent} from "@/draggable/types/Base";
-import {DesignBlock} from "@/draggable/types/DesignBlock";
-import {ComponentManageModel} from "@/draggable/models/ComponentManageModel";
-import {blockDeepTransform, deepBindThis, deepExtractBlock, propsTransform, renderTpl} from "@/draggable/utils/BlockPropsTransform";
-import {RuntimeBlock, RuntimeBlockNode, RuntimeComponentNode} from "@/draggable/types/RuntimeBlock";
+import { hasValue, isArray, isStr } from "@/utils/Typeof";
+import { AnyFunction, VueComponent } from "@/draggable/types/Base";
+import { DesignBlock } from "@/draggable/types/DesignBlock";
+import { ComponentManageModel } from "@/draggable/models/ComponentManageModel";
+import { blockDeepTransform, deepBindThis, deepExtractBlock, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
+import { RuntimeBlock, RuntimeBlockNode, RuntimeComponentNode } from "@/draggable/types/RuntimeBlock";
 
 /** 组件管理器实例 */
 const componentManage = new ComponentManageModel();
@@ -199,6 +199,14 @@ function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, inst
     // return vnode;
 }
 
+/**
+ * 定义一个 DesignBlock 对象，仅仅是为了类型声明，无任何处理逻辑
+ */
+function defineDesignBlock(designBlock: DesignBlock): DesignBlock {
+    return designBlock;
+}
+
 export {
     createBlockComponent,
+    defineDesignBlock,
 }

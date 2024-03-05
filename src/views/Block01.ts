@@ -1,7 +1,7 @@
-import {ComponentInstance} from "@/draggable/types/Base";
-import {createBlockComponent} from "@/draggable/BlockFactory";
+import { ComponentInstance } from "@/draggable/types/Base";
+import { createBlockComponent, defineDesignBlock } from "@/draggable/BlockFactory";
 
-const Block01 = createBlockComponent({
+const block01 = defineDesignBlock({
     block: true,
     id: "001",
     ref: "outBlock",
@@ -178,6 +178,9 @@ const Block01 = createBlockComponent({
     },
 });
 
+const BlockCmp01 = createBlockComponent(block01);
+
 export {
-    Block01,
+    block01,
+    BlockCmp01,
 }
