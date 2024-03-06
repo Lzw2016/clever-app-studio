@@ -12,6 +12,7 @@ const block03 = defineDesignBlock({
             border: "1px solid #ccc",
             userSelect: "none",
         },
+        // style: "width: 300px; height:70px; border:1px solid #666;",
     },
     data: {
         count: 0,

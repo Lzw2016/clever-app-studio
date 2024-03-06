@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { BlockCmp01 } from "./Block01";
 import { BlockCmp02 } from "./Block02";
+import { BlockCmp03 } from "./Block03";
 
 const show = ref(1);
 const block01ref = ref();
@@ -20,6 +21,9 @@ const block01ref = ref();
 
     <div style="height: 12px;"/>
     <BlockCmp02/>
+
+    <div style="height: 12px;"/>
+    <BlockCmp03/>
 </template>
 
 <style scoped>

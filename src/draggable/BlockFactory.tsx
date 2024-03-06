@@ -65,6 +65,7 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
         methods,
         watch,
         lifeCycles,
+        slots,
         items,
         tpl,
     } = runtimeBlock;
@@ -120,6 +121,7 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
                 key: id,
                 ref: ref,
             };
+            // TODO 未处理 slots
             let children: any = undefined;
             if (items.length > 0) {
                 // 子组件
@@ -127,7 +129,7 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
             } else if (tpl.length > 0) {
                 // html模版
                 allProps.innerHTML = renderTpl(tpl, this, runtimeBlock, context.toExtData());
-                return createVNode('div', allProps, null);
+                return createVNode(Component, allProps, null);
             }
             if (Component === Fragment) {
                 return createVNode(Fragment, allProps, children);
@@ -188,7 +190,7 @@ function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, inst
     const props = propsTransform(child.props, instance, runtimeBlock, context.toExtData());
     // 创建 VNode
     return createVNode(
-        child.type,
+        child.type, // TODO 需要考虑 type=Fragment 的情况
         {
             key: child.id,
             ref: child.ref,

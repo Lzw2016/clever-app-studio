@@ -25,8 +25,8 @@ function createFunction(functionConfig: FunctionConfig): AnyFunction {
  */
 function fillBlockDefValue(block: ComponentNode | DesignBlock): Required<DesignBlock> | Required<ComponentNode> {
     // ComponentNode
-    if (!block.id) block.id = createVNodeID();
-    if (!block.ref) block.ref = createRefID();
+    if (!block.id || lodash.trim(block.id).length <= 0) block.id = createVNodeID();
+    if (!block.ref || lodash.trim(block.ref).length <= 0) block.ref = createRefID();
     if (!block.props) block.props = {};
     if (!block.listeners) block.listeners = {};
     if (!block.directives) block.directives = {};
@@ -227,7 +227,7 @@ function blockDeepTransform(block: ComponentNode | DesignBlock, componentManage:
     // 如果没有父级 Block 强制让当前节点为 Block
     if (!parents) runtime.block = true;
     // 读取组件类型
-    if (type) {
+    if (type && lodash.trim(type).length > 0) {
         runtime.type = type.trim();
         const htmlTag = isHtmlTag(runtime.type);
         if (!htmlTag) runtime.type = componentManage.getComponent(runtime.type);
@@ -437,8 +437,10 @@ function propsTransform(props: DesignBlock["props"], instance: any, runtimeBlock
  * 渲染 tpl 模版，返回渲染后的字符串
  */
 function renderTpl(tpl: string[], instance: any, runtimeBlock?: RuntimeBlock, extData?: object): string {
+    const template = tpl.join("\n");
+    if (lodash.trim(template).length <= 0) return template;
     const data = getExpOrTplParam(instance, runtimeBlock, extData);
-    return compileTpl(tpl, { cache: true }).bind(instance)(data);
+    return compileTpl(template, { cache: true }).bind(instance)(data);
 }
 
 export {
