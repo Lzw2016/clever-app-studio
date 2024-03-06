@@ -8,7 +8,7 @@ const block03 = defineDesignBlock({
     props: {
         style: {
             width: "300px",
-            height: "80px",
+            height: "90px",
             border: "1px solid #ccc",
             userSelect: "none",
         },
@@ -22,10 +22,17 @@ const block03 = defineDesignBlock({
             return this.count * 2;
         },
     },
-    tpl: [
-        "<div>AAA: <%= count %></div>",
-        "<div>BBB: <%= count %></div>",
-        "<div>CCC: <%= count %></div>",
+    // tpl: [
+    //     "<div style='color: #409eff;'>AAA: <%= count %></div>",
+    //     "<div style='color: bisque;'>BBB: <%= count %></div>",
+    //     "<div style='color: brown;'>CCC: <%= count %></div>",
+    //     "DDD: <%= count %>",
+    // ],
+    items: [
+        "<div style='color: #409eff;'>AAA: <%= count %></div>",
+        "<div style='color: bisque;'>BBB: <%= count %></div>",
+        "<div style='color: brown;'>CCC: <%= count %></div>",
+        "DDD: <%= count %>",
     ],
     listeners: {
         onClick: "addCount",

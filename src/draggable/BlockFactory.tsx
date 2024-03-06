@@ -59,16 +59,11 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
     const {
         id,
         ref,
-        type,
-        props,
         data,
         computed,
         methods,
         watch,
         lifeCycles,
-        slots,
-        items,
-        tpl,
     } = runtimeBlock;
     // 内置默认的异常处理
     if (!lifeCycles.errorCaptured) {
@@ -82,8 +77,6 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
         if (unmounted) unmounted.call(this);
         // 可以在这里释放组件依赖的资源
     };
-    // 当前组件类型
-    const Component: any = type;
     return defineComponent({
         ...lifeCycles,
         setup(props, ctx) {
@@ -109,33 +102,49 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
         methods: methods,
         watch: watch,
         render(this: any) {
-            const newProps = propsTransform(props, this, this[innerName.runtimeBlock], context.toExtData());
+            // 当前组件类型
+            const Component: any = runtimeBlock.type;
+            // 处理 props 表达式(属性的绑定)
+            const props = propsTransform(runtimeBlock.props, this, runtimeBlock, context.toExtData());
             const allProps = {
-                ...newProps,
+                ...props,
                 ...this.$attrs,
                 ...this.$props,
                 ...runtimeBlock.__bindListeners,
                 key: id,
                 ref: ref,
             };
-            // TODO 未处理 slots
-            let children: any = undefined;
-            if (items.length > 0) {
+            // 子组件和插槽(子组件就是default插槽)
+            let children: Array<any> | undefined;
+            const slots: Record<string, AnyFunction<any, Array<any>>> = {
+                default: () => ([]),
+            };
+            if (!runtimeBlock.__htmlTag && Component != Fragment) {
+                // TODO 设置插槽 待验证，需要使用 withCtx(slotProps=> [...VNode])
+                for (let name in runtimeBlock.slots) {
+                    const slot = runtimeBlock.slots[name];
+                    slots[name] = () => slot.map((item, idx) => createChildVNode(item, context, this, idx));
+                }
+            }
+            if (runtimeBlock.items.length > 0) {
                 // 子组件
-                children = items.map((node, idx) => createChildVNode(node, context, this, idx));
-            } else if (tpl.length > 0) {
+                children = runtimeBlock.items.map((item, idx) => createChildVNode(item, context, this, idx));
+            } else if (runtimeBlock.tpl.length > 0) {
                 // html模版
-                allProps.innerHTML = renderTpl(tpl, this, runtimeBlock, context.toExtData());
+                const staticHtml = renderTpl(runtimeBlock.tpl, this, runtimeBlock, context.toExtData());
+                children = [createHtmlVNode(staticHtml, allProps, Component)];
+            }
+            if (children) slots.default = () => children!;
+            // 创建 VNode // TODO 应用指令
+            if (Component === Fragment || runtimeBlock.__htmlTag) {
+                // 没有插槽
+                return createVNode(Component, allProps, children);
+            }
+            if (runtimeBlock.items.length <= 0) {
+                // 没有 children
                 return createVNode(Component, allProps, null);
             }
-            if (Component === Fragment) {
-                return createVNode(Fragment, allProps, children);
-            }
-            return (
-                <Component {...allProps}>
-                    {children}
-                </Component>
-            );
+            return createVNode(Component, allProps, children);
         },
     });
 }
@@ -192,7 +201,7 @@ function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, inst
     }
     if (children) slots.default = () => children!;
     /*
-     * 创建 VNode
+     * 创建 VNode  // TODO 应用指令
      * 1. Component === Fragment || childNode.__htmlTag
      *      没有插槽
      *      createVNode(Component, allProps, [children]);
@@ -211,7 +220,6 @@ function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, inst
         return createVNode(Component, allProps, null);
     }
     return createVNode(Component, allProps, children);
-    // TODO 应用指令
     // vnode = withDirectives(
     //     vnode,
     //     [
