@@ -57,8 +57,6 @@ function createBlockComponent(block: DesignBlock) {
  */
 function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: FactoryContext, designBlock?: DesignBlock) {
     const {
-        id,
-        ref,
         data,
         computed,
         methods,
@@ -111,8 +109,8 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
                 ...this.$attrs,
                 ...this.$props,
                 ...runtimeBlock.__bindListeners,
-                key: id,
-                ref: ref,
+                key: runtimeBlock.id,
+                ref: runtimeBlock.ref,
             };
             // 子组件和插槽(子组件就是default插槽)
             let children: Array<any> | undefined;
@@ -123,12 +121,12 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
                 // TODO 设置插槽 待验证，需要使用 withCtx(slotProps=> [...VNode])
                 for (let name in runtimeBlock.slots) {
                     const slot = runtimeBlock.slots[name];
-                    slots[name] = () => slot.map((item, idx) => createChildVNode(item, context, this, idx));
+                    slots[name] = () => slot.map(item => createChildVNode(item, context, this));
                 }
             }
             if (runtimeBlock.items.length > 0) {
                 // 子组件
-                children = runtimeBlock.items.map((item, idx) => createChildVNode(item, context, this, idx));
+                children = runtimeBlock.items.map(item => createChildVNode(item, context, this));
             } else if (runtimeBlock.tpl.length > 0) {
                 // html模版
                 const staticHtml = renderTpl(runtimeBlock.tpl, this, runtimeBlock, context.toExtData());
@@ -152,7 +150,7 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
 /**
  * 基于 ComponentNode 创建 VNode
  */
-function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, instance: any, nodeIdx: number) {
+function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, instance: any) {
     // 静态 html 文本
     if (isStr(child)) {
         const staticHtml = renderTpl([child], instance, undefined, context.toExtData());
@@ -174,10 +172,10 @@ function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, inst
     // 处理 props 表达式(属性的绑定)
     const props = propsTransform(child.props, instance, runtimeBlock, context.toExtData());
     const allProps = {
-        key: child.id,
-        ref: child.ref,
         ...props,
         ...child.__bindListeners,
+        key: child.id,
+        ref: child.ref,
     };
     // 子组件和插槽(子组件就是default插槽)
     let children: Array<any> | undefined;
@@ -188,12 +186,12 @@ function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, inst
         // TODO 设置插槽 待验证，需要使用 withCtx(slotProps=> [...VNode])
         for (let name in childNode.slots) {
             const slot = childNode.slots[name];
-            slots[name] = () => slot.map((item, idx) => createChildVNode(item, context, instance, idx));
+            slots[name] = () => slot.map(item => createChildVNode(item, context, instance));
         }
     }
     if (childNode.items.length > 0) {
         // 子组件
-        children = childNode.items.map((item, idx) => createChildVNode(item, context, instance, idx));
+        children = childNode.items.map(item => createChildVNode(item, context, instance));
     } else if (childNode.tpl.length > 0) {
         // html模版
         const staticHtml = renderTpl(child.tpl, instance, runtimeBlock, context.toExtData());
