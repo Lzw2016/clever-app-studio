@@ -5,7 +5,8 @@
 [  ] 5.完成 Block vue 组件封装(wrap)
 [  ] 6.Block vue 组件需要支持内部动态更新(内部更新Block配置)
 [  ] 7.createStaticVNode 打包后不更新问题
-[  ] 8.
+[  ] 8.组件定义时提供类似 ext 的 defaults 属性
+[  ] 9.
 
 
 

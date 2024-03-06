@@ -84,10 +84,10 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
     const Component: any = type;
     return defineComponent({
         ...lifeCycles,
-        props: {
-            style: Object,
-            class: String,
-        },
+        // props: {
+        //     style: Object,
+        //     class: String,
+        // },
         setup(props, ctx) {
             // const instance = getCurrentInstance()!;
             // const exposed: Record<string, any> = {};
@@ -111,21 +111,29 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
         methods: methods,
         watch: watch,
         render(this: any) {
+            const newProps = propsTransform(props, this, this[innerName.runtimeBlock], context.toExtData());
+            const allProps = {
+                ...newProps,
+                ...this.$attrs,
+                ...this.$props,
+                ...runtimeBlock.__bindListeners,
+                key: id,
+                ref: ref,
+            };
             let children: any = undefined;
             if (items.length > 0) {
                 // 子组件
                 children = items.map((node, idx) => createChildVNode(node, context, this, idx));
             } else if (tpl.length > 0) {
                 // html模版
-                const staticHtml = renderTpl(tpl, this, runtimeBlock, context.toExtData());
-                children = [createStaticVNode(staticHtml, 0)];
+                allProps.innerHTML = renderTpl(tpl, this, runtimeBlock, context.toExtData());
+                return createVNode('div', allProps, null);
             }
             if (Component === Fragment) {
-                return createVNode(Fragment, null, children);
+                return createVNode(Fragment, allProps, children);
             }
-            const newProps = propsTransform(props, this, this[innerName.runtimeBlock], context.toExtData());
             return (
-                <Component {...newProps} {...this.$attrs} {...this.$props} {...runtimeBlock.__bindListeners} key={id} ref={ref}>
+                <Component {...allProps}>
                     {children}
                 </Component>
             );
