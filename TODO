@@ -4,7 +4,7 @@
 [OK] 4.Block 嵌套时内层 Block 如何使用外层 Block 的数据好函数
 [  ] 5.完成 Block vue 组件封装(wrap)
 [  ] 6.Block vue 组件需要支持内部动态更新(内部更新Block配置)
-[  ] 7.
+[  ] 7.createStaticVNode 打包后不更新问题
 [  ] 8.
 
 

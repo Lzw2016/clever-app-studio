@@ -138,7 +138,10 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
  */
 function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, instance: any, nodeIdx: number) {
     // 静态 html 文本
-    if (isStr(child)) return createStaticVNode(child, nodeIdx);
+    if (isStr(child)) {
+        const staticHtml = renderTpl([child], instance, undefined, context.toExtData());
+        return createStaticVNode(staticHtml, nodeIdx);
+    }
     // RuntimeBlock
     const currBlock = child as RuntimeBlock;
     if (currBlock.block) {

@@ -36,7 +36,7 @@ const block02 = defineDesignBlock({
                 onClick: "addCount",
             },
         },
-        "<div style='width:300px;border: 1px solid #ccc;'>测试: </div>",
+        "<div style='width:300px;border: 1px solid #ccc;'>测试: <%= count %></div>",
         {
             type: "div",
             props: {
@@ -57,6 +57,7 @@ const block02 = defineDesignBlock({
     methods: {
         addCount(this: ComponentInstance) {
             this.count++;
+            console.log("this", this);
         },
     },
 });

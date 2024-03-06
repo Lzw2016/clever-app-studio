@@ -386,7 +386,7 @@ function _deepExtractSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, al
 /**
  * 生成表达式函数或模版函数的参数
  */
-function getExpOrTplParam(instance: any, runtimeBlock: RuntimeBlock, extData?: object): any {
+function getExpOrTplParam(instance: any, runtimeBlock?: RuntimeBlock, extData?: object): any {
     const data: any = {
         $props: instance.$props,
         $attrs: instance.$attrs,
@@ -402,13 +402,13 @@ function getExpOrTplParam(instance: any, runtimeBlock: RuntimeBlock, extData?: o
         ...instance.$data,
     };
     // 计算数据
-    if (runtimeBlock.computed) {
+    if (runtimeBlock?.computed) {
         for (let name in runtimeBlock.computed) {
             data[name] = instance[name];
         }
     }
     // 自定义函数
-    if (runtimeBlock.methods) {
+    if (runtimeBlock?.methods) {
         for (let name in runtimeBlock.methods) {
             data[name] = instance[name];
         }
@@ -436,7 +436,7 @@ function propsTransform(props: DesignBlock["props"], instance: any, runtimeBlock
 /**
  * 渲染 tpl 模版，返回渲染后的字符串
  */
-function renderTpl(tpl: string[], instance: any, runtimeBlock: RuntimeBlock, extData?: object): string {
+function renderTpl(tpl: string[], instance: any, runtimeBlock?: RuntimeBlock, extData?: object): string {
     const data = getExpOrTplParam(instance, runtimeBlock, extData);
     return compileTpl(tpl, { cache: true }).bind(instance)(data);
 }
