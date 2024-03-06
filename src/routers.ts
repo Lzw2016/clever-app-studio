@@ -8,8 +8,8 @@ const staticRouters: RouteRecordRaw[] = [
         // component: () => import("@/layouts/Layouts01.vue"),
         children: [
             {
-                name: 'test',
-                path: '/test',
+                name: 'test1',
+                path: '/test1',
                 strict: true,
                 component: () => import("@/views/Page01.vue"),
             },
