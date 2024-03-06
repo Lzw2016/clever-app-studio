@@ -1,11 +1,12 @@
-import { ComponentPublicInstance, createStaticVNode, createVNode, defineComponent, Fragment } from "vue";
+import { ComponentPublicInstance, createVNode, defineComponent, Fragment } from "vue";
 import lodash from "lodash";
-import { hasValue, isArray, isStr } from "@/utils/Typeof";
+import { hasValue, isStr } from "@/utils/Typeof";
 import { AnyFunction, VueComponent } from "@/draggable/types/Base";
 import { DesignBlock } from "@/draggable/types/DesignBlock";
 import { ComponentManageModel } from "@/draggable/models/ComponentManageModel";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
 import { RuntimeBlock, RuntimeBlockNode, RuntimeComponentNode } from "@/draggable/types/RuntimeBlock";
+import { parseHTML } from "@/draggable/utils/HtmlTag";
 
 /** 组件管理器实例 */
 const componentManage = new ComponentManageModel();
@@ -85,10 +86,6 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
     const Component: any = type;
     return defineComponent({
         ...lifeCycles,
-        // props: {
-        //     style: Object,
-        //     class: String,
-        // },
         setup(props, ctx) {
             // const instance = getCurrentInstance()!;
             // const exposed: Record<string, any> = {};
@@ -150,7 +147,7 @@ function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, inst
     // 静态 html 文本
     if (isStr(child)) {
         const staticHtml = renderTpl([child], instance, undefined, context.toExtData());
-        return createStaticVNode(staticHtml, nodeIdx);
+        return createHtmlVNode(staticHtml);
     }
     // RuntimeBlock
     const currBlock = child as RuntimeBlock;
@@ -162,43 +159,58 @@ function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, inst
     }
     // RuntimeComponentNode
     const childNode = child as RuntimeComponentNode;
+    const Component: any = childNode.type;
     // 当前层级 Block 所对应的 RuntimeBlock 对象
     const runtimeBlock = instance[innerName.runtimeBlock];
-    // 插槽和子组件(default插槽其实就是子组件)
-    const children: Record<string, AnyFunction<any, Array<any>>> = {
+    // 处理 props 表达式(属性的绑定)
+    const props = propsTransform(child.props, instance, runtimeBlock, context.toExtData());
+    const allProps = {
+        key: child.id,
+        ref: child.ref,
+        ...props,
+        ...child.__bindListeners,
+    };
+    // 子组件和插槽(子组件就是default插槽)
+    let children: Array<any> | undefined;
+    const slots: Record<string, AnyFunction<any, Array<any>>> = {
         default: () => ([]),
     };
-    // TODO 设置插槽 待验证，需要使用 withCtx(slotProps=> [...VNode])
-    for (let name in childNode.slots) {
-        const slot = childNode.slots[name];
-        if (isArray(slot)) {
-            children[name] = () => slot.map((item, idx) => createChildVNode(item, context, instance, idx));
-        } else {
-            children[name] = () => [createChildVNode(slot, context, instance, 0)];
+    if (!childNode.__htmlTag && Component != Fragment) {
+        // TODO 设置插槽 待验证，需要使用 withCtx(slotProps=> [...VNode])
+        for (let name in childNode.slots) {
+            const slot = childNode.slots[name];
+            slots[name] = () => slot.map((item, idx) => createChildVNode(item, context, instance, idx));
         }
     }
-    // 设置子组件
     if (childNode.items.length > 0) {
         // 子组件
-        children.default = () => childNode.items.map((item, idx) => createChildVNode(item, context, instance, idx));
+        children = childNode.items.map((item, idx) => createChildVNode(item, context, instance, idx));
     } else if (childNode.tpl.length > 0) {
         // html模版
         const staticHtml = renderTpl(child.tpl, instance, runtimeBlock, context.toExtData());
-        children.default = () => ([createStaticVNode(staticHtml, 0)]);
+        children = [createHtmlVNode(staticHtml, allProps, Component)];
     }
-    // 处理 props 表达式(属性的绑定)
-    const props = propsTransform(child.props, instance, runtimeBlock, context.toExtData());
-    // 创建 VNode
-    return createVNode(
-        child.type, // TODO 需要考虑 type=Fragment 的情况
-        {
-            key: child.id,
-            ref: child.ref,
-            ...props,
-            ...child.__bindListeners,
-        },
-        children,
-    );
+    if (children) slots.default = () => children!;
+    /*
+     * 创建 VNode
+     * 1. Component === Fragment || childNode.__htmlTag
+     *      没有插槽
+     *      createVNode(Component, allProps, [children]);
+     * 2. childNode.items===null
+     *      没有 children
+     *      createVNode(Component, allProps, null);
+     * 3. 插槽 & children
+     *      createVNode(Component, allProps, {children});
+     */
+    if (Component === Fragment || childNode.__htmlTag) {
+        // 没有插槽
+        return createVNode(Component, allProps, children);
+    }
+    if (childNode.items.length <= 0) {
+        // 没有 children
+        return createVNode(Component, allProps, null);
+    }
+    return createVNode(Component, allProps, children);
     // TODO 应用指令
     // vnode = withDirectives(
     //     vnode,
@@ -213,6 +225,20 @@ function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, inst
     //     ],
     // )
     // return vnode;
+}
+
+function createHtmlVNode(staticHtml: string, allProps?: Record<string, any>, component?: any) {
+    if (!allProps) allProps = {};
+    if (component && lodash.trim(component).length > 0) {
+        allProps.innerHTML = staticHtml;
+        return createVNode(component, allProps, null);
+    }
+    const htmlInfo = parseHTML(staticHtml);
+    if (htmlInfo.onlyOne) {
+        return createVNode(htmlInfo.tagName, { ...allProps, ...htmlInfo.attrs, innerHTML: htmlInfo.innerHTML }, null);
+    }
+    allProps.innerHTML = staticHtml;
+    return createVNode('span', allProps, null);
 }
 
 /**

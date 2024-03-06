@@ -229,8 +229,8 @@ function blockDeepTransform(block: ComponentNode | DesignBlock, componentManage:
     // 读取组件类型
     if (type && lodash.trim(type).length > 0) {
         runtime.type = type.trim();
-        const htmlTag = isHtmlTag(runtime.type);
-        if (!htmlTag) runtime.type = componentManage.getComponent(runtime.type);
+        runtime.__htmlTag = isHtmlTag(runtime.type);
+        if (!runtime.__htmlTag) runtime.type = componentManage.getComponent(runtime.type);
     } else {
         runtime.type = Fragment;
     }
