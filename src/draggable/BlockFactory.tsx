@@ -235,6 +235,9 @@ function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, inst
     // return vnode;
 }
 
+/**
+ * 基于 HTML 创建 VNode
+ */
 function createHtmlVNode(staticHtml: string, allProps?: Record<string, any>, component?: any) {
     if (!allProps) allProps = {};
     if (component && lodash.trim(component).length > 0) {
