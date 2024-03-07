@@ -15,7 +15,7 @@ const block02 = defineDesignBlock({
     },
     items: [
         {
-            type: "div",
+            // type: "div",
             tpl: 'count = <%= count %>',
         },
         {

@@ -100,49 +100,7 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
         methods: methods,
         watch: watch,
         render(this: any) {
-            // 当前组件类型
-            const Component: any = runtimeBlock.type;
-            // 处理 props 表达式(属性的绑定)
-            const props = propsTransform(runtimeBlock.props, this, runtimeBlock, context.toExtData());
-            const allProps = {
-                ...props,
-                ...this.$attrs,
-                ...this.$props,
-                ...runtimeBlock.__bindListeners,
-                key: runtimeBlock.id,
-                ref: runtimeBlock.ref,
-            };
-            // 子组件和插槽(子组件就是default插槽)
-            let children: Array<any> | undefined;
-            const slots: Record<string, AnyFunction<any, Array<any>>> = {
-                default: () => ([]),
-            };
-            if (!runtimeBlock.__htmlTag && Component != Fragment) {
-                // TODO 设置插槽 待验证，需要使用 withCtx(slotProps=> [...VNode])
-                for (let name in runtimeBlock.slots) {
-                    const slot = runtimeBlock.slots[name];
-                    slots[name] = () => slot.map(item => createChildVNode(item, context, this));
-                }
-            }
-            if (runtimeBlock.items.length > 0) {
-                // 子组件
-                children = runtimeBlock.items.map(item => createChildVNode(item, context, this));
-            } else if (runtimeBlock.tpl.length > 0) {
-                // html模版
-                const staticHtml = renderTpl(runtimeBlock.tpl, this, runtimeBlock, context.toExtData());
-                children = [createHtmlVNode(staticHtml, allProps, Component)];
-            }
-            if (children) slots.default = () => children!;
-            // 创建 VNode // TODO 应用指令
-            if (Component === Fragment || runtimeBlock.__htmlTag) {
-                // 没有插槽
-                return createVNode(Component, allProps, children);
-            }
-            if (runtimeBlock.items.length <= 0) {
-                // 没有 children
-                return createVNode(Component, allProps, null);
-            }
-            return createVNode(Component, allProps, children);
+            return createRuntimeComponentNode(runtimeBlock, context, this, true);
         },
     });
 }
@@ -165,59 +123,69 @@ function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, inst
         return createVNode(currBlock.__blockComponent);
     }
     // RuntimeComponentNode
-    const childNode = child as RuntimeComponentNode;
-    const Component: any = childNode.type;
+    const runtimeNode = child as RuntimeComponentNode;
+    return createRuntimeComponentNode(runtimeNode, context, instance);
+}
+
+/**
+ * 基于 RuntimeComponentNode 创建 VNode
+ */
+function createRuntimeComponentNode(runtimeNode: RuntimeComponentNode, context: FactoryContext, instance: any, isBlock: boolean = false) {
     // 当前层级 Block 所对应的 RuntimeBlock 对象
     const runtimeBlock = instance[innerName.runtimeBlock];
+    // 组件类型
+    const component: any = runtimeNode.type;
     // 处理 props 表达式(属性的绑定)
-    const props = propsTransform(child.props, instance, runtimeBlock, context.toExtData());
+    const props = propsTransform(runtimeNode.props, instance, runtimeBlock, context.toExtData());
     const allProps = {
         ...props,
-        ...child.__bindListeners,
-        key: child.id,
-        ref: child.ref,
+        ...(isBlock ? { ...instance.$attrs, ...instance.$props } : {}),
+        ...runtimeNode.__bindListeners,
+        key: runtimeNode.id,
+        ref: runtimeNode.ref,
     };
     // 子组件和插槽(子组件就是default插槽)
     let children: Array<any> | undefined;
     const slots: Record<string, AnyFunction<any, Array<any>>> = {
         default: () => ([]),
     };
-    if (!childNode.__htmlTag && Component != Fragment) {
+    if (!runtimeNode.__htmlTag && component != Fragment) {
         // TODO 设置插槽 待验证，需要使用 withCtx(slotProps=> [...VNode])
-        for (let name in childNode.slots) {
-            const slot = childNode.slots[name];
+        for (let name in runtimeNode.slots) {
+            const slot = runtimeNode.slots[name];
             slots[name] = () => slot.map(item => createChildVNode(item, context, instance));
         }
     }
-    if (childNode.items.length > 0) {
+    if (runtimeNode.items.length > 0) {
         // 子组件
-        children = childNode.items.map(item => createChildVNode(item, context, instance));
-    } else if (childNode.tpl.length > 0) {
+        children = runtimeNode.items.map(item => createChildVNode(item, context, instance));
+    } else if (runtimeNode.tpl.length > 0) {
         // html模版
-        const staticHtml = renderTpl(child.tpl, instance, runtimeBlock, context.toExtData());
-        children = [createHtmlVNode(staticHtml, allProps, Component)];
+        const staticHtml = renderTpl(runtimeNode.tpl, instance, runtimeBlock, context.toExtData());
+        children = [createHtmlVNode(staticHtml, allProps, component)];
     }
     if (children) slots.default = () => children!;
     /*
      * 创建 VNode  // TODO 应用指令
-     * 1. Component === Fragment || childNode.__htmlTag
+     * 1. component === Fragment || runtimeNode.__htmlTag
      *      没有插槽
-     *      createVNode(Component, allProps, [children]);
-     * 2. childNode.items===null
+     *      createVNode(component, allProps, [children]);
+     * 2. runtimeNode.items===null
      *      没有 children
-     *      createVNode(Component, allProps, null);
+     *      createVNode(component, allProps, null);
      * 3. 插槽 & children
-     *      createVNode(Component, allProps, {children});
+     *      createVNode(component, allProps, {children});
      */
-    if (Component === Fragment || childNode.__htmlTag) {
-        // 没有插槽
-        return createVNode(Component, allProps, children);
+    if (component === Fragment || runtimeNode.__htmlTag) {
+        // 1.没有插槽
+        return createVNode(component, allProps, children);
     }
-    if (childNode.items.length <= 0) {
-        // 没有 children
-        return createVNode(Component, allProps, null);
+    if (runtimeNode.items.length <= 0) {
+        // 2.没有 children
+        return createVNode(component, allProps, null);
     }
-    return createVNode(Component, allProps, children);
+    // 3.插槽 & children
+    return createVNode(component, allProps, children);
     // vnode = withDirectives(
     //     vnode,
     //     [
@@ -237,8 +205,14 @@ function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, inst
  * 基于 HTML 创建 VNode
  */
 function createHtmlVNode(staticHtml: string, allProps?: Record<string, any>, component?: any) {
+    const defComponent = 'span';
     if (!allProps) allProps = {};
-    if (component && lodash.trim(component).length > 0) {
+    if (isStr(component)) {
+        component = lodash.trim(component);
+        if (component.length <= 0) component = undefined;
+    }
+    if (component) {
+        if (component === Fragment) component = defComponent;
         allProps.innerHTML = staticHtml;
         return createVNode(component, allProps, null);
     }
@@ -247,7 +221,7 @@ function createHtmlVNode(staticHtml: string, allProps?: Record<string, any>, com
         return createVNode(htmlInfo.tagName, { ...allProps, ...htmlInfo.attrs, innerHTML: htmlInfo.innerHTML }, null);
     }
     allProps.innerHTML = staticHtml;
-    return createVNode('span', allProps, null);
+    return createVNode(defComponent, allProps, null);
 }
 
 /**
