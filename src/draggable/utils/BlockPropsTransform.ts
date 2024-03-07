@@ -384,13 +384,25 @@ function _deepExtractSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, al
 }
 
 /**
- * 生成表达式函数的上下文数据
+ * 生成表达式函数的上下文数据。
+ * props表达式的数据范围(优先级由上到下)
+ *     1.this指向当前tpl所属block对应的vue组件实例
+ *     2.lodash 对象 _ 属性
+ *     3.当前node所属block对应的vue实例 $block 属性
+ *     4.自定义扩展属性 $allBlock
+ *     5.for指令中的数据，通过 index、item 配置的属性名
+ *     6.当前node所属block对应的vue实例平铺的 methods 函数
+ *     7.当前node所属block对应的vue实例平铺的 computed 数据
+ *     8.当前node所属block对应的vue实例的 $props、$attrs、$data、$root、$parent、$slots、$refs、$el、$emit、$forceUpdate 属性
+ *     9.当前node所属block对应的vue实例平铺的 $props 和 $data 数据
  * @param instance      当前 vue 组件实例
  * @param runtimeBlock  当前节点所属的Block
  * @param extData       扩展数据
  */
 function getExpData(instance: any, runtimeBlock?: RuntimeBlock, extData?: object): any {
     const data: any = {
+        ...instance.$props,
+        ...instance.$data,
         $props: instance.$props,
         $attrs: instance.$attrs,
         $data: instance.$data,
@@ -401,8 +413,6 @@ function getExpData(instance: any, runtimeBlock?: RuntimeBlock, extData?: object
         $el: instance.$el,
         $emit: instance.$emit,
         $forceUpdate: instance.$forceUpdate,
-        ...instance.$props,
-        ...instance.$data,
     };
     // 计算数据
     if (runtimeBlock?.computed) {
@@ -429,7 +439,18 @@ function getExpData(instance: any, runtimeBlock?: RuntimeBlock, extData?: object
 }
 
 /**
- * 生成模版函数的上下文数据
+ * 生成模版函数的上下文数据。
+ * tpl数据范围(优先级由上到下)
+ *      1.this指向当前tpl所属block对应的vue组件实例
+ *      2.包含当前tpl的node的props(计算后的props)
+ *      3.lodash 对象 _ 属性
+ *      4.当前node所属block对应的vue实例 $block 属性
+ *      5.自定义扩展属性 $allBlock
+ *      6.for指令中的数据，通过 index、item 配置的属性名
+ *      7.当前node所属block对应的vue实例平铺的 methods 函数
+ *      8.当前node所属block对应的vue实例平铺的 computed 数据
+ *      9.当前node所属block对应的vue实例的 $props、$attrs、$data、$root、$parent、$slots、$refs、$el、$emit、$forceUpdate 属性
+ *     10.当前node所属block对应的vue实例平铺的 $props 和 $data 数据
  * @param props         当前渲染节点的 props(RuntimeComponentNode.props)
  * @param instance      当前 vue 组件实例
  * @param runtimeBlock  当前节点所属的Block
@@ -467,7 +488,6 @@ function expTransform(exp: string, instance: any, runtimeBlock: RuntimeBlock, ex
 }
 
 /**
- * TODO 需要规范 tpl 的数据范围
  * 渲染 tpl 模版，返回渲染后的字符串
  * @param tpl           字符串模版
  * @param props         当前渲染节点的 props(RuntimeComponentNode.props)
