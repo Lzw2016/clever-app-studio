@@ -62,9 +62,7 @@ const block03 = defineDesignBlock({
             directives: {
                 if: "{{ count%2 === 0 }}",
             },
-            items: [
-                "条件渲染",
-            ],
+            items: "条件渲染",
         },
         {
             type: "div",

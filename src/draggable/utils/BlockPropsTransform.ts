@@ -467,6 +467,7 @@ function expTransform(exp: string, instance: any, runtimeBlock: RuntimeBlock, ex
 }
 
 /**
+ * TODO 需要规范 tpl 的数据范围
  * 渲染 tpl 模版，返回渲染后的字符串
  * @param tpl           字符串模版
  * @param props         当前渲染节点的 props(RuntimeComponentNode.props)

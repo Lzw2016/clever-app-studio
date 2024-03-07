@@ -12,3 +12,30 @@
 [  ] 12.
 [  ] 13.
 
+
+
+
+
+node
+    页面渲染的最小单元，称为“渲染节点”，一个渲染节点在vue中对应一个vnode
+
+block
+    包含若干个 node，称为“渲染块”，一个渲染块在vue中对应一个vue组件定义，运行时对应一个vue组件实例
+
+node 与 block
+    node不能不能单独存在，必须定义在block中。node和block都支持嵌套，并且支持相互混合嵌套。
+    node和block都可以定义ref属性，在运行时通过ref属性名能获取到他们的实例。
+    block可以通过$refs访问所有子node和block实例
+
+所有函数的this
+    指向当前当前所属block对应的vue组件实例
+
+tpl数据范围
+    1.包含当前tpl的node的props(计算后的props)
+    2.当前tpl所属block对应的vue实例的 $props、$attrs、$data、$root、$parent、$slots、$refs、$el、$emit、$forceUpdate 以及平铺的 $props 和 $data
+    3.this指向当前tpl所属block对应的vue组件实例
+
+props表达式的数据范围
+    1.当前node所属block对应的vue实例的 $props、$attrs、$data、$root、$parent、$slots、$refs、$el、$emit、$forceUpdate 以及平铺的 $props 和 $data
+    2.this指向当前tpl所属block对应的vue组件实例
+
