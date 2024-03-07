@@ -1,8 +1,8 @@
-import { ComponentPublicInstance, createVNode, defineComponent, Fragment, resolveDirective, withDirectives } from "vue";
+import { ComponentPublicInstance, createVNode, defineComponent, Fragment, renderList, resolveDirective, withDirectives } from "vue";
 import lodash from "lodash";
 import { hasValue, isArray, isObj, isStr } from "@/utils/Typeof";
 import { AnyFunction, VueComponent } from "@/draggable/types/Base";
-import { DesignBlock } from "@/draggable/types/DesignBlock";
+import { BaseDirectives, DesignBlock } from "@/draggable/types/DesignBlock";
 import { ComponentManageModel } from "@/draggable/models/ComponentManageModel";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
 import { RuntimeBlock, RuntimeBlockNode, RuntimeComponentNode } from "@/draggable/types/RuntimeBlock";
@@ -159,10 +159,6 @@ function createRuntimeComponentNode(runtimeNode: RuntimeComponentNode, context: 
         const show = expTransform(runtimeNode.directives.show, instance, runtimeBlock, context.toExtData());
         _setShowStyle(allProps, show);
     }
-    // 应用指令 - for
-    if (runtimeNode.directives.for) {
-
-    }
     /*
      * 创建 VNode
      * 1. component === Fragment || runtimeNode.__htmlTag
@@ -175,6 +171,15 @@ function createRuntimeComponentNode(runtimeNode: RuntimeComponentNode, context: 
      *      createVNode(component, allProps, {children});
      */
     let vnode: any;
+    if (runtimeNode.directives.for) {
+        vnode = createVNode(
+            Fragment,
+            undefined,
+            renderList(component, (item, index) => {
+
+            })
+        );
+    }
     if (component === Fragment || runtimeNode.__htmlTag) {
         // 1.没有插槽
         vnode = createVNode(component, allProps, children);
@@ -186,35 +191,53 @@ function createRuntimeComponentNode(runtimeNode: RuntimeComponentNode, context: 
         vnode = createVNode(component, allProps, children);
     }
     // 应用其他用户自定义指令
-    const innerDirectives = ['show', 'if', 'for'];
-    const useDirectives: Array<any> = [];
-    for (let name in runtimeNode.directives) {
-        if (innerDirectives.includes(name)) {
-            continue;
-        }
-        const param = runtimeNode.directives[name];
-        const directive = resolveDirective(name);
-        if (directive) {
-            // [directive: Directive, value:any, argument:string, modifiers: Record<string, boolean>]
-            let value: any;
-            let argument: string | undefined;
-            let modifiers: Record<string, boolean> | undefined;
-            if (isArray(param)) {
-                value = param[0];
-                argument = param[1];
-                modifiers = param[3];
-            } else if (isObj(param)) {
-                value = param.value;
-                argument = param.argument;
-                modifiers = param.modifiers;
-            }
-            useDirectives.push([directive, value, argument, modifiers]);
-        }
-    }
-    if (useDirectives.length > 0) {
-        vnode = withDirectives(vnode, useDirectives)
-    }
+    vnode = _applyDirectives(vnode, runtimeNode.directives);
     return vnode;
+    // // 应用指令 - for
+    // if (runtimeNode.directives.for) {
+    //     let {
+    //         data,
+    //         item,
+    //         key,
+    //         index,
+    //     } = runtimeNode.directives.for;
+    //     data = lodash.trim(data);
+    //     item = lodash.trim(item);
+    //     key = lodash.trim(key);
+    //     index = lodash.trim(index);
+    //     if (data.length > 0 && item.length > 0) {
+    //         let forData = expTransform(data, instance, runtimeBlock, context.toExtData());
+    //         if (!isObj(forData)) forData = [];
+    //         const forChildren: Array<any> = [];
+    //         const createChildren = function (itemValue: any, keyOrIdx: string | number) {
+    //             // 计算 vnode key
+    //             let keyValue = `_for_${keyOrIdx}`;
+    //             if (key) keyValue = calcExpression(key, itemValue, { thisArg: itemValue, cache: false });
+    //             // 设置 vnode props
+    //             const innerProps = { ...allProps, key: keyValue };
+    //             if (item) innerProps[item] = itemValue;
+    //             if (key) innerProps[key] = keyOrIdx;
+    //             if (index) innerProps[index] = keyOrIdx;
+    //             let vnodeInner = innerCreateVNode(innerProps);
+    //             vnodeInner = _applyDirectives(vnodeInner, runtimeNode.directives);
+    //             return vnodeInner;
+    //         };
+    //         if (isArray(forData)) {
+    //             for (let idx = 0; idx < forData.length; idx++) {
+    //                 const itemData = forData[idx];
+    //                 forChildren.push(createChildren(itemData, idx));
+    //             }
+    //         } else if (isObj(forData)) {
+    //             for (let itemKey in forData) {
+    //                 const itemData = forData[itemKey];
+    //                 forChildren.push(createChildren(itemData, itemKey));
+    //             }
+    //         }
+    //         if (forChildren.length > 0) {
+    //             vnode = createVNode(Fragment, undefined, forChildren);
+    //         }
+    //     }
+    // }
 }
 
 /**
@@ -273,6 +296,41 @@ function _setShowStyle(props: any, show: boolean) {
     } else if (isStr(props.style)) {
         props.style = `${props.style};visibility: ${cssShow};`
     }
+}
+
+/**
+ *  应用其他用户自定义指令
+ */
+function _applyDirectives<Directives extends BaseDirectives = BaseDirectives>(vnode: any, directives: Directives) {
+    const innerDirectives = ['show', 'if', 'for'];
+    const useDirectives: Array<any> = [];
+    for (let name in directives) {
+        if (innerDirectives.includes(name)) {
+            continue;
+        }
+        const param = directives[name];
+        const directive = resolveDirective(name);
+        if (directive) {
+            // [directive: Directive, value:any, argument:string, modifiers: Record<string, boolean>]
+            let value: any;
+            let argument: string | undefined;
+            let modifiers: Record<string, boolean> | undefined;
+            if (isArray(param)) {
+                value = param[0];
+                argument = param[1];
+                modifiers = param[3];
+            } else if (isObj(param)) {
+                value = param.value;
+                argument = param.argument;
+                modifiers = param.modifiers;
+            }
+            useDirectives.push([directive, value, argument, modifiers]);
+        }
+    }
+    if (useDirectives.length > 0) {
+        vnode = withDirectives(vnode, useDirectives)
+    }
+    return vnode;
 }
 
 /**

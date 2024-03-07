@@ -30,7 +30,7 @@ interface BaseDirectives {
     for?: {
         /** 原始数据表达式 */
         data: string;
-        /** 子节点的key取值(item对象的属性名) */
+        /** 子节点的key取值表达式(item对象的属性名) */
         key?: string,
         /**
          * index 变量名

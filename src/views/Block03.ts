@@ -33,47 +33,56 @@ const block03 = defineDesignBlock({
     //     "DDD: <%= count %>",
     // ],
     items: [
-        "<div style='color: #409eff;'>AAA: <%= count %></div>",
-        "<div style='color: bisque;'>BBB: <%= count %></div>",
-        "<div style='color: brown;'>CCC: <%= count %></div>",
-        "DDD: <%= count %>",
-        {
-            type: "div",
-            directives: {
-                show: "{{ count%2 === 0 }}",
-            },
-            items: ["条件显示"],
-        },
-        {
-            type: "div",
-            directives: {
-                if: "{{ count%2 === 0 }}",
-            },
-            items: [
-                "条件渲染",
-            ],
-        },
+        // "<div style='color: #409eff;'>AAA: <%= count %></div>",
+        // "<div style='color: bisque;'>BBB: <%= count %></div>",
+        // "<div style='color: brown;'>CCC: <%= count %></div>",
+        // "DDD: <%= count %>",
+        // {
+        //     type: "div",
+        //     directives: {
+        //         show: "{{ count%2 === 0 }}",
+        //     },
+        //     items: ["条件显示"],
+        // },
+        // {
+        //     type: "div",
+        //     directives: {
+        //         if: "{{ count%2 === 0 }}",
+        //     },
+        //     items: [
+        //         "条件渲染",
+        //     ],
+        // },
         {
             type: "div",
             directives: {
                 for: {
                     data: "{{ rows }}",
                     item: "item",
-                    key: "key",
-                    index: "index",
+                    // key: "key",
+                    // index: "index",
                 },
             },
             items: [
-                "循环渲染",
-                // "<div>k= <%= item.k %> | v= <%= item.v %></div>",
+                "<div>循环渲染 k= <%= item.k %> | v= <%= item.v %></div>",
             ],
         },
-        {
-            type: "input",
-            directives: {
-                focus: {},
-            },
-        },
+        // {
+        //     type: "input",
+        //     directives: {
+        //         focus: true,
+        //     },
+        // },
+        // {
+        //     type: "input",
+        //     directives: {
+        //         if: "{{ count%2 === 0 }}",
+        //         focus: true,
+        //     },
+        //     props: {
+        //         value: "{{ '多个指令组合使用' + count }}",
+        //     },
+        // },
     ],
     listeners: {
         onClick: "addCount",
