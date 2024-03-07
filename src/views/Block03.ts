@@ -20,6 +20,11 @@ const block03 = defineDesignBlock({
             { k: "002", v: "bbb" },
             { k: "003", v: "ccc" },
         ],
+        map: {
+            "ccc": { v: "003" },
+            "bbb": { v: "002" },
+            "aaa": { v: "001" },
+        },
     },
     computed: {
         count2: function (this: ComponentInstance, oldValue, block) {
@@ -66,16 +71,33 @@ const block03 = defineDesignBlock({
         },
         {
             type: "div",
+            props: {
+                style: {
+                    color: "blue",
+                },
+            },
             directives: {
                 for: {
                     data: "{{ rows }}",
                     item: "item",
-                    // key: "key",
-                    // index: "index",
+                    index: "index",
                 },
             },
             tpl: [
-                "<div>循环渲染 k= <%= item.k %> | v= <%= item.v %></div>",
+                "<div><%= index+1 %>循环渲染 k= <%= item.k %> | v= <%= item.v %></div>",
+            ],
+        },
+        {
+            type: "div",
+            directives: {
+                for: {
+                    data: "{{ map }}",
+                    item: "item",
+                    index: "index",
+                },
+            },
+            items: [
+                "<div>循环渲染 k= <%= index %> | v= <%= item.v %></div>",
             ],
         },
         {

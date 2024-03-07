@@ -183,18 +183,19 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
             return createVNode(
                 Fragment,
                 undefined,
-                renderList(renderListData, (itemData, idx: number) => {
+                renderList(renderListData, (itemData, keyOrIdx: number) => {
                     // 计算 vnode key
-                    let keyOrIdx = `_for_${idx}`;
-                    if (key) keyOrIdx = calcExpression(key, itemData, { thisArg: itemData, cache: false });
-                    // 设置 vnode props
-                    const innerProps = { ...allProps, key: keyOrIdx };
+                    let vnodeKey = `_for_${keyOrIdx}`;
+                    if (key) vnodeKey = calcExpression(key, itemData, { thisArg: itemData, cache: false });
+                    // 设置 vnode key
+                    allProps.key = vnodeKey;
+                    allProps.ref = `${allProps.ref}_${keyOrIdx}`;
+                    // 设置指令变量
                     const vForData = {};
-                    if (item) vForData[item] = itemData;
-                    if (key) vForData[key] = keyOrIdx;
                     if (index) vForData[index] = keyOrIdx;
-                    context.vForData = vForData;
-                    return doCreateChildVNode(runtimeNode, context, global, component, innerProps);
+                    if (item) vForData[item] = itemData;
+                    // context.vForData = vForData;
+                    return doCreateChildVNode(runtimeNode, { ...context, vForData }, global, component, allProps);
                 })
             );
         }
@@ -207,13 +208,13 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
  * @param context       当前调用的上下文
  * @param global        全局的 global 对象
  * @param component     当前 runtimeNode 应该使用的 vue 组件
- * @param props         已经合并了的 props
+ * @param props         已经计算合并了的 props
  */
 function doCreateChildVNode(runtimeNode: RuntimeComponentNode, context: Context, global: Global, component: any, props: Record<string, any>) {
     const fromInstance = context.instance;
     const fromBlock = context.block;
     const fromNode = context.node;
-    const newContext: Context = { instance: fromInstance, block: fromBlock, node: runtimeNode };
+    const newContext: Context = { ...context, node: runtimeNode };
     // 子组件和插槽(子组件就是default插槽)
     let children: Array<any> | undefined;
     const slots: Record<string, AnyFunction<any, Array<any>>> = {
@@ -231,7 +232,6 @@ function doCreateChildVNode(runtimeNode: RuntimeComponentNode, context: Context,
         children = runtimeNode.items.map(item => createChildVNode(item, newContext, global));
     } else if (runtimeNode.tpl.length > 0) {
         // html模版
-        const props = propsTransform(fromNode.props, fromInstance, fromBlock, _toExtData(global, context));
         const staticHtml = renderTpl(runtimeNode.tpl, props, fromInstance, fromBlock, _toExtData(global, context));
         children = [createHtmlVNode(staticHtml, props, component)];
     }
@@ -278,15 +278,13 @@ function createHtmlVNode(staticHtml: string, allProps?: Record<string, any>, com
     }
     if (component) {
         if (component === Fragment) component = defComponent;
-        allProps.innerHTML = staticHtml;
-        return createVNode(component, allProps, null);
+        return createVNode(component, { ...allProps, innerHTML: staticHtml }, null);
     }
     const htmlInfo = parseHTML(staticHtml);
     if (htmlInfo.onlyOne) {
         return createVNode(htmlInfo.tagName, { ...allProps, ...htmlInfo.attrs, innerHTML: htmlInfo.innerHTML }, null);
     }
-    allProps.innerHTML = staticHtml;
-    return createVNode(defComponent, allProps, null);
+    return createVNode(defComponent, { ...allProps, innerHTML: staticHtml }, null);
 }
 
 /**
