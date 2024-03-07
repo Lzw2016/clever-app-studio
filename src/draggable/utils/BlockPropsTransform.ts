@@ -469,7 +469,7 @@ function expTransform(exp: string, instance: any, runtimeBlock: RuntimeBlock, ex
 /**
  * 渲染 tpl 模版，返回渲染后的字符串
  * @param tpl           字符串模版
- * @param props         当前渲染节点的 props
+ * @param props         当前渲染节点的 props(RuntimeComponentNode.props)
  * @param instance      当前 vue 组件实例
  * @param runtimeBlock  当前节点所属的Block
  * @param extData       扩展数据

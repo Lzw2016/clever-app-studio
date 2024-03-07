@@ -47,11 +47,6 @@ interface Context {
     readonly block: RuntimeBlock;
     /** 当前渲染节点所属的 RuntimeComponentNode 对象 */
     readonly node: RuntimeComponentNode;
-
-    // /** 父级 vue 组件的 props */
-    // readonly pInstanceProps: Record<string, any>;
-    // /** 父级 vue 组件的 data */
-    // readonly pInstanceData: Record<string, any>;
 }
 
 /**
@@ -129,7 +124,7 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, global: Global,
                     block: runtimeBlock,
                     node: runtimeBlock,
                 };
-                return createChildVNode(runtimeBlock, context, global);
+                return createChildVNode(runtimeBlock, context, global, true);
             } catch (e) {
                 console.warn("组件渲染失败", runtimeBlock, e);
                 // TODO 优化错误渲染组件(使用对话框查看错误详情)
@@ -141,17 +136,17 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, global: Global,
 
 /**
  * 基于 RuntimeBlockNode 创建 VNode
- * @param child         当前节点信息
- * @param context        上层函数数据
- * @param global        全局的 global 对象
+ * @param child             当前节点信息
+ * @param context           上层函数数据
+ * @param global            全局的 global 对象
+ * @param startRenderBlock  当前是否是开始渲染 RuntimeBlock
  */
-function createChildVNode(child: RuntimeBlockNode, context: Context, global: Global) {
+function createChildVNode(child: RuntimeBlockNode, context: Context, global: Global, startRenderBlock: boolean = false) {
     const {
         instance,
         block,
         node,
     } = context;
-    const isRenderBlock = block === node;
     // 静态 html 文本
     if (isStr(child)) {
         const tpl = [child];
@@ -161,7 +156,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
     }
     // RuntimeBlock
     const childBlock = child as RuntimeBlock;
-    if (!isRenderBlock && childBlock.block) {
+    if (!startRenderBlock && childBlock.block) {
         if (!childBlock.__blockComponent) {
             childBlock.__blockComponent = createRuntimeBlockComponent(childBlock, global);
         }
@@ -175,7 +170,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
     const props = propsTransform(runtimeNode.props, instance, block, global.toExtData());
     const allProps = {
         ...props,
-        ...(isRenderBlock ? { ...instance.$attrs, ...instance.$props } : {}),
+        ...(startRenderBlock ? { ...instance.$attrs, ...instance.$props } : {}),
         ...runtimeNode.__bindListeners,
         key: runtimeNode.id,
         ref: runtimeNode.ref,
@@ -226,11 +221,10 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
 }
 
 /**
- *
  * @param runtimeNode   runtimeNode 运行时的渲染节点对象
  * @param component     当前 runtimeNode 应该使用的 vue 组件
  * @param allProps      已经合并了的 props
- * @param global       全局的 global 对象
+ * @param global        全局的 global 对象
  * @param instance      当前 runtimeNode 所属的 vue 组件实例
  * @param runtimeBlock  当前层级 Block 所对应的 RuntimeBlock 对象
  */

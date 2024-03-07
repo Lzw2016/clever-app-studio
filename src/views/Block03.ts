@@ -34,73 +34,68 @@ const block03 = defineDesignBlock({
     // ],
     items: [
         "<div style='color: #409eff;'>AAA: <%= count %></div>",
-        // "<div style='color: bisque;'>BBB: <%= count %></div>",
-        // "<div style='color: brown;'>CCC: <%= count %></div>",
-        // "DDD: <%= count %>",
-        // {
-        //     type: "div",
-        //     directives: {
-        //         show: "{{ count%2 === 0 }}",
-        //     },
-        //     items: ["条件显示"],
-        // },
-        // {
-        //     type: "div",
-        //     directives: {
-        //         if: "{{ count%2 === 0 }}",
-        //     },
-        //     items: [
-        //         "条件渲染",
-        //     ],
-        // },
+        "<div style='color: bisque;'>BBB: <%= count %></div>",
+        "<div style='color: brown;'>CCC: <%= count %></div>",
+        "DDD: <%= count %>",
         {
             type: "div",
-            directives: {
-                // for: {
-                //     data: "{{ rows }}",
-                //     item: "item",
-                //     // key: "key",
-                //     // index: "index",
-                // },
-            },
             props: {
                 // item: { k: "111", v: "aaa" },
                 item: "{{ rows[0] }}",
             },
             items: [
+                "<div>读取当前的Props  k= <%= item.k %> | v= <%= item.v %></div>",
+            ],
+            // tpl: [
+            //     "<div>读取当前的Props  k= <%= item.k %> | v= <%= item.v %></div>",
+            // ],
+        },
+        {
+            type: "div",
+            directives: {
+                show: "{{ count%2 === 0 }}",
+            },
+            items: ["条件显示"],
+        },
+        {
+            type: "div",
+            directives: {
+                if: "{{ count%2 === 0 }}",
+            },
+            items: [
+                "条件渲染",
+            ],
+        },
+        {
+            type: "div",
+            directives: {
+                for: {
+                    data: "{{ rows }}",
+                    item: "item",
+                    // key: "key",
+                    // index: "index",
+                },
+            },
+            tpl: [
                 "<div>循环渲染 k= <%= item.k %> | v= <%= item.v %></div>",
             ],
         },
-        // {
-        //     type: "div",
-        //     directives: {
-        //         for: {
-        //             data: "{{ rows }}",
-        //             item: "item",
-        //             // key: "key",
-        //             // index: "index",
-        //         },
-        //     },
-        //     items: [
-        //         "<div>循环渲染 k= <%= item.k %> | v= <%= item.v %></div>",
-        //     ],
-        // },
-        // {
-        //     type: "input",
-        //     directives: {
-        //         focus: true,
-        //     },
-        // },
-        // {
-        //     type: "input",
-        //     directives: {
-        //         if: "{{ count%2 === 0 }}",
-        //         focus: true,
-        //     },
-        //     props: {
-        //         value: "{{ '多个指令组合使用' + count }}",
-        //     },
-        // },
+        {
+            type: "input",
+            directives: {
+                focus: true,
+            },
+        },
+        {
+            type: "input",
+            directives: {
+                if: "{{ count%2 === 0 }}",
+                focus: true,
+            },
+            props: {
+                value: "{{ '多个指令组合使用' + count }}",
+            },
+        },
     ],
     listeners: {
         onClick: "addCount",
@@ -108,6 +103,7 @@ const block03 = defineDesignBlock({
     methods: {
         addCount(this: ComponentInstance) {
             this.count++;
+            this.rows.push({ k: `0_${this.count}`, v: `a_${this.count}` });
             console.log("this", this);
         },
     },
