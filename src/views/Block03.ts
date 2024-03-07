@@ -33,7 +33,7 @@ const block03 = defineDesignBlock({
     //     "DDD: <%= count %>",
     // ],
     items: [
-        // "<div style='color: #409eff;'>AAA: <%= count %></div>",
+        "<div style='color: #409eff;'>AAA: <%= count %></div>",
         // "<div style='color: bisque;'>BBB: <%= count %></div>",
         // "<div style='color: brown;'>CCC: <%= count %></div>",
         // "DDD: <%= count %>",
@@ -56,17 +56,35 @@ const block03 = defineDesignBlock({
         {
             type: "div",
             directives: {
-                for: {
-                    data: "{{ rows }}",
-                    item: "item",
-                    // key: "key",
-                    // index: "index",
-                },
+                // for: {
+                //     data: "{{ rows }}",
+                //     item: "item",
+                //     // key: "key",
+                //     // index: "index",
+                // },
+            },
+            props: {
+                // item: { k: "111", v: "aaa" },
+                item: "{{ rows[0] }}",
             },
             items: [
                 "<div>循环渲染 k= <%= item.k %> | v= <%= item.v %></div>",
             ],
         },
+        // {
+        //     type: "div",
+        //     directives: {
+        //         for: {
+        //             data: "{{ rows }}",
+        //             item: "item",
+        //             // key: "key",
+        //             // index: "index",
+        //         },
+        //     },
+        //     items: [
+        //         "<div>循环渲染 k= <%= item.k %> | v= <%= item.v %></div>",
+        //     ],
+        // },
         // {
         //     type: "input",
         //     directives: {

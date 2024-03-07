@@ -384,9 +384,12 @@ function _deepExtractSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, al
 }
 
 /**
- * 生成表达式函数或模版函数的参数
+ * 生成表达式函数的上下文数据
+ * @param instance      当前 vue 组件实例
+ * @param runtimeBlock  当前节点所属的Block
+ * @param extData       扩展数据
  */
-function getExpOrTplParam(instance: any, runtimeBlock?: RuntimeBlock, extData?: object): any {
+function getExpData(instance: any, runtimeBlock?: RuntimeBlock, extData?: object): any {
     const data: any = {
         $props: instance.$props,
         $attrs: instance.$attrs,
@@ -426,30 +429,55 @@ function getExpOrTplParam(instance: any, runtimeBlock?: RuntimeBlock, extData?: 
 }
 
 /**
+ * 生成模版函数的上下文数据
+ * @param props         当前渲染节点的 props(RuntimeComponentNode.props)
+ * @param instance      当前 vue 组件实例
+ * @param runtimeBlock  当前节点所属的Block
+ * @param extData       扩展数据
+ */
+function getTplData(props: Record<string, any>, instance: any, runtimeBlock?: RuntimeBlock, extData?: object): any {
+    const data = getExpData(instance, runtimeBlock, extData);
+    return { ...data, ...props };
+}
+
+/**
  * 处理 Block/ComponentNode 的 props 属性，计算出表达式值
+ * @param props         需要计算的 props 对象
+ * @param instance      当前 vue 组件实例
+ * @param runtimeBlock  当前节点所属的Block
+ * @param extData       扩展数据
  */
 function propsTransform(props: DesignBlock["props"], instance: any, runtimeBlock: RuntimeBlock, extData?: object): Record<string, any> {
-    const data = getExpOrTplParam(instance, runtimeBlock, extData);
+    const data = getExpData(instance, runtimeBlock, extData);
     return calcExpression(props, data, { thisArg: instance, cache: false });
 }
 
 /**
  * 计算 Block/ComponentNode 中的单条表达式
+ * @param exp           单个字符串表达式
+ * @param instance      当前 vue 组件实例
+ * @param runtimeBlock  当前节点所属的Block
+ * @param extData       扩展数据
  */
 function expTransform(exp: string, instance: any, runtimeBlock: RuntimeBlock, extData?: object): any {
     exp = lodash.trim(exp);
     if (exp.length <= 0) return undefined;
-    const data = getExpOrTplParam(instance, runtimeBlock, extData);
+    const data = getExpData(instance, runtimeBlock, extData);
     return calcExpression(exp, data, { thisArg: instance, cache: false });
 }
 
 /**
  * 渲染 tpl 模版，返回渲染后的字符串
+ * @param tpl           字符串模版
+ * @param props         当前渲染节点的 props
+ * @param instance      当前 vue 组件实例
+ * @param runtimeBlock  当前节点所属的Block
+ * @param extData       扩展数据
  */
-function renderTpl(tpl: string[], instance: any, runtimeBlock?: RuntimeBlock, extData?: object): string {
+function renderTpl(tpl: string[], props: Record<string, any>, instance: any, runtimeBlock?: RuntimeBlock, extData?: object): string {
     const template = tpl.join("\n");
     if (lodash.trim(template).length <= 0) return template;
-    const data = getExpOrTplParam(instance, runtimeBlock, extData);
+    const data = getTplData(props, instance, runtimeBlock, extData);
     return compileTpl(template, { cache: true }).bind(instance)(data);
 }
 
@@ -464,7 +492,8 @@ export {
     blockDeepTransform,
     deepBindThis,
     deepExtractBlock,
-    getExpOrTplParam,
+    getExpData,
+    getTplData,
     propsTransform,
     expTransform,
     renderTpl,
