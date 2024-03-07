@@ -5,7 +5,7 @@ import { AnyFunction, VueComponent } from "@/draggable/types/Base";
 import { BaseDirectives, DesignBlock } from "@/draggable/types/DesignBlock";
 import { ComponentManageModel } from "@/draggable/models/ComponentManageModel";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
-import { RuntimeBlock, RuntimeBlockNode, RuntimeComponentNode } from "@/draggable/types/RuntimeBlock";
+import { RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { parseHTML } from "@/draggable/utils/HtmlTag";
 import { calcExpression } from "@/utils/Expression";
 
@@ -30,8 +30,8 @@ interface Context {
     readonly instance: any;
     /** 当前渲染节点所属的 RuntimeBlock 对象 */
     readonly block: RuntimeBlock;
-    /** 当前渲染节点所属的 RuntimeComponentNode 对象 */
-    readonly node: RuntimeComponentNode;
+    /** 当前渲染节点所属的 RuntimeNode 对象 */
+    readonly node: RuntimeNode;
     /** v-for指令的上下文数据 */
     vForData?: Record<string, any>;
 }
@@ -142,8 +142,8 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
         }
         return createVNode(childBlock.__blockComponent);
     }
-    // RuntimeComponentNode
-    const runtimeNode = child as RuntimeComponentNode;
+    // RuntimeNode
+    const runtimeNode = child as RuntimeNode;
     // 组件类型
     const component: any = runtimeNode.type;
     // 处理 props 表达式(属性的绑定)
@@ -210,7 +210,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
  * @param component     当前 runtimeNode 应该使用的 vue 组件
  * @param props         已经计算合并了的 props
  */
-function doCreateChildVNode(runtimeNode: RuntimeComponentNode, context: Context, global: Global, component: any, props: Record<string, any>) {
+function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: Global, component: any, props: Record<string, any>) {
     const fromInstance = context.instance;
     const fromBlock = context.block;
     const fromNode = context.node;

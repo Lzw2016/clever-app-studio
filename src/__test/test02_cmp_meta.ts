@@ -16,7 +16,7 @@ const componentMeta = defineComponentMeta({
     version: "0.0.1",
     docLink: "",
     icon: "input",
-    defComponentNode: {
+    defDesignNode: {
         props: {},
         listeners: {},
         directives: {},

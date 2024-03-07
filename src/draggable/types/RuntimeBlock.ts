@@ -3,7 +3,7 @@ import { AnyFunction, ComponentInstance, I18N, VueComponent } from "@/draggable/
 import { BaseDirectives, BlockMeta } from "@/draggable/types/DesignBlock";
 
 /** 组件插槽类型(运行时) */
-type RuntimeComponentSlotsItem = RuntimeComponentNode | Omit<RuntimeBlock, "meta" | "i18n"> | string;
+type RuntimeComponentSlotsItem = RuntimeNode | Omit<RuntimeBlock, "meta" | "i18n"> | string;
 
 /** Listener的对象形式(运行时) */
 interface RuntimeListener {
@@ -13,7 +13,7 @@ interface RuntimeListener {
 }
 
 /** 组件节点(运行时) */
-interface RuntimeComponentNode {
+interface RuntimeNode {
     /** 当前节点是html标签 */
     readonly __htmlTag: boolean;
     /** 组件唯一id */
@@ -44,7 +44,7 @@ type WatchOptionItem = string | WatchCallback | ObjectWatchOptionItem;
 type RuntimeBlockWatchItem = WatchOptionItem | Array<WatchOptionItem>;
 
 /** 区块(运行时) */
-interface RuntimeBlock extends RuntimeComponentNode {
+interface RuntimeBlock extends RuntimeNode {
     /** 当前 Block 生成的 vue 组件 */
     __blockComponent?: VueComponent;
     /** 是否是Block */
@@ -80,7 +80,7 @@ export type {
     RuntimeComponentSlotsItem,
     RuntimeBlockWatchItem,
     RuntimeListener,
-    RuntimeComponentNode,
+    RuntimeNode,
     RuntimeBlock,
     RuntimeBlockNode,
 }

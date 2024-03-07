@@ -5,8 +5,8 @@ import { AsyncFunction } from "@/utils/UseType";
 import { calcExpression } from "@/utils/Expression";
 import { createRefID, createVNodeID } from "@/utils/IDCreate";
 import { AnyFunction, FunctionConfig } from "@/draggable/types/Base";
-import { BlockWatchItem, ComponentNode, DesignBlock } from "@/draggable/types/DesignBlock";
-import { RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentNode, RuntimeComponentSlotsItem, RuntimeListener } from "@/draggable/types/RuntimeBlock";
+import { BlockWatchItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
+import { RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { compileTpl } from "@/utils/Template";
@@ -23,8 +23,8 @@ function createFunction(functionConfig: FunctionConfig): AnyFunction {
 /**
  * 给 Block 对象属性设置默认值
  */
-function fillBlockDefValue(block: ComponentNode | DesignBlock): Required<DesignBlock> | Required<ComponentNode> {
-    // ComponentNode
+function fillBlockDefValue(block: DesignNode | DesignBlock): Required<DesignBlock> | Required<DesignNode> {
+    // DesignNode
     if (!block.id || lodash.trim(block.id).length <= 0) block.id = createVNodeID();
     if (!block.ref || lodash.trim(block.ref).length <= 0) block.ref = createRefID();
     if (!block.props) block.props = {};
@@ -173,7 +173,7 @@ function watchTransform(watch: DesignBlock['watch']): Record<string, RuntimeBloc
 }
 
 /**
- * 处理 Block/ComponentNode 的 listeners 属性
+ * 处理 DesignBlock/DesignNode 的 listeners 属性
  */
 function listenersTransform(listeners: DesignBlock["listeners"], methods: Record<string, any>): Record<string, RuntimeListener> {
     const vueListeners: any = {};
@@ -209,7 +209,7 @@ function listenersTransform(listeners: DesignBlock["listeners"], methods: Record
  * 深度转换 DesignBlock。
  * 会转换的属性：type、listeners、slots、items、tpl、computed、watch、methods、lifeCycles
  */
-function blockDeepTransform(block: ComponentNode | DesignBlock, componentManage: ComponentManage, parents?: RuntimeBlock): RuntimeBlock {
+function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: ComponentManage, parents?: RuntimeBlock): RuntimeBlock {
     const {
         block: isBlock,
         type,
@@ -267,7 +267,7 @@ function blockDeepTransform(block: ComponentNode | DesignBlock, componentManage:
 }
 
 // blockDeepTransform 处理 slots 或者 items
-function _deepTransformSlotsOrItems(itemsOrSlots: ComponentNode['items'], componentManage: ComponentManage, parents: RuntimeBlock, propName: 'items' | 'slots', slotName: string): Array<RuntimeComponentSlotsItem> {
+function _deepTransformSlotsOrItems(itemsOrSlots: DesignNode['items'], componentManage: ComponentManage, parents: RuntimeBlock, propName: 'items' | 'slots', slotName: string): Array<RuntimeComponentSlotsItem> {
     let result: Array<RuntimeComponentSlotsItem>;
     if (isStr(itemsOrSlots)) {
         result = [itemsOrSlots];
@@ -293,7 +293,7 @@ function _deepTransformSlotsOrItems(itemsOrSlots: ComponentNode['items'], compon
  * 深度绑定 this 指针。
  * 会绑定的函数：listeners、lifeCycles
  */
-function deepBindThis(cmpNode: RuntimeComponentNode, instance: any) {
+function deepBindThis(cmpNode: RuntimeNode, instance: any) {
     const {
         listeners,
         __bindListeners,
@@ -336,7 +336,7 @@ function _deepBindThisSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, i
 /**
  * 深度提取 Block 的属性，模拟 Block 对应的 vue 组件的初始化状态
  */
-function deepExtractBlock(nodeOrBlock: RuntimeComponentNode, allBlock: Record<string, object>, parentBlock?: any): void {
+function deepExtractBlock(nodeOrBlock: RuntimeNode, allBlock: Record<string, object>, parentBlock?: any): void {
     const {
         ref,
         props,
@@ -376,7 +376,7 @@ function deepExtractBlock(nodeOrBlock: RuntimeComponentNode, allBlock: Record<st
 // deepExtractBlock 处理 slots 或者 items
 function _deepExtractSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, allBlock: Record<string, object>, parentBlock?: any) {
     for (let cmpNode of cmpNodes) {
-        const node = cmpNode as RuntimeComponentNode;
+        const node = cmpNode as RuntimeNode;
         if (isObj(node) && !isArray(node)) {
             deepExtractBlock(node, allBlock, parentBlock);
         }
@@ -451,7 +451,7 @@ function getExpData(instance: any, runtimeBlock?: RuntimeBlock, extData?: object
  *      8.当前node所属block对应的vue实例平铺的 computed 数据
  *      9.当前node所属block对应的vue实例的 $props、$attrs、$data、$root、$parent、$slots、$refs、$el、$emit、$forceUpdate 属性
  *     10.当前node所属block对应的vue实例平铺的 $props 和 $data 数据
- * @param props         当前渲染节点的 props(RuntimeComponentNode.props)
+ * @param props         当前渲染节点的 props(RuntimeNode.props)
  * @param instance      当前 vue 组件实例
  * @param runtimeBlock  当前节点所属的Block
  * @param extData       扩展数据
@@ -462,7 +462,7 @@ function getTplData(props: Record<string, any>, instance: any, runtimeBlock?: Ru
 }
 
 /**
- * 处理 Block/ComponentNode 的 props 属性，计算出表达式值
+ * 处理 DesignBlock/DesignNode 的 props 属性，计算出表达式值
  * @param props         需要计算的 props 对象
  * @param instance      当前 vue 组件实例
  * @param runtimeBlock  当前节点所属的Block
@@ -474,7 +474,7 @@ function propsTransform(props: DesignBlock["props"], instance: any, runtimeBlock
 }
 
 /**
- * 计算 Block/ComponentNode 中的单条表达式
+ * 计算 DesignBlock/DesignNode 中的单条表达式
  * @param exp           单个字符串表达式
  * @param instance      当前 vue 组件实例
  * @param runtimeBlock  当前节点所属的Block
@@ -490,7 +490,7 @@ function expTransform(exp: string, instance: any, runtimeBlock: RuntimeBlock, ex
 /**
  * 渲染 tpl 模版，返回渲染后的字符串
  * @param tpl           字符串模版
- * @param props         当前渲染节点的 props(RuntimeComponentNode.props)
+ * @param props         当前渲染节点的 props(RuntimeNode.props)
  * @param instance      当前 vue 组件实例
  * @param runtimeBlock  当前节点所属的Block
  * @param extData       扩展数据

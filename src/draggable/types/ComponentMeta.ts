@@ -1,8 +1,8 @@
 import { ComponentInstance, ComponentSlotMeta, FunctionMeta, I18N, VueComponent } from "@/draggable/types/Base";
-import { BaseProps, ComponentListener, ComponentNode } from "@/draggable/types/DesignBlock";
+import { BaseProps, ComponentListener, DesignNode } from "@/draggable/types/DesignBlock";
 
 /** 组件节点默认配置 */
-type DefComponentNode = Partial<Omit<ComponentNode, 'id' | 'type' | 'ref'>>
+type DefDesignNode = Partial<Omit<DesignNode, 'id' | 'type' | 'ref'>>
 
 /** 主键Schema */
 interface ComponentSchema {
@@ -115,7 +115,7 @@ interface ComponentMeta {
     /** 组件图标 */
     icon: VueComponent | string;
     /** 默认的组件节点配置 */
-    defComponentNode: DefComponentNode;
+    defDesignNode: DefDesignNode;
     /** 组件Schema(定义的事件、插槽等) */
     schema: ComponentSchema;
     /** 组件设计器 */
@@ -128,7 +128,7 @@ interface ComponentMeta {
 type AsyncComponentMeta = (type: string) => Promise<ComponentMeta>;
 
 export type {
-    DefComponentNode,
+    DefDesignNode,
     ComponentSchema,
     WatchPropsConfig,
     Setter,
