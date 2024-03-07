@@ -2,6 +2,7 @@ import { createApp, readonly } from "vue";
 import { createRouter, createWebHashHistory } from "vue-router";
 import { createPinia } from "pinia";
 import App from "./App.vue";
+import { focus } from "./directives";
 import { initRouter } from "./routers";
 
 window['APP_INFO'] = readonly(__APP_INFO__);
@@ -21,6 +22,8 @@ window['APP_INFO'] = readonly(__APP_INFO__);
     });
     initRouter(router);
     app.use(router);
+    // 自定义指令
+    app.directive("focus", focus);
     // 挂载 vue 应用到页面上
     app.mount("#app");
 })().finally();

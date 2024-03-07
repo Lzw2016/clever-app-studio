@@ -1,5 +1,5 @@
 import { CSSProperties, WatchCallback, WatchOptions } from "vue";
-import { AnyFunction, ComponentInstance, ErrorCapturedHook, FunctionConfig, I18N } from "@/draggable/types/Base";
+import { AnyFunction, ComponentInstance, ErrorCapturedHook, FunctionConfig, HtmlTag, I18N } from "@/draggable/types/Base";
 
 // -------------------------------------------------------------------------------------------------------------------
 // 组件
@@ -31,13 +31,13 @@ interface BaseDirectives {
         /** 原始数据表达式 */
         data: string;
         /** 子节点的key取值(item对象的属性名) */
-        key: string,
+        key?: string,
         /**
          * index 变量名
          * 当原始数据是数组时，数组的index
          * 当原始数据是对象时，对象的key
          */
-        index: string,
+        index?: string,
         /**
          * item 变量名
          * 当原始数据是数组时，数组的item
@@ -67,7 +67,7 @@ interface ComponentNode<Props extends BaseProps = BaseProps, Event extends BaseE
     /** 组件唯一id */
     id?: string;
     /** 组件类型，默认是 Fragment */
-    type?: string;
+    type?: HtmlTag;
     /** 当前组件实例的引用名称 */
     ref?: string;
     /** 组件属性 */

@@ -8,7 +8,6 @@ const block03 = defineDesignBlock({
     props: {
         style: {
             width: "300px",
-            height: "90px",
             border: "1px solid #ccc",
             userSelect: "none",
         },
@@ -16,6 +15,11 @@ const block03 = defineDesignBlock({
     },
     data: {
         count: 0,
+        rows: [
+            { k: "001", v: "aaa" },
+            { k: "002", v: "bbb" },
+            { k: "003", v: "ccc" },
+        ],
     },
     computed: {
         count2: function (this: ComponentInstance, oldValue, block) {
@@ -33,6 +37,43 @@ const block03 = defineDesignBlock({
         "<div style='color: bisque;'>BBB: <%= count %></div>",
         "<div style='color: brown;'>CCC: <%= count %></div>",
         "DDD: <%= count %>",
+        {
+            type: "div",
+            directives: {
+                show: "{{ count%2 === 0 }}",
+            },
+            items: ["条件显示"],
+        },
+        {
+            type: "div",
+            directives: {
+                if: "{{ count%2 === 0 }}",
+            },
+            items: [
+                "条件渲染",
+            ],
+        },
+        {
+            type: "div",
+            directives: {
+                for: {
+                    data: "{{ rows }}",
+                    item: "item",
+                    key: "key",
+                    index: "index",
+                },
+            },
+            items: [
+                "循环渲染",
+                // "<div>k= <%= item.k %> | v= <%= item.v %></div>",
+            ],
+        },
+        {
+            type: "input",
+            directives: {
+                focus: {},
+            },
+        },
     ],
     listeners: {
         onClick: "addCount",

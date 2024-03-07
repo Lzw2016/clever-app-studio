@@ -434,6 +434,16 @@ function propsTransform(props: DesignBlock["props"], instance: any, runtimeBlock
 }
 
 /**
+ * 计算 Block/ComponentNode 中的单条表达式
+ */
+function expTransform(exp: string, instance: any, runtimeBlock: RuntimeBlock, extData?: object): any {
+    exp = lodash.trim(exp);
+    if (exp.length <= 0) return undefined;
+    const data = getExpOrTplParam(instance, runtimeBlock, extData);
+    return calcExpression(exp, data, { thisArg: instance, cache: false });
+}
+
+/**
  * 渲染 tpl 模版，返回渲染后的字符串
  */
 function renderTpl(tpl: string[], instance: any, runtimeBlock?: RuntimeBlock, extData?: object): string {
@@ -456,5 +466,6 @@ export {
     deepExtractBlock,
     getExpOrTplParam,
     propsTransform,
+    expTransform,
     renderTpl,
 }

@@ -1,10 +1,10 @@
-import { ComponentPublicInstance, createVNode, defineComponent, Fragment } from "vue";
+import { ComponentPublicInstance, createVNode, defineComponent, Fragment, resolveDirective, withDirectives } from "vue";
 import lodash from "lodash";
-import { hasValue, isStr } from "@/utils/Typeof";
+import { hasValue, isArray, isObj, isStr } from "@/utils/Typeof";
 import { AnyFunction, VueComponent } from "@/draggable/types/Base";
 import { DesignBlock } from "@/draggable/types/DesignBlock";
 import { ComponentManageModel } from "@/draggable/models/ComponentManageModel";
-import { blockDeepTransform, deepBindThis, deepExtractBlock, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
+import { blockDeepTransform, deepBindThis, deepExtractBlock, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
 import { RuntimeBlock, RuntimeBlockNode, RuntimeComponentNode } from "@/draggable/types/RuntimeBlock";
 import { parseHTML } from "@/draggable/utils/HtmlTag";
 
@@ -100,31 +100,15 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, context: Factor
         methods: methods,
         watch: watch,
         render(this: any) {
-            return createRuntimeComponentNode(runtimeBlock, context, this, true);
+            try {
+                return createRuntimeComponentNode(runtimeBlock, context, this, true);
+            } catch (e) {
+                console.warn("组件渲染失败", runtimeBlock, e);
+                // TODO 优化错误渲染组件(使用对话框查看错误详情)
+                return createVNode('span', {}, ['组件渲染失败']);
+            }
         },
     });
-}
-
-/**
- * 基于 ComponentNode 创建 VNode
- */
-function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, instance: any) {
-    // 静态 html 文本
-    if (isStr(child)) {
-        const staticHtml = renderTpl([child], instance, undefined, context.toExtData());
-        return createHtmlVNode(staticHtml);
-    }
-    // RuntimeBlock
-    const currBlock = child as RuntimeBlock;
-    if (currBlock.block) {
-        if (!currBlock.__blockComponent) {
-            currBlock.__blockComponent = createRuntimeBlockComponent(currBlock, context);
-        }
-        return createVNode(currBlock.__blockComponent);
-    }
-    // RuntimeComponentNode
-    const runtimeNode = child as RuntimeComponentNode;
-    return createRuntimeComponentNode(runtimeNode, context, instance);
 }
 
 /**
@@ -144,6 +128,11 @@ function createRuntimeComponentNode(runtimeNode: RuntimeComponentNode, context: 
         key: runtimeNode.id,
         ref: runtimeNode.ref,
     };
+    // 应用指令 - if
+    if (runtimeNode.directives.if) {
+        const needRender = expTransform(runtimeNode.directives.if, instance, runtimeBlock, context.toExtData());
+        if (!needRender) return undefined;
+    }
     // 子组件和插槽(子组件就是default插槽)
     let children: Array<any> | undefined;
     const slots: Record<string, AnyFunction<any, Array<any>>> = {
@@ -165,8 +154,17 @@ function createRuntimeComponentNode(runtimeNode: RuntimeComponentNode, context: 
         children = [createHtmlVNode(staticHtml, allProps, component)];
     }
     if (children) slots.default = () => children!;
+    // 应用指令 - show
+    if (runtimeNode.directives.show) {
+        const show = expTransform(runtimeNode.directives.show, instance, runtimeBlock, context.toExtData());
+        _setShowStyle(allProps, show);
+    }
+    // 应用指令 - for
+    if (runtimeNode.directives.for) {
+
+    }
     /*
-     * 创建 VNode  // TODO 应用指令
+     * 创建 VNode
      * 1. component === Fragment || runtimeNode.__htmlTag
      *      没有插槽
      *      createVNode(component, allProps, [children]);
@@ -176,29 +174,69 @@ function createRuntimeComponentNode(runtimeNode: RuntimeComponentNode, context: 
      * 3. 插槽 & children
      *      createVNode(component, allProps, {children});
      */
+    let vnode: any;
     if (component === Fragment || runtimeNode.__htmlTag) {
         // 1.没有插槽
-        return createVNode(component, allProps, children);
-    }
-    if (runtimeNode.items.length <= 0) {
+        vnode = createVNode(component, allProps, children);
+    } else if (runtimeNode.items.length <= 0) {
         // 2.没有 children
-        return createVNode(component, allProps, null);
+        vnode = createVNode(component, allProps, null);
+    } else {
+        // 3.插槽 & children
+        vnode = createVNode(component, allProps, children);
     }
-    // 3.插槽 & children
-    return createVNode(component, allProps, children);
-    // vnode = withDirectives(
-    //     vnode,
-    //     [
-    //         [
-    //             // 不能使用内置指令
-    //             resolveDirective('focus'),
-    //             // {},
-    //             // "",
-    //             // {},
-    //         ],
-    //     ],
-    // )
-    // return vnode;
+    // 应用其他用户自定义指令
+    const innerDirectives = ['show', 'if', 'for'];
+    const useDirectives: Array<any> = [];
+    for (let name in runtimeNode.directives) {
+        if (innerDirectives.includes(name)) {
+            continue;
+        }
+        const param = runtimeNode.directives[name];
+        const directive = resolveDirective(name);
+        if (directive) {
+            // [directive: Directive, value:any, argument:string, modifiers: Record<string, boolean>]
+            let value: any;
+            let argument: string | undefined;
+            let modifiers: Record<string, boolean> | undefined;
+            if (isArray(param)) {
+                value = param[0];
+                argument = param[1];
+                modifiers = param[3];
+            } else if (isObj(param)) {
+                value = param.value;
+                argument = param.argument;
+                modifiers = param.modifiers;
+            }
+            useDirectives.push([directive, value, argument, modifiers]);
+        }
+    }
+    if (useDirectives.length > 0) {
+        vnode = withDirectives(vnode, useDirectives)
+    }
+    return vnode;
+}
+
+/**
+ * 基于 ComponentNode 创建 VNode
+ */
+function createChildVNode(child: RuntimeBlockNode, context: FactoryContext, instance: any) {
+    // 静态 html 文本
+    if (isStr(child)) {
+        const staticHtml = renderTpl([child], instance, undefined, context.toExtData());
+        return createHtmlVNode(staticHtml);
+    }
+    // RuntimeBlock
+    const runtimeBlock = child as RuntimeBlock;
+    if (runtimeBlock.block) {
+        if (!runtimeBlock.__blockComponent) {
+            runtimeBlock.__blockComponent = createRuntimeBlockComponent(runtimeBlock, context);
+        }
+        return createVNode(runtimeBlock.__blockComponent);
+    }
+    // RuntimeComponentNode
+    const runtimeNode = child as RuntimeComponentNode;
+    return createRuntimeComponentNode(runtimeNode, context, instance);
 }
 
 /**
@@ -222,6 +260,19 @@ function createHtmlVNode(staticHtml: string, allProps?: Record<string, any>, com
     }
     allProps.innerHTML = staticHtml;
     return createVNode(defComponent, allProps, null);
+}
+
+/**
+ * 设置组件是否显示
+ */
+function _setShowStyle(props: any, show: boolean) {
+    const cssShow = show ? 'unset' : 'hidden';
+    if (!props.style) props.style = {};
+    if (isObj(props.style)) {
+        props.style.visibility = cssShow;
+    } else if (isStr(props.style)) {
+        props.style = `${props.style};visibility: ${cssShow};`
+    }
 }
 
 /**
