@@ -195,8 +195,8 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
                     const vForData = {};
                     if (index) vForData[index] = keyOrIdx;
                     if (item) vForData[item] = itemData;
-                    // context.vForData = vForData;
-                    return doCreateChildVNode(runtimeNode, { ...context, vForData }, global, component, allProps);
+                    context.vForData = vForData;
+                    return doCreateChildVNode(runtimeNode, context, global, component, allProps);
                 })
             );
         }
