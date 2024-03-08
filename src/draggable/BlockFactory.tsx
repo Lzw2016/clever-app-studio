@@ -129,6 +129,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
     const extData = _toExtData(global, context);
     // 静态 html 文本
     if (isStr(child)) {
+        // html模版 items -> tlp
         const tpl = [child];
         const props = propsTransform(fromNode.props, fromInstance, fromBlock, extData);
         const staticHtml = renderTpl(tpl, props, fromInstance, fromBlock, extData);
@@ -208,7 +209,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
  * @param context       当前调用的上下文
  * @param global        全局的 global 对象
  * @param component     当前 runtimeNode 应该使用的 vue 组件
- * @param props         已经计算合并了的 props
+ * @param props         已经计算合并了的 props(包含 listeners)
  */
 function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: Global, component: any, props: Record<string, any>) {
     const fromInstance = context.instance;
@@ -231,7 +232,7 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: 
         // 子组件
         children = runtimeNode.items.map(item => createChildVNode(item, newContext, global));
     } else if (runtimeNode.tpl.length > 0) {
-        // html模版
+        // html模版 node -> tlp
         const staticHtml = renderTpl(runtimeNode.tpl, props, fromInstance, fromBlock, _toExtData(global, context));
         children = [createHtmlVNode(staticHtml, props, component)];
     }
@@ -256,7 +257,7 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: 
         vnode = createVNode(component, props, null);
     } else {
         // 3.插槽 & children
-        vnode = createVNode(component, props, children);
+        vnode = createVNode(component, props, slots);
     }
     // 应用其他用户自定义指令
     vnode = _applyDirectives(vnode, runtimeNode.directives);
@@ -266,25 +267,25 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: 
 /**
  * 基于 HTML 创建 VNode
  * @param staticHtml    静态的html片段
- * @param allProps      html片段所属node的属性
+ * @param props         html片段所属node的属性
  * @param component     html片段所属node的组件信息
  */
-function createHtmlVNode(staticHtml: string, allProps?: Record<string, any>, component?: any) {
+function createHtmlVNode(staticHtml: string, props?: Record<string, any>, component?: any) {
     const defComponent = 'span';
-    if (!allProps) allProps = {};
+    if (!props) props = {};
     if (isStr(component)) {
         component = lodash.trim(component);
         if (component.length <= 0) component = undefined;
     }
     if (component) {
         if (component === Fragment) component = defComponent;
-        return createVNode(component, { ...allProps, innerHTML: staticHtml }, null);
+        return createVNode(component, { ...props, innerHTML: staticHtml }, null);
     }
     const htmlInfo = parseHTML(staticHtml);
     if (htmlInfo.onlyOne) {
-        return createVNode(htmlInfo.tagName, { ...allProps, ...htmlInfo.attrs, innerHTML: htmlInfo.innerHTML }, null);
+        return createVNode(htmlInfo.tagName, { ...htmlInfo.attrs, innerHTML: htmlInfo.innerHTML }, null);
     }
-    return createVNode(defComponent, { ...allProps, innerHTML: staticHtml }, null);
+    return createVNode(defComponent, { innerHTML: staticHtml }, null);
 }
 
 /**
