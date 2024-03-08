@@ -1,7 +1,7 @@
-import { ComponentPublicInstance, createVNode, defineComponent, Fragment, renderList, resolveDirective, withDirectives } from "vue";
+import { ComponentPublicInstance, createVNode, defineComponent, Fragment, renderList, resolveDirective, VNode, withDirectives } from "vue";
 import lodash from "lodash";
 import { isArray, isObj, isStr } from "@/utils/Typeof";
-import { AnyFunction, VueComponent } from "@/draggable/types/Base";
+import { VueComponent } from "@/draggable/types/Base";
 import { BaseDirectives, DesignBlock } from "@/draggable/types/DesignBlock";
 import { ComponentManageModel } from "@/draggable/models/ComponentManageModel";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
@@ -214,50 +214,51 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
 function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: Global, component: any, props: Record<string, any>) {
     const fromInstance = context.instance;
     const fromBlock = context.block;
-    const fromNode = context.node;
     const newContext: Context = { ...context, node: runtimeNode };
-    // 子组件和插槽(子组件就是default插槽)
-    let children: Array<any> | undefined;
-    const slots: Record<string, AnyFunction<any, Array<any>>> = {
-        default: () => ([]),
-    };
-    if (!runtimeNode.__htmlTag && component != Fragment) {
+    const createSlotsVNode = function (): Record<string, () => Array<VNode>> {
+        const slots: any = { default: () => ([]) };
         // TODO 设置插槽 待验证，需要使用 withCtx(slotProps=> [...VNode])
         for (let name in runtimeNode.slots) {
             const slot = runtimeNode.slots[name];
             slots[name] = () => slot.map(item => createChildVNode(item, newContext, global));
         }
-    }
-    if (runtimeNode.items.length > 0) {
-        // 子组件
-        children = runtimeNode.items.map(item => createChildVNode(item, newContext, global));
-    } else if (runtimeNode.tpl.length > 0) {
-        // html模版 node -> tlp
+        return slots;
+    };
+    const createItemsVNode = function (): Array<VNode> {
+        return runtimeNode.items.map(item => createChildVNode(item, newContext, global));
+    };
+    const createTplVNode = function (): VNode {
         const staticHtml = renderTpl(runtimeNode.tpl, props, fromInstance, fromBlock, _toExtData(global, context));
-        children = [createHtmlVNode(staticHtml, props, component)];
-    }
-    if (children) slots.default = () => children!;
-    /*
-     * 创建 VNode
-     * 1. component === Fragment || runtimeNode.__htmlTag
-     *      没有插槽
-     *      createVNode(component, props, [children]);
-     * 2. runtimeNode.items===null
-     *      没有 children
-     *      createVNode(component, props, null);
-     * 3. 插槽 & children
-     *      createVNode(component, props, {children});
-     */
+        return createHtmlVNode(staticHtml, props, component);
+    };
+    // 存在 slots
+    const existsSlots = !runtimeNode.__htmlTag && component != Fragment && Object.keys(runtimeNode.slots).length > 0;
+    // 存在 items
+    const existsItems = runtimeNode.items.length > 0;
+    // 存在 tpl
+    const existsTpl = runtimeNode.tpl.length > 0;
+    // 创建 VNode
     let vnode: any;
-    if (component === Fragment || runtimeNode.__htmlTag) {
-        // 1.没有插槽
-        vnode = createVNode(component, props, children);
-    } else if (runtimeNode.items.length <= 0) {
-        // 2.没有 children
+    if (existsSlots) {
+        const slots = createSlotsVNode();
+        if (existsItems) {
+            // slots + items
+            slots.default = () => createItemsVNode();
+        } else if (existsTpl) {
+            // slots + tpl
+            slots.default = () => [createTplVNode()];
+        }
+        vnode = createVNode(component, props, slots);
+    } else if (existsItems) {
+        // items
+        vnode = createVNode(component, props, createItemsVNode());
+    } else if (existsTpl) {
+        // tpl
+        vnode = createTplVNode();
+    } else if (component != Fragment) {
         vnode = createVNode(component, props, null);
     } else {
-        // 3.插槽 & children
-        vnode = createVNode(component, props, slots);
+        return undefined;
     }
     // 应用其他用户自定义指令
     vnode = _applyDirectives(vnode, runtimeNode.directives);
