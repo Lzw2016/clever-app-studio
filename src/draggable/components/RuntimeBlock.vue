@@ -31,7 +31,7 @@ if (props.block) {
         const types = getAllComponentType(props.block);
         loading.value = true;
         componentManage.loadAsyncComponent(types).then(result => {
-            BlockComponent = createBlockComponent(props.block);
+            BlockComponent = createBlockComponent(props.block!);
             blockCreated.value = true;
         }).catch(reason => {
             // TODO 异常处理
