@@ -8,7 +8,13 @@ dependencies:
   '@opentiny/vue':
     specifier: ^3.14.0
     version: 3.14.0(echarts@5.5.0)
+  '@opentiny/vue-button':
+    specifier: ^3.14.0
+    version: 3.14.0
   '@opentiny/vue-icon':
+    specifier: ^3.14.0
+    version: 3.14.0
+  '@opentiny/vue-input':
     specifier: ^3.14.0
     version: 3.14.0
   '@opentiny/vue-locale':

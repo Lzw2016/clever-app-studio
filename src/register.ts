@@ -1,10 +1,7 @@
 import { App } from "vue";
-import { componentManage } from "@/draggable/BlockFactory";
-import { Button, Input } from "@opentiny/vue";
-import { iconCalendar, iconSearch } from "@opentiny/vue-icon";
 import PrimeVue from "primevue/config";
-import Calendar from "primevue/calendar";
 import "primevue/resources/themes/aura-light-blue/theme.css";
+import { componentManage } from "@/draggable/BlockFactory";
 
 /**
  * 配置组件库
@@ -18,11 +15,19 @@ function useComponent(app: App) {
  * 注册组件
  */
 function registerComponent() {
-    componentManage.registerComponent("Button", Button);
-    componentManage.registerComponent("Input", Input);
-    componentManage.registerComponent("IconSearch", iconSearch());
-    componentManage.registerComponent("IconCalendar", iconCalendar());
-    componentManage.registerComponent("Calendar", Calendar);
+    componentManage.registerAsyncComponent("Button", () => import("@opentiny/vue-button").then(module => module.default));
+    componentManage.registerAsyncComponent("Input", () => import("@opentiny/vue-input").then(module => module.default));
+    // import("@opentiny/vue-icon").then(icons => {
+    //     for (let iconName in icons) {
+    //         const icon = icons[iconName];
+    //         if (typeof icon === 'function') {
+    //             componentManage.registerComponent(iconName, icon());
+    //         }
+    //     }
+    // });
+    componentManage.registerAsyncComponent("IconSearch", () => import("@opentiny/vue-icon/lib/search.js").then(module => module.default()));
+    componentManage.registerAsyncComponent("IconCalendar", () => import("@opentiny/vue-icon/lib/calendar.js").then(module => module.default()));
+    componentManage.registerAsyncComponent("Calendar", () => import("primevue/calendar").then(module => module.default));
 }
 
 /**

@@ -31,8 +31,7 @@ type HtmlTag = 'address' | 'article' | 'aside' | 'footer' | 'header' | 'h1' | 'h
     | 'caption' | 'col' | 'colgroup' | 'table' | 'tbody' | 'td' | 'tfoot' | 'th' | 'thead' | 'tr'
     | 'button' | 'datalist' | 'fieldset' | 'form' | 'input' | 'label' | 'legend' | 'meter' | 'optgroup' | 'option' | 'output' | 'progress' | 'select' | 'textarea'
     | 'details' | 'dialog' | 'summary'
-    | 'slot' | 'template'
-    | string;
+    | 'slot' | 'template';
 
 // -------------------------------------------------------------------------------------------------------------------
 // 共用类型定义

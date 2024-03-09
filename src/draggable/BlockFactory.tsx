@@ -1,16 +1,17 @@
 import { ComponentPublicInstance, createVNode, defineComponent, Fragment, renderList, resolveDirective, vModelCheckbox, vModelRadio, vModelSelect, vModelText, VNode, vShow, withCtx, withDirectives } from "vue";
 import lodash from "lodash";
 import { isArray, isObj, isStr, noValue } from "@/utils/Typeof";
-import { ComponentInstance, VueComponent } from "@/draggable/types/Base";
-import { BaseDirectives, DesignBlock } from "@/draggable/types/DesignBlock";
-import { ComponentManageModel } from "@/draggable/models/ComponentManageModel";
-import { blockDeepTransform, deepBindThis, deepExtractBlock, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
-import { RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
-import { parseHTML } from "@/draggable/utils/HtmlTag";
 import { calcExpression, getKeyPathValue, setKeyPathValue } from "@/utils/Expression";
+import { ComponentInstance, VueComponent } from "@/draggable/types/Base";
+import { BaseDirectives, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
+import { RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { ComponentManage } from "@/draggable/types/ComponentManage";
+import { ComponentManageModel } from "@/draggable/models/ComponentManageModel";
+import { isHtmlTag, parseHTML } from "@/draggable/utils/HtmlTag";
+import { blockDeepTransform, deepBindThis, deepExtractBlock, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
 
 /** 组件管理器实例 */
-const componentManage = new ComponentManageModel();
+const componentManage: ComponentManage = new ComponentManageModel();
 
 /**
  * 创建 BlockComponent 时的全局上下文
@@ -411,6 +412,37 @@ function _applyDirectives<Directives extends BaseDirectives = BaseDirectives>(vn
 }
 
 /**
+ * 递归获取当前 DesignNode 中所有的 vue 组件名称
+ */
+function getAllComponentType(node: DesignNode, allType?: Set<string>): Array<string> {
+    if (!allType) allType = new Set<string>();
+    if (node.type) {
+        node.type = lodash.trim(node.type);
+        if (!isHtmlTag(node.type)) {
+            allType.add(node.type)
+        }
+    }
+    if (node.slots) {
+        for (let name in node.slots) {
+            const slot: any = node.slots[name];
+            if (isArray(slot)) {
+                slot.forEach(item => getAllComponentType(item, allType));
+            } else if (isObj(slot)) {
+                getAllComponentType(slot, allType);
+            }
+        }
+    }
+    if (node.items) {
+        if (isArray(node.items)) {
+            node.items.forEach(item => getAllComponentType(item, allType));
+        } else if (isObj(node.items)) {
+            getAllComponentType(node.items as any, allType);
+        }
+    }
+    return Array.from(allType);
+}
+
+/**
  * 定义一个 DesignBlock 对象，仅仅是为了类型声明，无任何处理逻辑
  */
 function defineDesignBlock(designBlock: DesignBlock): DesignBlock {
@@ -427,5 +459,6 @@ export type  {
 export {
     componentManage,
     createBlockComponent,
+    getAllComponentType,
     defineDesignBlock,
 }

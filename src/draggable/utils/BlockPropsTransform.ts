@@ -4,12 +4,12 @@ import { isArray, isFun, isObj, isStr, noValue } from "@/utils/Typeof";
 import { AsyncFunction } from "@/utils/UseType";
 import { calcExpression } from "@/utils/Expression";
 import { createRefID, createVNodeID } from "@/utils/IDCreate";
+import { compileTpl } from "@/utils/Template";
 import { AnyFunction, FunctionConfig } from "@/draggable/types/Base";
 import { BlockWatchItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
 import { RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
-import { compileTpl } from "@/utils/Template";
 
 /**
  * 根据 FunctionConfig 动态创建函数对象

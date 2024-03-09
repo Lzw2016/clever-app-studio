@@ -32,28 +32,72 @@ interface DirectivesOptions {
 
 /** 组件基础指令 */
 interface BaseDirectives {
-    /** v-model指令需要绑定的数据属性名 */
+    /**
+     * v-model指令需要绑定的数据属性名，如： <br/>
+     * <pre>
+     * 1. "formData.name"
+     * 2. "val.hits[0]._source.@timestamp"
+     * </pre>
+     */
     model?: string;
-    /** 组件的的可见性(表达式，值为boolean) */
+    /**
+     * v-show指令，组件的的可见性(表达式，值为boolean)，如： <br/>
+     * <pre>
+     * 1. "{{ uiCtr.isShow }}"
+     * 2. "{{ user.sex === 'f' }}"
+     * 3. "{{ orders.amount > 3000 }}"
+     * </pre>
+     */
     show?: string;
-    /** 条件性的渲染组件(表达式，值为boolean) */
+    /**
+     * v-if指令，条件性的渲染组件(表达式，值为boolean)，如： <br/>
+     * <pre>
+     * 1. "{{ uiCtr.isShow }}"
+     * 2. "{{ user.sex === 'f' }}"
+     * 3. "{{ orders.amount > 3000 }}"
+     * </pre>
+     */
     if?: string;
-    /** 基于原始数据多次渲染组件 */
+    /** v-for指令，基于原始数据多次渲染组件 */
     for?: {
-        /** 原始数据表达式 */
+        /**
+         * 原始数据表达式，如： <br/>
+         * <pre>
+         * 1. "{{ formData.cityArray }}"
+         * 2. "{{ formData.userInfo }}"
+         * 3. "{{ ['张三', '李四', '王五'] }}"
+         * </pre>
+         */
         data: string;
-        /** 子节点的key取值表达式(item对象的属性名) */
+        /**
+         * 子节点的key取值表达式(item对象的属性名)，一般可以不设置，如： <br/>
+         * <pre>
+         * 1. "{{ uid }}"
+         * 2. "{{ bizKey }}"
+         * 3. "{{ orderId }}"
+         * </pre>
+         */
         key?: string,
         /**
-         * index 变量名
-         * 当原始数据是数组时，数组的index
-         * 当原始数据是对象时，对象的key
+         * index 变量名，如： <br/>
+         * <pre>
+         * 1. "_idx"
+         * 2. "_key"
+         * 3. "_name"
+         * </pre>
+         * 当原始数据是数组时，数组的index。 <br/>
+         * 当原始数据是对象时，对象的key。 <br/>
          */
         index?: string,
         /**
-         * item 变量名
-         * 当原始数据是数组时，数组的item
-         * 当原始数据是对象时，对象的value
+         * item 变量名，如： <br/>
+         * <pre>
+         * 1. "_item"
+         * 2. "_obj"
+         * 3. "_data"
+         * </pre>
+         * 当原始数据是数组时，数组的item。 <br/>
+         * 当原始数据是对象时，对象的value。 <br/>
          */
         item: string;
     };
@@ -92,7 +136,7 @@ interface DesignNode<Props extends BaseProps = BaseProps, Event extends BaseEven
     // /** 组件唯一id(必须系统自动生成，debug时可以临时手动指定) */
     // id?: string;
     /** 组件类型，默认是 Fragment */
-    type?: HtmlTag;
+    type?: HtmlTag | string;
     /** 当前组件实例的引用名称 */
     ref?: string;
     /** 组件属性 */
