@@ -4,6 +4,7 @@ import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
 import { block01 } from "./Block01";
 import { block02 } from "./Block02";
 import { block03 } from "@/views/Block03";
+import { block04 } from "@/views/Block04";
 
 const show = ref(1);
 const block01ref = ref();
@@ -31,6 +32,9 @@ const block01ref = ref();
 
     <div style="height: 12px;"/>
     <RuntimeBlock :block="block03"/>
+
+    <div style="height: 12px;"/>
+    <RuntimeBlock :block="block04"/>
 </template>
 
 <style scoped>

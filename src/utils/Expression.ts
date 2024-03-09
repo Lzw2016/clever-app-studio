@@ -1,4 +1,5 @@
-import { isArray, isObj, isStr } from "@/utils/Typeof";
+import lodash from "lodash";
+import { hasValue, isArray, isObj, isStr, noValue } from "@/utils/Typeof";
 
 /** 编译表达式选项 */
 interface ExpOptions {
@@ -102,6 +103,115 @@ function calcExpression(expObj: any, data: object, options?: ExpOptions): any {
     }
 }
 
+/**
+ * 根据Key路径 获取对应值
+ * @param keyPath   Key路径，如: “val.hits[0]._source.@timestamp” (不支持属性名中含有“.”字符，也不支持多维数组)
+ * @param obj       目标对象
+ */
+function getKeyPathValue(keyPath: string, obj: any) {
+    const paths = keyPath.split(/\./);
+    if (paths.length <= 0) return undefined;
+    let item = obj;
+    for (let i = 0; i < paths.length; i++) {
+        if (noValue(item)) return undefined;
+        // noinspection DuplicatedCode
+        let path = paths[i];
+        // 当前路径值是否是数组 取出属性 path 和 method
+        let index: number | undefined = undefined;
+        if (path.match(/.+\[\d+]/)) {
+            path = path.substring(0, path.length - 1);
+            const key = path.substring(0, path.lastIndexOf('['));
+            const indexStr = path.substring(path.lastIndexOf('[') + 1);
+            path = key;
+            index = lodash.toInteger(indexStr);
+        }
+        // 最后一级
+        const isLastPath = (i + 1) == paths.length;
+        if (lodash.trim(path).length <= 0) {
+            if (isLastPath) {
+                return undefined;
+            } else {
+                continue;
+            }
+        }
+        const value = item[path];
+        if (noValue(value)) return value;
+        // 当前路径值是数组
+        if (hasValue(index)) {
+            const val = value[index];
+            if (isLastPath) {
+                return val;
+            } else {
+                item = val;
+            }
+        } else {
+            if (isLastPath) {
+                return value;
+            } else {
+                item = value;
+            }
+        }
+    }
+    return undefined;
+}
+
+/**
+ * 根据Key路径 设置对应值
+ * @param keyPath   Key路径，如: “val.hits[0]._source.@timestamp” (不支持属性名中含有“.”字符，也不支持多维数组)
+ * @param obj       目标对象
+ * @param val       需要设置的值
+ */
+function setKeyPathValue(keyPath: string, obj: any, val: any) {
+    const paths = keyPath.split(/\./);
+    if (paths.length <= 0) return undefined;
+    for (let i = 0; i < paths.length; i++) {
+        if (noValue(obj)) obj = {};
+        // noinspection DuplicatedCode
+        let path = paths[i];
+        // 当前路径值是否是数组 取出属性 path 和 method
+        let index: number | undefined = undefined;
+        if (path.match(/.+\[\d+]/)) {
+            path = path.substring(0, path.length - 1);
+            const key = path.substring(0, path.lastIndexOf('['));
+            const indexStr = path.substring(path.lastIndexOf('[') + 1);
+            path = key;
+            index = lodash.toInteger(indexStr);
+        }
+        // 最后一级
+        const isLastPath = (i + 1) == paths.length;
+        if (lodash.trim(path).length <= 0) {
+            if (isLastPath) {
+                return undefined;
+            } else {
+                continue;
+            }
+        }
+        // 当前路径值是数组
+        if (hasValue(index)) {
+            let value = obj[path];
+            if (noValue(value)) {
+                value = [];
+                obj[path] = value;
+            }
+            if (isLastPath) {
+                value[index] = val;
+                return;
+            } else {
+                if (noValue(value[index])) value[index] = {};
+                obj = value[index];
+            }
+        } else {
+            if (isLastPath) {
+                obj[path] = val;
+                return;
+            } else {
+                if (noValue(obj[path])) obj[path] = {};
+                obj = obj[path];
+            }
+        }
+    }
+}
+
 export type {
     ExpOptions,
     ExpressionExecutor,
@@ -110,4 +220,6 @@ export type {
 export {
     compileExp,
     calcExpression,
+    getKeyPathValue,
+    setKeyPathValue,
 }

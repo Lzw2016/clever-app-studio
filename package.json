@@ -42,16 +42,20 @@
         "numeral": "^2.0.6",
         "axios": "^1.6.7",
         "qs": "^6.11.2",
-        "mitt": "^3.0.1"
+        "mitt": "^3.0.1",
+        "@opentiny/vue": "^3.14.0",
+        "@opentiny/vue-locale": "^3.14.0",
+        "@opentiny/vue-icon": "^3.14.0",
+        "primevue": "^3.49.1"
     },
     "dependencies_bak": {
-        "primevue": "^3.49.0",
+        "primevue": "^3.49.1",
         "naive-ui": "^2.38.1",
         "vexip-ui": "^2.3.3",
         "@arco-design/web-vue": "^2.54.5",
         "ant-design-vue": "^4.1.2",
         "@idux/components": "^2.0.0",
-        "@opentiny/vue": "^3.13.0"
+        "@opentiny/vue": "^3.14.0"
     },
     "devDependencies": {
         "typescript": "^5.3.3",

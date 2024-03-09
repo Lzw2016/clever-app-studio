@@ -8,7 +8,7 @@ import { AnyFunction, ComponentInstance, ErrorCapturedHook, FunctionConfig, Html
 /** 组件基础属性 */
 interface BaseProps {
     /** 组件内联样式 */
-    style?: CSSProperties | Partial<Record<keyof CSSProperties, string>>;
+    style?: CSSProperties | Partial<Record<keyof CSSProperties, string>> | string;
     /** 组件class样式 */
     class?: string;
 
@@ -20,8 +20,20 @@ interface BaseEvent {
     [name: string]: AnyFunction;
 }
 
+/** 指令选项 */
+interface DirectivesOptions {
+    /** 指令参数 */
+    value?: any,
+    /** 指令参数 */
+    argument?: string,
+    /** 指令修饰符 */
+    modifiers?: Record<string, boolean>;
+}
+
 /** 组件基础指令 */
 interface BaseDirectives {
+    /** v-model指令需要绑定的数据属性名 */
+    model?: string;
     /** 组件的的可见性(表达式，值为boolean) */
     show?: string;
     /** 条件性的渲染组件(表达式，值为boolean) */
@@ -46,6 +58,19 @@ interface BaseDirectives {
         item: string;
     };
 
+    /**
+     * 自定义指令，类型 DirectivesOptions 格式：
+     * <pre>
+     * {
+     *     // 指令参数
+     *     value?: any;
+     *     // 指令 arg
+     *     argument?: string;
+     *     // 指令修饰符
+     *     modifiers?: Record<string, boolean>;
+     * }
+     * </pre>
+     */
     [name: string]: any;
 }
 
@@ -64,8 +89,8 @@ type ComponentSlotsItem = DesignNode | Omit<DesignBlock, "meta" | "i18n"> | stri
 
 /** 组件节点 */
 interface DesignNode<Props extends BaseProps = BaseProps, Event extends BaseEvent = BaseEvent, Directives extends BaseDirectives = BaseDirectives> {
-    /** 组件唯一id */
-    id?: string;
+    // /** 组件唯一id(必须系统自动生成，debug时可以临时手动指定) */
+    // id?: string;
     /** 组件类型，默认是 Fragment */
     type?: HtmlTag;
     /** 当前组件实例的引用名称 */
@@ -82,6 +107,8 @@ interface DesignNode<Props extends BaseProps = BaseProps, Event extends BaseEven
     items?: Array<ComponentSlotsItem> | ComponentSlotsItem;
     /** html模版(优先级低于 items) */
     tpl?: Array<string> | string;
+
+    [name: string]: any;
 }
 
 // -------------------------------------------------------------------------------------------------------------------

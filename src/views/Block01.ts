@@ -1,5 +1,4 @@
-import { ComponentInstance } from "@/draggable/types/Base";
-import { createBlockComponent, defineDesignBlock } from "@/draggable/BlockFactory";
+import { Block, createBlockComponent, defineDesignBlock } from "@/draggable/BlockFactory";
 
 const block01 = defineDesignBlock({
     block: true,
@@ -36,7 +35,7 @@ const block01 = defineDesignBlock({
                 },
             },
             listeners: {
-                onClick: function (this: ComponentInstance) {
+                onClick: function (this: Block) {
                     this.count++;
                     // console.log("onClick", this.count);
                 },
@@ -78,7 +77,7 @@ const block01 = defineDesignBlock({
                     tpl: "<%= hiddenDiv01 ? '显示': '隐藏' %>",
                     listeners: {
                         onClick: {
-                            handler: function (this: ComponentInstance) {
+                            handler: function (this: Block) {
                                 this.hiddenDiv01 = !this.hiddenDiv01;
                                 console.log("显示/隐藏");
                             },
@@ -105,19 +104,19 @@ const block01 = defineDesignBlock({
                 "<div>使用$allBlock <%= $allBlock.outBlock.count %></div>",
             ],
             computed: {
-                innerCount2: function (this: ComponentInstance, oldValue, block) {
+                innerCount2: function (this: Block, oldValue, block) {
                     return this.innerCount + 1;
                 },
             },
             watch: {
-                innerCount2: function (this: ComponentInstance, value, oldValue, onCleanup) {
+                innerCount2: function (this: Block, value, oldValue, onCleanup) {
                     this.test2(123, "abc");
                     console.log("watch innerCount2=", value, this);
                 }
             },
             listeners: {
                 onClick: {
-                    handler: function (this: ComponentInstance) {
+                    handler: function (this: Block) {
                         this.innerCount++;
                         console.log("this.$parent", this.$parent);
                         this.$parent.hiddenDiv01 = !this.$parent.hiddenDiv01;
@@ -152,7 +151,7 @@ const block01 = defineDesignBlock({
         },
     },
     listeners: {
-        onClick: function (this: ComponentInstance) {
+        onClick: function (this: Block) {
             this.count++;
             this.test("aaa", 123);
             // console.log("root onClick", this.count);

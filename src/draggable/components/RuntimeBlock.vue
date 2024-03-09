@@ -18,6 +18,9 @@ const props = withDefaults(defineProps<RuntimeBlockProps>(), {});
 
 // 动态创建 Block 组件
 const BlockComponent = props.block ? createBlockComponent(props.block) : Fragment;
+
+// TODO 加载组件，提供加载中状态显示
+// TODO 提供 block 操作api
 </script>
 
 <template>

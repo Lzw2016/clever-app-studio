@@ -1,5 +1,4 @@
-import { ComponentInstance } from "@/draggable/types/Base";
-import { createBlockComponent, defineDesignBlock } from "@/draggable/BlockFactory";
+import { Block, createBlockComponent, defineDesignBlock } from "@/draggable/BlockFactory";
 
 const block03 = defineDesignBlock({
     block: true,
@@ -27,7 +26,7 @@ const block03 = defineDesignBlock({
         },
     },
     computed: {
-        count2: function (this: ComponentInstance, oldValue, block) {
+        count2: function (this: Block, oldValue, block) {
             return this.count * 2;
         },
     },
@@ -121,7 +120,7 @@ const block03 = defineDesignBlock({
         onClick: "addCount",
     },
     methods: {
-        addCount(this: ComponentInstance) {
+        addCount(this: Block) {
             this.count++;
             this.rows.push({ k: `0_${this.count}`, v: `a_${this.count}` });
             console.log("this", this);

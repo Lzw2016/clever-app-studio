@@ -1,13 +1,13 @@
-import { ComponentPublicInstance, createVNode, defineComponent, Fragment, renderList, resolveDirective, VNode, withDirectives } from "vue";
+import { ComponentPublicInstance, createVNode, defineComponent, Fragment, renderList, resolveDirective, vModelCheckbox, vModelRadio, vModelSelect, vModelText, VNode, vShow, withCtx, withDirectives } from "vue";
 import lodash from "lodash";
-import { isArray, isObj, isStr } from "@/utils/Typeof";
-import { VueComponent } from "@/draggable/types/Base";
+import { isArray, isObj, isStr, noValue } from "@/utils/Typeof";
+import { ComponentInstance, VueComponent } from "@/draggable/types/Base";
 import { BaseDirectives, DesignBlock } from "@/draggable/types/DesignBlock";
 import { ComponentManageModel } from "@/draggable/models/ComponentManageModel";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
 import { RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { parseHTML } from "@/draggable/utils/HtmlTag";
-import { calcExpression } from "@/utils/Expression";
+import { calcExpression, getKeyPathValue, setKeyPathValue } from "@/utils/Expression";
 
 /** 组件管理器实例 */
 const componentManage = new ComponentManageModel();
@@ -34,6 +34,8 @@ interface Context {
     readonly node: RuntimeNode;
     /** v-for指令的上下文数据 */
     vForData?: Record<string, any>;
+    /** 插槽中的 props 数据 */
+    slotProps?: Record<string, any>;
 }
 
 /**
@@ -164,7 +166,49 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
     // 应用指令 - show
     if (runtimeNode.directives.show) {
         const show = expTransform(runtimeNode.directives.show, fromInstance, fromBlock, extData);
-        _setShowStyle(allProps, show);
+        // 这里配置一下 show 指令参数，具有应用指令需要在 _applyDirectives 中实现
+        runtimeNode.directives.__inner_show = {
+            value: show,
+        };
+        // _setShowStyle(allProps, show);
+    }
+    // 应用指令 - v-model
+    if (runtimeNode.directives.model) {
+        const modelValue = getKeyPathValue(runtimeNode.directives.model, fromInstance);
+        if (!child.__htmlTag) {
+            // vue 组件
+            if (noValue(allProps.modelValue)) {
+                allProps.modelValue = modelValue;
+            }
+            if (!allProps['onUpdate:modelValue']) {
+                allProps['onUpdate:modelValue'] = function (value: any) {
+                    if (runtimeNode.directives.model) {
+                        setKeyPathValue(runtimeNode.directives.model, fromInstance, value);
+                    }
+                }
+            }
+        } else if (['input', 'select'].includes(child.type as string)) {
+            if (!allProps['onUpdate:modelValue']) {
+                allProps['onUpdate:modelValue'] = function (value: any) {
+                    if (runtimeNode.directives.model) {
+                        setKeyPathValue(runtimeNode.directives.model, fromInstance, value);
+                    }
+                }
+            }
+            // 原生html，这里配置一下 model 指令参数，具有应用指令需要在 _applyDirectives 中实现
+            runtimeNode.directives.__inner_model = { value: modelValue };
+            let fun: any = vModelText;
+            if (child.type === "input") {
+                if ("checkbox" === child.props?.type) {
+                    fun = vModelCheckbox;
+                } else if ("radio" === child.props?.type) {
+                    fun = vModelRadio;
+                }
+            } else if (child.type === "select") {
+                fun = vModelSelect;
+            }
+            runtimeNode.directives.__inner_model.fun = fun;
+        }
     }
     // 应用指令 - for
     if (runtimeNode.directives.for) {
@@ -215,12 +259,13 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: 
     const fromInstance = context.instance;
     const fromBlock = context.block;
     const newContext: Context = { ...context, node: runtimeNode };
-    const createSlotsVNode = function (): Record<string, () => Array<VNode>> {
+    const createSlotsVNode = function (): Record<string, Function> {
         const slots: any = { default: () => ([]) };
-        // TODO 设置插槽 待验证，需要使用 withCtx(slotProps=> [...VNode])
         for (let name in runtimeNode.slots) {
             const slot = runtimeNode.slots[name];
-            slots[name] = () => slot.map(item => createChildVNode(item, newContext, global));
+            slots[name] = withCtx((slotProps: any) => slot.map(item => {
+                return createChildVNode(item, { ...newContext, slotProps: slotProps }, global);
+            }));
         }
         return slots;
     };
@@ -231,8 +276,10 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: 
         const staticHtml = renderTpl(runtimeNode.tpl, props, fromInstance, fromBlock, _toExtData(global, context));
         return createHtmlVNode(staticHtml, props, component);
     };
+    // 当前 component 是 html 标签
+    const isHtmlTag = runtimeNode.__htmlTag;
     // 存在 slots
-    const existsSlots = !runtimeNode.__htmlTag && component != Fragment && Object.keys(runtimeNode.slots).length > 0;
+    const existsSlots = !isHtmlTag && component != Fragment && Object.keys(runtimeNode.slots).length > 0;
     // 存在 items
     const existsItems = runtimeNode.items.length > 0;
     // 存在 tpl
@@ -243,15 +290,20 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: 
         const slots = createSlotsVNode();
         if (existsItems) {
             // slots + items
-            slots.default = () => createItemsVNode();
+            slots.default = withCtx(() => createItemsVNode());
         } else if (existsTpl) {
             // slots + tpl
-            slots.default = () => [createTplVNode()];
+            slots.default = withCtx(() => [createTplVNode()]);
         }
         vnode = createVNode(component, props, slots);
     } else if (existsItems) {
         // items
-        vnode = createVNode(component, props, createItemsVNode());
+        if (isHtmlTag) {
+            vnode = createVNode(component, props, createItemsVNode());
+        } else {
+            // 当前 component 是 vue 组件类型 children 使用 withCtx 包裹，传递 default 插槽
+            vnode = createVNode(component, props, { default: withCtx(() => createItemsVNode()) });
+        }
     } else if (existsTpl) {
         // tpl
         vnode = createTplVNode();
@@ -295,6 +347,7 @@ function createHtmlVNode(staticHtml: string, props?: Record<string, any>, compon
 function _toExtData(global: Global, context: Context) {
     let extData: any = {
         $allBlock: global.allBlock,
+        slotProps: context.slotProps,
     };
     if (context.vForData) {
         extData = { ...extData, ...context.vForData };
@@ -319,14 +372,21 @@ function _setShowStyle(props: any, show: boolean) {
  *  应用其他用户自定义指令
  */
 function _applyDirectives<Directives extends BaseDirectives = BaseDirectives>(vnode: any, directives: Directives) {
-    const innerDirectives = ['show', 'if', 'for'];
+    const innerDirectives = ['model', 'show', 'if', 'for'];
     const useDirectives: Array<any> = [];
     for (let name in directives) {
         if (innerDirectives.includes(name)) {
             continue;
         }
         const param = directives[name];
-        const directive = resolveDirective(name);
+        let directive: any = undefined;
+        if (name === '__inner_show') {
+            directive = vShow;
+        } else if (name === '__inner_model') {
+            directive = param.fun;
+        } else {
+            directive = resolveDirective(name);
+        }
         if (directive) {
             // [directive: Directive, value:any, argument:string, modifiers: Record<string, boolean>]
             let value: any;
@@ -357,7 +417,15 @@ function defineDesignBlock(designBlock: DesignBlock): DesignBlock {
     return designBlock;
 }
 
+/** 定义一个简单明了的别名 */
+type Block = ComponentInstance;
+
+export type  {
+    Block,
+}
+
 export {
+    componentManage,
     createBlockComponent,
     defineDesignBlock,
 }
