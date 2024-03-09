@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { BlockCmp01 } from "./Block01";
-import { BlockCmp02 } from "./Block02";
-import { BlockCmp03 } from "./Block03";
-import { BlockCmp04 } from "./Block04";
+import { block01 } from "./Block01";
+import { block02 } from "./Block02";
+import { block03 } from "./Block03";
+import { block04 } from "./Block04";
+import { createBlockComponent } from "@/draggable/BlockFactory";
+
+const BlockCmp01 = createBlockComponent(block01);
+const BlockCmp02 = createBlockComponent(block02);
+const BlockCmp03 = createBlockComponent(block03);
+const BlockCmp04 = createBlockComponent(block04);
 
 const show = ref(1);
 const block01ref = ref();
@@ -25,7 +31,7 @@ const block01ref = ref();
 
     <div style="height: 12px;"/>
     <BlockCmp03/>
-    
+
     <div style="height: 12px;"/>
     <BlockCmp04/>
 </template>

@@ -1,4 +1,4 @@
-import { Block, createBlockComponent, defineDesignBlock } from "@/draggable/BlockFactory";
+import { Block, defineDesignBlock } from "@/draggable/BlockFactory";
 
 const block02 = defineDesignBlock({
     block: true,
@@ -61,9 +61,6 @@ const block02 = defineDesignBlock({
     },
 });
 
-const BlockCmp02 = createBlockComponent(block02);
-
 export {
     block02,
-    BlockCmp02,
 }
