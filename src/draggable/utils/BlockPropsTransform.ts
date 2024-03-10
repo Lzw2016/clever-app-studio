@@ -514,6 +514,16 @@ function renderTpl(tpl: string[], props: Record<string, any>, instance: any, run
     return compileTpl(template, { cache: true }).bind(instance)(data);
 }
 
+// 当访问不存在的属性时返回空字符串
+function _createSafeObject(obj: object) {
+    // 在with语句中Proxy 的 get不生效
+    return new Proxy(obj, {
+        get(target: object, prop: string | symbol, receiver: any): any {
+            return Reflect.get(target, prop, receiver) || '';
+        },
+    });
+}
+
 export {
     createFunction,
     fillBlockDefValue,

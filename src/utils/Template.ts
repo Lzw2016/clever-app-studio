@@ -30,7 +30,9 @@ function compileTpl(tpl: string | string[], options?: TplOptions): TemplateExecu
     if (tplFunCache.has(tpl)) {
         return tplFunCache.get(tpl)!;
     }
-    const cache = options?.cache;
+    // 禁用 template sourceMap
+    if (!options) options = {};
+    if (!options.sourceURL) options.sourceURL = '';
     try {
         // 这里暂时使用 lodash 的 template 功能，后面有需要可以换成 art-template
         // art-template 相对于 lodash template 优势:
@@ -39,7 +41,7 @@ function compileTpl(tpl: string | string[], options?: TplOptions): TemplateExecu
         //  3.没有使用已经弃用的 with 关键字
         //  4.功能更加强大：支持过滤器语法，模版缓存，模版压缩
         const tplFun = lodash.template(tpl, options);
-        if (cache) {
+        if (options.cache) {
             tplFunCache.set(tpl, tplFun);
         }
         return tplFun;
