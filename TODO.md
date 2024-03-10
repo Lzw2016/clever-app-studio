@@ -11,7 +11,7 @@
 [OK]  2.Block 支持相互嵌套
 [OK]  3.Block 支持插槽和基础指令以及用户自定义指令功能(v-show、v-if、v-for、v-model)
 [OK]  4.Block 嵌套时内层 Block 如何使用外层 Block 的数据好函数
-[  ]  5.完成 Block vue 组件封装(wrap)
+[50]  5.完成 Block vue 组件封装(wrap)
 [  ]  6.Block vue 组件需要支持内部动态更新(内部更新Block配置)
 [OK]  7.createStaticVNode 打包后不更新问题。使用自定义封装的 createHtmlVNode 解决
 [OK]  8.组件定义时提供类似 ext 的 defaults 属性

@@ -56,7 +56,7 @@ if (props.block) {
             msg="DesignBlock 模块渲染失败"
             :err-type="RenderErrType.createBlockComponent"
             :errConfig="props.block"
-            :node="props.block"
+            :node="props.block!"
             :error="err"
         />
     </template>
