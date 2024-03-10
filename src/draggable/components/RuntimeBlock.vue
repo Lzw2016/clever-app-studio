@@ -2,6 +2,8 @@
 import { Fragment, ref } from "vue";
 import { DesignBlock } from "@/draggable/types/DesignBlock";
 import { componentManage, createBlockComponent, getAllComponentType } from "@/draggable/BlockFactory";
+import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
+import { RenderErrType } from "@/draggable/types/RuntimeBlock";
 
 // 定义组件选项
 defineOptions({
@@ -26,6 +28,8 @@ const loading = ref(false);
 let BlockComponent: any = Fragment;
 // Block 组件创建完成
 const blockCreated = ref(false);
+// 渲染的错误
+let err = ref<any>();
 if (props.block) {
     if (props.autoLoadComponent) {
         const types = getAllComponentType(props.block);
@@ -34,8 +38,7 @@ if (props.block) {
             BlockComponent = createBlockComponent(props.block!);
             blockCreated.value = true;
         }).catch(reason => {
-            // TODO 异常处理
-            console.log("渲染Block失败", reason);
+            err = reason;
         }).finally(() => loading.value = false);
     } else {
         BlockComponent = createBlockComponent(props.block);
@@ -48,7 +51,16 @@ if (props.block) {
 </script>
 
 <template>
-    <component :is="BlockComponent" v-if="blockCreated"/>
+    <template v-if="err">
+        <BlockRenderError
+            msg="DesignBlock 模块渲染失败"
+            :err-type="RenderErrType.createBlockComponent"
+            :errConfig="props.block"
+            :node="props.block"
+            :error="err"
+        />
+    </template>
+    <component :is="BlockComponent" v-else-if="blockCreated"/>
     <div v-else>加载中...</div>
 </template>
 

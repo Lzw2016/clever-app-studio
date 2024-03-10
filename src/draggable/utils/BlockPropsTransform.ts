@@ -235,18 +235,18 @@ function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: Co
             }
         }
     }
-    const runtime: any = { block: isBlock };
+    const runtime: any = { block: isBlock, type: type };
     // 如果没有父级 Block 强制让当前节点为 Block
     if (!parents) runtime.block = true;
     // 读取组件类型
     if (type && lodash.trim(type).length > 0) {
-        runtime.type = type.trim();
-        runtime.__htmlTag = isHtmlTag(runtime.type);
-        if (!runtime.__htmlTag) runtime.type = componentManage.getComponent(runtime.type);
+        runtime.__type = type.trim();
+        runtime.__htmlTag = isHtmlTag(runtime.__type);
+        if (!runtime.__htmlTag) runtime.__type = componentManage.getComponent(runtime.__type);
     } else {
-        runtime.type = Fragment;
+        runtime.__type = Fragment;
     }
-    if (!runtime.type) {
+    if (!runtime.__type) {
         throw new Error(`UI组件未注册也不是html原生标签，组件: ${type}`);
     }
     // 处理 tpl 属性

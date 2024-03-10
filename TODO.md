@@ -16,7 +16,7 @@
 [OK]  7.createStaticVNode 打包后不更新问题。使用自定义封装的 createHtmlVNode 解决
 [OK]  8.组件定义时提供类似 ext 的 defaults 属性
 [OK]  9.v-model指令的实现
-[  ] 10.遇到异常是尽可能多的渲染出内容，需要处理 renderTpl、propsTransform、expTransform 函数的异常
+[OK] 10.遇到异常是尽可能多的渲染出内容，需要处理 renderTpl、propsTransform、expTransform 函数的异常
 [  ] 11.模版或者表达式计算时使用代理对象，可以访问任何值?
 [  ] 12.
 [  ] 13.

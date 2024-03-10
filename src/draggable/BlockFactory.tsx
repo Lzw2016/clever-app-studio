@@ -4,11 +4,12 @@ import { isArray, isObj, isStr, noValue } from "@/utils/Typeof";
 import { calcExpression, getKeyPathValue, setKeyPathValue } from "@/utils/Expression";
 import { ComponentInstance, VueComponent } from "@/draggable/types/Base";
 import { BaseDirectives, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
-import { RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { ComponentManageModel } from "@/draggable/models/ComponentManageModel";
 import { isHtmlTag, parseHTML } from "@/draggable/utils/HtmlTag";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
+import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
 
 /** 组件管理器实例 */
 const componentManage: ComponentManage = new ComponentManageModel();
@@ -47,7 +48,17 @@ function createBlockComponent(block: DesignBlock) {
     // 深度克隆 block 对象，保护原始 block 对象不被篡改
     block = lodash.cloneDeep(designBlock);
     // 递归处理 Block 属性，使它符合 vue 组件的规范
-    const runtimeBlock = blockDeepTransform(block, componentManage);
+    let runtimeBlock: RuntimeBlock;
+    try {
+        runtimeBlock = blockDeepTransform(block, componentManage);
+    } catch (e) {
+        return createVNode(BlockRenderError, {
+            msg: "解析 DesignBlock 失败",
+            errType: RenderErrType.blockDeepTransform,
+            errConfig: block,
+            node: block, error: e,
+        });
+    }
     // console.log("createBlockComponent", runtimeBlock);
     const global: Global = { allBlock: {}, designBlock: designBlock };
     // 递归初始化 allBlock
@@ -137,9 +148,27 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
     if (isStr(child)) {
         // html模版 items -> tlp
         const tpl = [child];
-        const props = propsTransform(fromNode.props, fromInstance, fromBlock, extData);
-        const staticHtml = renderTpl(tpl, props, fromInstance, fromBlock, extData);
-        return createHtmlVNode(staticHtml);
+        try {
+            const props = propsTransform(fromNode.props, fromInstance, fromBlock, extData);
+            try {
+                const staticHtml = renderTpl(tpl, props, fromInstance, fromBlock, extData);
+                return createHtmlVNode(staticHtml);
+            } catch (e) {
+                return createVNode(BlockRenderError, {
+                    msg: `渲染模版失败，tpl: \n${tpl.join('\n')}\n`,
+                    errType: RenderErrType.renderTpl,
+                    errConfig: tpl,
+                    node: child, error: e,
+                });
+            }
+        } catch (e) {
+            return createVNode(BlockRenderError, {
+                msg: `计算渲染节点属性失败，props: \n${JSON.stringify(fromNode.props, null, 4)}\n`,
+                errType: RenderErrType.propsTransform,
+                errConfig: fromNode.props,
+                node: child, error: e,
+            });
+        }
     }
     // RuntimeBlock
     const childBlock = child as RuntimeBlock;
@@ -152,9 +181,19 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
     // RuntimeNode
     const runtimeNode = child as RuntimeNode;
     // 组件类型
-    const component: any = runtimeNode.type;
+    const component: any = runtimeNode.__type;
     // 处理 props 表达式(属性的绑定)
-    const props = propsTransform(runtimeNode.props, fromInstance, fromBlock, extData);
+    let props: any;
+    try {
+        props = propsTransform(runtimeNode.props, fromInstance, fromBlock, extData);
+    } catch (e) {
+        return createVNode(BlockRenderError, {
+            msg: `计算渲染节点属性失败，props: \n${JSON.stringify(runtimeNode.props, null, 4)}\n`,
+            errType: RenderErrType.propsTransform,
+            errConfig: runtimeNode.props,
+            node: child, error: e,
+        });
+    }
     const allProps = {
         ...props,
         ...(startRenderBlock ? { ...fromInstance.$attrs, ...fromInstance.$props } : {}),
@@ -164,17 +203,35 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
     };
     // 应用指令 - if
     if (runtimeNode.directives.if) {
-        const needRender = expTransform(runtimeNode.directives.if, fromInstance, fromBlock, extData);
-        if (!needRender) return undefined;
+        try {
+            const needRender = expTransform(runtimeNode.directives.if, fromInstance, fromBlock, extData);
+            if (!needRender) return undefined;
+        } catch (e) {
+            return createVNode(BlockRenderError, {
+                msg: `计算v-if指令表达式失败，v-if: ${runtimeNode.directives.if}`,
+                errType: RenderErrType.expTransform,
+                errConfig: runtimeNode.directives.if,
+                node: child, error: e,
+            });
+        }
     }
     // 应用指令 - show
     if (runtimeNode.directives.show) {
-        const show = expTransform(runtimeNode.directives.show, fromInstance, fromBlock, extData);
-        // 这里配置一下 show 指令参数，具有应用指令需要在 _applyDirectives 中实现
-        runtimeNode.directives.__inner_show = {
-            value: show,
-        };
-        // _setShowStyle(allProps, show);
+        try {
+            const show = expTransform(runtimeNode.directives.show, fromInstance, fromBlock, extData);
+            // 这里配置一下 show 指令参数，具有应用指令需要在 _applyDirectives 中实现
+            runtimeNode.directives.__inner_show = {
+                value: show,
+            };
+            // _setShowStyle(allProps, show);
+        } catch (e) {
+            return createVNode(BlockRenderError, {
+                msg: `计算v-show指令表达式失败，v-show: ${runtimeNode.directives.show}`,
+                errType: RenderErrType.expTransform,
+                errConfig: runtimeNode.directives.show,
+                node: child, error: e
+            });
+        }
     }
     // 应用指令 - v-model
     if (runtimeNode.directives.model) {
@@ -191,7 +248,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
                     }
                 }
             }
-        } else if (['input', 'select'].includes(child.type as string)) {
+        } else if (['input', 'select'].includes(child.__type as string)) {
             if (!allProps['onUpdate:modelValue']) {
                 allProps['onUpdate:modelValue'] = function (value: any) {
                     if (runtimeNode.directives.model) {
@@ -202,13 +259,13 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
             // 原生html，这里配置一下 model 指令参数，具有应用指令需要在 _applyDirectives 中实现
             runtimeNode.directives.__inner_model = { value: modelValue };
             let fun: any = vModelText;
-            if (child.type === "input") {
+            if (child.__type === "input") {
                 if ("checkbox" === child.props?.type) {
                     fun = vModelCheckbox;
                 } else if ("radio" === child.props?.type) {
                     fun = vModelRadio;
                 }
-            } else if (child.type === "select") {
+            } else if (child.__type === "select") {
                 fun = vModelSelect;
             }
             runtimeNode.directives.__inner_model.fun = fun;
@@ -227,7 +284,17 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
         key = lodash.trim(key);
         index = lodash.trim(index);
         if (data.length > 0 && item.length > 0) {
-            let renderListData = expTransform(data, fromInstance, fromBlock, extData);
+            let renderListData: any;
+            try {
+                renderListData = expTransform(data, fromInstance, fromBlock, extData);
+            } catch (e) {
+                return createVNode(BlockRenderError, {
+                    msg: `计算v-for指令表达式失败，v-for: \n${JSON.stringify(runtimeNode.directives.for, null, 4)}\n`,
+                    errType: RenderErrType.expTransform,
+                    errConfig: runtimeNode.directives.for,
+                    node: child, error: e
+                });
+            }
             if (!isObj(renderListData)) renderListData = [];
             return createVNode(
                 Fragment,
@@ -278,8 +345,17 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: 
         return runtimeNode.items.map(item => createChildVNode(item, newContext, global));
     };
     const createTplVNode = function (): VNode {
-        const staticHtml = renderTpl(runtimeNode.tpl, props, fromInstance, fromBlock, _toExtData(global, context));
-        return createHtmlVNode(staticHtml, props, component);
+        try {
+            const staticHtml = renderTpl(runtimeNode.tpl, props, fromInstance, fromBlock, _toExtData(global, context));
+            return createHtmlVNode(staticHtml, props, component);
+        } catch (e) {
+            return createVNode(BlockRenderError, {
+                msg: `渲染模版失败，tpl: \n${runtimeNode.tpl.join('\n')}\n`,
+                errType: RenderErrType.renderTpl,
+                errConfig: runtimeNode.tpl,
+                node: runtimeNode, error: e,
+            });
+        }
     };
     // 当前 component 是 html 标签
     const isHtmlTag = runtimeNode.__htmlTag;
@@ -445,7 +521,7 @@ function getAllComponentType(node: DesignNode, allType?: Set<string>): Array<str
         if (isArray(node.items)) {
             node.items.forEach(item => {
                 if (isObj(item)) {
-                    getAllComponentType(item, allType);
+                    getAllComponentType(item as any, allType);
                 }
             });
         } else if (isObj(node.items)) {

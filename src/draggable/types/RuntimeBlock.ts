@@ -18,8 +18,10 @@ interface RuntimeNode {
     readonly __htmlTag: boolean;
     /** 组件唯一id */
     readonly id: string;
-    /** 组件类型 */
-    readonly type: string | VueComponent;
+    /** 组件类型(HtmlTag或vue组件名称，DesignNode配置) */
+    readonly type: string;
+    /** 组件类型(HtmlTag或vue组件对象) */
+    readonly __type: string | VueComponent;
     /** 当前组件实例的引用名称 */
     readonly ref: string;
     /** 组件属性 */
@@ -76,6 +78,20 @@ interface RuntimeBlock extends RuntimeNode {
 /** 运行时需要渲染的 Block 节点 */
 type RuntimeBlockNode = RuntimeComponentSlotsItem | RuntimeBlock;
 
+/** Block渲染失败类型 */
+enum RenderErrType {
+    /** 创建BlockComponent */
+    createBlockComponent = "createBlockComponent",
+    /** 深度解析DesignBlock */
+    blockDeepTransform = "blockDeepTransform",
+    /** 渲染模版 */
+    renderTpl = "renderTpl",
+    /** 计算node属性 */
+    propsTransform = "propsTransform",
+    /** 表达式计算 */
+    expTransform = "expTransform",
+}
+
 export type {
     RuntimeComponentSlotsItem,
     RuntimeBlockWatchItem,
@@ -83,4 +99,8 @@ export type {
     RuntimeNode,
     RuntimeBlock,
     RuntimeBlockNode,
+}
+
+export {
+    RenderErrType,
 }
