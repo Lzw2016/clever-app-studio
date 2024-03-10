@@ -48,6 +48,7 @@ function createBlockComponent(block: DesignBlock) {
     block = lodash.cloneDeep(designBlock);
     // 递归处理 Block 属性，使它符合 vue 组件的规范
     const runtimeBlock = blockDeepTransform(block, componentManage);
+    // console.log("createBlockComponent", runtimeBlock);
     const global: Global = { allBlock: {}, designBlock: designBlock };
     // 递归初始化 allBlock
     deepExtractBlock(runtimeBlock, global.allBlock);
@@ -63,6 +64,7 @@ function createBlockComponent(block: DesignBlock) {
  * @param global        全局的 global 对象
  */
 function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, global: Global) {
+    // console.log("createRuntimeBlockComponent", runtimeBlock);
     const {
         data,
         computed,
@@ -126,6 +128,7 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, global: Global)
  * @param startRenderBlock  当前是否是开始渲染 RuntimeBlock
  */
 function createChildVNode(child: RuntimeBlockNode, context: Context, global: Global, startRenderBlock: boolean = false) {
+    // console.log("createChildVNode", child);
     const fromInstance = context.instance;
     const fromBlock = context.block;
     const fromNode = context.node;
@@ -257,6 +260,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
  * @param props         已经计算合并了的 props(包含 listeners)
  */
 function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: Global, component: any, props: Record<string, any>) {
+    // console.log("doCreateChildVNode", runtimeNode);
     const fromInstance = context.instance;
     const fromBlock = context.block;
     const newContext: Context = { ...context, node: runtimeNode };
@@ -279,8 +283,10 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: 
     };
     // 当前 component 是 html 标签
     const isHtmlTag = runtimeNode.__htmlTag;
+    // 当前 component 是 Fragment 标签
+    const isFragment = component === Fragment;
     // 存在 slots
-    const existsSlots = !isHtmlTag && component != Fragment && Object.keys(runtimeNode.slots).length > 0;
+    const existsSlots = !isHtmlTag && !isFragment && Object.keys(runtimeNode.slots).length > 0;
     // 存在 items
     const existsItems = runtimeNode.items.length > 0;
     // 存在 tpl
@@ -300,6 +306,8 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: 
     } else if (existsItems) {
         // items
         if (isHtmlTag) {
+            vnode = createVNode(component, props, createItemsVNode());
+        } else if (isFragment) {
             vnode = createVNode(component, props, createItemsVNode());
         } else {
             // 当前 component 是 vue 组件类型 children 使用 withCtx 包裹，传递 default 插槽
@@ -325,6 +333,7 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: 
  * @param component     html片段所属node的组件信息
  */
 function createHtmlVNode(staticHtml: string, props?: Record<string, any>, component?: any) {
+    // console.log("createHtmlVNode", staticHtml, props, component);
     const defComponent = 'span';
     if (!props) props = {};
     if (isStr(component)) {
@@ -434,7 +443,11 @@ function getAllComponentType(node: DesignNode, allType?: Set<string>): Array<str
     }
     if (node.items) {
         if (isArray(node.items)) {
-            node.items.forEach(item => getAllComponentType(item, allType));
+            node.items.forEach(item => {
+                if (isObj(item)) {
+                    getAllComponentType(item, allType);
+                }
+            });
         } else if (isObj(node.items)) {
             getAllComponentType(node.items as any, allType);
         }

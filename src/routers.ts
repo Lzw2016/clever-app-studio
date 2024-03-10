@@ -19,6 +19,12 @@ const staticRouters: RouteRecordRaw[] = [
                 strict: true,
                 component: () => import("@/views/Page02.vue"),
             },
+            {
+                name: 'test3',
+                path: '/test3',
+                strict: true,
+                component: () => import("@/views/Page03.vue"),
+            },
         ],
     },
 ];

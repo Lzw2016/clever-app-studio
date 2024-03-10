@@ -179,6 +179,7 @@ function listenersTransform(listeners: DesignBlock["listeners"], methods: Record
     const vueListeners: any = {};
     for (let name in listeners) {
         const value = listeners[name];
+        if (!value) continue;
         const listener: Partial<RuntimeListener> = {};
         if (isStr(value) && isFun(methods[value])) {
             listener.handler = methods[value];
@@ -212,6 +213,7 @@ function listenersTransform(listeners: DesignBlock["listeners"], methods: Record
 function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: ComponentManage, parents?: RuntimeBlock): RuntimeBlock {
     const {
         block: isBlock,
+        defaults,
         type,
         listeners,
         slots,
@@ -223,6 +225,16 @@ function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: Co
         lifeCycles,
         ...other
     } = fillBlockDefValue(block) as DesignBlock;
+    // 应用 defaults 属性
+    if (defaults && Object.keys(defaults).length > 0) {
+        if (isArray(items)) {
+            for (let item of items) {
+                if (isObj(item) && !isArray(item)) {
+                    lodash.defaultsDeep(item, defaults);
+                }
+            }
+        }
+    }
     const runtime: any = { block: isBlock };
     // 如果没有父级 Block 强制让当前节点为 Block
     if (!parents) runtime.block = true;

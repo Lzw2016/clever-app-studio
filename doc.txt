@@ -35,3 +35,9 @@ tpl数据范围(优先级由上到下)
      9.当前node所属block对应的vue实例的 $props、$attrs、$data、$root、$parent、$slots、$refs、$el、$emit、$forceUpdate 属性
     10.当前node所属block对应的vue实例平铺的 $props 和 $data 数据
 
+表达式语法
+
+
+模版语法
+
+

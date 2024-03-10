@@ -135,6 +135,8 @@ type ComponentSlotsItem = DesignNode | Omit<DesignBlock, "meta" | "i18n"> | stri
 interface DesignNode<Props extends BaseProps = BaseProps, Event extends BaseEvent = BaseEvent, Directives extends BaseDirectives = BaseDirectives> {
     // /** 组件唯一id(必须系统自动生成，debug时可以临时手动指定) */
     // id?: string;
+    /** 当前items中的node对象的默认配置 */
+    defaults?: Omit<DesignNode<Props, Event, Directives>, "ref">;
     /** 组件类型，默认是 Fragment */
     type?: HtmlTag | string;
     /** 当前组件实例的引用名称 */

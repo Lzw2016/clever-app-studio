@@ -35,6 +35,7 @@ if (props.block) {
             blockCreated.value = true;
         }).catch(reason => {
             // TODO 异常处理
+            console.log("渲染Block失败", reason);
         }).finally(() => loading.value = false);
     } else {
         BlockComponent = createBlockComponent(props.block);
