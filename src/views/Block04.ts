@@ -6,7 +6,7 @@ const block04 = defineDesignBlock({
     type: "div",
     props: {
         style: {
-            width: "300px",
+            width: "350px",
             border: "1px solid #ccc",
             userSelect: "none",
             padding: "8px",
