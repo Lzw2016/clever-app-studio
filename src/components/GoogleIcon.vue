@@ -66,56 +66,56 @@ const props = withDefaults(defineProps<GoogleIconProps>(), {
     font-family: 'Material Icons';
     font-style: normal;
     font-weight: 400;
-    src: url(font/MaterialIcons.woff2) format('woff2');
+    src: url(../../public/font/MaterialIcons.woff2) format('woff2');
 }
 
 @font-face {
     font-family: 'Material Icons Outlined';
     font-style: normal;
     font-weight: 400;
-    src: url(font/MaterialIcons-Outlined.woff2) format('woff2');
+    src: url(../../public/font/MaterialIcons-Outlined.woff2) format('woff2');
 }
 
 @font-face {
     font-family: 'Material Icons Round';
     font-style: normal;
     font-weight: 400;
-    src: url(font/MaterialIcons-Round.woff2) format('woff2');
+    src: url(../../public/font/MaterialIcons-Round.woff2) format('woff2');
 }
 
 @font-face {
     font-family: 'Material Icons Sharp';
     font-style: normal;
     font-weight: 400;
-    src: url(font/MaterialIcons-Sharp.woff2) format('woff2');
+    src: url(../../public/font/MaterialIcons-Sharp.woff2) format('woff2');
 }
 
 @font-face {
     font-family: 'Material Icons TwoTone';
     font-style: normal;
     font-weight: 400;
-    src: url(font/MaterialIcons-TwoTone.woff2) format('woff2');
+    src: url(../../public/font/MaterialIcons-TwoTone.woff2) format('woff2');
 }
 
 @font-face {
     font-family: 'Material Symbols Outlined';
     font-style: normal;
     font-weight: 100 700;
-    src: url(font/MaterialSymbols-Outlined.woff2) format('woff2');
+    src: url(../../public/font/MaterialSymbols-Outlined.woff2) format('woff2');
 }
 
 @font-face {
     font-family: 'Material Symbols Rounded';
     font-style: normal;
     font-weight: 100 700;
-    src: url(font/MaterialSymbols-Rounded.woff2) format('woff2');
+    src: url(../../public/font/MaterialSymbols-Rounded.woff2) format('woff2');
 }
 
 @font-face {
     font-family: 'Material Symbols Sharp';
     font-style: normal;
     font-weight: 100 700;
-    src: url(font/MaterialSymbols-Sharp.woff2) format('woff2');
+    src: url(../../public/font/MaterialSymbols-Sharp.woff2) format('woff2');
 }
 
 /*noinspection ALL*/

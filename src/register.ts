@@ -44,8 +44,8 @@ function registerComponent() {
             componentManage.registerComponent(`Tabler${name}`, TablerIcons[name]);
         }
     });
-    // 加载 tabler 图标
-    componentManage.registerAsyncComponent("GoogleIcon", () => import("@/components/GoogleIcon/index.vue").then(module => module.default));
+    // 加载 google 图标
+    componentManage.registerAsyncComponent("GoogleIcon", () => import("@/components/GoogleIcon.vue").then(module => module.default));
     // primevue 组件注册
     componentManage.registerAsyncComponent("Button", () => import("primevue/button").then(module => module.default));
     componentManage.registerAsyncComponent("InputNumber", () => import("primevue/inputnumber").then(module => module.default));

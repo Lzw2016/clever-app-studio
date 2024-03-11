@@ -20,7 +20,7 @@
 [NO] 11.模版或者表达式计算时使用代理对象，可以访问任何值?只针对模版处理，当访问不存在的属性时返回空字符串(无法实现，在with语句中Proxy的get不生效)
 [OK] 12.图标库 fortawesome、google-fonts-icons、tabler-icons，未整合 fluent-system-icons 因为图标已经够用了
 [OK] 13.primevue 国际化(中文配置)
-[  ] 14.ant-design-vue 国际化配置 
+[50] 14.ant-design-vue 国际化配置 
 [OK] 15.删除 opentiny?(暂时删除，因为打包体积太大)
 [  ] 16.给图标库图标名称定义类型
 [  ] 17.
