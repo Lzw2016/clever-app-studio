@@ -81,7 +81,21 @@ export default defineConfig(env => {
             minify: 'esbuild',
             reportCompressedSize: true,
             chunkSizeWarningLimit: 512,
-            rollupOptions: {},
+            rollupOptions: {
+                output: {
+                    manualChunks: function (id) {
+                        if (id.includes('lodash')) {
+                            return 'lodash';
+                        }
+                        if (id.includes('@tabler/')) {
+                            return 'tabler-icons';
+                        }
+                        if (id.includes('@fortawesome/')) {
+                            return 'font-awesome-icon';
+                        }
+                    },
+                },
+            },
         },
     };
     if (isBuild) {
