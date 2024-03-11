@@ -1,6 +1,10 @@
 // import { createI18n } from "vue-i18n";
 import { usePrimeVue } from "primevue/config";
 import PrimeVueZhCN from "./primevue/zh-CN.json";
+import AntDesignZhCN from 'ant-design-vue/es/locale/zh_CN';
+// import dayjs from "dayjs";
+// import "dayjs/locale/zh-cn";
+// dayjs.locale('zh-cn');
 
 /** 国际化(语言) */
 enum Language {
@@ -21,6 +25,11 @@ const primeVueLocale: Partial<Record<LanguageName, any>> = {
     "zh-CN": PrimeVueZhCN["zh-CN"],
 };
 
+// ant-design-vue的多语言 https://antdv.com/docs/vue/i18n-cn
+const antDesignLocale: Partial<Record<LanguageName, any>> = {
+    "zh-CN": AntDesignZhCN,
+};
+
 /**
  * 初始化i18n
  */
@@ -36,18 +45,16 @@ function initI18n(locale: string = "zhCN") {
     // return TinyLocale.initI18n(option);
 }
 
-// 设置 PrimeVue 的语言
-function setPrimeVueLocale(locale: Language) {
-    const primevue = usePrimeVue();
-    primevue.config.locale = primeVueLocale[locale];
-}
-
 /**
  * 切换语言
  * @param locale 语言类型，如：“zhCN”、“”、“”、“”、“”
  */
 function switchLocale(locale: Language = Language.zhCN) {
-    setPrimeVueLocale(locale);
+    // 设置 PrimeVue 的语言
+    const primevue = usePrimeVue();
+    primevue.config.locale = primeVueLocale[locale];
+
+
 }
 
 export type {
@@ -58,6 +65,7 @@ export type {
 export {
     Language,
     primeVueLocale,
+    antDesignLocale,
     initI18n,
     switchLocale,
 };

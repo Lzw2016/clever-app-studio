@@ -7,7 +7,7 @@ defineOptions({
 });
 
 /** 字体类型 */
-type FontStyle = "" | "outlined" | "round" | "Sharp" | "two-tone" | "symbols-outlined" | "symbols-round" | "symbols-sharp";
+type FontStyle = "" | "outlined" | "round" | "sharp" | "two-tone" | "symbols-outlined" | "symbols-round" | "symbols-sharp";
 
 // 定义 Props 类型
 interface GoogleIconProps {

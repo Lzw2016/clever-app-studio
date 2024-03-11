@@ -50,6 +50,8 @@ function registerComponent() {
     componentManage.registerAsyncComponent("Button", () => import("primevue/button").then(module => module.default));
     componentManage.registerAsyncComponent("InputNumber", () => import("primevue/inputnumber").then(module => module.default));
     componentManage.registerAsyncComponent("Calendar", () => import("primevue/calendar").then(module => module.default));
+    // ant-design-vue 组件注册
+    componentManage.registerAsyncComponent("Avatar", () => import("ant-design-vue/es/avatar").then(module => module.default));
 }
 
 /**
