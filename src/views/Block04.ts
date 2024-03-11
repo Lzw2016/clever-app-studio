@@ -125,42 +125,6 @@ const block04 = defineDesignBlock({
             },
             listeners: {},
         },
-        // {
-        //     type: "Input",
-        //     props: {
-        //         type: "text",
-        //         modelValue: "{{ str }}",
-        //     },
-        //     slots: {
-        //         prefix: {
-        //             type: 'FontAwesomeIcon',
-        //             props: {
-        //                 style: {
-        //                     fontSize: "14px",
-        //                     color: "#adb0b8",
-        //                 },
-        //                 icon: "fas fa-search",
-        //                 fixedWidth: true,
-        //             },
-        //         },
-        //         suffix: {
-        //             type: 'FontAwesomeIcon',
-        //             props: {
-        //                 style: {
-        //                     fontSize: "14px",
-        //                     color: "#adb0b8",
-        //                 },
-        //                 icon: "fas fa-calendar-alt",
-        //                 fixedWidth: true,
-        //             },
-        //         },
-        //     },
-        //     listeners: {
-        //         "onUpdate:modelValue": function (this: Block, value: string) {
-        //             this.str = value;
-        //         },
-        //     },
-        // },
         {
             type: "Calendar",
             props: {
@@ -190,7 +154,7 @@ const block04 = defineDesignBlock({
                         directives: {
                             if: "{{ !($slotProps.date.day > 10 && $slotProps.date.day < 15) }}",
                         },
-                        tpl: "<%= $slotProps.date.day %>",
+                        tpl: "<span style='outline: none;'><%= $slotProps.date.day %></span>",
                     },
                 ]
             },

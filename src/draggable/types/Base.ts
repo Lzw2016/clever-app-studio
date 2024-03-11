@@ -1,4 +1,5 @@
 import { Component, ComponentPublicInstance, DefineComponent } from "vue";
+import { I18N, Language, LanguageName } from "@/i18n";
 
 // -------------------------------------------------------------------------------------------------------------------
 // 参考vue类型定义(vue内部的类型定义，直接复制过来的)
@@ -36,20 +37,6 @@ type HtmlTag = 'address' | 'article' | 'aside' | 'footer' | 'header' | 'h1' | 'h
 // -------------------------------------------------------------------------------------------------------------------
 // 共用类型定义
 // -------------------------------------------------------------------------------------------------------------------
-
-/** 国际化(语言) */
-enum Language {
-    /** 中文 */
-    zhCN = 'zh-CN',
-    /** 英文 */
-    enUS = 'en-US',
-}
-
-/** 语言字符串名称 */
-type LanguageName = (typeof Language)[keyof typeof Language];
-
-/** 多语言词条 */
-type I18N = Partial<Record<LanguageName, Record<string, string>>>;
 
 /** 配置式函数(字符串函数代码) */
 interface FunctionConfig {
