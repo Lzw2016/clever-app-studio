@@ -1,4 +1,5 @@
-import { ComponentManage } from "@/draggable/types/ComponentManage";
+import lodash from "lodash";
+import { BatchRegister, ComponentManage } from "@/draggable/types/ComponentManage";
 import { AsyncVueComponent, VueComponent } from "../types/Base";
 import { AsyncComponentMeta, ComponentMeta } from "../types/ComponentMeta";
 
@@ -6,6 +7,7 @@ import { AsyncComponentMeta, ComponentMeta } from "../types/ComponentMeta";
  * 组件管理器模型
  */
 class ComponentManageModel implements ComponentManage {
+    private readonly batchRegister: Map<RegExp, BatchRegister> = new Map<RegExp, BatchRegister>();
     private readonly asyncComponents: Map<string, AsyncVueComponent> = new Map<string, AsyncVueComponent>();
     private readonly components: Map<string, VueComponent> = new Map<string, VueComponent>();
     private readonly componentMetas: Map<string, ComponentMeta> = new Map<string, ComponentMeta>();
@@ -19,9 +21,22 @@ class ComponentManageModel implements ComponentManage {
         this.asyncComponents.set(type, asyncComponent);
     }
 
+    batchRegisterComponent(type: RegExp, register: BatchRegister): void {
+        this.batchRegister.set(type, register);
+    }
+
     async loadAsyncComponent(types: string[]): Promise<Record<string, VueComponent>> {
         const needLoadTypes = types.filter(type => !this.components.has(type));
         const notExistTypes = needLoadTypes.filter(type => !this.asyncComponents.has(type));
+        const registers: { [type: string]: BatchRegister } = {};
+        this.batchRegister.forEach((register, regexp) => {
+            const matchTypes = notExistTypes.filter(type => type.match(regexp));
+            for (let matchType of matchTypes) {
+                registers[matchType] = register;
+            }
+            // 在 notExistTypes 中删除 matchTypes
+            lodash.pullAll(notExistTypes, matchTypes);
+        });
         // 有未注册的组件
         if (notExistTypes.length > 0) {
             throw new Error(`组件 ${notExistTypes.join("、")} 未注册`);
@@ -31,10 +46,18 @@ class ComponentManageModel implements ComponentManage {
             await Promise.all(needLoadTypes.map(async type => {
                 let cmp = this.components.get(type);
                 if (cmp) return cmp;
-                const asyncCmp = this.asyncComponents.get(type)!;
+                const asyncCmp = this.asyncComponents.get(type);
                 try {
-                    cmp = await asyncCmp(type);
-                    this.components.set(type, cmp);
+                    if (!asyncCmp) {
+                        const register = registers[type];
+                        await register(type);
+                        cmp = this.components.get(type);
+                    } else {
+                        cmp = await asyncCmp(type);
+                    }
+                    if (cmp) {
+                        this.components.set(type, cmp);
+                    }
                     return cmp;
                 } catch (reason) {
                     throw new Error(`加载组件 ${type} 失败，错误信息：${reason}`);

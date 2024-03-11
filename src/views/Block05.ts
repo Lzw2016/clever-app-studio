@@ -55,7 +55,23 @@ const block05 = defineDesignBlock({
             listeners: {
                 onClick: null,
             },
-        }
+        },
+        {
+            type: "TablerIconAB2",
+            props: {
+                size: 48,
+                color: "#4299e1",
+            },
+        },
+           {
+            type: "TablerIconAB2",
+            props: {
+                size: 48,
+                color: "#f76707",
+                strokeWidth: 1,
+                class: "fa-spin",
+            },
+        },
     ],
     methods: {
         addCount(this: Block) {

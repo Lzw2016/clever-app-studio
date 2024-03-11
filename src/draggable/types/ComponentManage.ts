@@ -1,6 +1,11 @@
 import { AsyncVueComponent, VueComponent } from "@/draggable/types/Base";
 import { AsyncComponentMeta, ComponentMeta } from "@/draggable/types/ComponentMeta";
 
+/**
+ * 批量注册组件，内部使用 componentManage.registerComponent() 注册组件
+ */
+type BatchRegister = (type: string) => Promise<void>;
+
 /** 组件管理器 */
 interface ComponentManage {
     /**
@@ -16,6 +21,13 @@ interface ComponentManage {
      * @param asyncComponent    异步组件
      */
     registerAsyncComponent(type: string, asyncComponent: AsyncVueComponent): void;
+
+    /**
+     * 批量注册异步组件
+     * @param type      组件名称的正则表达式
+     * @param register  批量注册组件逻辑
+     */
+    batchRegisterComponent(type: RegExp, register: BatchRegister): void;
 
     /**
      * 加载指定的异步组件(如果已加载就直接返回)
@@ -65,5 +77,6 @@ interface ComponentManage {
 }
 
 export type {
+    BatchRegister,
     ComponentManage,
 }

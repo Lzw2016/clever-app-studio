@@ -4,17 +4,6 @@ import "primevue/resources/themes/aura-light-blue/theme.css";
 import { Language, primeVueLocale } from "@/i18n";
 import { componentManage } from "@/draggable/BlockFactory";
 
-// const FaSolidIcons = await import("@fortawesome/free-solid-svg-icons");
-// const icon: FaIcon = FaSolidIcons[key];
-// interface FaIcon {
-//     /** 图标前缀 */
-//     prefix: "fas" | string;
-//     /** 图标名称，如："weight-scale"、"window-minimize" */
-//     iconName: string;
-//     /** 图标内容 */
-//     icon: Array<any>;
-// }
-
 /**
  * 配置组件库
  */
@@ -31,6 +20,9 @@ function useComponent(app: App) {
  * 注册组件
  */
 function registerComponent() {
+    // 注册成全局对象
+    window['componentManage'] = componentManage;
+    // 加载 fortawesome 图标
     componentManage.registerAsyncComponent("FontAwesomeIcon", async () => {
         const { FontAwesomeIcon } = await import("@fortawesome/vue-fontawesome");
         const { library } = await import("@fortawesome/fontawesome-svg-core");
@@ -42,6 +34,17 @@ function registerComponent() {
         library.add(fab); // 数量: 518
         return FontAwesomeIcon;
     });
+    // 加载 tabler 图标
+    componentManage.batchRegisterComponent(/^TablerIcon\w+$/, async () => {
+        const TablerIcons = await import("@tabler/icons-vue");
+        for (let name in TablerIcons) {
+            if (!name.startsWith("Icon")) {
+                continue;
+            }
+            componentManage.registerComponent(`Tabler${name}`, TablerIcons[name]);
+        }
+    });
+    // primevue 组件注册
     componentManage.registerAsyncComponent("Button", () => import("primevue/button").then(module => module.default));
     componentManage.registerAsyncComponent("InputNumber", () => import("primevue/inputnumber").then(module => module.default));
     componentManage.registerAsyncComponent("Calendar", () => import("primevue/calendar").then(module => module.default));

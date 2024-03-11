@@ -61,7 +61,7 @@ if (props.block) {
         />
     </template>
     <component :is="BlockComponent" v-else-if="blockCreated"/>
-    <div v-else>加载中...</div>
+    <div v-else-if="loading">加载中...</div>
 </template>
 
 <style scoped>
