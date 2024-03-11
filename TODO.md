@@ -18,5 +18,19 @@
 [OK]  9.v-model指令的实现
 [OK] 10.遇到异常是尽可能多的渲染出内容，需要处理 renderTpl、propsTransform、expTransform 函数的异常
 [NO] 11.模版或者表达式计算时使用代理对象，可以访问任何值?只针对模版处理，当访问不存在的属性时返回空字符串(无法实现，在with语句中Proxy的get不生效)
-[  ] 12.
-[  ] 13.
+[  ] 12.图标库 fortawesome 、fluent-system-icons、google-fonts-icons、tabler-icons
+[  ] 13.primevue 国际化(中文配置)
+[  ] 14.ant-design-vue 国际化配置 
+[  ] 15.删除 opentiny?
+[  ] 16.
+[  ] 17.
+[  ] 18.
+[  ] 19.
+
+组件库面板
+拖拽引擎
+拖拽画布
+组件属性配置面板
+页面预览
+页面大纲树
+页面管理

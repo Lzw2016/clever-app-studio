@@ -433,7 +433,7 @@ function createHtmlVNode(staticHtml: string, props?: Record<string, any>, compon
 function _toExtData(global: Global, context: Context) {
     let extData: any = {
         $allBlock: global.allBlock,
-        slotProps: context.slotProps,
+        $slotProps: context.slotProps,
     };
     if (context.vForData) {
         extData = { ...extData, ...context.vForData };

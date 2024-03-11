@@ -2,7 +2,7 @@ import { ComponentInstance, ComponentSlotMeta, FunctionMeta, I18N, VueComponent 
 import { BaseProps, ComponentListener, DesignNode } from "@/draggable/types/DesignBlock";
 
 /** 组件节点默认配置 */
-type DefDesignNode = Partial<Omit<DesignNode, 'id' | 'type' | 'ref'>>
+type DefDesignNode = Partial<Omit<DesignNode, 'type' | 'ref'>>
 
 /** 主键Schema */
 interface ComponentSchema {

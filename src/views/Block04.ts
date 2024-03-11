@@ -25,6 +25,51 @@ const block04 = defineDesignBlock({
     },
     items: [
         {
+            type: 'FontAwesomeIcon',
+            props: {
+                // icon: "fa-solid fa-phone",
+                icon: ['fas', 'phone'],
+                // icon: ['fas', 'spinner'],
+                size: "2x",
+            },
+        },
+        {
+            type: 'FontAwesomeIcon',
+            props: {
+                icon: "fas fa-volume-up",
+                size: "1x",
+                spin: true,
+            },
+        },
+        {
+            type: 'FontAwesomeIcon',
+            props: {
+                icon: "fas fa-volume-up",
+                size: "2x",
+                flip: "horizontal",
+            },
+        },
+        {
+            type: 'FontAwesomeIcon',
+            props: {
+                icon: "fas fa-volume-up",
+                size: "3x",
+                rotation: 270,
+            },
+        },
+        {
+            type: 'FontAwesomeIcon',
+            props: {
+                style: {
+                    fontSize: "28px",
+                    color: "#adb0b8",
+                },
+                icon: "fas fa-search",
+                fixedWidth: true,
+            },
+        },
+        "<br/>",
+        {
             type: 'input',
             directives: {
                 model: "str",
@@ -33,9 +78,11 @@ const block04 = defineDesignBlock({
         {
             type: "Button",
             props: {
-                type: "primary",
-                size: "mini",
-                "reset-time": 0,
+                severity: "info",
+                size: "small",
+                style: {
+                    marginLeft: "8px",
+                },
             },
             // items: "A按钮<%= count %>",
             tpl: "A按钮<%= count %>",
@@ -44,52 +91,76 @@ const block04 = defineDesignBlock({
             },
         },
         {
-            type: "Button",
-            props: {},
-            tpl: "B按钮<%= count %>",
-            listeners: {
-                onClick: "addCount",
-            },
-        },
-        {
-            type: "Input",
+            type: "InputNumber",
             props: {
-                type: "text",
-                // modelValue: "{{ str }}",
+                showButtons: true,
+                buttonLayout: "horizontal",
             },
             directives: {
-                model: "str",
+                model: "count",
             },
             slots: {
-                prepend: {
-                    tpl: "HTTP://",
+                decrementbuttonicon: {
+                    type: "FontAwesomeIcon",
+                    props: {
+                        style: {
+                            fontSize: "16px",
+                            color: "#adb0b8",
+                        },
+                        icon: "fas fa-plus",
+                        fixedWidth: true,
+                    },
                 },
-                append: {
-                    tpl: ".com",
+                incrementbuttonicon: {
+                    type: "FontAwesomeIcon",
+                    props: {
+                        style: {
+                            fontSize: "16px",
+                            color: "#adb0b8",
+                        },
+                        icon: "fa-solid fa-minus",
+                        fixedWidth: true,
+                    },
                 },
             },
             listeners: {},
         },
-        {
-            type: "Input",
-            props: {
-                type: "text",
-                modelValue: "{{ str }}",
-            },
-            slots: {
-                prefix: {
-                    type: "IconSearch",
-                },
-                suffix: {
-                    type: "IconCalendar",
-                },
-            },
-            listeners: {
-                "onUpdate:modelValue": function (this: Block, value: string) {
-                    this.str = value;
-                },
-            },
-        },
+        // {
+        //     type: "Input",
+        //     props: {
+        //         type: "text",
+        //         modelValue: "{{ str }}",
+        //     },
+        //     slots: {
+        //         prefix: {
+        //             type: 'FontAwesomeIcon',
+        //             props: {
+        //                 style: {
+        //                     fontSize: "14px",
+        //                     color: "#adb0b8",
+        //                 },
+        //                 icon: "fas fa-search",
+        //                 fixedWidth: true,
+        //             },
+        //         },
+        //         suffix: {
+        //             type: 'FontAwesomeIcon',
+        //             props: {
+        //                 style: {
+        //                     fontSize: "14px",
+        //                     color: "#adb0b8",
+        //                 },
+        //                 icon: "fas fa-calendar-alt",
+        //                 fixedWidth: true,
+        //             },
+        //         },
+        //     },
+        //     listeners: {
+        //         "onUpdate:modelValue": function (this: Block, value: string) {
+        //             this.str = value;
+        //         },
+        //     },
+        // },
         {
             type: "Calendar",
             props: {
@@ -111,15 +182,15 @@ const block04 = defineDesignBlock({
                             },
                         },
                         directives: {
-                            if: "{{ slotProps.date.day > 10 && slotProps.date.day < 15 }}",
+                            if: "{{ $slotProps.date.day > 10 && $slotProps.date.day < 15 }}",
                         },
-                        tpl: "<%= slotProps.date.day %>",
+                        tpl: "<%= $slotProps.date.day %>",
                     },
                     {
                         directives: {
-                            if: "{{ !(slotProps.date.day > 10 && slotProps.date.day < 15) }}",
+                            if: "{{ !($slotProps.date.day > 10 && $slotProps.date.day < 15) }}",
                         },
-                        tpl: "<%= slotProps.date.day %>",
+                        tpl: "<%= $slotProps.date.day %>",
                     },
                 ]
             },
