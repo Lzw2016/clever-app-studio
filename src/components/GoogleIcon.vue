@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
 import { style } from "@/utils/UseType";
 
 // 定义组件选项
@@ -37,6 +38,31 @@ const props = withDefaults(defineProps<GoogleIconProps>(), {
     grade: 0,
     opticalSize: 24,
 });
+
+// 是否已加载字体
+const loadFonts = ref(false);
+
+onMounted(() => {
+    let loader: Promise<any>;
+    if (props.fontStyle === 'outlined') {
+        loader = import('@/assets/font-material-icons-outlined.css');
+    } else if (props.fontStyle === 'round') {
+        loader = import('@/assets/font-material-icons-round.css');
+    } else if (props.fontStyle === 'sharp') {
+        loader = import('@/assets/font-material-icons-sharp.css');
+    } else if (props.fontStyle === 'two-tone') {
+        loader = import('@/assets/font-material-icons-two-tone.css');
+    } else if (props.fontStyle === 'symbols-outlined') {
+        loader = import('@/assets/font-material-symbols-outlined.css');
+    } else if (props.fontStyle === 'symbols-round') {
+        loader = import('@/assets/font-material-symbols-round.css');
+    } else if (props.fontStyle === 'symbols-sharp') {
+        loader = import('@/assets/font-material-symbols-sharp.css');
+    } else {
+        loader = import('@/assets/font-material-icons.css');
+    }
+    loader.finally(() => loadFonts.value = true);
+});
 </script>
 
 <template>
@@ -57,67 +83,11 @@ const props = withDefaults(defineProps<GoogleIconProps>(), {
             'symbols-sharp': props.fontStyle === 'symbols-sharp',
         }"
     >
-        {{ props.content }}
+        {{ loadFonts ? props.content : '' }}
     </span>
 </template>
 
 <style>
-@font-face {
-    font-family: 'Material Icons';
-    font-style: normal;
-    font-weight: 400;
-    src: url(../../public/font/MaterialIcons.woff2) format('woff2');
-}
-
-@font-face {
-    font-family: 'Material Icons Outlined';
-    font-style: normal;
-    font-weight: 400;
-    src: url(../../public/font/MaterialIcons-Outlined.woff2) format('woff2');
-}
-
-@font-face {
-    font-family: 'Material Icons Round';
-    font-style: normal;
-    font-weight: 400;
-    src: url(../../public/font/MaterialIcons-Round.woff2) format('woff2');
-}
-
-@font-face {
-    font-family: 'Material Icons Sharp';
-    font-style: normal;
-    font-weight: 400;
-    src: url(../../public/font/MaterialIcons-Sharp.woff2) format('woff2');
-}
-
-@font-face {
-    font-family: 'Material Icons TwoTone';
-    font-style: normal;
-    font-weight: 400;
-    src: url(../../public/font/MaterialIcons-TwoTone.woff2) format('woff2');
-}
-
-@font-face {
-    font-family: 'Material Symbols Outlined';
-    font-style: normal;
-    font-weight: 100 700;
-    src: url(../../public/font/MaterialSymbols-Outlined.woff2) format('woff2');
-}
-
-@font-face {
-    font-family: 'Material Symbols Rounded';
-    font-style: normal;
-    font-weight: 100 700;
-    src: url(../../public/font/MaterialSymbols-Rounded.woff2) format('woff2');
-}
-
-@font-face {
-    font-family: 'Material Symbols Sharp';
-    font-style: normal;
-    font-weight: 100 700;
-    src: url(../../public/font/MaterialSymbols-Sharp.woff2) format('woff2');
-}
-
 /*noinspection ALL*/
 .material-icons {
     font-family: 'Material Icons';
