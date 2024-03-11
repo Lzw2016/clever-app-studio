@@ -63,13 +63,27 @@ const block05 = defineDesignBlock({
                 color: "#4299e1",
             },
         },
-           {
+        {
             type: "TablerIconAB2",
             props: {
                 size: 48,
                 color: "#f76707",
                 strokeWidth: 1,
                 class: "fa-spin",
+            },
+        },
+        {
+            type: "br",
+        },
+        {
+            type: "GoogleIcon",
+            props: {
+                content: "home",
+                size: 48,
+                fontStyle: "symbols-outlined",
+                color: "#ae3ec9",
+                class: "fa-spin",
+                inactive: true,
             },
         },
     ],
