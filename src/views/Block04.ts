@@ -83,6 +83,7 @@ const block04 = defineDesignBlock({
                 style: {
                     marginLeft: "8px",
                 },
+                // unstyled: true,
             },
             // items: "A按钮<%= count %>",
             tpl: "A按钮<%= count %>",
@@ -132,6 +133,7 @@ const block04 = defineDesignBlock({
                 hourFormat: "24",
                 showTime: true,
                 showSeconds: true,
+                // unstyled: true,
             },
             directives: {
                 model: "now",
