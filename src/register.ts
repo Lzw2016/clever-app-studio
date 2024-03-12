@@ -22,7 +22,7 @@ function useComponent(app: App) {
 function registerComponent() {
     // 注册成全局对象
     window['componentManage'] = componentManage;
-    // 加载 fortawesome 图标
+    // 注册 fortawesome 图标
     componentManage.registerAsyncComponent("FontAwesomeIcon", async () => {
         const { FontAwesomeIcon } = await import("@fortawesome/vue-fontawesome");
         const { library } = await import("@fortawesome/fontawesome-svg-core");
@@ -34,7 +34,7 @@ function registerComponent() {
         library.add(fab); // 数量: 518
         return FontAwesomeIcon;
     });
-    // 加载 tabler 图标
+    // 注册 tabler 图标
     componentManage.batchRegisterComponent(/^TablerIcon\w+$/, async () => {
         const TablerIcons = await import("@tabler/icons-vue");
         for (let name in TablerIcons) {
@@ -44,8 +44,10 @@ function registerComponent() {
             componentManage.registerComponent(`Tabler${name}`, TablerIcons[name]);
         }
     });
-    // 加载 google 图标
+    // 注册 google 图标
     componentManage.registerAsyncComponent("GoogleIcon", () => import("@/components/GoogleIcon.vue").then(module => module.default));
+    // opentiny 组件注册
+    componentManage.registerAsyncComponent("OpenTiny", () => import("@/components/opentiny"));
     // primevue 组件注册
     componentManage.registerAsyncComponent("Button", () => import("primevue/button").then(module => module.default));
     componentManage.registerAsyncComponent("InputNumber", () => import("primevue/inputnumber").then(module => module.default));

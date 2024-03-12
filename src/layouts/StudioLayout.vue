@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { RouterView } from "vue-router";
-import Splitter from 'primevue/splitter';
-import SplitterPanel from 'primevue/splitterpanel';
-import TabView from 'primevue/tabview';
-import TabPanel from 'primevue/tabpanel';
+import Splitter from "primevue/splitter";
+import SplitterPanel from "primevue/splitterpanel";
+import TabView from "primevue/tabview";
+import TabPanel from "primevue/tabpanel";
+import ComponentPanel from "@/draggable/components/widgets/ComponentPanel.vue";
 import { style } from "@/utils/UseType";
+import { componentMetaTabs } from "@/ComponentMetaTabs";
 
 // 定义组件选项
 defineOptions({
@@ -74,10 +76,13 @@ onMounted(() => {
             <div class="flex-item-fixed box-border-l" style="width: 48px;">语言</div>
         </div>
         <div
-            class="flex-item-fixed box-border-t"
+            class="flex-item-fixed flex-row-container box-border-t"
             :style="style({ height: props.topToolsHeight })"
         >
-            可隐藏工具栏
+            <div class="flex-item-fixed box-border-r" style="width: 128px;">当前叶签信息</div>
+            <div class="flex-item-fill"></div>
+            <div class="flex-item-fixed box-border-l" style="width: 48px;">功能</div>
+            <div class="flex-item-fixed box-border-l" style="width: 48px;">功能</div>
         </div>
         <div
             ref="centerRef"
@@ -98,7 +103,7 @@ onMounted(() => {
             </div>
             <Splitter v-if="state.leftPanelSize>0" class="flex-item-fill" style="height: 100%;" stateKey="studioSplit" stateStorage="local" :unstyled="false">
                 <SplitterPanel class="" style="height: 100%;" :size="state.leftPanelSize">
-                    AAA
+                    <ComponentPanel :tabs="componentMetaTabs" />
                 </SplitterPanel>
                 <SplitterPanel class="" style="height: 100%;" :size="100 - state.leftPanelSize - state.rightPanelSize">
                     <TabView class="multi-pages" style="height: 100%;" :scrollable="true" :unstyled="false">

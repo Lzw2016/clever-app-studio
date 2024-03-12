@@ -49,6 +49,8 @@
         "@fortawesome/free-brands-svg-icons": "^6.5.1",
         "@fortawesome/vue-fontawesome": "^3.0.6",
         "@tabler/icons-vue": "^3.0.0",
+        "@opentiny/vue": "^3.14.0",
+        "@opentiny/vue-locale": "^3.14.0",
         "primevue": "^3.49.1",
         "ant-design-vue": "^4.1.2"
     },

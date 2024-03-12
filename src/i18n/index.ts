@@ -1,4 +1,6 @@
-// import { createI18n } from "vue-i18n";
+import { createI18n } from "vue-i18n";
+import TinyLocale from "@opentiny/vue-locale";
+import type { InitI18nOption } from "@opentiny/vue-locale/src/vue3";
 import { usePrimeVue } from "primevue/config";
 import PrimeVueZhCN from "./primevue/zh-CN.json";
 import AntDesignZhCN from 'ant-design-vue/es/locale/zh_CN';
@@ -34,15 +36,15 @@ const antDesignLocale: Partial<Record<LanguageName, any>> = {
  * 初始化i18n
  */
 function initI18n(locale: string = "zhCN") {
-    // const option: InitI18nOption = {
-    //     i18n: { locale: locale },
-    //     createI18n: createI18n,
-    //     messages: {
-    //         zhCN: {},
-    //         enUS: {},
-    //     },
-    // };
-    // return TinyLocale.initI18n(option);
+    const option: InitI18nOption = {
+        i18n: { locale: locale },
+        createI18n: createI18n,
+        messages: {
+            zhCN: {},
+            enUS: {},
+        },
+    };
+    return TinyLocale.initI18n(option);
 }
 
 /**
@@ -53,8 +55,6 @@ function switchLocale(locale: Language = Language.zhCN) {
     // 设置 PrimeVue 的语言
     const primevue = usePrimeVue();
     primevue.config.locale = primeVueLocale[locale];
-
-
 }
 
 export type {

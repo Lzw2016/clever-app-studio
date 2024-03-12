@@ -4,7 +4,7 @@ import { createPinia } from "pinia";
 import App from "./App.vue";
 import { focus } from "./directives";
 import { initRouter } from "./routers";
-// import initI18n from "./i18n";
+import { initI18n } from "./i18n";
 import { registerComponent, registerComponentMeta, useComponent } from "./register";
 
 window['APP_INFO'] = readonly(__APP_INFO__);
@@ -25,8 +25,8 @@ window['APP_INFO'] = readonly(__APP_INFO__);
     initRouter(router);
     app.use(router);
     // i18n
-    // const i18n = initI18n("zhCN");
-    // app.use(i18n);
+    const i18n = initI18n();
+    app.use(i18n);
     // 自定义指令
     app.directive("focus", focus);
     // 配置组件库

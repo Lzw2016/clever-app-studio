@@ -124,6 +124,24 @@ interface ComponentMeta {
     i18n?: I18N;
 }
 
+/** 组件元信息分组 */
+interface ComponentMetaGroup {
+    /** 组件分组标题 */
+    title: string;
+    /** 是否展开状态(默认为true) */
+    expand?: boolean;
+    /** 组件元信息集合 */
+    items: Array<ComponentMeta>
+}
+
+/** 组件元信息叶签 */
+interface ComponentMetaTab {
+    /** 组件叶签标题 */
+    title: string;
+    /** 组件元信息集合 */
+    groups: Array<ComponentMetaGroup>
+}
+
 /** 异步获取“组件元信息” */
 type AsyncComponentMeta = (type: string) => Promise<ComponentMeta>;
 
@@ -136,5 +154,7 @@ export type {
     SetterPanel,
     ComponentSetter,
     ComponentMeta,
+    ComponentMetaGroup,
+    ComponentMetaTab,
     AsyncComponentMeta,
 }
