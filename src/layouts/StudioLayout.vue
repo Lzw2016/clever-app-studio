@@ -14,8 +14,11 @@ defineOptions({
 
 // 定义 Props 类型
 interface StudioLayoutProps {
+    /** 顶部高度，单位(px) */
     topPanelHeight?: number;
+    /** 顶部工具栏高度，单位(px) */
     topToolsHeight?: number;
+    /** 底部工具栏高度，单位(px) */
     bottomToolsHeight?: number;
     /** 左侧面板宽度，单位(px) */
     leftPanelSize?: number;
@@ -28,18 +31,14 @@ const props = withDefaults(defineProps<StudioLayoutProps>(), {
     topPanelHeight: 32,
     topToolsHeight: 22,
     bottomToolsHeight: 22,
-
     leftPanelSize: 180,
     rightPanelSize: 300,
 });
-
 
 const centerRef = ref<HTMLDivElement | undefined>();
 const leftToolRef = ref<HTMLDivElement | undefined>();
 const rightToolRef = ref<HTMLDivElement | undefined>();
 const state = reactive({
-
-
     // 左侧面板宽度，百分比
     leftPanelSize: 0,
     // 右侧面板宽度，百分比
@@ -55,8 +54,6 @@ onMounted(() => {
             state.leftPanelSize = 15;
             state.rightPanelSize = 30;
         }
-        // console.log("width", width);
-        // console.log("state", state);
     }
 });
 </script>
