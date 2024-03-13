@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
-import { RouterView } from "vue-router";
-import Splitter from "primevue/splitter";
-import SplitterPanel from "primevue/splitterpanel";
-import TabView from "primevue/tabview";
-import TabPanel from "primevue/tabpanel";
-import ComponentPanel from "@/draggable/components/widgets/ComponentPanel.vue";
+import { onMounted, reactive, ref, watch } from "vue";
+// import Splitter from "primevue/splitter";
+// import SplitterPanel from "primevue/splitterpanel";
+// import TabView from "primevue/tabview";
+// import TabPanel from "primevue/tabpanel";
 import { style } from "@/utils/UseType";
-import { componentMetaTabs } from "@/ComponentMetaTabs";
+import SplitPane from "@/components/SplitPane.vue";
 
 // 定义组件选项
 defineOptions({
@@ -42,21 +40,34 @@ const leftToolRef = ref<HTMLDivElement | undefined>();
 const rightToolRef = ref<HTMLDivElement | undefined>();
 const state = reactive({
     // 左侧面板宽度，百分比
-    leftPanelSize: 0,
+    leftPanelSplit: -1,
     // 右侧面板宽度，百分比
-    rightPanelSize: 0,
+    rightPanelSplit: -1,
 });
 
 onMounted(() => {
     if (centerRef.value && leftToolRef.value && rightToolRef.value) {
         const width = centerRef.value?.clientWidth - leftToolRef.value?.offsetWidth - rightToolRef.value?.offsetWidth - 2;
-        state.leftPanelSize = props.leftPanelSize / width * 100;
-        state.rightPanelSize = props.rightPanelSize / width * 100;
-        if ((state.leftPanelSize + state.rightPanelSize) > 90) {
-            state.leftPanelSize = 15;
-            state.rightPanelSize = 30;
+        state.rightPanelSplit = props.rightPanelSize / width;
+        state.leftPanelSplit = props.leftPanelSize / width;
+        if ((state.leftPanelSplit + state.rightPanelSplit) > 0.9) {
+            state.leftPanelSplit = 0.15;
+            state.rightPanelSplit = 0.30;
         }
+        state.rightPanelSplit = 1 - state.rightPanelSplit;
     }
+});
+
+function rightPanelMoving(event: MouseEvent) {
+
+}
+
+function moving(event: MouseEvent) {
+    console.log("event", event);
+}
+
+watch(() => state.rightPanelSplit, (value, oldValue, onCleanup) => {
+    console.log("value, oldValue", value, oldValue)
 });
 </script>
 
@@ -87,9 +98,6 @@ onMounted(() => {
         <div
             ref="centerRef"
             class="flex-item-fill flex-row-container box-border"
-            :style="style({
-                height:  `calc(100% - ${props.topPanelHeight + props.topToolsHeight + props.bottomToolsHeight}px)`,
-            })"
         >
             <div ref="leftToolRef" class="flex-item-fixed flex-column-container" style="height: 100%;width: 32px;">
                 <div class="flex-item-fixed box-border-b" style="height: 32px">组件</div>
@@ -101,21 +109,86 @@ onMounted(() => {
                 <div class="flex-item-fixed box-border-t" style="height: 32px">功能</div>
                 <div class="flex-item-fixed"></div>
             </div>
-            <Splitter v-if="state.leftPanelSize>0" class="flex-item-fill" style="height: 100%;" stateKey="studioSplit" stateStorage="local" :unstyled="false">
-                <SplitterPanel class="" style="height: 100%;" :size="state.leftPanelSize">
-                    <ComponentPanel :tabs="componentMetaTabs" />
-                </SplitterPanel>
-                <SplitterPanel class="" style="height: 100%;" :size="100 - state.leftPanelSize - state.rightPanelSize">
-                    <TabView class="multi-pages" style="height: 100%;" :scrollable="true" :unstyled="false">
-                        <TabPanel :key="'001'" :header="'页面'">
-                            <RouterView/>
-                        </TabPanel>
-                    </TabView>
-                </SplitterPanel>
-                <SplitterPanel class="" style="height: 100%;" :size="state.rightPanelSize">
-                    BBB
-                </SplitterPanel>
-            </Splitter>
+            <SplitPane
+                class="flex-item-fill box-border-lr"
+                style="height: 100%;"
+                :layout="'H'"
+                :fixed-pane-min-size="150"
+                :fixed-pane-max-size="600"
+                :fixed-pane-def-size="300"
+                :one-collapse="true"
+            >
+                <template #onePane="slotProps">
+                    <div v-bind="slotProps" style="overflow: auto;">
+
+                    </div>
+                </template>
+                <template #twoPane="slotProps">
+<!--                    <div v-bind="slotProps">-->
+<!--                    </div>-->
+
+                    <SplitPane
+                        v-bind="slotProps"
+                        style="height: 100%;"
+                        :layout="'H'"
+                        :fixed-pane="'two'"
+                        :fixed-pane-min-size="150"
+                        :fixed-pane-max-size="600"
+                        :fixed-pane-def-size="300"
+                        :two-collapse="true"
+                    >
+                        <template #onePane="slotProps">
+                            <div v-bind="slotProps">
+
+                            </div>
+                        </template>
+                        <template #twoPane="slotProps">
+                            <div v-bind="slotProps">
+
+                            </div>
+                        </template>
+                    </SplitPane>
+                </template>
+            </SplitPane>
+
+
+            <!--            <Split-->
+            <!--                v-if="state.rightPanelSplit>=0"-->
+            <!--                class="flex-item-fill"-->
+            <!--                style="height: 100%;"-->
+            <!--                mode="horizontal"-->
+            <!--                v-model="state.rightPanelSplit"-->
+            <!--                right-bottom-min="150px"-->
+            <!--                left-top-min="500px"-->
+            <!--                collapse-right-bottom-->
+            <!--                trigger-simple-->
+            <!--                three-areas-->
+            <!--                @moving="moving"-->
+            <!--            >-->
+            <!--                <template #left>-->
+            <!--                    <Split-->
+            <!--                        style="height: 100%;"-->
+            <!--                        mode="horizontal"-->
+            <!--                        v-model="state.leftPanelSplit"-->
+            <!--                        left-top-min="150px"-->
+            <!--                        collapse-left-top-->
+            <!--                        trigger-simple-->
+            <!--                        three-areas-->
+            <!--                    >-->
+            <!--                        <template #left>-->
+
+            <!--                        </template>-->
+            <!--                        <template #right>-->
+
+            <!--                        </template>-->
+            <!--                    </Split>-->
+            <!--                </template>-->
+            <!--                <template #right>-->
+
+            <!--                </template>-->
+            <!--            </Split>-->
+
+
             <div ref="rightToolRef" class="flex-item-fixed flex-column-container" style="height: 100%;width: 32px;">
                 <div class="flex-item-fixed box-border-b" style="height: 32px">属性</div>
                 <div class="flex-item-fixed box-border-b" style="height: 32px">历史</div>
@@ -158,6 +231,7 @@ onMounted(() => {
 
 .flex-item-fill {
     flex-grow: 1;
+    overflow: hidden;
 }
 
 .flex-item-fixed {
@@ -192,22 +266,5 @@ onMounted(() => {
 .box-border-tb {
     border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
-}
-</style>
-
-<style>
-.multi-pages.p-tabview > .p-tabview-nav-container {
-    height: 36px;
-    font-size: 0.90rem;
-}
-
-.multi-pages.p-tabview .p-tabview-nav li .p-tabview-nav-link {
-    padding: 0.6rem 1rem;
-}
-
-.multi-pages.p-tabview > .p-tabview-panels {
-    height: calc(100% - 36px);
-    overflow: auto;
-    padding: 0.6rem 0.75rem 0.75rem 0.75rem;
 }
 </style>

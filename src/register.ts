@@ -47,7 +47,7 @@ function registerComponent() {
     // 注册 google 图标
     componentManage.registerAsyncComponent("GoogleIcon", () => import("@/components/GoogleIcon.vue").then(module => module.default));
     // opentiny 组件注册
-    componentManage.registerAsyncComponent("OpenTiny", () => import("@/components/opentiny"));
+    componentManage.registerAsyncComponent("OpenTiny", () => import("@/components/OpenTiny"));
     // primevue 组件注册
     componentManage.registerAsyncComponent("Button", () => import("primevue/button").then(module => module.default));
     componentManage.registerAsyncComponent("InputNumber", () => import("primevue/inputnumber").then(module => module.default));
@@ -60,7 +60,6 @@ function registerComponent() {
  * 注册组件元信息
  */
 function registerComponentMeta() {
-
 }
 
 export {

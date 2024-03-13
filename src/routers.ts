@@ -5,7 +5,7 @@ const staticRouters: RouteRecordRaw[] = [
         name: 'defLayout',
         path: '/',
         strict: true,
-        component: () => import("@/layouts/StudioLayout.vue"),
+        component: () => import("@/draggable/components/StudioLayout.vue"),
         children: [
             {
                 name: 'test1',
