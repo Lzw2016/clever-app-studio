@@ -112,83 +112,76 @@ watch(() => state.rightPanelSplit, (value, oldValue, onCleanup) => {
             <SplitPane
                 class="flex-item-fill box-border-lr"
                 style="height: 100%;"
-                :layout="'H'"
+                layout="V"
+                fixed-pane="two"
                 :fixed-pane-min-size="150"
                 :fixed-pane-max-size="600"
                 :fixed-pane-def-size="300"
-                :one-collapse="true"
+                :two-collapse="true"
+                def-collapsed="two"
             >
                 <template #onePane="slotProps">
-                    <div v-bind="slotProps" style="overflow: auto;">
-
-                    </div>
-                </template>
-                <template #twoPane="slotProps">
-<!--                    <div v-bind="slotProps">-->
-<!--                    </div>-->
-
                     <SplitPane
                         v-bind="slotProps"
                         style="height: 100%;"
-                        :layout="'H'"
-                        :fixed-pane="'two'"
+                        layout="H"
                         :fixed-pane-min-size="150"
                         :fixed-pane-max-size="600"
                         :fixed-pane-def-size="300"
-                        :two-collapse="true"
+                        :one-collapse="true"
                     >
                         <template #onePane="slotProps">
-                            <div v-bind="slotProps">
-
+                            <div v-bind="slotProps" style="overflow: auto;">
+                                <div style="height: 300px;">1</div>
+                                <div style="height: 300px;">2</div>
+                                <div style="height: 300px;">3</div>
+                                <div style="height: 300px;">4</div>
+                                <div style="height: 300px;">5</div>
                             </div>
                         </template>
                         <template #twoPane="slotProps">
-                            <div v-bind="slotProps">
-
-                            </div>
+                            <SplitPane
+                                v-bind="slotProps"
+                                style="height: 100%;"
+                                layout="H"
+                                fixed-pane="two"
+                                :fixed-pane-min-size="150"
+                                :fixed-pane-max-size="600"
+                                :fixed-pane-def-size="300"
+                                :two-collapse="true"
+                            >
+                                <template #onePane="slotProps">
+                                    <div v-bind="slotProps" style="overflow: auto;">
+                                        <div style="height: 300px;">1</div>
+                                        <div style="height: 300px;">2</div>
+                                        <div style="height: 300px;">3</div>
+                                        <div style="height: 300px;">4</div>
+                                        <div style="height: 300px;">5</div>
+                                    </div>
+                                </template>
+                                <template #twoPane="slotProps">
+                                    <div v-bind="slotProps" style="overflow: auto;">
+                                        <div style="height: 300px;">1</div>
+                                        <div style="height: 300px;">2</div>
+                                        <div style="height: 300px;">3</div>
+                                        <div style="height: 300px;">4</div>
+                                        <div style="height: 300px;">5</div>
+                                    </div>
+                                </template>
+                            </SplitPane>
                         </template>
                     </SplitPane>
                 </template>
+                <template #twoPane="slotProps">
+                    <div v-bind="slotProps" style="overflow: auto;">
+                        <div style="height: 300px;">1</div>
+                        <div style="height: 300px;">2</div>
+                        <div style="height: 300px;">3</div>
+                        <div style="height: 300px;">4</div>
+                        <div style="height: 300px;">5</div>
+                    </div>
+                </template>
             </SplitPane>
-
-
-            <!--            <Split-->
-            <!--                v-if="state.rightPanelSplit>=0"-->
-            <!--                class="flex-item-fill"-->
-            <!--                style="height: 100%;"-->
-            <!--                mode="horizontal"-->
-            <!--                v-model="state.rightPanelSplit"-->
-            <!--                right-bottom-min="150px"-->
-            <!--                left-top-min="500px"-->
-            <!--                collapse-right-bottom-->
-            <!--                trigger-simple-->
-            <!--                three-areas-->
-            <!--                @moving="moving"-->
-            <!--            >-->
-            <!--                <template #left>-->
-            <!--                    <Split-->
-            <!--                        style="height: 100%;"-->
-            <!--                        mode="horizontal"-->
-            <!--                        v-model="state.leftPanelSplit"-->
-            <!--                        left-top-min="150px"-->
-            <!--                        collapse-left-top-->
-            <!--                        trigger-simple-->
-            <!--                        three-areas-->
-            <!--                    >-->
-            <!--                        <template #left>-->
-
-            <!--                        </template>-->
-            <!--                        <template #right>-->
-
-            <!--                        </template>-->
-            <!--                    </Split>-->
-            <!--                </template>-->
-            <!--                <template #right>-->
-
-            <!--                </template>-->
-            <!--            </Split>-->
-
-
             <div ref="rightToolRef" class="flex-item-fixed flex-column-container" style="height: 100%;width: 32px;">
                 <div class="flex-item-fixed box-border-b" style="height: 32px">属性</div>
                 <div class="flex-item-fixed box-border-b" style="height: 32px">历史</div>
