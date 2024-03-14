@@ -30,8 +30,14 @@ interface SplitPaneProps {
     gutterSize?: number;
     /** 默认折叠状态，one:第一个面板折叠 , two:第二个面板折叠 */
     defCollapsed?: "" | "one" | "two";
-    /** 面板自定义样式 */
+    /** 面板自定义样式，同时应用在 第一个面板 和 第二个面板 */
     paneStyle?: CSSProperties;
+    /** 分隔线样式 */
+    gutterStyle?: CSSProperties;
+    /** 自定义第一个面板(手动定义第一个面板的根级html dom) */
+    customOnePane?: boolean;
+    /** 自定义第二个面板(手动定义第二个面板的根级html dom) */
+    customTwoPane?: boolean;
 }
 
 // 自定义事件类型
@@ -286,14 +292,26 @@ function twoCollapseClick() {
         }"
     >
         <slot
+            v-if="props.customOnePane"
             name="onePane"
             :class="{
                 'flex-item-fill': !onePaneFixed && !hideOne,
                 'flex-item-fixed': onePaneFixed && !hideOne,
             }"
-            :style="{...onePaneStyle, ...paneStyle}"
+            :style="{overflow: 'auto', ...onePaneStyle, ...paneStyle}"
         >
         </slot>
+        <div
+            v-else
+            :class="{
+                'flex-item-fill': !onePaneFixed && !hideOne,
+                'flex-item-fixed': onePaneFixed && !hideOne,
+            }"
+            :style="{overflow: 'auto', ...onePaneStyle, ...paneStyle}"
+        >
+            <slot name="onePane"></slot>
+        </div>
+
         <slot name="gutter">
             <div
                 :class="{
@@ -302,7 +320,7 @@ function twoCollapseClick() {
                     'split-gutter-horizontal': horizontal,
                     'resizing': state.resizing,
                 }"
-                :style="gutterStyle"
+                :style="{...gutterStyle, ...props.gutterStyle}"
             >
                 <div
                     class="split-gutter-drag"
@@ -328,15 +346,27 @@ function twoCollapseClick() {
                 </div>
             </div>
         </slot>
+
         <slot
+            v-if="props.customTwoPane"
             name="twoPane"
             :class="{
                 'flex-item-fill': onePaneFixed && !hideTwo,
                 'flex-item-fixed': !onePaneFixed && !hideTwo,
             }"
-            :style="{...twoPaneStyle, ...paneStyle}"
+            :style="{overflow: 'auto', ...twoPaneStyle, ...paneStyle}"
         >
         </slot>
+        <div
+            v-else
+            :class="{
+                'flex-item-fill': onePaneFixed && !hideTwo,
+                'flex-item-fixed': !onePaneFixed && !hideTwo,
+            }"
+            :style="{overflow: 'auto', ...twoPaneStyle, ...paneStyle}"
+        >
+            <slot name="twoPane"></slot>
+        </div>
     </div>
 </template>
 

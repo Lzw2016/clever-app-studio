@@ -119,6 +119,7 @@ watch(() => state.rightPanelSplit, (value, oldValue, onCleanup) => {
                 :fixed-pane-def-size="300"
                 :two-collapse="true"
                 def-collapsed="two"
+                :custom-one-pane="true"
             >
                 <template #onePane="slotProps">
                     <SplitPane
@@ -129,15 +130,14 @@ watch(() => state.rightPanelSplit, (value, oldValue, onCleanup) => {
                         :fixed-pane-max-size="600"
                         :fixed-pane-def-size="300"
                         :one-collapse="true"
+                        :custom-two-pane="true"
                     >
-                        <template #onePane="slotProps">
-                            <div v-bind="slotProps" style="overflow: auto;">
-                                <div style="height: 300px;">1</div>
-                                <div style="height: 300px;">2</div>
-                                <div style="height: 300px;">3</div>
-                                <div style="height: 300px;">4</div>
-                                <div style="height: 300px;">5</div>
-                            </div>
+                        <template #onePane>
+                            <div style="height: 300px;">1</div>
+                            <div style="height: 300px;">2</div>
+                            <div style="height: 300px;">3</div>
+                            <div style="height: 300px;">4</div>
+                            <div style="height: 300px;">5</div>
                         </template>
                         <template #twoPane="slotProps">
                             <SplitPane
@@ -150,36 +150,30 @@ watch(() => state.rightPanelSplit, (value, oldValue, onCleanup) => {
                                 :fixed-pane-def-size="300"
                                 :two-collapse="true"
                             >
-                                <template #onePane="slotProps">
-                                    <div v-bind="slotProps" style="overflow: auto;">
-                                        <div style="height: 300px;">1</div>
-                                        <div style="height: 300px;">2</div>
-                                        <div style="height: 300px;">3</div>
-                                        <div style="height: 300px;">4</div>
-                                        <div style="height: 300px;">5</div>
-                                    </div>
+                                <template #onePane>
+                                    <div style="height: 300px;">1</div>
+                                    <div style="height: 300px;">2</div>
+                                    <div style="height: 300px;">3</div>
+                                    <div style="height: 300px;">4</div>
+                                    <div style="height: 300px;">5</div>
                                 </template>
-                                <template #twoPane="slotProps">
-                                    <div v-bind="slotProps" style="overflow: auto;">
-                                        <div style="height: 300px;">1</div>
-                                        <div style="height: 300px;">2</div>
-                                        <div style="height: 300px;">3</div>
-                                        <div style="height: 300px;">4</div>
-                                        <div style="height: 300px;">5</div>
-                                    </div>
+                                <template #twoPane>
+                                    <div style="height: 300px;">1</div>
+                                    <div style="height: 300px;">2</div>
+                                    <div style="height: 300px;">3</div>
+                                    <div style="height: 300px;">4</div>
+                                    <div style="height: 300px;">5</div>
                                 </template>
                             </SplitPane>
                         </template>
                     </SplitPane>
                 </template>
-                <template #twoPane="slotProps">
-                    <div v-bind="slotProps" style="overflow: auto;">
-                        <div style="height: 300px;">1</div>
-                        <div style="height: 300px;">2</div>
-                        <div style="height: 300px;">3</div>
-                        <div style="height: 300px;">4</div>
-                        <div style="height: 300px;">5</div>
-                    </div>
+                <template #twoPane>
+                    <div style="height: 300px;">1</div>
+                    <div style="height: 300px;">2</div>
+                    <div style="height: 300px;">3</div>
+                    <div style="height: 300px;">4</div>
+                    <div style="height: 300px;">5</div>
                 </template>
             </SplitPane>
             <div ref="rightToolRef" class="flex-item-fixed flex-column-container" style="height: 100%;width: 32px;">
