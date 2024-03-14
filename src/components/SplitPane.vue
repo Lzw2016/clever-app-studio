@@ -26,7 +26,7 @@ interface SplitPaneProps {
     twoCollapse?: boolean;
     /** 禁用拖拽 */
     disabled?: boolean;
-    /** 分隔线大小 */
+    /** 分隔拖拽区大小 */
     gutterSize?: number;
     /** 默认折叠状态，one:第一个面板折叠 , two:第二个面板折叠 */
     defCollapsed?: "" | "one" | "two";
@@ -78,6 +78,8 @@ const data = {
     lastPosition: -1,
     // 当前已超出 fixedPaneMinSize | fixedPaneMaxSize 范围，分别取值 min | max
     outOfMinMax: "",
+    // 分隔线(最外层显示的线)大小
+    gutterLineSize: 2,
 };
 // 水平模式
 const horizontal = computed(() => props.layout === 'H');
@@ -117,9 +119,9 @@ const twoPaneStyle = computed(() => {
     } else if (hideOne.value) {
         style[widthOrHeight.value] = "100%";
     } else if (onePaneFixed.value) {
-        style[widthOrHeight.value] = `calc(100% - ${state.fixedSize - props.gutterSize}px)`;
+        style[widthOrHeight.value] = `calc(100% - ${state.fixedSize}px)`;
     } else {
-        style[widthOrHeight.value] = `${state.fixedSize - props.gutterSize}px`;
+        style[widthOrHeight.value] = `${state.fixedSize}px`;
     }
     return style;
 });
@@ -137,14 +139,14 @@ const gutterStyle = computed(() => {
     if (hideOne.value || hideTwo.value) {
         style[widthOrHeight.value] = '0px';
     } else {
-        style[widthOrHeight.value] = '2px';
+        style[widthOrHeight.value] = `${data.gutterLineSize}px`;
     }
     return style;
 });
 // 分隔区响应拖拽 style
 const gutterDragStyle = computed(() => {
     const style: CSSProperties = {};
-    const gutterSizeHalf = (props.gutterSize - 2) / 2;
+    const gutterSizeHalf = (props.gutterSize - data.gutterLineSize) / 2;
     const gutterSizeStrictHalf = props.gutterSize / 2;
     if (horizontal.value) {
         style.height = "100%";
@@ -244,8 +246,8 @@ function gutterResizing(event: MouseEvent) {
         newSize = props.fixedPaneMaxSize;
         data.outOfMinMax = "max";
     }
+    state.fixedSize = newSize;
     if (!data.outOfMinMax) {
-        state.fixedSize = newSize;
         data.lastPosition = position;
     }
 }

@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from "vue";
-// import Splitter from "primevue/splitter";
-// import SplitterPanel from "primevue/splitterpanel";
-// import TabView from "primevue/tabview";
-// import TabPanel from "primevue/tabpanel";
+import { reactive } from "vue";
 import { style } from "@/utils/UseType";
 import SplitPane from "@/components/SplitPane.vue";
+import { componentMetaTabs } from "@/ComponentMetaTabs";
+import ComponentPanel from "@/draggable/components/widgets/ComponentPanel.vue";
 
 // 定义组件选项
 defineOptions({
@@ -14,60 +12,53 @@ defineOptions({
 
 // 定义 Props 类型
 interface StudioLayoutProps {
-    /** 顶部高度，单位(px) */
-    topPanelHeight?: number;
+    /** 顶部导航栏高度，单位(px) */
+    topNavHeight?: number;
     /** 顶部工具栏高度，单位(px) */
     topToolsHeight?: number;
     /** 底部工具栏高度，单位(px) */
     bottomToolsHeight?: number;
     /** 左侧面板宽度，单位(px) */
-    leftPanelSize?: number;
+    leftPanelDefWidth?: number;
+
+    leftPanelMinWidth?: number;
+
+    leftPanelMaxWidth?: number;
     /** 右侧面板宽度，单位(px) */
-    rightPanelSize?: number;
+    rightPanelDefWidth?: number;
+
+    rightPanelMinWidth?: number;
+
+    rightPanelMaxWidth?: number;
+    /** 底部工具栏高度，单位(px) */
+    bottomPanelDefWidth?: number;
+
+    bottomPanelMinWidth?: number;
+
+    bottomPanelMaxWidth?: number;
 }
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<StudioLayoutProps>(), {
-    topPanelHeight: 32,
+    topNavHeight: 32,
     topToolsHeight: 22,
     bottomToolsHeight: 22,
-    leftPanelSize: 180,
-    rightPanelSize: 300,
-});
 
-const centerRef = ref<HTMLDivElement | undefined>();
-const leftToolRef = ref<HTMLDivElement | undefined>();
-const rightToolRef = ref<HTMLDivElement | undefined>();
+    leftPanelDefWidth: 250,
+    leftPanelMinWidth: 150,
+    leftPanelMaxWidth: 350,
+
+    rightPanelDefWidth: 280,
+    rightPanelMinWidth: 150,
+    rightPanelMaxWidth: 320,
+
+    bottomPanelDefWidth: 180,
+    bottomPanelMinWidth: 50,
+    bottomPanelMaxWidth: 300,
+});
+// state 属性
 const state = reactive({
-    // 左侧面板宽度，百分比
-    leftPanelSplit: -1,
-    // 右侧面板宽度，百分比
-    rightPanelSplit: -1,
-});
 
-onMounted(() => {
-    if (centerRef.value && leftToolRef.value && rightToolRef.value) {
-        const width = centerRef.value?.clientWidth - leftToolRef.value?.offsetWidth - rightToolRef.value?.offsetWidth - 2;
-        state.rightPanelSplit = props.rightPanelSize / width;
-        state.leftPanelSplit = props.leftPanelSize / width;
-        if ((state.leftPanelSplit + state.rightPanelSplit) > 0.9) {
-            state.leftPanelSplit = 0.15;
-            state.rightPanelSplit = 0.30;
-        }
-        state.rightPanelSplit = 1 - state.rightPanelSplit;
-    }
-});
-
-function rightPanelMoving(event: MouseEvent) {
-
-}
-
-function moving(event: MouseEvent) {
-    console.log("event", event);
-}
-
-watch(() => state.rightPanelSplit, (value, oldValue, onCleanup) => {
-    console.log("value, oldValue", value, oldValue)
 });
 </script>
 
@@ -75,7 +66,7 @@ watch(() => state.rightPanelSplit, (value, oldValue, onCleanup) => {
     <div class="studio-layout flex-column-container box-border">
         <div
             class="flex-item-fixed flex-row-container"
-            :style="style({ height: props.topPanelHeight })"
+            :style="style({ height: props.topNavHeight })"
         >
             <div class="flex-item-fixed box-border-r" style="width: 128px;">Logo</div>
             <div class="flex-item-fixed box-border-r" style="width: 48px;">功能</div>
@@ -95,11 +86,8 @@ watch(() => state.rightPanelSplit, (value, oldValue, onCleanup) => {
             <div class="flex-item-fixed box-border-l" style="width: 48px;">功能</div>
             <div class="flex-item-fixed box-border-l" style="width: 48px;">功能</div>
         </div>
-        <div
-            ref="centerRef"
-            class="flex-item-fill flex-row-container box-border"
-        >
-            <div ref="leftToolRef" class="flex-item-fixed flex-column-container" style="height: 100%;width: 32px;">
+        <div class="flex-item-fill flex-row-container box-border">
+            <div class="flex-item-fixed flex-column-container" style="height: 100%;width: 32px;">
                 <div class="flex-item-fixed box-border-b" style="height: 32px">组件</div>
                 <div class="flex-item-fixed box-border-b" style="height: 32px">大纲</div>
                 <div class="flex-item-fixed box-border-b" style="height: 32px">页面</div>
@@ -114,11 +102,11 @@ watch(() => state.rightPanelSplit, (value, oldValue, onCleanup) => {
                 style="height: 100%;"
                 layout="V"
                 fixed-pane="two"
-                :fixed-pane-min-size="150"
-                :fixed-pane-max-size="600"
-                :fixed-pane-def-size="300"
+                :fixed-pane-def-size="props.bottomPanelDefWidth"
+                :fixed-pane-min-size="props.bottomPanelMinWidth"
+                :fixed-pane-max-size="props.bottomPanelMaxWidth"
                 :two-collapse="true"
-                def-collapsed="two"
+                def-collapsed=""
                 :custom-one-pane="true"
             >
                 <template #onePane="slotProps">
@@ -126,18 +114,14 @@ watch(() => state.rightPanelSplit, (value, oldValue, onCleanup) => {
                         v-bind="slotProps"
                         style="height: 100%;"
                         layout="H"
-                        :fixed-pane-min-size="150"
-                        :fixed-pane-max-size="600"
-                        :fixed-pane-def-size="300"
+                        :fixed-pane-def-size="props.leftPanelDefWidth"
+                        :fixed-pane-min-size="props.leftPanelMinWidth"
+                        :fixed-pane-max-size="props.leftPanelMaxWidth"
                         :one-collapse="true"
                         :custom-two-pane="true"
                     >
                         <template #onePane>
-                            <div style="height: 300px;">1</div>
-                            <div style="height: 300px;">2</div>
-                            <div style="height: 300px;">3</div>
-                            <div style="height: 300px;">4</div>
-                            <div style="height: 300px;">5</div>
+                            <ComponentPanel :tabs="componentMetaTabs"/>
                         </template>
                         <template #twoPane="slotProps">
                             <SplitPane
@@ -145,9 +129,9 @@ watch(() => state.rightPanelSplit, (value, oldValue, onCleanup) => {
                                 style="height: 100%;"
                                 layout="H"
                                 fixed-pane="two"
-                                :fixed-pane-min-size="150"
-                                :fixed-pane-max-size="600"
-                                :fixed-pane-def-size="300"
+                                :fixed-pane-def-size="props.rightPanelDefWidth"
+                                :fixed-pane-min-size="props.rightPanelMinWidth"
+                                :fixed-pane-max-size="props.rightPanelMaxWidth"
                                 :two-collapse="true"
                             >
                                 <template #onePane>
@@ -176,7 +160,7 @@ watch(() => state.rightPanelSplit, (value, oldValue, onCleanup) => {
                     <div style="height: 300px;">5</div>
                 </template>
             </SplitPane>
-            <div ref="rightToolRef" class="flex-item-fixed flex-column-container" style="height: 100%;width: 32px;">
+            <div class="flex-item-fixed flex-column-container" style="height: 100%;width: 32px;">
                 <div class="flex-item-fixed box-border-b" style="height: 32px">属性</div>
                 <div class="flex-item-fixed box-border-b" style="height: 32px">历史</div>
                 <div class="flex-item-fixed box-border-b" style="height: 32px">数据</div>

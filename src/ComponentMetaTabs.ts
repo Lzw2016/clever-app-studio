@@ -36,7 +36,7 @@ const componentMetaTabs: Array<ComponentMetaTab> = [
         groups: [],
     },
     {
-        title: "原子组件",
+        title: "基础组件",
         groups: [],
     },
 ];
