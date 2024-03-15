@@ -126,7 +126,7 @@ const state = reactive({});
                         <template #twoPane="slotProps">
                             <SplitPane
                                 v-bind="slotProps"
-                                style="height: 100%;"
+                                style="height: 100%;overflow: hidden;"
                                 layout="H"
                                 fixed-pane="two"
                                 :fixed-pane-def-size="props.rightPanelDefWidth"

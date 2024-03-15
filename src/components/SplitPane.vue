@@ -20,9 +20,9 @@ interface SplitPaneProps {
     fixedPaneMinSize?: number;
     /** 第一个面板的最大大小(绝对大小) */
     fixedPaneMaxSize?: number;
-    /** 第一个面板的折叠按钮 */
+    /** 显示第一个面板的折叠按钮 */
     oneCollapse?: boolean;
-    /** 第二个面板的折叠按钮 */
+    /** 显示第二个面板的折叠按钮 */
     twoCollapse?: boolean;
     /** 禁用拖拽 */
     disabled?: boolean;
@@ -103,6 +103,7 @@ const onePaneStyle = computed(() => {
         style.display = 'none';
     } else if (hideTwo.value) {
         style[widthOrHeight.value] = "100%";
+        // style[widthOrHeight.value] = `calc(100% - ${data.gutterLineSize}px)`;
     } else if (onePaneFixed.value) {
         style[widthOrHeight.value] = `${state.fixedSize}px`;
     } else {
@@ -118,6 +119,7 @@ const twoPaneStyle = computed(() => {
         style.display = 'none';
     } else if (hideOne.value) {
         style[widthOrHeight.value] = "100%";
+        // style[widthOrHeight.value] = `calc(100% - ${data.gutterLineSize}px)`;
     } else if (onePaneFixed.value) {
         style[widthOrHeight.value] = `calc(100% - ${state.fixedSize}px)`;
     } else {
@@ -331,7 +333,7 @@ function twoCollapseClick() {
                 >
                 </div>
                 <div
-                    v-if="props.oneCollapse || hideTwo"
+                    v-if="(props.oneCollapse && !hideOne) || hideTwo"
                     class="split-gutter-button"
                     :style="oneCollapseStyle"
                     @click="oneCollapseClick"
@@ -339,7 +341,7 @@ function twoCollapseClick() {
                     <FontAwesomeIcon :icon="horizontal ? faCaretLeft : faCaretUp"/>
                 </div>
                 <div
-                    v-if="props.twoCollapse || hideOne"
+                    v-if="(props.twoCollapse && !hideTwo) || hideOne"
                     class="split-gutter-button"
                     :style="twoCollapseStyle"
                     @click="twoCollapseClick"
