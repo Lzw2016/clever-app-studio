@@ -5,6 +5,7 @@ import SplitPane from "@/components/SplitPane.vue";
 import { componentMeta, componentMetaTabs } from "@/ComponentMetaTabs";
 import ComponentPanel from "@/draggable/components/widgets/ComponentPanel.vue";
 import SettingsPanel from "@/draggable/components/widgets/SettingsPanel.vue";
+import WorkspaceTabs from "@/draggable/components/widgets/WorkspaceTabs.vue";
 
 // 定义组件选项
 defineOptions({
@@ -134,7 +135,7 @@ const state = reactive({});
                                 :two-collapse="true"
                             >
                                 <template #onePane>
-                                    <div style="height: 1300px;"></div>
+                                    <WorkspaceTabs />
                                 </template>
                                 <template #twoPane>
                                     <SettingsPanel :componentMeta="componentMeta"/>

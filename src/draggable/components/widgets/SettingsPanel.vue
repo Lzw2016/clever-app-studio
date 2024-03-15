@@ -109,7 +109,6 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
 .component-panel {
     height: 100%;
     width: 100%;
-    user-select: none;
 }
 
 .component-panel-title {

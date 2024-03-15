@@ -423,6 +423,7 @@ function twoCollapseClick() {
     justify-content: center;
     cursor: pointer;
     transform: translate(-50%, -50%);
+    z-index: 1;
 }
 
 .split-gutter-button:hover {

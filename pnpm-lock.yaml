@@ -71,6 +71,9 @@ dependencies:
   qs:
     specifier: ^6.11.2
     version: 6.11.2
+  sortablejs:
+    specifier: ^1.15.2
+    version: 1.15.2
   vue:
     specifier: ^3.4.20
     version: 3.4.20(typescript@5.3.3)
@@ -88,6 +91,9 @@ devDependencies:
   '@types/node':
     specifier: ^20.11.21
     version: 20.11.21
+  '@types/sortablejs':
+    specifier: ^1.15.8
+    version: 1.15.8
   '@vitejs/plugin-legacy':
     specifier: ^5.3.1
     version: 5.3.1(esbuild@0.20.1)(terser@5.28.1)(vite@5.1.4)
@@ -4961,6 +4967,10 @@ packages:
       undici-types: 5.26.5
     dev: true
 
+  /@types/sortablejs@1.15.8:
+    resolution: {integrity: sha512-b79830lW+RZfwaztgs1aVPgbasJ8e7AXtZYHTELNXZPsERt4ymJdjV4OccDbHQAvHrCcFpbF78jkm0R6h/pZVg==}
+    dev: true
+
   /@types/web-bluetooth@0.0.20:
     resolution: {integrity: sha512-g9gZnnXVq7gM7v3tJCWV/qw7w+KeOlSHAhgF9RytFyifW6AF61hdT2ucrYhPq9hLs5JIryeupHV3qGk95dH9ow==}
     dev: false
@@ -6825,6 +6835,10 @@ packages:
     resolution: {integrity: sha512-JA//kQgZtbuY83m+xT+tXJkmJncGMTFT+C+g2h2R9uxkYIrE2yy9sgmcLhCnw57/WSD+Eh3J97FPEDFnbXnDUg==}
     dependencies:
       is-arrayish: 0.3.2
+    dev: false
+
+  /sortablejs@1.15.2:
+    resolution: {integrity: sha512-FJF5jgdfvoKn1MAKSdGs33bIqLi3LmsgVTliuX6iITj834F+JRQZN90Z93yql8h0K2t0RwDPBmxwlbZfDcxNZA==}
     dev: false
 
   /source-map-js@1.0.2:
