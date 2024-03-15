@@ -66,7 +66,7 @@ function filterEmptyTabs(tabs: Array<ComponentMetaTab>): Array<ComponentMetaTab>
 
 <template>
     <div class="component-panel flex-column-container">
-        <div class="flex-row-container flex-item-fixed" style="margin: 8px 12px 16px 12px; ">
+        <div class="flex-row-container flex-item-fixed component-panel-title">
             <div class="flex-item-fixed" style="font-size: 16px;font-weight: bold;">组件库</div>
             <div class="flex-item-fill"/>
             <div>
@@ -127,9 +127,17 @@ function filterEmptyTabs(tabs: Array<ComponentMetaTab>): Array<ComponentMetaTab>
     user-select: none;
 }
 
+.component-panel-title {
+    background-color: #efefef;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #e1e1e1;
+}
+
 .component-panel-close {
     color: #666666;
     cursor: pointer;
+    font-weight: normal;
 }
 
 .component-panel-close:hover {
