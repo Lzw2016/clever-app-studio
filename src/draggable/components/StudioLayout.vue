@@ -2,8 +2,9 @@
 import { reactive } from "vue";
 import { style } from "@/utils/UseType";
 import SplitPane from "@/components/SplitPane.vue";
-import { componentMetaTabs } from "@/ComponentMetaTabs";
+import { componentMeta, componentMetaTabs } from "@/ComponentMetaTabs";
 import ComponentPanel from "@/draggable/components/widgets/ComponentPanel.vue";
+import SettingsPanel from "@/draggable/components/widgets/SettingsPanel.vue";
 
 // 定义组件选项
 defineOptions({
@@ -57,9 +58,7 @@ const props = withDefaults(defineProps<StudioLayoutProps>(), {
     bottomPanelMaxWidth: 300,
 });
 // state 属性
-const state = reactive({
-
-});
+const state = reactive({});
 </script>
 
 <template>
@@ -135,29 +134,17 @@ const state = reactive({
                                 :two-collapse="true"
                             >
                                 <template #onePane>
-                                    <div style="height: 300px;">1</div>
-                                    <div style="height: 300px;">2</div>
-                                    <div style="height: 300px;">3</div>
-                                    <div style="height: 300px;">4</div>
-                                    <div style="height: 300px;">5</div>
+                                    <div style="height: 1300px;"></div>
                                 </template>
                                 <template #twoPane>
-                                    <div style="height: 300px;">1</div>
-                                    <div style="height: 300px;">2</div>
-                                    <div style="height: 300px;">3</div>
-                                    <div style="height: 300px;">4</div>
-                                    <div style="height: 300px;">5</div>
+                                    <SettingsPanel :componentMeta="componentMeta"/>
                                 </template>
                             </SplitPane>
                         </template>
                     </SplitPane>
                 </template>
                 <template #twoPane>
-                    <div style="height: 300px;">1</div>
-                    <div style="height: 300px;">2</div>
-                    <div style="height: 300px;">3</div>
-                    <div style="height: 300px;">4</div>
-                    <div style="height: 300px;">5</div>
+                    <div style="height: 800px;"></div>
                 </template>
             </SplitPane>
             <div class="flex-item-fixed flex-column-container" style="height: 100%;width: 32px;">

@@ -79,7 +79,7 @@ interface SetterGroup {
 /** 设置器面板 */
 interface SetterPanel {
     /** 面板标题 */
-    title: string;
+    title?: string;
     /** 设置器分组集合 */
     groups: Array<SetterGroup>;
 }

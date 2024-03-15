@@ -18,19 +18,234 @@ function createComponentMeta(cfg: any): ComponentMeta {
         setter: {
             props: {
                 title: "",
-                groups: [],
+                groups: [
+                    {
+                        title: "常规",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                    {
+                        title: "数据绑定",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                    {
+                        title: "数据源",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                ],
             },
             events: {
                 title: "",
-                groups: [],
+                groups: [
+                    {
+                        title: "组件事件",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                    {
+                        title: "HTML事件",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                ],
             },
             style: {
                 title: "",
-                groups: [],
+                groups: [
+                    {
+                        title: "布局",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                    {
+                        title: "间距",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                    {
+                        title: "尺寸",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                    {
+                        title: "定位",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                    {
+                        title: "文本",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                    {
+                        title: "背景",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                    {
+                        title: "边框",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                    {
+                        title: "效果",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                ],
             },
             advanced: {
                 title: "",
-                groups: [],
+                groups: [
+                    {
+                        title: "指令",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                    {
+                        title: "权限",
+                        items: [
+                            {
+                                cmp: "TextSetter",
+                                propsName: "aaa",
+                            },
+                        ],
+                    },
+                ],
             },
         },
         i18n: {},
@@ -67,7 +282,20 @@ const componentMetaTabs: Array<ComponentMetaTab> = [
     },
     {
         title: "业务组件",
-        groups: [],
+        groups: [
+            {
+                title: "表格",
+                items: [
+                    createComponentMeta({ name: "按钮", icon: "" }),
+                ],
+            },
+            {
+                title: "表单",
+                items: [
+                    createComponentMeta({ name: "按钮", icon: "" }),
+                ],
+            },
+        ],
     },
     {
         title: "原子组件",
@@ -218,6 +446,9 @@ const componentMetaTabs: Array<ComponentMetaTab> = [
     },
 ];
 
+const componentMeta = createComponentMeta({ name: "按钮", icon: "" });
+
 export {
     componentMetaTabs,
+    componentMeta,
 }

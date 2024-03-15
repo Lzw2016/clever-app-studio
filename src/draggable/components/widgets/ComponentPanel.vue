@@ -33,7 +33,6 @@ const data = {};
 // 组件元信息
 const componentMetaTabs = computed(() => filterEmptyTabs(props.tabs));
 
-
 // 获取所有展开的 group title
 function getAllExpandTitles(tabs: Array<ComponentMetaTab>): Record<string, Array<string>> {
     const expandGroups: Record<string, Array<string>> = {};
@@ -67,7 +66,7 @@ function filterEmptyTabs(tabs: Array<ComponentMetaTab>): Array<ComponentMetaTab>
 <template>
     <div class="component-panel flex-column-container">
         <div class="flex-row-container flex-item-fixed component-panel-title">
-            <div class="flex-item-fixed" style="font-size: 16px;font-weight: bold;">组件库</div>
+            <div class="flex-item-fixed component-panel-title-name">组件库</div>
             <div class="flex-item-fill"/>
             <div>
                 <FontAwesomeIcon :icon="faTimes" class="component-panel-close"/>
@@ -132,6 +131,11 @@ function filterEmptyTabs(tabs: Array<ComponentMetaTab>): Array<ComponentMetaTab>
     padding: 8px 12px;
     margin-bottom: 16px;
     border-bottom: 1px solid #e1e1e1;
+}
+
+.component-panel-title-name {
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .component-panel-close {
