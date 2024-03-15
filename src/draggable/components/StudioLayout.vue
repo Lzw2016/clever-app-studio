@@ -106,7 +106,7 @@ const state = reactive({
                 :fixed-pane-min-size="props.bottomPanelMinWidth"
                 :fixed-pane-max-size="props.bottomPanelMaxWidth"
                 :two-collapse="true"
-                def-collapsed=""
+                def-collapsed="two"
                 :custom-one-pane="true"
             >
                 <template #onePane="slotProps">

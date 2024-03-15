@@ -103,13 +103,13 @@ interface ComponentMeta {
     /** 运行时的组件对象(可以是html原生标签) */
     component: VueComponent | string;
     /** 设计时的组件对象 */
-    designComponent: VueComponent;
+    designComponent?: VueComponent | string;
     /** 组件名称 */
     name: string;
     /** 组件介绍描述 */
-    description: string;
+    description?: string;
     /** 组件版本 */
-    version: string;
+    version?: string;
     /** 组件文档连接 */
     docLink?: string;
     /** 组件图标 */

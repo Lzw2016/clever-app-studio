@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
 import { Collapse, CollapseItem, Search, TabItem, Tabs } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 import { ComponentMetaTab } from "@/draggable/types/ComponentMeta";
 
 // 定义组件选项
@@ -25,15 +26,42 @@ const state = reactive({
     // 活动的叶签
     activeTab: props.defTab ?? props.tabs[0]?.title,
     // 展开的组件分组
-    expandGroups: [] as Array<string>,
+    expandGroups: getAllExpandTitles(props.tabs),
 });
-props.tabs.forEach(tab => {
-    tab.groups.forEach(group => {
-        if (group.expand !== false) {
-            state.expandGroups.push(group.title);
-        }
+// 内部数据
+const data = {};
+// 组件元信息
+const componentMetaTabs = computed(() => filterEmptyTabs(props.tabs));
+
+
+// 获取所有展开的 group title
+function getAllExpandTitles(tabs: Array<ComponentMetaTab>): Record<string, Array<string>> {
+    const expandGroups: Record<string, Array<string>> = {};
+    tabs.forEach(tab => {
+        expandGroups[tab.title] = [];
+        tab.groups.forEach(group => {
+            if (group.expand !== false) {
+                expandGroups[tab.title].push(group.title);
+            }
+        });
     });
-});
+    return expandGroups;
+}
+
+// 过滤所有空 groups 和 items
+function filterEmptyTabs(tabs: Array<ComponentMetaTab>): Array<ComponentMetaTab> {
+    const newTabs: Array<ComponentMetaTab> = [];
+    tabs.forEach(tab => {
+        if (tab.groups.length <= 0) return;
+        const newTab: ComponentMetaTab = { ...tab, groups: [] };
+        tab.groups.forEach(group => {
+            if (group.items.length <= 0) return;
+            newTab.groups.push(group);
+        });
+        newTabs.push(newTab);
+    });
+    return newTabs;
+}
 </script>
 
 <template>
@@ -60,18 +88,31 @@ props.tabs.forEach(tab => {
         >
             <TabItem
                 style="height: 100%;"
-                v-for="tab in tabs"
+                v-for="tab in componentMetaTabs"
                 :key="tab.title"
                 :lazy="false"
                 :name="tab.title"
                 :title="tab.title"
             >
-                <Collapse class="component-groups" v-model="state.expandGroups">
+                <Collapse class="component-groups" v-model="state.expandGroups[tab.title]">
                     <CollapseItem
+                        class="component-items"
                         v-for="group in tab.groups"
                         :name="group.title"
                         :title="group.title"
                     >
+                        <div
+                            class="component-item"
+                            v-for="item in group.items"
+                            :title="`${item.name}(${item.type})`"
+                        >
+                            <div class="component-item-icon flex-item-fixed">
+                                <FontAwesomeIcon :icon="faCalendarPlus" fixed-width/>
+                            </div>
+                            <div class="component-item-name flex-item-fill">
+                                {{ item.name }}
+                            </div>
+                        </div>
                     </CollapseItem>
                 </Collapse>
             </TabItem>
@@ -152,8 +193,56 @@ props.tabs.forEach(tab => {
 
 .component-groups :deep(.tiny-collapse-item) {
     margin-top: 0;
-    border-top: none;
-    border-left: none;
-    border-right: none;
+    border: none;
+}
+
+.component-items :deep(.tiny-collapse-item__header) {
+    background-color: #efefef;
+    border-radius: 0;
+    border: none;
+    /*border-right: 1px solid #d9d9d9;*/
+    border-bottom: 1px solid #d9d9d9;
+}
+
+.component-items :deep(.tiny-collapse-item__content) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0;
+    border: none;
+    border-bottom: 1px solid #d9d9d9;
+}
+
+.component-item {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+    height: 32px;
+    width: calc(50% - 8px);
+    min-width: 60px;
+    margin: 6px 4px;
+    padding: 4px 8px;
+    border: 1px solid #edeef0;
+    cursor: move;
+    transition: box-shadow .2s ease;
+}
+
+.component-item:hover {
+    border-color: #409eff;
+}
+
+.component-item-icon {
+    font-size: 18px;
+    color: #303133;
+    margin-right: 5px;
+}
+
+.component-item-name {
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 </style>
