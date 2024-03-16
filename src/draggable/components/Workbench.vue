@@ -9,7 +9,7 @@ import WorkspaceTabs from "@/draggable/components/widgets/WorkspaceTabs.vue";
 
 // 定义组件选项
 defineOptions({
-    name: 'StudioLayout',
+    name: 'Workbench',
 });
 
 // 定义 Props 类型

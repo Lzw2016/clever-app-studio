@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, CSSProperties, reactive } from "vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faCaretDown, faCaretLeft, faCaretRight, faCaretUp } from "@fortawesome/free-solid-svg-icons";
+import { IconCaretDownFilled, IconCaretLeftFilled, IconCaretRightFilled, IconCaretUpFilled } from "@tabler/icons-vue";
 
 // 定义组件选项
 defineOptions({
@@ -172,7 +171,7 @@ const gutterDragStyle = computed(() => {
 // 收起第一个面板按钮 style
 const oneCollapseStyle = computed(() => {
     const style: CSSProperties = {};
-    const gutterSizeHalf = props.gutterSize / 2;
+    const gutterSizeHalf = props.gutterSize / 2 + data.gutterLineSize / 2;
     if (horizontal.value) {
         style.width = '14px';
         style.height = '24px';
@@ -189,7 +188,7 @@ const oneCollapseStyle = computed(() => {
 // 收起第二个面板按钮 style
 const twoCollapseStyle = computed(() => {
     const style: CSSProperties = {};
-    const gutterSizeHalf = props.gutterSize / 2;
+    const gutterSizeHalf = props.gutterSize / 2 + data.gutterLineSize / 2;
     if (horizontal.value) {
         style.width = '14px';
         style.height = '24px';
@@ -319,7 +318,8 @@ function twoCollapseClick() {
         <slot name="gutter">
             <div
                 :class="{
-                    'split-gutter':true,
+                    'flex-item-fixed': true,
+                    'split-gutter': true,
                     'split-gutter-vertical': !horizontal,
                     'split-gutter-horizontal': horizontal,
                     'resizing': state.resizing,
@@ -338,7 +338,8 @@ function twoCollapseClick() {
                     :style="oneCollapseStyle"
                     @click="oneCollapseClick"
                 >
-                    <FontAwesomeIcon :icon="horizontal ? faCaretLeft : faCaretUp"/>
+                    <IconCaretLeftFilled v-if="horizontal" viewBox="4 4 16 16" style="width: 12px;"/>
+                    <IconCaretUpFilled v-else viewBox="4 4 16 16" style="height: 12px;"/>
                 </div>
                 <div
                     v-if="(props.twoCollapse && !hideTwo) || hideOne"
@@ -346,7 +347,8 @@ function twoCollapseClick() {
                     :style="twoCollapseStyle"
                     @click="twoCollapseClick"
                 >
-                    <FontAwesomeIcon :icon="horizontal ? faCaretRight : faCaretDown"/>
+                    <IconCaretRightFilled v-if="horizontal" viewBox="4 4 16 16" style="width: 12px;"/>
+                    <IconCaretDownFilled v-else style="height: 12px;"/>
                 </div>
             </div>
         </slot>

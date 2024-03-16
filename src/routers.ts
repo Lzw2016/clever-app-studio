@@ -5,7 +5,6 @@ const staticRouters: RouteRecordRaw[] = [
         name: 'defLayout',
         path: '/',
         strict: true,
-        component: () => import("@/draggable/components/StudioLayout.vue"),
         children: [
             {
                 name: 'test1',
@@ -25,6 +24,14 @@ const staticRouters: RouteRecordRaw[] = [
                 strict: true,
                 component: () => import("@/views/Page03.vue"),
             },
+        ],
+    },
+    {
+        name: 'workbench',
+        path: '/workbench',
+        strict: true,
+        component: () => import("@/draggable/components/Workbench.vue"),
+        children: [
         ],
     },
 ];

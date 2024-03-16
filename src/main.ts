@@ -15,15 +15,6 @@ window['APP_INFO'] = readonly(__APP_INFO__);
     // 初始化状态管理插件
     const pinia = createPinia();
     app.use(pinia);
-    // 初始化路由
-    const router = createRouter({
-        history: createWebHashHistory(),
-        routes: [],
-        strict: true,
-        sensitive: true,
-    });
-    initRouter(router);
-    app.use(router);
     // i18n
     const i18n = initI18n();
     app.use(i18n);
@@ -35,6 +26,15 @@ window['APP_INFO'] = readonly(__APP_INFO__);
     registerComponent();
     // 注册组件元信息
     registerComponentMeta();
+    // 初始化路由
+    const router = createRouter({
+        history: createWebHashHistory(),
+        routes: [],
+        strict: true,
+        sensitive: true,
+    });
+    initRouter(router);
+    app.use(router);
     // 挂载 vue 应用到页面上
     app.mount("#app");
 })().finally();

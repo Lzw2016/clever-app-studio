@@ -23,31 +23,31 @@ function registerComponent() {
     // 注册成全局对象
     window['componentManage'] = componentManage;
     // 注册 fortawesome 图标
-    componentManage.registerAsyncComponent("FontAwesomeIcon", async () => {
-        const { FontAwesomeIcon } = await import("@fortawesome/vue-fontawesome");
-        const { library } = await import("@fortawesome/fontawesome-svg-core");
-        const { fas } = await import("@fortawesome/free-solid-svg-icons");
-        const { far } = await import("@fortawesome/free-regular-svg-icons");
-        const { fab } = await import("@fortawesome/free-brands-svg-icons");
-        library.add(fas); // 数量: 1953
-        library.add(far); // 数量: 257
-        library.add(fab); // 数量: 518
-        return FontAwesomeIcon;
-    });
+    // componentManage.registerAsyncComponent("FontAwesomeIcon", async () => {
+    //     const { FontAwesomeIcon } = await import("@fortawesome/vue-fontawesome");
+    //     const { library } = await import("@fortawesome/fontawesome-svg-core");
+    //     const { fas } = await import("@fortawesome/free-solid-svg-icons");
+    //     const { far } = await import("@fortawesome/free-regular-svg-icons");
+    //     const { fab } = await import("@fortawesome/free-brands-svg-icons");
+    //     library.add(fas); // 数量: 1953
+    //     library.add(far); // 数量: 257
+    //     library.add(fab); // 数量: 518
+    //     return FontAwesomeIcon;
+    // });
     // 注册 tabler 图标
-    componentManage.batchRegisterComponent(/^TablerIcon\w+$/, async () => {
-        const TablerIcons = await import("@tabler/icons-vue");
-        for (let name in TablerIcons) {
-            if (!name.startsWith("Icon")) {
-                continue;
-            }
-            componentManage.registerComponent(`Tabler${name}`, TablerIcons[name]);
-        }
-    });
+    // componentManage.batchRegisterComponent(/^TablerIcon\w+$/, async () => {
+    //     const TablerIcons = await import("@tabler/icons-vue");
+    //     for (let name in TablerIcons) {
+    //         if (!name.startsWith("Icon")) {
+    //             continue;
+    //         }
+    //         componentManage.registerComponent(`Tabler${name}`, TablerIcons[name]);
+    //     }
+    // });
     // 注册 google 图标
-    componentManage.registerAsyncComponent("GoogleIcon", () => import("@/components/GoogleIcon.vue").then(module => module.default));
+    // componentManage.registerAsyncComponent("GoogleIcon", () => import("@/components/GoogleIcon.vue").then(module => module.default));
     // opentiny 组件注册
-    componentManage.registerAsyncComponent("OpenTiny", () => import("@/components/OpenTiny"));
+    // componentManage.registerAsyncComponent("OpenTiny", () => import("@/components/OpenTiny"));
     // primevue 组件注册
     componentManage.registerAsyncComponent("Button", () => import("primevue/button").then(module => module.default));
     componentManage.registerAsyncComponent("InputNumber", () => import("primevue/inputnumber").then(module => module.default));

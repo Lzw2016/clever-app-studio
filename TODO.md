@@ -34,3 +34,7 @@
 页面预览
 页面大纲树
 页面管理
+
+fortawesome 忽略系统设置，强制播放动画，重写如下css样式
+@media (prefers-reduced-motion: reduce) .fa-beat, .fa-bounce, .fa-fade, .fa-beat-fade, .fa-flip, .fa-pulse, .fa-shake, .fa-spin, .fa-spin-pulse {
+}
