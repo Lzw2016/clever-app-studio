@@ -84,9 +84,9 @@ export default defineConfig(env => {
             rollupOptions: {
                 output: {
                     manualChunks: function (id) {
-                        if (id.includes('/draggable/')) {
-                            return 'draggable';
-                        }
+                        // if (!id.includes('/node_modules/')) {
+                        //     console.log("id->", id);
+                        // }
                         if (id.includes('lodash')) {
                             return 'lodash';
                         }
