@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { reactive } from "vue";
-import { TabItem, Tabs } from "@opentiny/vue"
-import Sortable from "sortablejs";
 import lodash from "lodash";
+import Sortable from "sortablejs";
+import { TabItem, Tabs } from "@opentiny/vue"
 
 
 // 定义组件选项
@@ -12,6 +12,7 @@ defineOptions({
 
 // 定义 Props 类型
 interface WorkspaceTabsProps {
+    a?: string;
 }
 
 // 读取组件 props 属性

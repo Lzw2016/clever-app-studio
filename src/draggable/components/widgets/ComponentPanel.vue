@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
 import { Collapse, CollapseItem, Search, TabItem, Tabs } from "@opentiny/vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
+import { IconCalendarPlus, IconX } from "@tabler/icons-vue";
 import { ComponentMetaTab } from "@/draggable/types/ComponentMeta";
 
 // 定义组件选项
@@ -68,8 +66,8 @@ function filterEmptyTabs(tabs: Array<ComponentMetaTab>): Array<ComponentMetaTab>
         <div class="flex-row-container flex-item-fixed component-panel-title">
             <div class="flex-item-fixed component-panel-title-name">组件库</div>
             <div class="flex-item-fill"/>
-            <div>
-                <FontAwesomeIcon :icon="faTimes" class="component-panel-close"/>
+            <div class="component-panel-close">
+                <IconX :size="18"/>
             </div>
         </div>
         <div class="flex-row-container flex-center flex-item-fixed">
@@ -106,7 +104,7 @@ function filterEmptyTabs(tabs: Array<ComponentMetaTab>): Array<ComponentMetaTab>
                             :title="`${item.name}(${item.type})`"
                         >
                             <div class="component-item-icon flex-item-fixed">
-                                <FontAwesomeIcon :icon="faCalendarPlus" fixed-width/>
+                                <IconCalendarPlus :size="20"/>
                             </div>
                             <div class="component-item-name flex-item-fill">
                                 {{ item.name }}
@@ -139,9 +137,11 @@ function filterEmptyTabs(tabs: Array<ComponentMetaTab>): Array<ComponentMetaTab>
 }
 
 .component-panel-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: #666666;
     cursor: pointer;
-    font-weight: normal;
 }
 
 .component-panel-close:hover {
@@ -246,6 +246,10 @@ function filterEmptyTabs(tabs: Array<ComponentMetaTab>): Array<ComponentMetaTab>
 }
 
 .component-item-icon {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
     font-size: 18px;
     color: #303133;
     margin-right: 5px;

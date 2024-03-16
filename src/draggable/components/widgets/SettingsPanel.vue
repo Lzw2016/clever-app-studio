@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
 import { Collapse, CollapseItem, TabItem, Tabs } from "@opentiny/vue";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { IconX } from "@tabler/icons-vue";
 import { ComponentMeta, SetterGroup } from "@/draggable/types/ComponentMeta";
+
 // 定义组件选项
 defineOptions({
     name: 'SettingsPanel',
@@ -70,8 +70,8 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
         <div class="flex-row-container flex-item-fixed component-panel-title">
             <div class="flex-item-fixed component-panel-title-name">组件配置</div>
             <div class="flex-item-fill"/>
-            <div>
-                <FontAwesomeIcon :icon="faTimes" class="component-panel-close"/>
+            <div class="component-panel-close">
+                <IconX :size="18"/>
             </div>
         </div>
         <div class="flex-row-container flex-center flex-item-fixed">
@@ -124,9 +124,11 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
 }
 
 .component-panel-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: #666666;
     cursor: pointer;
-    font-weight: normal;
 }
 
 .component-panel-close:hover {
