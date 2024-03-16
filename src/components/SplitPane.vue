@@ -348,7 +348,7 @@ function twoCollapseClick() {
                     @click="twoCollapseClick"
                 >
                     <IconCaretRightFilled v-if="horizontal" viewBox="4 4 16 16" style="width: 12px;"/>
-                    <IconCaretDownFilled v-else style="height: 12px;"/>
+                    <IconCaretDownFilled v-else viewBox="4 4 16 16" style="height: 12px;"/>
                 </div>
             </div>
         </slot>
