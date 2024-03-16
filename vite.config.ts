@@ -84,6 +84,9 @@ export default defineConfig(env => {
             rollupOptions: {
                 output: {
                     manualChunks: function (id) {
+                        if (id.includes('/draggable/')) {
+                            return 'draggable';
+                        }
                         if (id.includes('lodash')) {
                             return 'lodash';
                         }
@@ -98,6 +101,9 @@ export default defineConfig(env => {
                         }
                         if (id.includes('@opentiny/')) {
                             return 'opentiny';
+                        }
+                        if (id.includes('sortablejs')) {
+                            return 'sortablejs';
                         }
                     },
                 },
