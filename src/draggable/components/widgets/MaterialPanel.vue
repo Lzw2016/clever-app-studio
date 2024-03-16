@@ -2,7 +2,7 @@
 import { computed, reactive } from "vue";
 import { Collapse, CollapseItem, Search, TabItem, Tabs } from "@opentiny/vue";
 import { IconCalendarPlus, IconX } from "@tabler/icons-vue";
-import { ComponentMetaTab } from "@/draggable/types/ComponentMeta";
+import { MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 
 // 定义组件选项
 defineOptions({
@@ -12,7 +12,7 @@ defineOptions({
 // 定义 Props 类型
 interface ComponentPaneProps {
     /** 组件叶签信息 */
-    tabs: Array<ComponentMetaTab>;
+    tabs: Array<MaterialMetaTab>;
     /** 默认的叶签 */
     defTab?: string;
 }
@@ -32,7 +32,7 @@ const data = {};
 const componentMetaTabs = computed(() => filterEmptyTabs(props.tabs));
 
 // 获取所有展开的 group title
-function getAllExpandTitles(tabs: Array<ComponentMetaTab>): Record<string, Array<string>> {
+function getAllExpandTitles(tabs: Array<MaterialMetaTab>): Record<string, Array<string>> {
     const expandGroups: Record<string, Array<string>> = {};
     tabs.forEach(tab => {
         expandGroups[tab.title] = [];
@@ -46,11 +46,11 @@ function getAllExpandTitles(tabs: Array<ComponentMetaTab>): Record<string, Array
 }
 
 // 过滤所有空 groups 和 items
-function filterEmptyTabs(tabs: Array<ComponentMetaTab>): Array<ComponentMetaTab> {
-    const newTabs: Array<ComponentMetaTab> = [];
+function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
+    const newTabs: Array<MaterialMetaTab> = [];
     tabs.forEach(tab => {
         if (tab.groups.length <= 0) return;
-        const newTab: ComponentMetaTab = { ...tab, groups: [] };
+        const newTab: MaterialMetaTab = { ...tab, groups: [] };
         tab.groups.forEach(group => {
             if (group.items.length <= 0) return;
             newTab.groups.push(group);
