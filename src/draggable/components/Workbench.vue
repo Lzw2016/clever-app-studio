@@ -3,7 +3,7 @@ import { reactive } from "vue";
 import { style } from "@/utils/UseType";
 import SplitPane from "@/components/SplitPane.vue";
 import { componentMeta, componentMetaTabs } from "@/ComponentMetaTabs";
-import ComponentPanel from "@/draggable/components/widgets/ComponentPanel.vue";
+import MaterialPanel from "@/draggable/components/widgets/MaterialPanel.vue";
 import SettingsPanel from "@/draggable/components/widgets/SettingsPanel.vue";
 import WorkspaceTabs from "@/draggable/components/widgets/WorkspaceTabs.vue";
 
@@ -121,7 +121,7 @@ const state = reactive({});
                         :custom-two-pane="true"
                     >
                         <template #onePane>
-                            <ComponentPanel :tabs="componentMetaTabs"/>
+                            <MaterialPanel :tabs="componentMetaTabs"/>
                         </template>
                         <template #twoPane="slotProps">
                             <SplitPane

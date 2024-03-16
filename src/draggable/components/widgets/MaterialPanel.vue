@@ -6,7 +6,7 @@ import { ComponentMetaTab } from "@/draggable/types/ComponentMeta";
 
 // 定义组件选项
 defineOptions({
-    name: 'ComponentPane',
+    name: 'MaterialPanel',
 });
 
 // 定义 Props 类型
