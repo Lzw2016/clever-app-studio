@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { onMounted, onUnmounted, reactive } from "vue";
 import { style } from "@/utils/UseType";
 import SplitPane from "@/components/SplitPane.vue";
 import { componentMeta, componentMetaTabs } from "@/ComponentMetaTabs";
 import MaterialPanel from "@/draggable/components/widgets/MaterialPanel.vue";
 import SettingsPanel from "@/draggable/components/widgets/SettingsPanel.vue";
 import WorkspaceTabs from "@/draggable/components/widgets/WorkspaceTabs.vue";
+import { DesignerEngine } from "@/draggable/DesignerEngine";
 
 // 定义组件选项
 defineOptions({
@@ -60,6 +61,20 @@ const props = withDefaults(defineProps<StudioLayoutProps>(), {
 });
 // state 属性
 const state = reactive({});
+// 内部数据
+const data = {};
+// 设计器引擎
+const designerEngine = new DesignerEngine({
+    drivers: [],
+});
+
+onMounted(() => {
+    designerEngine.mount(document, window);
+});
+
+onUnmounted(() => {
+    designerEngine.unmount();
+});
 </script>
 
 <template>
@@ -135,7 +150,7 @@ const state = reactive({});
                                 :two-collapse="true"
                             >
                                 <template #onePane>
-                                    <WorkspaceTabs />
+                                    <WorkspaceTabs/>
                                 </template>
                                 <template #twoPane>
                                     <SettingsPanel :componentMeta="componentMeta"/>
