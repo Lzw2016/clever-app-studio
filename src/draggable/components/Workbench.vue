@@ -4,11 +4,13 @@ import { globalThisPolyfill } from "@/utils/GlobalThisPolyfill";
 import { style } from "@/utils/UseType";
 import SplitPane from "@/components/SplitPane.vue";
 import { componentMeta, componentMetaTabs } from "@/ComponentMetaTabs";
+import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { DragDropDriver } from "@/draggable/drivers/DragDropDriver";
+import { MouseMoveDriver } from "@/draggable/drivers/MouseMoveDriver";
+import DragGhost from "@/draggable/components/widgets/DragGhost.vue";
 import MaterialPanel from "@/draggable/components/widgets/MaterialPanel.vue";
 import SettingsPanel from "@/draggable/components/widgets/SettingsPanel.vue";
 import WorkspaceTabs from "@/draggable/components/widgets/WorkspaceTabs.vue";
-import { DesignerEngine } from "@/draggable/DesignerEngine";
-import { DragMoveEvent } from "@/draggable/events/cursor/DragMoveEvent";
 
 // 定义组件选项
 defineOptions({
@@ -67,11 +69,11 @@ const state = reactive({});
 const data = {};
 // 设计器引擎
 const designerEngine = new DesignerEngine({
-    drivers: [],
+    drivers: [
+        DragDropDriver,
+        MouseMoveDriver,
+    ],
 });
-
-const aa = new DragMoveEvent({} as any);
-console.log("@@@@",  aa['constructor'].name);
 
 onMounted(() => {
     designerEngine.mount(document, globalThisPolyfill);
@@ -83,6 +85,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+    <DragGhost :designerEngine="designerEngine"/>
     <div class="studio-layout flex-column-container box-border">
         <div
             class="flex-item-fixed flex-row-container"

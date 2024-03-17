@@ -66,18 +66,18 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
 </script>
 
 <template>
-    <div class="component-panel flex-column-container">
-        <div class="flex-row-container flex-item-fixed component-panel-title">
-            <div class="flex-item-fixed component-panel-title-name">组件配置</div>
+    <div class="settings-panel flex-column-container">
+        <div class="flex-row-container flex-item-fixed settings-panel-title">
+            <div class="flex-item-fixed settings-panel-title-name">组件配置</div>
             <div class="flex-item-fill"/>
-            <div class="component-panel-close">
+            <div class="settings-panel-close">
                 <IconX :size="18"/>
             </div>
         </div>
         <div class="flex-row-container flex-center flex-item-fixed">
         </div>
         <Tabs
-            class="flex-item-fill component-tabs flex-column-container"
+            class="flex-item-fill settings-tabs flex-column-container"
             :active-name="state.activeTab"
             tab-style="button-card"
         >
@@ -89,14 +89,14 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
                 :name="name"
                 :title="setter.title || data.setterTabs[name]"
             >
-                <Collapse class="component-groups" v-model="state.expandGroups[name]">
+                <Collapse class="settings-groups" v-model="state.expandGroups[name]">
                     <CollapseItem
-                        class="component-items"
+                        class="settings-items"
                         v-for="group in setter.groups"
                         :name="group.title"
                         :title="group.title"
                     >
-                        <div class="component-item flex-item-fixed" v-for="item in group.items">
+                        <div class="settings-item flex-item-fixed" v-for="item in group.items">
                         </div>
                     </CollapseItem>
                 </Collapse>
@@ -106,24 +106,24 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
 </template>
 
 <style scoped>
-.component-panel {
+.settings-panel {
     height: 100%;
     width: 100%;
 }
 
-.component-panel-title {
+.settings-panel-title {
     background-color: #efefef;
     padding: 8px 12px;
     margin-bottom: 16px;
     border-bottom: 1px solid #e1e1e1;
 }
 
-.component-panel-title-name {
+.settings-panel-title-name {
     font-size: 16px;
     font-weight: bold;
 }
 
-.component-panel-close {
+.settings-panel-close {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -131,7 +131,7 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
     cursor: pointer;
 }
 
-.component-panel-close:hover {
+.settings-panel-close:hover {
     color: #333333;
 }
 
@@ -163,16 +163,16 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
 
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
 
-.component-tabs :deep(.tiny-tabs__header) {
+.settings-tabs :deep(.tiny-tabs__header) {
     flex-shrink: 0;
     margin-bottom: 16px;
 }
 
-.component-tabs :deep(.tiny-tabs__nav .tiny-tabs__item .tiny-tabs__item__title) {
+.settings-tabs :deep(.tiny-tabs__nav .tiny-tabs__item .tiny-tabs__item__title) {
     padding: 0 12px;
 }
 
-.component-tabs :deep(.tiny-tabs__header .tiny-tabs__nav-scroll) {
+.settings-tabs :deep(.tiny-tabs__header .tiny-tabs__nav-scroll) {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -180,35 +180,35 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
     justify-content: center;
 }
 
-.component-tabs :deep(.tiny-tabs__header .tiny-tabs__nav-scroll .tiny-tabs__nav .tiny-tabs__item:last-child) {
+.settings-tabs :deep(.tiny-tabs__header .tiny-tabs__nav-scroll .tiny-tabs__nav .tiny-tabs__item:last-child) {
     padding-right: 0;
 }
 
-.component-tabs :deep(.tiny-tabs__content) {
+.settings-tabs :deep(.tiny-tabs__content) {
     margin: 0;
     flex-grow: 1;
 }
 
-.component-groups {
+.settings-groups {
     height: 100%;
     overflow: auto;
     border-top: none;
     border-bottom: none;
 }
 
-.component-groups :deep(.tiny-collapse-item) {
+.settings-groups :deep(.tiny-collapse-item) {
     margin-top: 0;
     border: none;
 }
 
-.component-items :deep(.tiny-collapse-item__header) {
+.settings-items :deep(.tiny-collapse-item__header) {
     background-color: #efefef;
     border-radius: 0;
     border: none;
     border-bottom: 1px solid #d9d9d9;
 }
 
-.component-items :deep(.tiny-collapse-item__content) {
+.settings-items :deep(.tiny-collapse-item__content) {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -217,7 +217,7 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
     border-bottom: 1px solid #d9d9d9;
 }
 
-.component-item {
+.settings-item {
     height: 32px;
 }
 </style>

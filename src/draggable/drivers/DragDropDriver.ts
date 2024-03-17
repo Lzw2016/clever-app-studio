@@ -1,12 +1,14 @@
 import { noValue } from "@/utils/Typeof";
 import { calcDistance } from "@/draggable/utils/DesignerUtils";
+import { EventBus } from "@/draggable/EventBus";
 import { DesignerDriver } from "@/draggable/DesignerDriver";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
-import { CursorStatus } from "@/draggable/types/Designer";
+import { CursorStatus, EventContainer } from "@/draggable/types/Designer";
 import { DragStopEvent } from "@/draggable/events/cursor/DragStopEvent";
 import { DragStartEvent } from "@/draggable/events/cursor/DragStartEvent";
 import { DragMoveEvent } from "@/draggable/events/cursor/DragMoveEvent";
 import { requestIdle } from "@/utils/RequestIdle";
+import { draggableArea } from "@/draggable/Constant";
 
 interface GlobalDragDropState {
     /** 是否在拖拽中 */
@@ -25,6 +27,10 @@ interface GlobalDragDropState {
  */
 class DragDropDriver extends DesignerDriver {
     private readonly globalState: GlobalDragDropState = this.initGlobalState();
+
+    constructor(eventbus: EventBus, container: EventContainer, window: Window) {
+        super(eventbus, container, window);
+    }
 
     protected initGlobalState(): GlobalDragDropState {
         return {
@@ -72,9 +78,8 @@ class DragDropDriver extends DesignerDriver {
         const target = event.target as HTMLElement;
         // 如果点击的不是拖拽区域也直接返回
         if (target?.closest) {
-            const parentSelectors = ['.monaco-editor'];
-            const existsParent = parentSelectors.some(selector => target.closest(selector));
-            if (existsParent) {
+            const existsParent = draggableArea.some(selector => target.closest(selector));
+            if (!existsParent) {
                 return;
             }
         }
@@ -177,6 +182,7 @@ class DragDropDriver extends DesignerDriver {
             const cursor = designerEngine.cursor;
             cursor.status = CursorStatus.DragStart;
             cursor.dragStartPosition = event.data;
+            console.log("@@@ DragStart", cursor)
         });
         /**
          * 拖动中
@@ -185,6 +191,7 @@ class DragDropDriver extends DesignerDriver {
             const cursor = designerEngine.cursor;
             cursor.status = CursorStatus.Dragging;
             cursor.position = event.data;
+            console.log("@@@ Dragging", cursor)
         });
         /**
          * 拖拽结束
@@ -195,6 +202,7 @@ class DragDropDriver extends DesignerDriver {
             cursor.dragEndPosition = event.data;
             cursor.dragStartPosition = undefined;
             requestIdle(() => cursor.status = CursorStatus.Normal);
+            console.log("@@@ DragStop", cursor)
         });
     }
 }

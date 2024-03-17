@@ -1,7 +1,8 @@
 import { hasValue } from "@/utils/Typeof";
+import { EventBus } from "@/draggable/EventBus";
 import { DesignerDriver } from "@/draggable/DesignerDriver";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
-import { CursorStatus } from "@/draggable/types/Designer";
+import { CursorStatus, EventContainer } from "@/draggable/types/Designer";
 import { MouseMoveEvent } from "@/draggable/events/cursor/MouseMoveEvent";
 
 /**
@@ -9,6 +10,10 @@ import { MouseMoveEvent } from "@/draggable/events/cursor/MouseMoveEvent";
  */
 class MouseMoveDriver extends DesignerDriver {
     private request?: number = undefined;
+
+    constructor(eventbus: EventBus, container: EventContainer, window: Window) {
+        super(eventbus, container, window);
+    }
 
     // --------------------------------------------------------------------------------------------
     // 生产事件

@@ -62,11 +62,11 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
 </script>
 
 <template>
-    <div class="component-panel flex-column-container">
-        <div class="flex-row-container flex-item-fixed component-panel-title">
-            <div class="flex-item-fixed component-panel-title-name">组件库</div>
+    <div class="material-panel flex-column-container">
+        <div class="flex-row-container flex-item-fixed material-panel-title">
+            <div class="flex-item-fixed material-panel-title-name">组件库</div>
             <div class="flex-item-fill"/>
-            <div class="component-panel-close">
+            <div class="material-panel-close">
                 <IconX :size="18"/>
             </div>
         </div>
@@ -79,7 +79,7 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
             />
         </div>
         <Tabs
-            class="flex-item-fill component-tabs flex-column-container"
+            class="flex-item-fill material-tabs flex-column-container"
             :separator="true"
             :active-name="state.activeTab"
         >
@@ -91,22 +91,22 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
                 :name="tab.title"
                 :title="tab.title"
             >
-                <Collapse class="component-groups" v-model="state.expandGroups[tab.title]">
+                <Collapse class="material-groups" v-model="state.expandGroups[tab.title]">
                     <CollapseItem
-                        class="component-items"
+                        class="material-items"
                         v-for="group in tab.groups"
                         :name="group.title"
                         :title="group.title"
                     >
                         <div
-                            class="component-item"
+                            class="material-item draggable"
                             v-for="item in group.items"
                             :title="`${item.name}(${item.type})`"
                         >
-                            <div class="component-item-icon flex-item-fixed">
+                            <div class="material-item-icon flex-item-fixed">
                                 <IconCalendarPlus :size="20"/>
                             </div>
-                            <div class="component-item-name flex-item-fill">
+                            <div class="material-item-name flex-item-fill">
                                 {{ item.name }}
                             </div>
                         </div>
@@ -118,25 +118,25 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
 </template>
 
 <style scoped>
-.component-panel {
+.material-panel {
     height: 100%;
     width: 100%;
     user-select: none;
 }
 
-.component-panel-title {
+.material-panel-title {
     background-color: #efefef;
     padding: 8px 12px;
     margin-bottom: 16px;
     border-bottom: 1px solid #e1e1e1;
 }
 
-.component-panel-title-name {
+.material-panel-title-name {
     font-size: 16px;
     font-weight: bold;
 }
 
-.component-panel-close {
+.material-panel-close {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -144,7 +144,7 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
     cursor: pointer;
 }
 
-.component-panel-close:hover {
+.material-panel-close:hover {
     color: #333333;
 }
 
@@ -176,11 +176,11 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
 
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
 
-.component-tabs :deep(.tiny-tabs__header) {
+.material-tabs :deep(.tiny-tabs__header) {
     flex-shrink: 0;
 }
 
-.component-tabs :deep(.tiny-tabs__header .tiny-tabs__nav-scroll) {
+.material-tabs :deep(.tiny-tabs__header .tiny-tabs__nav-scroll) {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -188,27 +188,27 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
     justify-content: center;
 }
 
-.component-tabs :deep(.tiny-tabs__header .tiny-tabs__nav-scroll .tiny-tabs__nav .tiny-tabs__item:last-child) {
+.material-tabs :deep(.tiny-tabs__header .tiny-tabs__nav-scroll .tiny-tabs__nav .tiny-tabs__item:last-child) {
     padding-right: 0;
 }
 
-.component-tabs :deep(.tiny-tabs__content) {
+.material-tabs :deep(.tiny-tabs__content) {
     margin: 0;
     flex-grow: 1;
 }
 
-.component-groups {
+.material-groups {
     height: 100%;
     overflow: auto;
     border-bottom: none;
 }
 
-.component-groups :deep(.tiny-collapse-item) {
+.material-groups :deep(.tiny-collapse-item) {
     margin-top: 0;
     border: none;
 }
 
-.component-items :deep(.tiny-collapse-item__header) {
+.material-items :deep(.tiny-collapse-item__header) {
     background-color: #efefef;
     border-radius: 0;
     border: none;
@@ -216,7 +216,7 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
     border-bottom: 1px solid #d9d9d9;
 }
 
-.component-items :deep(.tiny-collapse-item__content) {
+.material-items :deep(.tiny-collapse-item__content) {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -225,7 +225,7 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
     border-bottom: 1px solid #d9d9d9;
 }
 
-.component-item {
+.material-item {
     flex-shrink: 0;
     display: flex;
     flex-direction: row;
@@ -241,11 +241,11 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
     transition: box-shadow .2s ease;
 }
 
-.component-item:hover {
+.material-item:hover {
     border-color: #409eff;
 }
 
-.component-item-icon {
+.material-item-icon {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -255,7 +255,7 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
     margin-right: 5px;
 }
 
-.component-item-name {
+.material-item-name {
     font-size: 14px;
     overflow: hidden;
     text-overflow: ellipsis;
