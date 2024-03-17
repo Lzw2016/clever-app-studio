@@ -32,7 +32,7 @@ const ghostStyle = computed<CSSProperties>(() => {
         return {};
     }
     return style({
-        transform: `perspective(1px) translate3d(${position.topClientX - 16}px,${position.topClientY - 16}px, 0) scale(0.8)`,
+        transform: `perspective(1px) translate3d(${position.topClientX - 8}px, ${position.topClientY - 20}px, 0) scale(0.8)`,
     });
 });
 // 设计器引擎光标信息
