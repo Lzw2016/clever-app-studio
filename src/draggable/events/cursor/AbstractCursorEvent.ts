@@ -1,46 +1,24 @@
 import { globalThisPolyfill } from "@/utils/GlobalThisPolyfill";
-import { DesignerEvent, DesignerEventType } from "@/draggable/types/Designer";
+import { CursorPosition, DesignerEvent } from "@/draggable/types/Designer";
 
 /**
- * 原始 HTMLElement 事件的属性值
+ * 光标事件数据
  */
-interface CursorEventRawData {
-    /** 光标位置相对于浏览器窗口左上角的水平坐标(单位像素) */
-    clientX: /* */ number;
-    /** 光标位置相对于浏览器窗口左上角的垂直坐标(单位像素) */
-    clientY: /* */ number;
-    /** 光标位置与文档左侧边缘的距离，包括文档不可见的部分(单位像素) */
-    pageX:  /*  */ number;
-    /** 光标位置与文档上侧边缘的距离，包括文档不可见的部分(单位像素) */
-    pageY: /*   */ number;
+interface CursorEventData extends CursorPosition {
     /** 指向触发该事件的实际DOM元素 */
     target: /*  */ EventTarget;
     /** 生成事件的 document.defaultView 对象，在浏览器中，就是事件所在的 Window 对象(在 iframe 中很有用) */
     view: /*    */ Window;
 }
 
-/**
- * 光标事件数据
- */
-interface CursorEventData extends CursorEventRawData {
-    /** 光标位置相对于最外层(考虑iframe存在的情况)浏览器窗口左上角的水平坐标(单位像素) */
-    topClientX: /* */ number;
-    /** 光标位置相对于最外层(考虑iframe存在的情况)浏览器窗口左上角的垂直坐标(单位像素) */
-    topClientY: /* */ number;
-    /** 光标位置与最外层(考虑iframe存在的情况)文档左侧边缘的距离，包括文档不可见的部分(单位像素) */
-    topPageX: /*   */ number;
-    /** 光标位置与最外层(考虑iframe存在的情况)文档上侧边缘的距离，包括文档不可见的部分(单位像素) */
-    topPageY: /*   */ number;
-}
-
 abstract class AbstractCursorEvent implements DesignerEvent<CursorEventData> {
     /** 事件类型 */
-    readonly type: DesignerEventType;
+    readonly type: string;
     /** 光标事件数据 */
     readonly data: CursorEventData;
 
-    protected constructor(type: DesignerEventType, event: MouseEvent) {
-        this.type = type;
+    protected constructor(event: MouseEvent) {
+        this.type = this['constructor'].name;
         this.data = this.transformCoordinates(event);
     }
 
@@ -83,7 +61,6 @@ abstract class AbstractCursorEvent implements DesignerEvent<CursorEventData> {
 }
 
 export type {
-    CursorEventRawData,
     CursorEventData,
 }
 

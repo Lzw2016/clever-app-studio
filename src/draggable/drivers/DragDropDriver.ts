@@ -1,10 +1,12 @@
 import { noValue } from "@/utils/Typeof";
-import { DesignerDriver } from "@/draggable/DesignerDriver";
 import { calcDistance } from "@/draggable/utils/DesignerUtils";
+import { DesignerDriver } from "@/draggable/DesignerDriver";
+import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { CursorStatus } from "@/draggable/types/Designer";
 import { DragStopEvent } from "@/draggable/events/cursor/DragStopEvent";
 import { DragStartEvent } from "@/draggable/events/cursor/DragStartEvent";
 import { DragMoveEvent } from "@/draggable/events/cursor/DragMoveEvent";
-import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { requestIdle } from "@/utils/RequestIdle";
 
 interface GlobalDragDropState {
     /** 是否在拖拽中 */
@@ -168,6 +170,32 @@ class DragDropDriver extends DesignerDriver {
     // --------------------------------------------------------------------------------------------
 
     effect(designerEngine: DesignerEngine): void {
+        /**
+         * 开始拖动
+         */
+        this.eventbus.subscribe(DragStartEvent, event => {
+            const cursor = designerEngine.cursor;
+            cursor.status = CursorStatus.DragStart;
+            cursor.dragStartPosition = event.data;
+        });
+        /**
+         * 拖动中
+         */
+        this.eventbus.subscribe(DragMoveEvent, event => {
+            const cursor = designerEngine.cursor;
+            cursor.status = CursorStatus.Dragging;
+            cursor.position = event.data;
+        });
+        /**
+         * 拖拽结束
+         */
+        this.eventbus.subscribe(DragStopEvent, event => {
+            const cursor = designerEngine.cursor;
+            cursor.status = CursorStatus.DragStop;
+            cursor.dragEndPosition = event.data;
+            cursor.dragStartPosition = undefined;
+            requestIdle(() => cursor.status = CursorStatus.Normal);
+        });
     }
 }
 

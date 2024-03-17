@@ -1,6 +1,7 @@
 import { EventBus } from "@/draggable/EventBus";
 import { DesignerDriver, DesignerDriverConstructor } from "@/draggable/DesignerDriver";
 import { EventContainer } from "@/draggable/types/Designer";
+import { Cursor } from "@/draggable/models/Cursor";
 
 interface DesignerEngineProps {
     /** 设计器功能模块集合 */
@@ -23,9 +24,12 @@ class DesignerEngine {
     private readonly props: DesignerEngineProps;
     /** 设计器功能模块集合 */
     private readonly drivers: Array<DesignerDriver> = [];
+    /** 当前光标状态 */
+    readonly cursor: Cursor;
 
     constructor(props: Partial<DesignerEngineProps>) {
         this.props = { ...defaultProps, ...props };
+        this.cursor = new Cursor(this);
     }
 
     /** 挂载当前设计器 */

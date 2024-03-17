@@ -8,6 +8,7 @@ import MaterialPanel from "@/draggable/components/widgets/MaterialPanel.vue";
 import SettingsPanel from "@/draggable/components/widgets/SettingsPanel.vue";
 import WorkspaceTabs from "@/draggable/components/widgets/WorkspaceTabs.vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { DragMoveEvent } from "@/draggable/events/cursor/DragMoveEvent";
 
 // 定义组件选项
 defineOptions({
@@ -68,6 +69,9 @@ const data = {};
 const designerEngine = new DesignerEngine({
     drivers: [],
 });
+
+const aa = new DragMoveEvent({} as any);
+console.log("@@@@",  aa['constructor'].name);
 
 onMounted(() => {
     designerEngine.mount(document, globalThisPolyfill);

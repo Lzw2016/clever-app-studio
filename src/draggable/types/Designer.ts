@@ -1,23 +1,8 @@
 /**
- * 设计器事件类型
+ * 通用的构造函数
  */
-enum DesignerEventType {
-    /** 开始拖动事件 */
-    DragStartEvent = "drag:start",
-    /** 拖动事件 */
-    DragMoveEvent = "drag:move",
-    /** 停止拖动事件 */
-    DragStopEvent = "drag:stop",
-    /** 鼠标单击事件 */
-    MouseClickEvent = "mouse:click",
-    /** 鼠标双击事件 */
-    MouseDoubleClickEvent = "mouse:dblclick",
-    /** 鼠标移动事件 */
-    MouseMoveEvent = "mouse:move",
-    /** 按键按下事件 */
-    KeyDownEvent = "key:down",
-    /** 按键释放事件 */
-    KeyUpEvent = "key:up",
+interface AnyConstructor<T = any> {
+    new(...args: any[]): T;
 }
 
 /**
@@ -25,7 +10,7 @@ enum DesignerEventType {
  */
 interface DesignerEvent<Data = any> {
     /** 事件类型 */
-    readonly type: DesignerEventType;
+    readonly type: string;
     /** 事件数据 */
     data?: Data;
     /** 事件上下文 */
@@ -35,10 +20,43 @@ interface DesignerEvent<Data = any> {
 /**
  * 事件订阅函数
  */
-type Subscriber<Data = any> = (event: DesignerEvent<Data>) => void;
+type Subscriber<Event extends DesignerEvent = DesignerEvent> = (event: Event) => void;
 
 /** 监听事件的DOM元素(含Window) */
 type EventContainer = HTMLElement | Document;
+
+
+/** 光标拖拽状态 */
+enum CursorStatus {
+    /** 常规 */
+    Normal = 'normal',
+    /** 开始拖拽 */
+    DragStart = 'drag_start',
+    /** 拖拽中 */
+    Dragging = 'dragging',
+    /** 拖拽结束 */
+    DragStop = 'drag_stop',
+}
+
+/** 光标位置 */
+interface CursorPosition {
+    /** 光标位置相对于浏览器窗口左上角的水平坐标(单位像素) */
+    clientX: /*     */ number;
+    /** 光标位置相对于浏览器窗口左上角的垂直坐标(单位像素) */
+    clientY: /*     */ number;
+    /** 光标位置与文档左侧边缘的距离，包括文档不可见的部分(单位像素) */
+    pageX:  /*      */ number;
+    /** 光标位置与文档上侧边缘的距离，包括文档不可见的部分(单位像素) */
+    pageY: /*       */ number;
+    /** 光标位置相对于最外层(考虑iframe存在的情况)浏览器窗口左上角的水平坐标(单位像素) */
+    topClientX: /*  */ number;
+    /** 光标位置相对于最外层(考虑iframe存在的情况)浏览器窗口左上角的垂直坐标(单位像素) */
+    topClientY: /*  */ number;
+    /** 光标位置与最外层(考虑iframe存在的情况)文档左侧边缘的距离，包括文档不可见的部分(单位像素) */
+    topPageX: /*    */ number;
+    /** 光标位置与最外层(考虑iframe存在的情况)文档上侧边缘的距离，包括文档不可见的部分(单位像素) */
+    topPageY: /*    */ number;
+}
 
 // /** 设计器页面类型 */
 // enum ScreenType {
@@ -51,11 +69,13 @@ type EventContainer = HTMLElement | Document;
 // }
 
 export type {
+    AnyConstructor,
     DesignerEvent,
     Subscriber,
     EventContainer,
+    CursorPosition,
 }
 
 export {
-    DesignerEventType,
+    CursorStatus,
 }

@@ -1,7 +1,8 @@
 import { hasValue } from "@/utils/Typeof";
 import { DesignerDriver } from "@/draggable/DesignerDriver";
-import { MouseMoveEvent } from "@/draggable/events/cursor/MouseMoveEvent";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { CursorStatus } from "@/draggable/types/Designer";
+import { MouseMoveEvent } from "@/draggable/events/cursor/MouseMoveEvent";
 
 /**
  * 封装鼠标移动事件，产生的业务事件：MouseMoveEvent
@@ -36,7 +37,17 @@ class MouseMoveDriver extends DesignerDriver {
     // --------------------------------------------------------------------------------------------
 
     effect(designerEngine: DesignerEngine): void {
-
+        /**
+         * 鼠标移动
+         */
+        this.eventbus.subscribe(MouseMoveEvent, event => {
+            const cursor = designerEngine.cursor;
+            if (![CursorStatus.Dragging, CursorStatus.DragStart].includes(cursor.status)) {
+                cursor.status = CursorStatus.Normal;
+            }
+            if (cursor.status === CursorStatus.Dragging) return;
+            cursor.position = event.data;
+        });
     }
 }
 
