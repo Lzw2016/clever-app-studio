@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive } from "vue";
+import { globalThisPolyfill } from "@/utils/GlobalThisPolyfill";
 import { style } from "@/utils/UseType";
 import SplitPane from "@/components/SplitPane.vue";
 import { componentMeta, componentMetaTabs } from "@/ComponentMetaTabs";
@@ -69,7 +70,7 @@ const designerEngine = new DesignerEngine({
 });
 
 onMounted(() => {
-    designerEngine.mount(document, window);
+    designerEngine.mount(document, globalThisPolyfill);
 });
 
 onUnmounted(() => {

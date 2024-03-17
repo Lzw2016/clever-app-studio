@@ -1,5 +1,3 @@
-import { EventType } from "mitt";
-
 /**
  * 设计器事件类型
  */
@@ -25,7 +23,7 @@ enum DesignerEventType {
 /**
  * 设计器事件
  */
-interface DesignerEvent<Data = any> extends Record<EventType, unknown> {
+interface DesignerEvent<Data = any> {
     /** 事件类型 */
     readonly type: DesignerEventType;
     /** 事件数据 */

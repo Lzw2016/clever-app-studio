@@ -3,17 +3,11 @@ import { DesignerDriver, DesignerDriverConstructor } from "@/draggable/DesignerD
 import { EventContainer } from "@/draggable/types/Designer";
 
 interface DesignerEngineProps {
-    // /** 设计器对应的 HTMLElement 对象 */
-    // container: EventContainer;
-    // /** 设计器对应的 window 对象 */
-    // window: Window;
     /** 设计器功能模块集合 */
     drivers: Array<DesignerDriverConstructor>;
 }
 
 const defaultProps: DesignerEngineProps = {
-    // container: window.document,
-    // window: window,
     drivers: [],
 };
 
@@ -21,8 +15,8 @@ const defaultProps: DesignerEngineProps = {
  * 设计器引擎(管理整个开发平台，包含：组件拖拽模块、各种快捷键模块、页面大纲树拖拽)
  */
 class DesignerEngine {
-    /** 当前设计器是否初始化 */
-    private _initialized: boolean = false;
+    // /** 当前设计器是否初始化 */
+    // private _initialized: boolean = false;
     /** 设计器事件总线 */
     private readonly eventbus: EventBus = new EventBus();
     /** 初始化属性 */
@@ -42,7 +36,7 @@ class DesignerEngine {
         const drivers = this.props.drivers.map(driver => new driver(this.eventbus, container, window));
         this.drivers.push(...drivers);
         // 开始消费 EventBus 事件
-        this.drivers.forEach(driver => driver.effect());
+        this.drivers.forEach(driver => driver.effect(this));
         // 启动 DesignerDriver
         this.drivers.forEach(driver => driver.attach());
     }

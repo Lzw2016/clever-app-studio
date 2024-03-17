@@ -1,5 +1,6 @@
 import { EventContainer } from "@/draggable/types/Designer";
 import { EventBus } from "@/draggable/EventBus";
+import { DesignerEngine } from "@/draggable/DesignerEngine";
 
 /**
  * 设计器功能模块
@@ -55,7 +56,7 @@ abstract class DesignerDriver {
     /**
      * 消费 EventBus 中的事件
      */
-    abstract effect(): void;
+    abstract effect(designerEngine: DesignerEngine): void;
 }
 
 /** DesignerDriver 构造函数 */
