@@ -1,14 +1,20 @@
 import { EventBus } from "@/draggable/EventBus";
 import { DesignerDriver, DesignerDriverConstructor } from "@/draggable/DesignerDriver";
 import { EventContainer } from "@/draggable/types/Designer";
+import { ComponentManage } from "@/draggable/types/ComponentManage";
+import { DefComponentManage } from "@/draggable/models/DefComponentManage";
 import { Cursor } from "@/draggable/models/Cursor";
+import { DraggingCmpMetas } from "@/draggable/models/DraggingCmpMetas";
 
 interface DesignerEngineProps {
+    /** 组件管理器 */
+    componentManage: ComponentManage;
     /** 设计器功能模块集合 */
     drivers: Array<DesignerDriverConstructor>;
 }
 
 const defaultProps: DesignerEngineProps = {
+    componentManage: new DefComponentManage(),
     drivers: [],
 };
 
@@ -21,15 +27,18 @@ class DesignerEngine {
     /** 设计器事件总线 */
     readonly eventbus: EventBus = new EventBus();
     /** 初始化属性 */
-    private readonly props: DesignerEngineProps;
+    readonly props: DesignerEngineProps;
     /** 设计器功能模块集合 */
     private readonly drivers: Array<DesignerDriver> = [];
     /** 当前光标状态 */
     readonly cursor: Cursor;
+    /** 正在拖拽的组件的元信息 */
+    readonly draggingCmpMetas: DraggingCmpMetas;
 
     constructor(props: Partial<DesignerEngineProps>) {
         this.props = { ...defaultProps, ...props };
         this.cursor = new Cursor(this);
+        this.draggingCmpMetas = new DraggingCmpMetas(this);
     }
 
     /** 挂载当前设计器 */

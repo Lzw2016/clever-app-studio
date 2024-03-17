@@ -1,32 +1,16 @@
 import { CursorPosition } from "@/draggable/types/Designer";
+import { ComponentManage } from "@/draggable/types/ComponentManage";
+import { DefComponentManage } from "@/draggable/models/DefComponentManage";
 
+/** 组件管理器实例 */
+const componentManage: ComponentManage = new DefComponentManage();
 
-// /**
-//  * 自定义 html 元素属性
-//  */
-// const htmlAttr = {
-//     /**
-//      * 鼠标双击支持编辑文本，boolean 类型
-//      */
-//     editable: "editable",
-// };
-//
-// /**
-//  * 使用 htmlAttr 的逻辑
-//  */
-// const useHtmlAttr = {
-//     /**
-//      * 支持鼠标双击编辑文本
-//      */
-//     idEditable(element?: HTMLElement): boolean {
-//         if (!element) return false;
-//         return `${element[htmlAttr.editable]}` === 'true';
-//     },
-// }
+/** 物料元素区域 */
+const materialItem: string = '.draggable.material-item';
 
 /** 定义 DragDropDriver 的可拖拽区域(白名单) */
 const draggableArea = [
-    '.draggable.material-item',
+    materialItem,
 ];
 
 /** 默认的光标位置 */
@@ -42,6 +26,8 @@ const defCursorPosition: CursorPosition = {
 };
 
 export {
+    componentManage,
+    materialItem,
     draggableArea,
     defCursorPosition,
 }

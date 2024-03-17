@@ -102,6 +102,7 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
                             class="material-item draggable"
                             v-for="item in group.items"
                             :title="`${item.name}(${item.type})`"
+                            :data-component-type="item.type"
                         >
                             <div class="material-item-icon flex-item-fixed">
                                 <IconCalendarPlus :size="20"/>

@@ -2,7 +2,7 @@ import { App } from "vue";
 import PrimeVue, { PrimeVueConfiguration } from "primevue/config";
 import "primevue/resources/themes/aura-light-blue/theme.css";
 import { Language, primeVueLocale } from "@/i18n";
-import { componentManage } from "@/draggable/BlockFactory";
+import { componentManage } from "@/draggable/Constant";
 
 /**
  * 配置组件库

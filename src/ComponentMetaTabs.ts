@@ -1,4 +1,5 @@
 import { ComponentMeta, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
+import { componentManage } from "@/draggable/Constant";
 
 const componentMetaTabs: Array<MaterialMetaTab> = [
     {
@@ -196,7 +197,6 @@ const componentMetaTabs: Array<MaterialMetaTab> = [
 function createComponentMeta(cfg: any): ComponentMeta {
     return {
         type: cfg.type,
-        component: "",
         designComponent: "",
         name: cfg.name,
         description: "",
@@ -445,7 +445,10 @@ function createComponentMeta(cfg: any): ComponentMeta {
     };
 }
 
-const componentMeta = createComponentMeta({ name: "按钮", icon: "" });
+const componentMeta = createComponentMeta({ type: "Button", name: "按钮", icon: "" });
+
+componentManage.registerComponentMeta(componentMeta);
+componentManage.registerComponentMeta(createComponentMeta({ type: "ButtonGroup", name: "按钮组", icon: "" }));
 
 export {
     componentMetaTabs,

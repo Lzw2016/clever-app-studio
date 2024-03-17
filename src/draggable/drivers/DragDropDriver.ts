@@ -1,12 +1,13 @@
 import { noValue } from "@/utils/Typeof";
 import { requestIdle } from "@/utils/RequestIdle";
-import { draggableArea } from "@/draggable/Constant";
+import { draggableArea, materialItem } from "@/draggable/Constant";
 import { calcDistance } from "@/draggable/utils/DesignerUtils";
 import { DesignerDriver } from "@/draggable/DesignerDriver";
 import { CursorStatus } from "@/draggable/types/Designer";
 import { DragStopEvent } from "@/draggable/events/cursor/DragStopEvent";
 import { DragStartEvent } from "@/draggable/events/cursor/DragStartEvent";
 import { DragMoveEvent } from "@/draggable/events/cursor/DragMoveEvent";
+import { useHtmlExtendAttr } from "@/draggable/utils/HtmlExtendAttribute";
 
 interface GlobalDragDropState {
     /** 是否在拖拽中 */
@@ -75,9 +76,6 @@ class DragDropDriver extends DesignerDriver {
         if (!existsParent) {
             return;
         }
-
-        console.log("target", target);
-
         // 设置拖拽状态
         this.globalState.startEvent = event;
         this.globalState.dragging = false;
@@ -171,13 +169,14 @@ class DragDropDriver extends DesignerDriver {
     // --------------------------------------------------------------------------------------------
 
     effect(): void {
-        this.handleCursorStatus();
+        this.handleCursor();
+        this.handleDraggingCmpMetas();
     }
 
     /**
      * 维护 cursor 状态
      */
-    handleCursorStatus() {
+    handleCursor() {
         // 开始拖动
         this.eventbus.subscribe(DragStartEvent, event => {
             console.log("DragStartEvent");
@@ -203,6 +202,29 @@ class DragDropDriver extends DesignerDriver {
             cursor.dragStartPosition = undefined;
             cursor.status = CursorStatus.Normal;
             requestIdle(() => this.setContainerCursorStyle(this.originalCursor));
+        });
+    }
+
+    /**
+     * 维护 draggingCmpMetas 状态
+     */
+    handleDraggingCmpMetas() {
+        // 开始拖动
+        this.eventbus.subscribe(DragStartEvent, event => {
+            console.log("DragStartEvent");
+            const target = event.data.target as HTMLElement;
+            if (!target?.closest) return;
+            const element = target.closest(materialItem);
+            const componentMeta = useHtmlExtendAttr.componentType(element, this.componentManage);
+            if (!componentMeta) return;
+            const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
+            draggingCmpMetas.cmpMetas = [componentMeta];
+        });
+        // 拖拽结束
+        this.eventbus.subscribe(DragStopEvent, event => {
+            console.log("DragStopEvent");
+            const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
+            draggingCmpMetas.cmpMetas = [];
         });
     }
 }

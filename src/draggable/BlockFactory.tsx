@@ -2,17 +2,13 @@ import { ComponentPublicInstance, createVNode, defineComponent, Fragment, render
 import lodash from "lodash";
 import { isArray, isObj, isStr, noValue } from "@/utils/Typeof";
 import { calcExpression, getKeyPathValue, setKeyPathValue } from "@/utils/Expression";
+import { componentManage } from "@/draggable/Constant";
 import { ComponentInstance, VueComponent } from "@/draggable/types/Base";
 import { BaseDirectives, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
 import { RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
-import { ComponentManage } from "@/draggable/types/ComponentManage";
-import { ComponentManageModel } from "@/draggable/models/ComponentManageModel";
 import { isHtmlTag, parseHTML } from "@/draggable/utils/HtmlTag";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
-
-/** 组件管理器实例 */
-const componentManage: ComponentManage = new ComponentManageModel();
 
 /**
  * 创建 BlockComponent 时的全局上下文
@@ -546,7 +542,6 @@ export type  {
 }
 
 export {
-    componentManage,
     createBlockComponent,
     getAllComponentType,
     defineDesignBlock,

@@ -2,6 +2,7 @@ import { Property } from "csstype";
 import { EventContainer } from "@/draggable/types/Designer";
 import { EventBus } from "@/draggable/EventBus";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { ComponentManage } from "@/draggable/types/ComponentManage";
 
 /**
  * 设计器功能模块
@@ -11,6 +12,8 @@ abstract class DesignerDriver {
     readonly designerEngine: DesignerEngine;
     /** 设计器事件总线 */
     readonly eventbus: EventBus;
+    /** 组件管理器 */
+    readonly componentManage: ComponentManage;
     /** 当前模块对应的 HTMLElement 对象 */
     readonly container: EventContainer = window.document;
     /** 当前模块对应的 window 对象 */
@@ -19,6 +22,7 @@ abstract class DesignerDriver {
     constructor(designerEngine: DesignerEngine, container: EventContainer, window: Window) {
         this.designerEngine = designerEngine;
         this.eventbus = designerEngine.eventbus;
+        this.componentManage = designerEngine.props.componentManage;
         this.container = container;
         this.window = window;
     }

@@ -6,7 +6,7 @@ import { AsyncComponentMeta, ComponentMeta } from "../types/ComponentMeta";
 /**
  * 组件管理器模型
  */
-class ComponentManageModel implements ComponentManage {
+class DefComponentManage implements ComponentManage {
     private readonly batchRegister: Map<RegExp, BatchRegister> = new Map<RegExp, BatchRegister>();
     private readonly asyncComponents: Map<string, AsyncVueComponent> = new Map<string, AsyncVueComponent>();
     private readonly components: Map<string, VueComponent> = new Map<string, VueComponent>();
@@ -115,5 +115,5 @@ class ComponentManageModel implements ComponentManage {
 }
 
 export {
-    ComponentManageModel,
+    DefComponentManage,
 }

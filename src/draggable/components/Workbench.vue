@@ -4,6 +4,7 @@ import { globalThisPolyfill } from "@/utils/GlobalThisPolyfill";
 import { style } from "@/utils/UseType";
 import SplitPane from "@/components/SplitPane.vue";
 import { componentMeta, componentMetaTabs } from "@/ComponentMetaTabs";
+import { componentManage } from "@/draggable/Constant";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DragDropDriver } from "@/draggable/drivers/DragDropDriver";
 import { MouseMoveDriver } from "@/draggable/drivers/MouseMoveDriver";
@@ -69,6 +70,7 @@ const state = reactive({});
 const data = {};
 // 设计器引擎
 const designerEngine = new DesignerEngine({
+    componentManage: componentManage,
     drivers: [
         DragDropDriver,
         MouseMoveDriver,

@@ -114,8 +114,8 @@ interface ComponentSetter {
 
 /** 组件元信息 */
 interface ComponentMeta extends MaterialMeta {
-    /** 运行时的组件对象(可以是html原生标签) */
-    component: VueComponent | string;
+    // /** 运行时的组件对象(可以是html原生标签) */
+    // component: VueComponent | string;
     /** 设计时的组件对象 */
     designComponent?: VueComponent | string;
     /** 默认的组件节点配置 */

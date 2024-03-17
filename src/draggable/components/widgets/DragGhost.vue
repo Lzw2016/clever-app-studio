@@ -37,18 +37,19 @@ const ghostStyle = computed<CSSProperties>(() => {
 });
 // 设计器引擎光标信息
 const cursor = props.designerEngine.cursor;
+const draggingCmpMetas = props.designerEngine.draggingCmpMetas;
 </script>
 
 <template>
     <Teleport to="body">
         <div
-            v-if="cursor.status===CursorStatus.Dragging"
+            v-if="cursor.status===CursorStatus.Dragging && draggingCmpMetas.existsCmpMeta"
             ref="ghost"
             class="ghost"
             :style="ghostStyle"
         >
             <span class="ghost-material-name">
-                组件名称
+                {{ draggingCmpMetas.cmpMetas.map(meta => meta.name).join(',') }}
             </span>
         </div>
     </Teleport>
