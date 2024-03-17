@@ -1,3 +1,4 @@
+import { Property } from "csstype";
 import { EventContainer } from "@/draggable/types/Designer";
 import { EventBus } from "@/draggable/EventBus";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
@@ -28,6 +29,8 @@ abstract class DesignerDriver {
      * @param options   事件选项
      */
     protected addEventListener(type: any, listener: any, options?: any): void {
+        // if (this.container[type] === listener) return;
+        // this.container[type] = listener;
         this.container.addEventListener(type, listener, options);
     }
 
@@ -40,7 +43,22 @@ abstract class DesignerDriver {
      * @param options   事件选项
      */
     protected removeEventListener(type: any, listener: any, options?: any): void {
-        this.container.addEventListener(type, listener, options);
+        this.container.removeEventListener(type, listener, options);
+    }
+
+    protected getContainerCursorStyle() {
+        if (this.container instanceof Document) {
+            return this.container.body.style.cursor;
+        }
+        return this.container.style.cursor;
+    }
+
+    protected setContainerCursorStyle(cursorStyle: Property.Cursor) {
+        if (this.container instanceof Document) {
+            this.container.body.style.cursor = cursorStyle;
+        } else {
+            this.container.style.cursor = cursorStyle;
+        }
     }
 
     /**

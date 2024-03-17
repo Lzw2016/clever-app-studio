@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, CSSProperties, reactive, ref, Teleport } from "vue"
+import { computed, CSSProperties, ref, Teleport } from "vue"
 import { isNum } from "@/utils/Typeof";
 import { style } from "@/utils/UseType";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
@@ -19,9 +19,9 @@ interface DragGhostProps {
 // 读取组件 props 属性
 const props = withDefaults(defineProps<DragGhostProps>(), {});
 // state 属性
-const state = reactive({});
+// const state = reactive({});
 // 内部数据
-const data = {};
+// const data = {};
 // ghost div实例
 const ghost = ref<HTMLDivElement | undefined>();
 // ghost样式
@@ -32,7 +32,7 @@ const ghostStyle = computed<CSSProperties>(() => {
         return {};
     }
     return style({
-        transform: `perspective(1px) translate3d(${position.topClientX - 18}px,${position.topClientY - 12}px, 0) scale(0.8)`,
+        transform: `perspective(1px) translate3d(${position.topClientX - 16}px,${position.topClientY - 16}px, 0) scale(0.8)`,
     });
 });
 // 设计器引擎光标信息
@@ -42,13 +42,12 @@ const cursor = props.designerEngine.cursor;
 <template>
     <Teleport to="body">
         <div
-            ref="ghost"
             v-if="cursor.status===CursorStatus.Dragging"
+            ref="ghost"
             class="ghost"
             :style="ghostStyle"
-            style="width: 60px;"
         >
-            <span style="white-space: nowrap;">
+            <span class="ghost-material-name">
                 组件名称
             </span>
         </div>
@@ -57,6 +56,27 @@ const cursor = props.designerEngine.cursor;
 
 <style scoped>
 .ghost {
+    z-index: 999;
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #fff;
+    background-color: #1890ff;
+    height: 40px;
+    min-width: 60px;
+    max-width: 150px;
+    padding: 4px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 16px;
+    opacity: 0.6;
+}
 
+.ghost-material-name {
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 </style>

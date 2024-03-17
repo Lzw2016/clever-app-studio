@@ -36,6 +36,7 @@ class DesignerEngine {
     mount(container: EventContainer, window: Window): void {
         // 先卸载
         this.unmount();
+        console.log("DesignerEngine mount")
         // 创建设计器功能模块集合
         const drivers = this.props.drivers.map(driver => new driver(this.eventbus, container, window));
         this.drivers.push(...drivers);
@@ -47,6 +48,8 @@ class DesignerEngine {
 
     /** 卸载当前设计器 */
     unmount(): void {
+        console.log("DesignerEngine unmount")
+        this.eventbus.clearAllSubscribe();
         this.drivers.forEach(driver => driver.detach());
         this.drivers.length = 0;
     }

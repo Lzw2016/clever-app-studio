@@ -1,4 +1,6 @@
 import { noValue } from "@/utils/Typeof";
+import { requestIdle } from "@/utils/RequestIdle";
+import { draggableArea } from "@/draggable/Constant";
 import { calcDistance } from "@/draggable/utils/DesignerUtils";
 import { EventBus } from "@/draggable/EventBus";
 import { DesignerDriver } from "@/draggable/DesignerDriver";
@@ -7,8 +9,6 @@ import { CursorStatus, EventContainer } from "@/draggable/types/Designer";
 import { DragStopEvent } from "@/draggable/events/cursor/DragStopEvent";
 import { DragStartEvent } from "@/draggable/events/cursor/DragStartEvent";
 import { DragMoveEvent } from "@/draggable/events/cursor/DragMoveEvent";
-import { requestIdle } from "@/utils/RequestIdle";
-import { draggableArea } from "@/draggable/Constant";
 
 interface GlobalDragDropState {
     /** 是否在拖拽中 */
@@ -27,6 +27,7 @@ interface GlobalDragDropState {
  */
 class DragDropDriver extends DesignerDriver {
     private readonly globalState: GlobalDragDropState = this.initGlobalState();
+    private originalCursor: string = "";
 
     constructor(eventbus: EventBus, container: EventContainer, window: Window) {
         super(eventbus, container, window);
@@ -119,6 +120,7 @@ class DragDropDriver extends DesignerDriver {
      * 鼠标移动，开始拖拽处理
      */
     onDistanceChange = (event: MouseEvent) => {
+        console.log("@@@ onDistanceChange")
         const startDragTime = this.globalState.startDragTime;
         const startEvent = this.globalState.startEvent;
         // 没有对应的状态值，直接返回
@@ -175,34 +177,38 @@ class DragDropDriver extends DesignerDriver {
     // --------------------------------------------------------------------------------------------
 
     effect(designerEngine: DesignerEngine): void {
-        /**
-         * 开始拖动
-         */
+        this.handleCursorStatus(designerEngine);
+    }
+
+    /**
+     * 维护 cursor 状态
+     */
+    handleCursorStatus(designerEngine: DesignerEngine) {
+        // 开始拖动
         this.eventbus.subscribe(DragStartEvent, event => {
+            console.log("DragStartEvent");
+            this.originalCursor = this.getContainerCursorStyle();
             const cursor = designerEngine.cursor;
             cursor.status = CursorStatus.DragStart;
             cursor.dragStartPosition = event.data;
-            console.log("@@@ DragStart", cursor)
         });
-        /**
-         * 拖动中
-         */
+        // 拖动中
         this.eventbus.subscribe(DragMoveEvent, event => {
+            console.log("DragMoveEvent");
             const cursor = designerEngine.cursor;
             cursor.status = CursorStatus.Dragging;
             cursor.position = event.data;
-            console.log("@@@ Dragging", cursor)
+            requestIdle(() => this.setContainerCursorStyle('move'));
         });
-        /**
-         * 拖拽结束
-         */
+        // 拖拽结束
         this.eventbus.subscribe(DragStopEvent, event => {
+            console.log("DragStopEvent");
             const cursor = designerEngine.cursor;
             cursor.status = CursorStatus.DragStop;
             cursor.dragEndPosition = event.data;
             cursor.dragStartPosition = undefined;
-            requestIdle(() => cursor.status = CursorStatus.Normal);
-            console.log("@@@ DragStop", cursor)
+            cursor.status = CursorStatus.Normal;
+            requestIdle(() => this.setContainerCursorStyle(this.originalCursor));
         });
     }
 }

@@ -46,6 +46,7 @@ class MouseMoveDriver extends DesignerDriver {
          * 鼠标移动
          */
         this.eventbus.subscribe(MouseMoveEvent, event => {
+            console.log("MouseMoveEvent");
             const cursor = designerEngine.cursor;
             if (![CursorStatus.Dragging, CursorStatus.DragStart].includes(cursor.status)) {
                 cursor.status = CursorStatus.Normal;
