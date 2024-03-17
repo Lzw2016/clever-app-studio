@@ -19,7 +19,7 @@ class DesignerEngine {
     // /** 当前设计器是否初始化 */
     // private _initialized: boolean = false;
     /** 设计器事件总线 */
-    private readonly eventbus: EventBus = new EventBus();
+    readonly eventbus: EventBus = new EventBus();
     /** 初始化属性 */
     private readonly props: DesignerEngineProps;
     /** 设计器功能模块集合 */
@@ -38,10 +38,10 @@ class DesignerEngine {
         this.unmount();
         console.log("DesignerEngine mount")
         // 创建设计器功能模块集合
-        const drivers = this.props.drivers.map(driver => new driver(this.eventbus, container, window));
+        const drivers = this.props.drivers.map(driver => new driver(this, container, window));
         this.drivers.push(...drivers);
         // 开始消费 EventBus 事件
-        this.drivers.forEach(driver => driver.effect(this));
+        this.drivers.forEach(driver => driver.effect());
         // 启动 DesignerDriver
         this.drivers.forEach(driver => driver.attach());
     }

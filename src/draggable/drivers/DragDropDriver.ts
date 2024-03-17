@@ -2,10 +2,8 @@ import { noValue } from "@/utils/Typeof";
 import { requestIdle } from "@/utils/RequestIdle";
 import { draggableArea } from "@/draggable/Constant";
 import { calcDistance } from "@/draggable/utils/DesignerUtils";
-import { EventBus } from "@/draggable/EventBus";
 import { DesignerDriver } from "@/draggable/DesignerDriver";
-import { DesignerEngine } from "@/draggable/DesignerEngine";
-import { CursorStatus, EventContainer } from "@/draggable/types/Designer";
+import { CursorStatus } from "@/draggable/types/Designer";
 import { DragStopEvent } from "@/draggable/events/cursor/DragStopEvent";
 import { DragStartEvent } from "@/draggable/events/cursor/DragStartEvent";
 import { DragMoveEvent } from "@/draggable/events/cursor/DragMoveEvent";
@@ -28,10 +26,6 @@ interface GlobalDragDropState {
 class DragDropDriver extends DesignerDriver {
     private readonly globalState: GlobalDragDropState = this.initGlobalState();
     private originalCursor: string = "";
-
-    constructor(eventbus: EventBus, container: EventContainer, window: Window) {
-        super(eventbus, container, window);
-    }
 
     protected initGlobalState(): GlobalDragDropState {
         return {
@@ -73,17 +67,17 @@ class DragDropDriver extends DesignerDriver {
      */
     onMouseDown = (event: MouseEvent) => {
         // 如果 未按下鼠标左键 或者 按下了Control键 或者 win键(mac中是Command键)，就直接返回
-        if (event.button !== 0 || event.ctrlKey || event.metaKey) {
+        if (event.button !== 0 || event.ctrlKey || event.metaKey) return;
+        const target = event.target as HTMLElement;
+        if (!target?.closest) return;
+        // 如果点击的不是拖拽区域也直接返回
+        const existsParent = draggableArea.some(selector => target.closest(selector));
+        if (!existsParent) {
             return;
         }
-        const target = event.target as HTMLElement;
-        // 如果点击的不是拖拽区域也直接返回
-        if (target?.closest) {
-            const existsParent = draggableArea.some(selector => target.closest(selector));
-            if (!existsParent) {
-                return;
-            }
-        }
+
+        console.log("target", target);
+
         // 设置拖拽状态
         this.globalState.startEvent = event;
         this.globalState.dragging = false;
@@ -176,26 +170,26 @@ class DragDropDriver extends DesignerDriver {
     // 消费事件
     // --------------------------------------------------------------------------------------------
 
-    effect(designerEngine: DesignerEngine): void {
-        this.handleCursorStatus(designerEngine);
+    effect(): void {
+        this.handleCursorStatus();
     }
 
     /**
      * 维护 cursor 状态
      */
-    handleCursorStatus(designerEngine: DesignerEngine) {
+    handleCursorStatus() {
         // 开始拖动
         this.eventbus.subscribe(DragStartEvent, event => {
             console.log("DragStartEvent");
             this.originalCursor = this.getContainerCursorStyle();
-            const cursor = designerEngine.cursor;
+            const cursor = this.designerEngine.cursor;
             cursor.status = CursorStatus.DragStart;
             cursor.dragStartPosition = event.data;
         });
         // 拖动中
         this.eventbus.subscribe(DragMoveEvent, event => {
             console.log("DragMoveEvent");
-            const cursor = designerEngine.cursor;
+            const cursor = this.designerEngine.cursor;
             cursor.status = CursorStatus.Dragging;
             cursor.position = event.data;
             requestIdle(() => this.setContainerCursorStyle('move'));
@@ -203,7 +197,7 @@ class DragDropDriver extends DesignerDriver {
         // 拖拽结束
         this.eventbus.subscribe(DragStopEvent, event => {
             console.log("DragStopEvent");
-            const cursor = designerEngine.cursor;
+            const cursor = this.designerEngine.cursor;
             cursor.status = CursorStatus.DragStop;
             cursor.dragEndPosition = event.data;
             cursor.dragStartPosition = undefined;

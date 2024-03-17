@@ -1,8 +1,6 @@
 import { hasValue } from "@/utils/Typeof";
-import { EventBus } from "@/draggable/EventBus";
 import { DesignerDriver } from "@/draggable/DesignerDriver";
-import { DesignerEngine } from "@/draggable/DesignerEngine";
-import { CursorStatus, EventContainer } from "@/draggable/types/Designer";
+import { CursorStatus } from "@/draggable/types/Designer";
 import { MouseMoveEvent } from "@/draggable/events/cursor/MouseMoveEvent";
 
 /**
@@ -10,10 +8,6 @@ import { MouseMoveEvent } from "@/draggable/events/cursor/MouseMoveEvent";
  */
 class MouseMoveDriver extends DesignerDriver {
     private request?: number = undefined;
-
-    constructor(eventbus: EventBus, container: EventContainer, window: Window) {
-        super(eventbus, container, window);
-    }
 
     // --------------------------------------------------------------------------------------------
     // 生产事件
@@ -41,13 +35,11 @@ class MouseMoveDriver extends DesignerDriver {
     // 消费事件
     // --------------------------------------------------------------------------------------------
 
-    effect(designerEngine: DesignerEngine): void {
-        /**
-         * 鼠标移动
-         */
+    effect(): void {
+        // 鼠标移动
         this.eventbus.subscribe(MouseMoveEvent, event => {
             console.log("MouseMoveEvent");
-            const cursor = designerEngine.cursor;
+            const cursor = this.designerEngine.cursor;
             if (![CursorStatus.Dragging, CursorStatus.DragStart].includes(cursor.status)) {
                 cursor.status = CursorStatus.Normal;
             }

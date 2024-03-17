@@ -7,6 +7,8 @@ import { DesignerEngine } from "@/draggable/DesignerEngine";
  * 设计器功能模块
  */
 abstract class DesignerDriver {
+    /** 设计器引擎 */
+    readonly designerEngine: DesignerEngine;
     /** 设计器事件总线 */
     readonly eventbus: EventBus;
     /** 当前模块对应的 HTMLElement 对象 */
@@ -14,8 +16,9 @@ abstract class DesignerDriver {
     /** 当前模块对应的 window 对象 */
     readonly window: Window = window;
 
-    protected constructor(eventbus: EventBus, container: EventContainer, window: Window) {
-        this.eventbus = eventbus;
+    constructor(designerEngine: DesignerEngine, container: EventContainer, window: Window) {
+        this.designerEngine = designerEngine;
+        this.eventbus = designerEngine.eventbus;
         this.container = container;
         this.window = window;
     }
@@ -74,11 +77,11 @@ abstract class DesignerDriver {
     /**
      * 消费 EventBus 中的事件
      */
-    abstract effect(designerEngine: DesignerEngine): void;
+    abstract effect(): void;
 }
 
 /** DesignerDriver 构造函数 */
-type DesignerDriverConstructor = new (eventbus: EventBus, container: EventContainer, window: Window) => DesignerDriver;
+type DesignerDriverConstructor = new (designerEngine: DesignerEngine, container: EventContainer, window: Window) => DesignerDriver;
 
 export type {
     DesignerDriverConstructor,
