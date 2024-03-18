@@ -26,23 +26,23 @@ interface StudioLayoutProps {
     topToolsHeight?: number;
     /** 底部工具栏高度，单位(px) */
     bottomToolsHeight?: number;
-    /** 左侧面板宽度，单位(px) */
+    /** 左侧面板初始宽度，单位(px) */
     leftPanelDefWidth?: number;
-
+    /** 左侧面板最小宽度，单位(px) */
     leftPanelMinWidth?: number;
-
+    /** 左侧面板最大宽度，单位(px) */
     leftPanelMaxWidth?: number;
-    /** 右侧面板宽度，单位(px) */
+    /** 右侧面板初始宽度，单位(px) */
     rightPanelDefWidth?: number;
-
+    /** 右侧面板最小宽度，单位(px) */
     rightPanelMinWidth?: number;
-
+    /** 右侧面板最大宽度，单位(px) */
     rightPanelMaxWidth?: number;
-    /** 底部工具栏高度，单位(px) */
+    /** 底部工具栏初始高度，单位(px) */
     bottomPanelDefWidth?: number;
-
+    /** 底部工具栏最小高度，单位(px) */
     bottomPanelMinWidth?: number;
-
+    /** 底部工具栏最大高度，单位(px) */
     bottomPanelMaxWidth?: number;
 }
 

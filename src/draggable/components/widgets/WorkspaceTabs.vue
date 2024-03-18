@@ -62,7 +62,7 @@ function closePage(name: string) {
     >
         <TabItem v-for="item in state.pages" :key="item.title" :name="item.title" :title="item.title">
             {{ item.content }}
-            <div style="height: 1300px; width: 3300px;"/>
+            <div style="height: 1300px;"/>
         </TabItem>
     </Tabs>
 </template>

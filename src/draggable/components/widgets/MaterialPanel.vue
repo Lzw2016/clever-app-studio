@@ -70,7 +70,7 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
                 <IconX :size="18"/>
             </div>
         </div>
-        <div class="flex-row-container flex-center flex-item-fixed">
+        <div class="flex-row-container flex-center flex-item-fixed" style="margin-bottom: 4px;">
             <Search
                 class="flex-item-fill"
                 style="min-width: 130px;max-width: 240px;margin: 0 16px;"
