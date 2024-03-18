@@ -68,7 +68,7 @@ const isFun = isType<(...args: any[]) => any>(['Function', 'AsyncFunction', 'Gen
 const isFunction = isType<(...args: any[]) => any>('Function');
 
 /** 变量是否是 AsyncFunction(异步函数，返回Promise的函数) */
-const isAsyncFunction = isType<(...args: any[]) => any>('AsyncFunction');
+const isAsyncFunction = isType<(...args: any[]) => Promise<any>>('AsyncFunction');
 
 /** 变量是否是 GeneratorFunction(异步函数，返回Generator的函数) */
 const isGeneratorFunction = isType<(...args: any[]) => any>('GeneratorFunction');

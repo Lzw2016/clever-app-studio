@@ -114,7 +114,6 @@ onUnmounted(() => {
         <div class="flex-item-fill flex-row-container box-border">
             <div class="flex-item-fixed flex-column-container" style="height: 100%;width: 32px;">
                 <div class="flex-item-fixed box-border-b" style="height: 32px">组件</div>
-                <div class="flex-item-fixed box-border-b" style="height: 32px">大纲</div>
                 <div class="flex-item-fixed box-border-b" style="height: 32px">页面</div>
                 <div class="flex-item-fixed box-border-b" style="height: 32px">接口</div>
                 <div class="flex-item-fill"></div>
@@ -175,6 +174,7 @@ onUnmounted(() => {
             </SplitPane>
             <div class="flex-item-fixed flex-column-container" style="height: 100%;width: 32px;">
                 <div class="flex-item-fixed box-border-b" style="height: 32px">属性</div>
+                <div class="flex-item-fixed box-border-b" style="height: 32px">大纲</div>
                 <div class="flex-item-fixed box-border-b" style="height: 32px">历史</div>
                 <div class="flex-item-fixed box-border-b" style="height: 32px">数据</div>
                 <div class="flex-item-fill"></div>

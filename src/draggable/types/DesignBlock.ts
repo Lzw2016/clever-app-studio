@@ -1,4 +1,5 @@
 import { CSSProperties, WatchCallback, WatchOptions } from "vue";
+import { RouteParams } from "vue-router";
 import { AnyFunction, ComponentInstance, ErrorCapturedHook, FunctionConfig, HtmlTag, I18N } from "@/draggable/types/Base";
 
 // -------------------------------------------------------------------------------------------------------------------
@@ -242,6 +243,17 @@ interface DesignBlock<Props extends BaseProps = BaseProps, Event extends BaseEve
     i18n?: I18N;
 }
 
+/** 设计页面元数据 */
+interface DesignPageMate {
+    /** 页面标题 */
+    title: string;
+    /** 设计的页面内容 */
+    designBlock: DesignBlock;
+}
+
+/** 加载设计页面元数据 */
+type LoadDesignPageMate = (params: RouteParams) => Promise<DesignPageMate | void>;
+
 export type {
     BaseProps,
     BaseEvent,
@@ -258,4 +270,6 @@ export type {
     BlockMethod,
     BlockLifeCycles,
     DesignBlock,
+    DesignPageMate,
+    LoadDesignPageMate,
 }

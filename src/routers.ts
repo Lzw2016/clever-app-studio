@@ -1,4 +1,10 @@
 import { Router, RouteRecordRaw } from "vue-router";
+// import { sleep } from "@/utils/Utils";
+import { DesignPageMate, LoadDesignPageMate } from "@/draggable/types/DesignBlock";
+
+function defineLoadDesignPageMate(fun: LoadDesignPageMate): LoadDesignPageMate {
+    return fun;
+}
 
 const staticRouters: RouteRecordRaw[] = [
     {
@@ -32,6 +38,40 @@ const staticRouters: RouteRecordRaw[] = [
         strict: true,
         component: () => import("@/draggable/components/Workbench.vue"),
         children: [
+            {
+                name: 'WelcomePanel',
+                path: '/workbench/welcome',
+                strict: true,
+                meta: {
+                    title: "欢迎",
+                },
+                component: () => import("@/draggable/components/widgets/WelcomePanel.vue"),
+            },
+            {
+                name: 'DictPanel',
+                path: '/workbench/dict',
+                strict: true,
+                meta: {
+                    title: "字典管理",
+                },
+                component: () => import("@/draggable/components/widgets/DictPanel.vue"),
+            },
+            {
+                name: 'DesignerPanel',
+                path: '/workbench/designer/:pageId',
+                strict: true,
+                meta: {
+                    loader: defineLoadDesignPageMate(async params => {
+                        // await sleep(100);
+                        // if(params.pageId==='333') await sleep(100000000);
+                        return {
+                            title: params.pageId,
+                            designBlock: {} as any,
+                        } as DesignPageMate;
+                    }),
+                },
+                component: () => import("@/draggable/components/widgets/DesignerPanel.vue"),
+            },
         ],
     },
 ];
