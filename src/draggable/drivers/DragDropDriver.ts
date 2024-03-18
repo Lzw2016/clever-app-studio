@@ -120,7 +120,6 @@ class DragDropDriver extends DesignerDriver {
      * 鼠标移动，开始拖拽处理
      */
     onDistanceChange = (event: MouseEvent) => {
-        console.log("@@@ onDistanceChange")
         const startDragTime = this.dragState.startDragTime;
         const startEvent = this.dragState.startEvent;
         // 没有对应的状态值，直接返回
@@ -199,7 +198,11 @@ class DragDropDriver extends DesignerDriver {
             const cursor = this.designerEngine.cursor;
             cursor.status = CursorStatus.Dragging;
             cursor.position = event.data;
-            requestIdle(() => this.setContainerCursorStyle('move'));
+            requestIdle(() => {
+                this.setContainerCursorStyle('move');
+                // const element = document.elementFromPoint(event.data.topClientX, event.data.topClientY);
+                // console.log("element", element);
+            });
         });
         // 拖拽结束
         this.eventbus.subscribe(DragStopEvent, event => {

@@ -32,7 +32,7 @@ const ghostStyle = computed<CSSProperties>(() => {
         return {};
     }
     return style({
-        transform: `perspective(1px) translate3d(${position.topClientX - 8}px, ${position.topClientY - 20}px, 0) scale(0.8)`,
+        transform: `perspective(1px) translate3d(${position.topClientX - 6}px, ${position.topClientY - 20}px, 0) scale(0.8)`,
     });
 });
 // 设计器引擎光标信息
@@ -58,7 +58,8 @@ const draggingCmpMetas = props.designerEngine.draggingCmpMetas;
 <style scoped>
 .ghost {
     z-index: 999;
-    position: absolute;
+    pointer-events: none;
+    position: fixed;
     top: 0;
     left: 0;
     color: #fff;
