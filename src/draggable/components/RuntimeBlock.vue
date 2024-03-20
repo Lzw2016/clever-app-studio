@@ -2,7 +2,7 @@
 import { Fragment, reactive } from "vue";
 import { componentManage } from "@/draggable/Constant";
 import { DesignBlock } from "@/draggable/types/DesignBlock";
-import { createBlockComponent, getAllComponentType } from "@/draggable/BlockFactory";
+import { createBlockComponent, CreateBlockConfig, getAllComponentType } from "@/draggable/BlockFactory";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
 import { RenderErrType } from "@/draggable/types/RuntimeBlock";
 
@@ -58,18 +58,21 @@ createComponent();
 
 // 基于 Block 创建 vue 组件
 function createComponent() {
+    const config: Partial<CreateBlockConfig> = {
+        isDesigning: props.isDesigning,
+    };
     if (!props.block) return;
     if (props.autoLoadComponent) {
         const types = getAllComponentType(props.block);
         state.loading = true;
         componentManage.loadAsyncComponent(types).then(result => {
-            data.component = createBlockComponent(props.block!);
+            data.component = createBlockComponent(props.block!, config);
             state.blockCreated = true;
         }).catch(reason => {
             state.loadErr = reason;
         }).finally(() => state.loading = false);
     } else {
-        data.component = createBlockComponent(props.block);
+        data.component = createBlockComponent(props.block, config);
         state.blockCreated = true;
     }
 }

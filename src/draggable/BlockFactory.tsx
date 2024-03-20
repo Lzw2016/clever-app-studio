@@ -54,12 +54,12 @@ const defConfig: CreateBlockConfig = {
 /**
  * 基于 DesignBlock 动态创建 vue 组件
  */
-function createBlockComponent(block: DesignBlock, config: CreateBlockConfig = defConfig) {
+function createBlockComponent(block: DesignBlock, config: Partial<CreateBlockConfig> = defConfig) {
     const designBlock: DesignBlock = block;
     // 深度克隆 block 对象，保护原始 block 对象不被篡改
     block = lodash.cloneDeep(designBlock);
     // 新建全局上下文
-    const global: Global = { ...config, allBlock: {}, designBlock: designBlock };
+    const global: Global = { ...defConfig, ...config, allBlock: {}, designBlock: designBlock };
     let runtimeBlock: RuntimeBlock;
     try {
         // 递归处理 Block 属性，使它符合 vue 组件的规范
@@ -554,6 +554,7 @@ function defineDesignBlock(designBlock: DesignBlock): DesignBlock {
 type Block = ComponentInstance;
 
 export type  {
+    CreateBlockConfig,
     Block,
 }
 
