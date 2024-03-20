@@ -187,6 +187,7 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
 .settings-tabs :deep(.tiny-tabs__content) {
     margin: 0;
     flex-grow: 1;
+    border-top: 1px solid #d9d9d9;
 }
 
 .settings-groups {

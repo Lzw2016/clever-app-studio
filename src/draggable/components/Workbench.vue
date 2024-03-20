@@ -6,6 +6,7 @@ import SplitPane from "@/components/SplitPane.vue";
 import { componentMeta, componentMetaTabs } from "@/ComponentMetaTabs";
 import { componentManage } from "@/draggable/Constant";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { setDesignerEngine } from "@/draggable/InjectVars";
 import { DragDropDriver } from "@/draggable/drivers/DragDropDriver";
 import { MouseMoveDriver } from "@/draggable/drivers/MouseMoveDriver";
 import DragGhost from "@/draggable/components/widgets/DragGhost.vue";
@@ -76,11 +77,10 @@ const designerEngine = new DesignerEngine({
         MouseMoveDriver,
     ],
 });
-
+setDesignerEngine(designerEngine);
 onMounted(() => {
     designerEngine.mount(document, globalThisPolyfill);
 });
-
 onUnmounted(() => {
     designerEngine.unmount();
 });

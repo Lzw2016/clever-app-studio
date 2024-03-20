@@ -25,7 +25,6 @@ type Subscriber<Event extends DesignerEvent = DesignerEvent> = (event: Event) =>
 /** 监听事件的DOM元素(含Window) */
 type EventContainer = HTMLElement | Document;
 
-
 /** 光标拖拽状态 */
 enum CursorStatus {
     /** 常规 */
@@ -58,15 +57,33 @@ interface CursorPosition {
     topPageY: /*    */ number;
 }
 
-// /** 设计器页面类型 */
-// enum ScreenType {
-//     /** PC端 */
-//     PC = 'PC',
-//     /** 手机端 */
-//     Mobile = 'Mobile',
-//     // Responsive = 'Responsive',
-//     // Sketch = 'Sketch',
-// }
+/** 设计器光标模式 */
+enum DesignerCursorMode {
+    /** 拖拽 */
+    DragDrop = 'dragdrop',
+    /** 自由选择 */
+    Selection = 'selection',
+}
+
+/** 设计器布局类型 */
+enum DesignerLayout {
+    /** PC端 */
+    PC = 'pc',
+    /** 移动端 */
+    Mobile = 'mobile',
+    /** 响应式布局 */
+    Responsive = 'responsive',
+}
+
+/** 设计器叶签类型 */
+enum DesignerTab {
+    /** 设计器 */
+    Designer = 'Designer',
+    /** 源码 */
+    Code = 'Code',
+    /** 预览 */
+    Preview = 'Preview',
+}
 
 export type {
     AnyConstructor,
@@ -78,4 +95,7 @@ export type {
 
 export {
     CursorStatus,
+    DesignerCursorMode,
+    DesignerLayout,
+    DesignerTab,
 }
