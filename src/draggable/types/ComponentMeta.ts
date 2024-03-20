@@ -20,7 +20,7 @@ interface MaterialMeta {
 /** 组件节点默认配置 */
 type DefDesignNode = Partial<Omit<DesignNode, 'type' | 'ref'>>
 
-/** 主键Schema */
+/** 组件schema */
 interface ComponentSchema {
     /** 组件事件元信息 */
     events: Record<string, Omit<FunctionMeta, 'name'>>;
@@ -114,8 +114,6 @@ interface ComponentSetter {
 
 /** 组件元信息 */
 interface ComponentMeta extends MaterialMeta {
-    // /** 运行时的组件对象(可以是html原生标签) */
-    // component: VueComponent | string;
     /** 设计时的组件对象 */
     designComponent?: VueComponent | string;
     /** 默认的组件节点配置 */

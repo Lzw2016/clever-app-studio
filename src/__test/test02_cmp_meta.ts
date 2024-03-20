@@ -8,7 +8,6 @@ function defineComponentMeta(meta: ComponentMeta) {
 
 const componentMeta = defineComponentMeta({
     type: "Input",
-    component: "[Input]",
     // 设计时显示的组件
     designComponent: "[DesignInput]" as any,
     name: "文本输入",

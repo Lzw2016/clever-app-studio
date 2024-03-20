@@ -7,7 +7,7 @@ import { CursorStatus } from "@/draggable/types/Designer";
 import { DragStopEvent } from "@/draggable/events/cursor/DragStopEvent";
 import { DragStartEvent } from "@/draggable/events/cursor/DragStartEvent";
 import { DragMoveEvent } from "@/draggable/events/cursor/DragMoveEvent";
-import { useHtmlExtendAttr } from "@/draggable/utils/HtmlExtendAttribute";
+import { useHtmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 
 interface DragState {
@@ -81,7 +81,7 @@ class DragDropDriver extends DesignerDriver {
         //     return;
         // }
         const element = target.closest(materialItem);
-        const componentMeta = useHtmlExtendAttr.componentType(element, this.componentManage);
+        const componentMeta = useHtmlExtAttr.componentType(element, this.componentManage);
         if (!componentMeta) return;
         this.componentMeta = componentMeta;
         // 设置拖拽状态

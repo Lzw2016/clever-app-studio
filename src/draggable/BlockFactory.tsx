@@ -9,11 +9,20 @@ import { RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/dr
 import { isHtmlTag, parseHTML } from "@/draggable/utils/HtmlTag";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
+import { ComponentManage } from "@/draggable/types/ComponentManage";
+
+/** 创建渲染组件的配置 */
+interface CreateBlockConfig {
+    /** 组件管理器 */
+    componentManage: ComponentManage;
+    /** 是否是设计时 */
+    isDesigning: boolean;
+}
 
 /**
  * 创建 BlockComponent 时的全局上下文
  */
-interface Global {
+interface Global extends CreateBlockConfig {
     /** 当前所有的 Block vue 组件 */
     readonly allBlock: Record<string, VueComponent>;
     /** 当前渲染的顶层 DesignBlock */
@@ -36,17 +45,25 @@ interface Context {
     slotProps?: Record<string, any>;
 }
 
+// 创建渲染组件的默认配置
+const defConfig: CreateBlockConfig = {
+    componentManage: componentManage,
+    isDesigning: false,
+};
+
 /**
  * 基于 DesignBlock 动态创建 vue 组件
  */
-function createBlockComponent(block: DesignBlock) {
+function createBlockComponent(block: DesignBlock, config: CreateBlockConfig = defConfig) {
     const designBlock: DesignBlock = block;
     // 深度克隆 block 对象，保护原始 block 对象不被篡改
     block = lodash.cloneDeep(designBlock);
-    // 递归处理 Block 属性，使它符合 vue 组件的规范
+    // 新建全局上下文
+    const global: Global = { ...config, allBlock: {}, designBlock: designBlock };
     let runtimeBlock: RuntimeBlock;
     try {
-        runtimeBlock = blockDeepTransform(block, componentManage);
+        // 递归处理 Block 属性，使它符合 vue 组件的规范
+        runtimeBlock = blockDeepTransform(block, global.componentManage);
     } catch (e) {
         return createVNode(BlockRenderError, {
             msg: "解析 DesignBlock 失败",
@@ -56,7 +73,6 @@ function createBlockComponent(block: DesignBlock) {
         });
     }
     // console.log("createBlockComponent", runtimeBlock);
-    const global: Global = { allBlock: {}, designBlock: designBlock };
     // 递归初始化 allBlock
     deepExtractBlock(runtimeBlock, global.allBlock);
     // 创建组件

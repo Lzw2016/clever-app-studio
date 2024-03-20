@@ -36,8 +36,14 @@ tpl数据范围(优先级由上到下)
     10.当前node所属block对应的vue实例平铺的 $props 和 $data 数据
 
 表达式语法
-
+    1.必须以“{{”开头且以“}}”结尾，中间的内容就是表达式内容
+    2.支持多个语句，语句的结束使用“;”
+    3.表达式值就是最后一个语句的值
+    4.大多数场景只有一条语句，如：“{{ exp_content }}”
+    5.表达式内部支持调用函数，表达式上下文详见：“props表达式的数据范围”
 
 模版语法
-
-
+    1.<%= exp_content %>：输出变量
+    2.<%- exp_content %>：html转义输出变量
+    3.<%  exp_content %>：js语句逻辑
+    4.详情：https://www.lodashjs.com/docs/lodash.template#_templatestring-options
