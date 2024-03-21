@@ -1,6 +1,6 @@
 import { WatchCallback, WatchOptions } from "vue";
 import { AnyFunction, ComponentInstance, I18N, VueComponent } from "@/draggable/types/Base";
-import { BaseDirectives, BlockMeta } from "@/draggable/types/DesignBlock";
+import { BaseDirectives, BlockMeta, ComponentSlotsItem } from "@/draggable/types/DesignBlock";
 
 /** 组件插槽类型(运行时) */
 type RuntimeComponentSlotsItem = RuntimeNode | Omit<RuntimeBlock, "meta" | "i18n"> | string;
@@ -90,6 +90,33 @@ enum RenderErrType {
     propsTransform = "propsTransform",
     /** 表达式计算 */
     expTransform = "expTransform",
+}
+
+interface RuntimeBlockExt {
+    // RuntimeNode.id -> RuntimeNode
+    readonly allNode: Record<string, RuntimeNode>;
+    // RuntimeNode.id -> 所属的RuntimeNode
+    readonly nodeParent: Record<string, RuntimeNode>;
+    // RuntimeNode.id -> BlockComponentInstance
+    readonly nodeCmp: Record<string, ComponentInstance>;
+    // RuntimeNode.ref -> RuntimeNode.id
+    readonly refId: Record<string, string>;
+}
+
+interface RuntimeBlockOperation {
+    /**
+     * 增加一个节点
+     * @param node          增加的节点对象
+     * @param parentNodeId  增加节点所属父节点id
+     * @param beforeNodeId  增加节点的位置，在指定的兄弟节点之后，如果为空增加的节点就是第一个子节点
+     */
+    addNode(node: ComponentSlotsItem, parentNodeId: string, beforeNodeId?: string): void;
+
+    /**
+     * 删除一个节点
+     * @param nodeId 删除的节点id
+     */
+    removeNode(nodeId: string): void;
 }
 
 export type {

@@ -13,7 +13,7 @@ const htmlExtAttr = {
     /** 获取被拖拽的组件类型(值是：DesignNode.type) */
     componentType: 'data-component-type',
     /** 组件节点(值是：RuntimeNode.id) */
-    designNode: 'data-design-node',
+    nodeId: 'data-node-id',
     /** 可以容纳子组件的容器(值是：true) */
     itemsContainer: 'data-items-container',
     /** 可以容纳插槽的容器(值是：slot_name) */

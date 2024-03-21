@@ -3,7 +3,7 @@ import lodash from "lodash";
 import { isArray, isObj, isStr, noValue } from "@/utils/Typeof";
 import { calcExpression, getKeyPathValue, setKeyPathValue } from "@/utils/Expression";
 import { componentManage } from "@/draggable/Constant";
-import { ComponentInstance, VueComponent } from "@/draggable/types/Base";
+import { ComponentInstance } from "@/draggable/types/Base";
 import { BaseDirectives, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
 import { RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { isHtmlTag, parseHTML } from "@/draggable/utils/HtmlTag";
@@ -24,9 +24,12 @@ interface CreateBlockConfig {
  */
 interface Global extends CreateBlockConfig {
     /** 当前所有的 Block vue 组件 */
-    readonly allBlock: Record<string, VueComponent>;
-    /** 当前渲染的顶层 DesignBlock */
+    readonly allBlock: Record<string, ComponentInstance>;
+    /** 当前渲染的顶层 DesignBlock(原始的DesignBlock对象) */
     readonly designBlock: DesignBlock;
+
+
+
 }
 
 /**
@@ -120,6 +123,8 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, global: Global)
             deepBindThis(runtimeBlock, vm);
             // 更新 global.allBlock
             global.allBlock[runtimeBlock.ref] = vm;
+            // Map<id, >
+
             // 返回组件数据
             return data;
         },
