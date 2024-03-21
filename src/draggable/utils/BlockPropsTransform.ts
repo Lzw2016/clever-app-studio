@@ -210,7 +210,7 @@ function listenersTransform(listeners: DesignBlock["listeners"], methods: Record
  * 深度转换 DesignBlock。
  * 会转换的属性：type、listeners、slots、items、tpl、computed、watch、methods、lifeCycles
  */
-function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: ComponentManage, parents?: RuntimeBlock): RuntimeBlock {
+function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: ComponentManage, parent?: RuntimeBlock): RuntimeBlock {
     const {
         block: isBlock,
         defaults,
@@ -237,7 +237,7 @@ function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: Co
     }
     const runtime: any = { block: isBlock, type: type };
     // 如果没有父级 Block 强制让当前节点为 Block
-    if (!parents) runtime.block = true;
+    if (!parent) runtime.block = true;
     // 读取组件类型
     if (type && lodash.trim(type).length > 0) {
         runtime.__type = type.trim();
@@ -262,12 +262,12 @@ function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: Co
     // 处理 listeners
     if (runtime.block) {
         runtime.listeners = listenersTransform(listeners, runtime.methods);
-    } else if (parents) {
-        runtime.listeners = listenersTransform(listeners, parents.methods);
+    } else if (parent) {
+        runtime.listeners = listenersTransform(listeners, parent.methods);
     }
     // 递归处理 slots
     runtime.slots = {};
-    const designBlock: RuntimeBlock = (parents ? parents : runtime);
+    const designBlock: RuntimeBlock = (parent ? parent : runtime);
     for (let name in slots) {
         const slot = slots[name];
         runtime.slots[name] = _deepTransformSlotsOrItems(slot, componentManage, designBlock, "slots", name);
@@ -279,7 +279,7 @@ function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: Co
 }
 
 // blockDeepTransform 处理 slots 或者 items
-function _deepTransformSlotsOrItems(itemsOrSlots: DesignNode['items'], componentManage: ComponentManage, parents: RuntimeBlock, propName: 'items' | 'slots', slotName: string): Array<RuntimeComponentSlotsItem> {
+function _deepTransformSlotsOrItems(itemsOrSlots: DesignNode['items'], componentManage: ComponentManage, parent: RuntimeBlock, propName: 'items' | 'slots', slotName: string): Array<RuntimeComponentSlotsItem> {
     let result: Array<RuntimeComponentSlotsItem>;
     if (isStr(itemsOrSlots)) {
         result = [itemsOrSlots];
@@ -288,13 +288,13 @@ function _deepTransformSlotsOrItems(itemsOrSlots: DesignNode['items'], component
             if (isStr(item)) {
                 return item;
             } else if (isObj(item) && !isArray(item)) {
-                return blockDeepTransform(item, componentManage, parents);
+                return blockDeepTransform(item, componentManage, parent);
             } else {
                 throw new Error(`Block ${propName} 定义错误(${slotName}[${idx}]=${JSON.stringify(item)})`);
             }
         });
     } else if (isObj(itemsOrSlots)) {
-        result = [blockDeepTransform(itemsOrSlots as any, componentManage, parents)];
+        result = [blockDeepTransform(itemsOrSlots as any, componentManage, parent)];
     } else {
         throw new Error(`Block ${propName} 定义错误(${slotName}=${JSON.stringify(itemsOrSlots)})`);
     }
@@ -391,6 +391,37 @@ function _deepExtractSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, al
         const node = cmpNode as RuntimeNode;
         if (isObj(node) && !isArray(node)) {
             deepExtractBlock(node, allBlock, parentBlock);
+        }
+    }
+}
+
+/** 遍历 RuntimeNode 的回调函数 */
+type TraverseNode = (current: RuntimeNode, isSlot: boolean, parent?: RuntimeNode) => void;
+
+/**
+ * 深度递归 RuntimeNode 遍历所有的 node(包含slot)
+ */
+function deepTraverseNodes(node: RuntimeNode, callback: TraverseNode, isSlot: boolean, parentNode?: RuntimeNode): void {
+    const { items, slots } = node;
+    callback(node, isSlot, parentNode);
+    // 递归 slots
+    for (let name in slots) {
+        const slot = slots[name];
+        if (slot.length <= 0) continue;
+        _deepBlockSlotsOrItems(slot, callback, true, node);
+    }
+    // 递归 items
+    if (items && items.length > 0) {
+        _deepBlockSlotsOrItems(items, callback, false, node);
+    }
+}
+
+// deepTraverseNodes 处理 slots 或者 items
+function _deepBlockSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, callback: TraverseNode, isSlot: boolean, parentNode?: RuntimeNode) {
+    for (let cmpNode of cmpNodes) {
+        const node = cmpNode as RuntimeNode;
+        if (isObj(node) && !isArray(node)) {
+            deepTraverseNodes(node, callback, isSlot, parentNode);
         }
     }
 }
@@ -535,6 +566,7 @@ export {
     blockDeepTransform,
     deepBindThis,
     deepExtractBlock,
+    deepTraverseNodes,
     getExpData,
     getTplData,
     propsTransform,

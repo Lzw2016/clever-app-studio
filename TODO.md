@@ -27,6 +27,9 @@
 [  ] 18.
 [  ] 19.
 
+DesignBlock 操作类
+拖拽 -> DesignBlock变化 -> 重新渲染RuntimeBlock.vue组件
+
 
 拖拽引擎
 拖拽画布

@@ -49,6 +49,5 @@ tpl数据范围(优先级由上到下)
     4.详情：https://www.lodashjs.com/docs/lodash.template#_templatestring-options
 
 基于DesignBlock创建的vue组件的实例扩展了以下属性/函数
-    1.__global: 创建 BlockComponent 时的全局上下文对象，定义在：Global(BlockFactory.tsx)
-    2.
-    3.
+    1.__global: 创建 BlockComponent 时的全局上下文对象，定义在：BlockFactory.tsx中的Global
+    2.__ops:    Block支持的操作函数，定义在：BlockFactory.tsx中的BlockOperation

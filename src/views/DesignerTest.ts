@@ -1,8 +1,9 @@
-import { defineDesignBlock } from "@/draggable/BlockFactory";
+import { Block, defineDesignBlock } from "@/draggable/BlockFactory";
 import { DesignBlock } from "@/draggable/types/DesignBlock";
 
 function createDiv(designBlock?: Partial<DesignBlock>) {
     return defineDesignBlock({
+        ref: designBlock?.ref,
         block: false,
         type: "div",
         props: {
@@ -23,6 +24,7 @@ function createDiv(designBlock?: Partial<DesignBlock>) {
 
 function createSpan(designBlock?: Partial<DesignBlock>) {
     return defineDesignBlock({
+        ref: designBlock?.ref,
         block: false,
         type: "span",
         props: {
@@ -32,9 +34,12 @@ function createSpan(designBlock?: Partial<DesignBlock>) {
                 height: "40px",
                 border: "1px solid #ccc",
                 margin: "4px",
+                ...(designBlock?.props?.style as any ?? {}),
             },
         },
-        ...designBlock,
+        items: [
+            ...(designBlock?.items as any ?? []),
+        ]
     });
 }
 
@@ -51,12 +56,20 @@ const designerTest = defineDesignBlock({
         },
     },
     items: [
+        {
+            type: "button",
+            items: "新增",
+            listeners: {
+                onClick: 'addSpan',
+            },
+        },
         createDiv(),
         createDiv(),
         createSpan(),
         createSpan(),
         createSpan(),
         createDiv({
+            ref: "c_000",
             props: {
                 style: {
                     width: '800px',
@@ -68,6 +81,7 @@ const designerTest = defineDesignBlock({
                 createSpan(),
                 createSpan(),
                 createDiv({
+                    ref: "c_001",
                     props: {
                         style: {
                             width: '200px',
@@ -96,9 +110,28 @@ const designerTest = defineDesignBlock({
             ],
         },
     ],
-    methods: {},
+    methods: {
+        addSpan(this: Block) {
+            this.__ops.addItem(
+                createSpan({
+                    props: {
+                        style: {
+                            backgroundColor: '#eee',
+                        },
+                    },
+                    // items: [
+                    //     `${this.count++}`,
+                    // ],
+                }),
+                "c_000",
+                "c_001"
+            )
+        }
+    },
 });
 
 export {
     designerTest,
+    createSpan,
+    createDiv,
 }
