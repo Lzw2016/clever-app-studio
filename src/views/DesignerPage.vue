@@ -2,21 +2,20 @@
 import { ref } from "vue";
 import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
 import { createSpan, designerTest } from "@/views/DesignerTest";
-import { isArray } from "@/utils/Typeof";
 
 const instance = ref<InstanceType<typeof RuntimeBlock> | undefined>();
 
 function updateDesignerTest() {
-    if (isArray(designerTest.items)) {
-        // console.log("instance", instance.value)
-        instance.value?.addNode(createSpan({
+    instance.value?.blockInstance?.blockOps.appendItem(
+        "c_000",
+        createSpan({
             props: {
                 style: {
                     backgroundColor: '#ddd',
                 },
             },
-        }), "c_000");
-    }
+        }),
+    );
 }
 </script>
 

@@ -12,7 +12,7 @@
 [OK]  3.Block 支持插槽和基础指令以及用户自定义指令功能(v-show、v-if、v-for、v-model)
 [OK]  4.Block 嵌套时内层 Block 如何使用外层 Block 的数据好函数
 [50]  5.完成 Block vue 组件封装(wrap)
-[  ]  6.Block vue 组件需要支持内部动态更新(内部更新Block配置)
+[OK]  6.Block vue 组件需要支持内部动态更新(内部更新Block配置)
 [OK]  7.createStaticVNode 打包后不更新问题。使用自定义封装的 createHtmlVNode 解决
 [OK]  8.组件定义时提供类似 ext 的 defaults 属性
 [OK]  9.v-model指令的实现
@@ -22,10 +22,11 @@
 [OK] 13.primevue 国际化(中文配置)
 [50] 14.ant-design-vue 国际化配置 
 [OK] 15.删除 opentiny?(暂时删除，因为打包体积太大)
-[  ] 16.给图标库图标名称定义类型
-[  ] 17.组件库面板
-[  ] 18.
-[  ] 19.
+[  ] 16.把 DesignNode 的 props 属性直接平铺直接在最外层定义，类似extjs写法
+[  ] 17.
+[  ] 18.给图标库图标名称定义类型
+[  ] 19.组件库面板
+[  ] 20.
 
 DesignBlock 操作类
 拖拽 -> DesignBlock变化 -> 重新渲染RuntimeBlock.vue组件

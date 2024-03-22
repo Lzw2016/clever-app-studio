@@ -16,8 +16,8 @@ interface ComponentInstance {
     $attrs: Record<string, any>;
     $refs: Record<string, HTMLElement & ComponentInstance>;
     $slots: Record<string, any>;
-    $root?: ComponentPublicInstance;
-    $parent?: ComponentPublicInstance;
+    $root: ComponentInstance;
+    $parent: ComponentInstance;
     $emit: ComponentPublicInstance['$emit'];
     $el: HTMLElement;
     $options: ComponentPublicInstance['$options'];

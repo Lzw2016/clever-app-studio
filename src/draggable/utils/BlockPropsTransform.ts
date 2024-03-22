@@ -401,7 +401,7 @@ type TraverseNode = (current: RuntimeNode, isSlot: boolean, parent?: RuntimeNode
 /**
  * 深度递归 RuntimeNode 遍历所有的 node(包含slot)
  */
-function deepTraverseNodes(node: RuntimeNode, callback: TraverseNode, isSlot: boolean, parentNode?: RuntimeNode): void {
+function deepTraverseNodes(node: RuntimeNode, callback: TraverseNode, isSlot: boolean = false, parentNode?: RuntimeNode): void {
     const { items, slots } = node;
     callback(node, isSlot, parentNode);
     // 递归 slots

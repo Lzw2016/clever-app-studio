@@ -4,7 +4,7 @@ import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { ComponentInstance } from "@/draggable/types/Base";
 import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
 import { RuntimeBlock, RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
-import { blockDeepTransform } from "@/draggable/utils/BlockPropsTransform";
+import { blockDeepTransform, deepTraverseNodes } from "@/draggable/utils/BlockPropsTransform";
 
 /** 操作选项 */
 interface Options {
@@ -410,9 +410,10 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         nodes = nodes.filter(node => hasValue(node));
         slotName = lodash.trim(slotName ?? "");
         if (nodes.length <= 0) return;
+        const isSlot = slotName.length > 0;
         // 获取目标集合
         let targets: Array<RuntimeComponentSlotsItem>;
-        if (slotName.length > 0) {
+        if (isSlot) {
             targets = parent.slots[slotName];
             if (!targets) {
                 targets = [];
@@ -433,6 +434,18 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                 if (parent.__designNode.defaults) lodash.defaultsDeep(node, parent.__designNode.defaults);
                 // 深度转换成 RuntimeNode
                 runtimeNode = blockDeepTransform(node, this.props.componentManage, this.props.runtimeBlock);
+                // 递归初始化 allNode nodeParent refId
+                deepTraverseNodes(
+                    runtimeNode,
+                    (current, isSlot, parentNode) => {
+                        this.props.allNode[current.id] = current;
+                        if (parentNode) this.props.nodeParent[current.id] = parentNode;
+                        if (this.props.refId[current.ref]) console.warn(`ref属性重复，ref=${current.ref}`);
+                        this.props.refId[current.ref] = current.id;
+                    },
+                    isSlot,
+                    parent,
+                );
             }
             runtimeNodes.push(runtimeNode);
         }
@@ -485,6 +498,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
     protected removeNodesById(ids: Array<string>, options: Options): void {
         ids = ids.filter(id => hasValue(id));
         if (ids.length <= 0) return;
+        const nodeInSlot: Record<string, boolean> = {};
         for (let id of ids) {
             // 获取父节点
             const parent = this.props.nodeParent[id];
@@ -493,6 +507,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
             let idx = this.findNodeIdx(parent.items, id);
             if (idx >= 0) {
                 parent.items.splice(idx, 1);
+                nodeInSlot[id] = false;
                 continue;
             }
             // 删除 slots 中的元素
@@ -501,9 +516,32 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                 idx = this.findNodeIdx(slot, id);
                 if (idx >= 0) {
                     slot.splice(idx, 1);
+                    nodeInSlot[id] = true;
                     break;
                 }
             }
+        }
+        // 维护属性 allNode nodeParent refId
+        for (let id of ids) {
+            const parent = this.props.nodeParent[id];
+            const node = this.props.allNode[id];
+            const ids: Array<string> = [node.id];
+            const refs: Array<string> = [node.ref];
+            const parentIds: Array<string> = [];
+            if (node.items.length > 0 || Object.keys(node.slots).length > 0) parentIds.push(node.id);
+            deepTraverseNodes(
+                node,
+                current => {
+                    ids.push(current.id);
+                    refs.push(current.ref);
+                    if (current.items.length > 0 || Object.keys(current.slots).length > 0) parentIds.push(current.id);
+                },
+                nodeInSlot[id],
+                parent,
+            );
+            ids.forEach(delId => delete this.props.allNode[delId]);
+            refs.forEach(delRef => delete this.props.refId[delRef]);
+            parentIds.forEach(delId => delete this.props.nodeParent[delId]);
         }
         // 重新渲染组件
         if (!options.cancelRender) this.props.instance.$forceUpdate();

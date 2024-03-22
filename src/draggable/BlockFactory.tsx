@@ -23,7 +23,7 @@ interface CreateBlockConfig {
 /**
  * 创建 BlockComponent 时的全局上下文
  */
-interface Global extends CreateBlockConfig {
+interface GlobalContext extends CreateBlockConfig {
     /** 当前渲染的顶层 DesignBlock(原始的DesignBlock对象) */
     readonly designBlock: DesignBlock;
     /** 当前所有的 Block vue 组件 | RuntimeBlock.ref -> Block vue组件实例 */
@@ -39,7 +39,7 @@ interface Global extends CreateBlockConfig {
 /** Block组件类型 */
 interface Block extends ComponentInstance {
     /** 创建 BlockComponent 时的全局上下文对象 */
-    readonly global: Global;
+    readonly globalContext: GlobalContext;
     /** Block支持的操作函数(基于ref属性) */
     readonly blockOps: BlockOperation;
     /** Block支持的操作函数(基于id属性) */
@@ -76,7 +76,7 @@ function createBlockComponent(block: DesignBlock, config: Partial<CreateBlockCon
     // 深度克隆 block 对象，保护原始 block 对象不被篡改
     block = lodash.cloneDeep(designBlock);
     // 新建全局上下文
-    const global: Global = {
+    const globalContext: GlobalContext = {
         ...defConfig,
         ...config,
         designBlock: designBlock,
@@ -88,7 +88,7 @@ function createBlockComponent(block: DesignBlock, config: Partial<CreateBlockCon
     let runtimeBlock: RuntimeBlock;
     try {
         // 递归处理 Block 属性，使它符合 vue 组件的规范
-        runtimeBlock = blockDeepTransform(block, global.componentManage);
+        runtimeBlock = blockDeepTransform(block, globalContext.componentManage);
     } catch (e) {
         return createVNode(BlockRenderError, {
             msg: "解析 DesignBlock 失败",
@@ -99,20 +99,19 @@ function createBlockComponent(block: DesignBlock, config: Partial<CreateBlockCon
     }
     // console.log("createBlockComponent", runtimeBlock);
     // 递归初始化 allBlock
-    deepExtractBlock(runtimeBlock, global.allBlock);
+    deepExtractBlock(runtimeBlock, globalContext.allBlock);
     // 递归初始化 allNode nodeParent refId
     deepTraverseNodes(
         runtimeBlock,
         (current, isSlot, parent) => {
-            global.allNode[current.id] = current;
-            if (parent) global.nodeParent[current.id] = parent;
-            if (global.refId[current.ref]) console.warn(`ref属性重复，ref=${current.ref}`);
-            global.refId[current.ref] = current.id;
-        },
-        false
+            globalContext.allNode[current.id] = current;
+            if (parent) globalContext.nodeParent[current.id] = parent;
+            if (globalContext.refId[current.ref]) console.warn(`ref属性重复，ref=${current.ref}`);
+            globalContext.refId[current.ref] = current.id;
+        }
     );
     // 创建组件
-    const blockComponent = createRuntimeBlockComponent(runtimeBlock, global);
+    const blockComponent = createRuntimeBlockComponent(runtimeBlock, globalContext);
     runtimeBlock.__blockComponent = blockComponent;
     return blockComponent;
 }
@@ -120,9 +119,9 @@ function createBlockComponent(block: DesignBlock, config: Partial<CreateBlockCon
 /**
  * 基于 RuntimeBlock 动态创建 vue 组件
  * @param runtimeBlock  当前需要渲染的 Block 对象
- * @param global        全局的 global 对象
+ * @param globalContext 全局的 globalContext 对象
  */
-function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, global: Global) {
+function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, globalContext: GlobalContext) {
     // console.log("createRuntimeBlockComponent", runtimeBlock);
     const {
         data,
@@ -151,21 +150,21 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, global: Global)
             // ctx.expose(exposed);
         },
         data(vm: MakeWritable<Block>) {
-            vm.global = global;
+            vm.globalContext = globalContext;
             const blockOps = new AllBlockOperation({
-                componentManage: global.componentManage,
+                componentManage: globalContext.componentManage,
                 runtimeBlock: runtimeBlock,
                 instance: vm,
-                allNode: global.allNode,
-                nodeParent: global.nodeParent,
-                refId: global.refId,
+                allNode: globalContext.allNode,
+                nodeParent: globalContext.nodeParent,
+                refId: globalContext.refId,
             })
             vm.blockOps = blockOps;
             vm.blockOpsById = blockOps;
             // 深度绑定 this 指针
             deepBindThis(runtimeBlock, vm);
-            // 更新 global.allBlock
-            global.allBlock[runtimeBlock.ref] = vm;
+            // 更新 globalContext.allBlock
+            globalContext.allBlock[runtimeBlock.ref] = vm;
             // 返回组件数据
             return data;
         },
@@ -179,7 +178,7 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, global: Global)
                     block: runtimeBlock,
                     node: runtimeBlock,
                 };
-                return createChildVNode(runtimeBlock, context, global, true);
+                return createChildVNode(runtimeBlock, context, globalContext, true);
             } catch (e) {
                 console.warn("组件渲染失败", runtimeBlock, e);
                 // TODO 优化错误渲染组件(使用对话框查看错误详情)
@@ -193,15 +192,15 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, global: Global)
  * 基于 RuntimeBlockNode 创建 VNode
  * @param child             当前节点信息
  * @param context           当前调用的上下文
- * @param global            全局的 global 对象
+ * @param globalContext     全局的 globalContext 对象
  * @param startRenderBlock  当前是否是开始渲染 RuntimeBlock
  */
-function createChildVNode(child: RuntimeBlockNode, context: Context, global: Global, startRenderBlock: boolean = false) {
+function createChildVNode(child: RuntimeBlockNode, context: Context, globalContext: GlobalContext, startRenderBlock: boolean = false) {
     // console.log("createChildVNode", child);
     const fromInstance = context.instance;
     const fromBlock = context.block;
     const fromNode = context.node;
-    const extData = _toExtData(global, context);
+    const extData = _toExtData(globalContext, context);
     // 静态 html 文本
     if (isStr(child)) {
         // html模版 items -> tlp
@@ -232,7 +231,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
     const childBlock = child as RuntimeBlock;
     if (!startRenderBlock && childBlock.block) {
         if (!childBlock.__blockComponent) {
-            childBlock.__blockComponent = createRuntimeBlockComponent(childBlock, global);
+            childBlock.__blockComponent = createRuntimeBlockComponent(childBlock, globalContext);
         }
         return createVNode(childBlock.__blockComponent);
     }
@@ -369,22 +368,22 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, global: Glo
                     if (index) vForData[index] = keyOrIdx;
                     if (item) vForData[item] = itemData;
                     context.vForData = vForData;
-                    return doCreateChildVNode(runtimeNode, context, global, component, allProps);
+                    return doCreateChildVNode(runtimeNode, context, globalContext, component, allProps);
                 })
             );
         }
     }
-    return doCreateChildVNode(runtimeNode, context, global, component, allProps);
+    return doCreateChildVNode(runtimeNode, context, globalContext, component, allProps);
 }
 
 /**
  * @param runtimeNode   runtimeNode 运行时的渲染节点对象
  * @param context       当前调用的上下文
- * @param global        全局的 global 对象
+ * @param globalContext 全局的 globalContext 对象
  * @param component     当前 runtimeNode 应该使用的 vue 组件
  * @param props         已经计算合并了的 props(包含 listeners)
  */
-function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: Global, component: any, props: Record<string, any>) {
+function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, globalContext: GlobalContext, component: any, props: Record<string, any>) {
     // console.log("doCreateChildVNode", runtimeNode);
     const fromInstance = context.instance;
     const fromBlock = context.block;
@@ -394,17 +393,17 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, global: 
         for (let name in runtimeNode.slots) {
             const slot = runtimeNode.slots[name];
             slots[name] = withCtx((slotProps: any) => slot.map(item => {
-                return createChildVNode(item, { ...newContext, slotProps: slotProps }, global);
+                return createChildVNode(item, { ...newContext, slotProps: slotProps }, globalContext);
             }));
         }
         return slots;
     };
     const createItemsVNode = function (): Array<VNode> {
-        return runtimeNode.items.map(item => createChildVNode(item, newContext, global));
+        return runtimeNode.items.map(item => createChildVNode(item, newContext, globalContext));
     };
     const createTplVNode = function (): VNode {
         try {
-            const staticHtml = renderTpl(runtimeNode.tpl, props, fromInstance, fromBlock, _toExtData(global, context));
+            const staticHtml = renderTpl(runtimeNode.tpl, props, fromInstance, fromBlock, _toExtData(globalContext, context));
             return createHtmlVNode(staticHtml, props, component);
         } catch (e) {
             return createVNode(BlockRenderError, {
@@ -488,9 +487,9 @@ function createHtmlVNode(staticHtml: string, props?: Record<string, any>, compon
 /**
  * “表达式”和“模版”的扩展参数
  */
-function _toExtData(global: Global, context: Context) {
+function _toExtData(globalContext: GlobalContext, context: Context) {
     let extData: any = {
-        $allBlock: global.allBlock,
+        $allBlock: globalContext.allBlock,
         $slotProps: context.slotProps,
     };
     if (context.vForData) {

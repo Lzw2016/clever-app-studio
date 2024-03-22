@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Fragment, reactive } from "vue";
+import { defineExpose, Fragment, reactive, ref } from "vue";
 import { componentManage } from "@/draggable/Constant";
 import { DesignBlock } from "@/draggable/types/DesignBlock";
-import { createBlockComponent, CreateBlockConfig, getAllComponentType } from "@/draggable/BlockFactory";
-import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
 import { RenderErrType } from "@/draggable/types/RuntimeBlock";
+import { Block, createBlockComponent, CreateBlockConfig, getAllComponentType } from "@/draggable/BlockFactory";
+import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
 
 // 定义组件选项
 defineOptions({
@@ -54,7 +54,23 @@ interface RuntimeBlockData {
 const data: RuntimeBlockData = {
     component: Fragment,
 };
-createComponent();
+// DesignBlock 的 vue 组件实例
+const blockInstance = ref<Block | undefined>();
+
+
+// watch(props.block, (value, oldValue, onCleanup) => {
+//
+// })
+// onBeforeUpdate(() => {
+//     console.log("onBeforeUpdate");
+// });
+defineExpose({
+    /** block示例对象 */
+    blockInstance: blockInstance,
+});
+
+// TODO 加载组件，提供加载中状态显示
+// TODO 提供 block 操作api
 
 // 基于 Block 创建 vue 组件
 function createComponent() {
@@ -77,8 +93,7 @@ function createComponent() {
     }
 }
 
-// TODO 加载组件，提供加载中状态显示
-// TODO 提供 block 操作api
+createComponent();
 </script>
 
 <template>
@@ -91,7 +106,7 @@ function createComponent() {
             :error="state.loadErr"
         />
     </template>
-    <component v-else-if="state.blockCreated" :is="data.component"/>
+    <component v-else-if="state.blockCreated" ref="blockInstance" :is="data.component"/>
     <div v-else-if="state.loading">加载中...</div>
 </template>
 
