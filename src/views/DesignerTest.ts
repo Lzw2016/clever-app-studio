@@ -51,6 +51,7 @@ const designerTest = defineDesignBlock({
     type: "div",
     data: {
         count: 0,
+        refs: [],
     },
     props: {
         style: {
@@ -66,6 +67,17 @@ const designerTest = defineDesignBlock({
                 onClick: 'addSpan',
             },
         },
+        {
+            type: "button",
+            items: "删除",
+            listeners: {
+                onClick: 'removeSpan',
+            },
+        },
+        // {
+        //     type: "buttonAAA",
+        //     items: "新增",
+        // },
         createDiv(),
         createDiv(),
         createSpan(),
@@ -105,7 +117,7 @@ const designerTest = defineDesignBlock({
         createSpan(),
         createSpan(),
         {
-            type: "",
+            type: "AAA",
             props: {
                 'data-test': 'test',
             },
@@ -120,7 +132,10 @@ const designerTest = defineDesignBlock({
     ],
     methods: {
         addSpan(this: Block) {
+            const ref = `span_${this.count}`;
+            this.refs.push(ref);
             const span = createSpan({
+                ref: ref,
                 props: {
                     style: {
                         backgroundColor: '#eee',
@@ -131,6 +146,12 @@ const designerTest = defineDesignBlock({
                 ],
             });
             this.blockOps.beforeAddItem("c_001", span);
+        },
+        removeSpan(this: Block) {
+            if (this.refs.length <= 0) return;
+            const ref = this.refs[0];
+            this.refs.splice(0, 1);
+            this.blockOps.remove(ref);
         },
     },
 });

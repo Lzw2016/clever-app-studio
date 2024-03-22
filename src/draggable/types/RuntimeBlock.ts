@@ -18,12 +18,14 @@ interface RuntimeNode {
     readonly __designNode: DesignNode;
     /** 当前节点是html标签 */
     readonly __htmlTag: boolean;
+    /** 组件类型(HtmlTag或vue组件对象) */
+    readonly __component?: string | VueComponent;
+    /** 组件不存在时的错误(组件未注册、加载组件失败等) */
+    readonly __loadComponentErr?: Error;
     /** 组件唯一id */
     readonly id: string;
     /** 组件类型(HtmlTag或vue组件名称，DesignNode配置) */
     readonly type: string;
-    /** 组件类型(HtmlTag或vue组件对象) */
-    readonly __type: string | VueComponent;
     /** 当前组件实例的引用名称 */
     readonly ref: string;
     /** 组件属性 */
@@ -82,6 +84,8 @@ type RuntimeBlockNode = RuntimeComponentSlotsItem | RuntimeBlock;
 
 /** Block渲染失败类型 */
 enum RenderErrType {
+    /** 渲染的组件不存在 */
+    componentNotExists = "componentNotExists",
     /** 创建BlockComponent */
     createBlockComponent = "createBlockComponent",
     /** 深度解析DesignBlock */

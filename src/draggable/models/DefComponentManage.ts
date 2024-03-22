@@ -39,11 +39,12 @@ class DefComponentManage implements ComponentManage {
         });
         // 有未注册的组件
         if (notExistTypes.length > 0) {
-            throw new Error(`组件 ${notExistTypes.join("、")} 未注册`);
+            console.warn(`组件 ${notExistTypes.join("、")} 未注册`);
         }
         // 异步加载组件
-        if (needLoadTypes.length > 0) {
-            await Promise.all(needLoadTypes.map(async type => {
+        const loadTypes = needLoadTypes.filter(type => !notExistTypes.includes(type));
+        if (loadTypes.length > 0) {
+            await Promise.all(loadTypes.map(async type => {
                 let cmp = this.components.get(type);
                 if (cmp) return cmp;
                 const asyncCmp = this.asyncComponents.get(type);
@@ -60,8 +61,10 @@ class DefComponentManage implements ComponentManage {
                     }
                     return cmp;
                 } catch (reason) {
-                    throw new Error(`加载组件 ${type} 失败，错误信息：${reason}`);
+                    console.warn(`加载组件 ${type} 失败，错误信息：${reason}`);
+                    console.warn(reason);
                 }
+                return null;
             }));
         }
         // 返回组件
@@ -99,6 +102,8 @@ class DefComponentManage implements ComponentManage {
                     this.componentMetas.set(type, meta);
                     return meta;
                 } catch (reason) {
+                    // console.warn(`加载组件 ${type} 元信息失败，错误信息：${reason}`);
+                    // console.warn(reason);
                     throw new Error(`加载组件 ${type} 元信息失败，错误信息：${reason}`);
                 }
             }));

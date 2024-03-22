@@ -240,14 +240,16 @@ function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: Co
     if (!parent) runtime.block = true;
     // 读取组件类型
     if (type && lodash.trim(type).length > 0) {
-        runtime.__type = type.trim();
-        runtime.__htmlTag = isHtmlTag(runtime.__type);
-        if (!runtime.__htmlTag) runtime.__type = componentManage.getComponent(runtime.__type);
+        runtime.__component = type.trim();
+        runtime.__htmlTag = isHtmlTag(runtime.__component);
+        if (!runtime.__htmlTag) runtime.__component = componentManage.getComponent(runtime.__component);
     } else {
-        runtime.__type = Fragment;
+        runtime.__component = Fragment;
     }
-    if (!runtime.__type) {
-        throw new Error(`UI组件未注册也不是html原生标签，组件: ${type}`);
+    if (!runtime.__component) {
+        const errMsg = `UI组件未注册也不是html原生标签，组件: ${type}`
+        console.warn(errMsg);
+        runtime.__loadComponentErr = new Error(errMsg);
     }
     // 处理 tpl 属性
     runtime.tpl = tpl;

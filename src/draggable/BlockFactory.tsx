@@ -237,8 +237,17 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
     }
     // RuntimeNode
     const runtimeNode = child as RuntimeNode;
+    // 组件不存在时的错误(组件未注册、加载组件失败等)
+    if (runtimeNode.__loadComponentErr) {
+        return createVNode(BlockRenderError, {
+            msg: `渲染的组件不存在，type: ${runtimeNode.type}\n`,
+            errType: RenderErrType.componentNotExists,
+            errConfig: runtimeNode.props,
+            node: child, error: runtimeNode.__loadComponentErr,
+        });
+    }
     // 组件类型
-    const component: any = runtimeNode.__type;
+    const component: any = runtimeNode.__component;
     // 处理 props 表达式(属性的绑定)
     let props: any;
     try {
@@ -305,7 +314,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
                     }
                 }
             }
-        } else if (['input', 'select'].includes(child.__type as string)) {
+        } else if (['input', 'select'].includes(child.__component as string)) {
             if (!allProps['onUpdate:modelValue']) {
                 allProps['onUpdate:modelValue'] = function (value: any) {
                     if (runtimeNode.directives.model) {
@@ -316,13 +325,13 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
             // 原生html，这里配置一下 model 指令参数，具有应用指令需要在 _applyDirectives 中实现
             runtimeNode.directives.__inner_model = { value: modelValue };
             let fun: any = vModelText;
-            if (child.__type === "input") {
+            if (child.__component === "input") {
                 if ("checkbox" === child.props?.type) {
                     fun = vModelCheckbox;
                 } else if ("radio" === child.props?.type) {
                     fun = vModelRadio;
                 }
-            } else if (child.__type === "select") {
+            } else if (child.__component === "select") {
                 fun = vModelSelect;
             }
             runtimeNode.directives.__inner_model.fun = fun;
