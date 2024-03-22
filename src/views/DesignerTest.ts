@@ -74,10 +74,6 @@ const designerTest = defineDesignBlock({
                 onClick: 'removeSpan',
             },
         },
-        // {
-        //     type: "buttonAAA",
-        //     items: "新增",
-        // },
         createDiv(),
         createDiv(),
         createSpan(),
@@ -117,7 +113,7 @@ const designerTest = defineDesignBlock({
         createSpan(),
         createSpan(),
         {
-            type: "AAA",
+            // type: "AAA",
             props: {
                 'data-test': 'test',
             },
