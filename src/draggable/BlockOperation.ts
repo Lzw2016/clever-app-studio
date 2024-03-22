@@ -429,8 +429,9 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
             if (isStr(node)) {
                 runtimeNode = node;
             } else {
-                // TODO 应用 defaults 属性
-                // if(parent.defaults)
+                // 应用 defaults 属性
+                if (parent.__designNode.defaults) lodash.defaultsDeep(node, parent.__designNode.defaults);
+                // 深度转换成 RuntimeNode
                 runtimeNode = blockDeepTransform(node, this.props.componentManage, this.props.runtimeBlock);
             }
             runtimeNodes.push(runtimeNode);

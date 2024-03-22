@@ -1,6 +1,6 @@
 import { WatchCallback, WatchOptions } from "vue";
 import { AnyFunction, ComponentInstance, I18N, VueComponent } from "@/draggable/types/Base";
-import { BaseDirectives, BlockMeta } from "@/draggable/types/DesignBlock";
+import { BaseDirectives, BlockMeta, DesignNode } from "@/draggable/types/DesignBlock";
 
 /** 组件插槽类型(运行时) */
 type RuntimeComponentSlotsItem = RuntimeNode | Omit<RuntimeBlock, "meta" | "i18n"> | string;
@@ -14,7 +14,8 @@ interface RuntimeListener {
 
 /** 组件节点(运行时) */
 interface RuntimeNode {
-    // TODO __designNode
+    /** 对应的 DesignNode 对象 */
+    readonly __designNode: DesignNode;
     /** 当前节点是html标签 */
     readonly __htmlTag: boolean;
     /** 组件唯一id */

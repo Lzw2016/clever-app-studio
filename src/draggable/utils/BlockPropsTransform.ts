@@ -235,7 +235,7 @@ function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: Co
             }
         }
     }
-    const runtime: any = { block: isBlock, type: type };
+    const runtime: any = { __designNode: block, block: isBlock, type: type };
     // 如果没有父级 Block 强制让当前节点为 Block
     if (!parent) runtime.block = true;
     // 读取组件类型

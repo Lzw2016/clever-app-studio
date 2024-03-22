@@ -39,7 +39,7 @@ interface Global extends CreateBlockConfig {
 /** Block组件类型 */
 interface Block extends ComponentInstance {
     /** 创建 BlockComponent 时的全局上下文对象 */
-    __global: Global;
+    readonly global: Global;
     /** Block支持的操作函数(基于ref属性) */
     readonly blockOps: BlockOperation;
     /** Block支持的操作函数(基于id属性) */
@@ -150,8 +150,8 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, global: Global)
             // const exposed: Record<string, any> = {};
             // ctx.expose(exposed);
         },
-        data(vm: any) {
-            vm.__global = global;
+        data(vm: MakeWritable<Block>) {
+            vm.global = global;
             const blockOps = new AllBlockOperation({
                 componentManage: global.componentManage,
                 runtimeBlock: runtimeBlock,

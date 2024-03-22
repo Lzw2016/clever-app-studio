@@ -6,6 +6,7 @@ function createDiv(designBlock?: Partial<DesignBlock>) {
         ref: designBlock?.ref,
         block: false,
         type: "div",
+        defaults: designBlock?.defaults,
         props: {
             style: {
                 width: "80px",
@@ -27,6 +28,7 @@ function createSpan(designBlock?: Partial<DesignBlock>) {
         ref: designBlock?.ref,
         block: false,
         type: "span",
+        defaults: designBlock?.defaults,
         props: {
             style: {
                 display: 'inline-block',
@@ -75,6 +77,11 @@ const designerTest = defineDesignBlock({
                 style: {
                     width: '800px',
                     height: 'auto',
+                },
+            },
+            defaults: {
+                props: {
+                    'data-def': 'test001',
                 },
             },
             items: [
