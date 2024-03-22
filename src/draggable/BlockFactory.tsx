@@ -1,15 +1,16 @@
 import { ComponentPublicInstance, createVNode, defineComponent, Fragment, renderList, resolveDirective, vModelCheckbox, vModelRadio, vModelSelect, vModelText, VNode, vShow, withCtx, withDirectives } from "vue";
 import lodash from "lodash";
-import { hasValue, isArray, isObj, isStr, noValue } from "@/utils/Typeof";
+import { isArray, isObj, isStr, noValue } from "@/utils/Typeof";
 import { calcExpression, getKeyPathValue, setKeyPathValue } from "@/utils/Expression";
 import { componentManage } from "@/draggable/Constant";
+import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { ComponentInstance } from "@/draggable/types/Base";
-import { BaseDirectives, ComponentSlotsItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
-import { RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { BaseDirectives, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
+import { RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { isHtmlTag, parseHTML } from "@/draggable/utils/HtmlTag";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, deepTraverseNodes, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
+import { AllBlockOperation, BlockOperation, BlockOperationById } from "@/draggable/BlockOperation";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
-import { ComponentManage } from "@/draggable/types/ComponentManage";
 
 /** 创建渲染组件的配置 */
 interface CreateBlockConfig {
@@ -35,189 +36,14 @@ interface Global extends CreateBlockConfig {
     readonly refId: Record<string, string>;
 }
 
-/**
- * Block支持的操作函数
- */
-interface BlockOperation {
-    /**
-     * 批量增加子节点(基于id属性)
-     * @param nodes         增加的节点集合
-     * @param parentNodeId  增加节点所属父节点id
-     * @param beforeNodeId  增加节点的位置，在指定的兄弟节点之后，如果为空增加的节点就是第一个子节点
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    batchAddItemById(nodes: Array<ComponentSlotsItem>, parentNodeId: string, beforeNodeId?: string, cancelRender?: boolean): void;
-
-    /**
-     * 批量增加插槽节点(基于id属性)
-     * @param slotName      插槽名
-     * @param nodes         增加的节点集合
-     * @param parentNodeId  增加节点所属父节点ref
-     * @param beforeNodeId  增加节点的位置，在指定的兄弟节点之后，如果为空增加的节点就是第一个子节点
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    batchAddSlotById(slotName: string, nodes: Array<ComponentSlotsItem>, parentNodeId: string, beforeNodeId?: string, cancelRender?: boolean): void;
-
-    /**
-     * 批量追加子节点(基于id属性)
-     * @param nodes         增加的节点集合
-     * @param parentNodeId  增加节点所属父节点id
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    batchAppendItemById(nodes: Array<ComponentSlotsItem>, parentNodeId: string, cancelRender?: boolean): void;
-
-    /**
-     * 批量追加插槽节点(基于id属性)
-     * @param slotName      插槽名
-     * @param nodes         增加的节点集合
-     * @param parentNodeId  增加节点所属父节点id
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    batchAppendSlotBById(slotName: string, nodes: Array<ComponentSlotsItem>, parentNodeId: string, cancelRender?: boolean): void;
-
-    /**
-     * 增加一个子节点(基于id属性)
-     * @param node          增加的节点对象
-     * @param parentNodeId  增加节点所属父节点id
-     * @param beforeNodeId  增加节点的位置，在指定的兄弟节点之后，如果为空增加的节点就是第一个子节点
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    addItemById(node: ComponentSlotsItem, parentNodeId: string, beforeNodeId?: string, cancelRender?: boolean): void;
-
-    /**
-     * 增加一个插槽节点(基于id属性)
-     * @param slotName      插槽名
-     * @param node          增加的节点对象
-     * @param parentNodeId  增加节点所属父节点id
-     * @param beforeNodeId  增加节点的位置，在指定的兄弟节点之后，如果为空增加的节点就是第一个子节点
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    addSlotById(slotName: string, node: ComponentSlotsItem, parentNodeId: string, beforeNodeId?: string, cancelRender?: boolean): void;
-
-    /**
-     * 追加一个子节点(基于id属性)
-     * @param node          增加的节点对象
-     * @param parentNodeId  增加节点所属父节点id
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    appendItemById(node: ComponentSlotsItem, parentNodeId: string, cancelRender?: boolean): void;
-
-    /**
-     * 追加一个插槽节点(基于id属性)
-     * @param slotName      插槽名
-     * @param node          增加的节点对象
-     * @param parentNodeId  增加节点所属父节点id
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    appendSlotById(slotName: string, node: ComponentSlotsItem, parentNodeId: string, cancelRender?: boolean): void;
-
-    /**
-     * 批量删除节点(基于id属性)
-     * @param nodeIds       删除的节点id集合
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    batchRemoveById(nodeIds: Array<string>, cancelRender?: boolean): void;
-
-    /**
-     * 删除一个节点(基于id属性)
-     * @param nodeId        删除的节点id
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    removeById(nodeId: string, cancelRender?: boolean): void;
-
-    /**
-     * 批量增加子节点(基于ref属性)
-     * @param nodes         增加的节点集合
-     * @param parentNodeRef 增加节点所属父节点ref
-     * @param beforeNodeRef 增加节点的位置，在指定的兄弟节点之后，如果为空增加的节点就是第一个子节点
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    batchAddItem(nodes: Array<ComponentSlotsItem>, parentNodeRef: string, beforeNodeRef?: string, cancelRender?: boolean): void;
-
-    /**
-     * 批量增加插槽节点(基于ref属性)
-     * @param slotName      插槽名
-     * @param nodes         增加的节点集合
-     * @param parentNodeRef 增加节点所属父节点ref
-     * @param beforeNodeRef 增加节点的位置，在指定的兄弟节点之后，如果为空增加的节点就是第一个子节点
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    batchAddSlot(slotName: string, nodes: Array<ComponentSlotsItem>, parentNodeRef: string, beforeNodeRef?: string, cancelRender?: boolean): void;
-
-    /**
-     * 批量追加子节点(基于ref属性)
-     * @param nodes         增加的节点集合
-     * @param parentNodeRef 增加节点所属父节点ref
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    batchAppendItem(nodes: Array<ComponentSlotsItem>, parentNodeRef: string, cancelRender?: boolean): void;
-
-    /**
-     * 批量追加插槽节点(基于ref属性)
-     * @param slotName      插槽名
-     * @param nodes         增加的节点集合
-     * @param parentNodeRef 增加节点所属父节点ref
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    batchAppendSlot(slotName: string, nodes: Array<ComponentSlotsItem>, parentNodeRef: string, cancelRender?: boolean): void;
-
-    /**
-     * 增加一个子节点(基于ref属性)
-     * @param node          增加的节点对象
-     * @param parentNodeRef 增加节点所属父节点ref
-     * @param beforeNodeRef 增加节点的位置，在指定的兄弟节点之后，如果为空增加的节点就是第一个子节点
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    addItem(node: ComponentSlotsItem, parentNodeRef: string, beforeNodeRef?: string, cancelRender?: boolean): void;
-
-    /**
-     * 增加一个插槽节点(基于ref属性)
-     * @param slotName      插槽名
-     * @param node          增加的节点对象
-     * @param parentNodeRef 增加节点所属父节点ref
-     * @param beforeNodeRef 增加节点的位置，在指定的兄弟节点之后，如果为空增加的节点就是第一个子节点
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    addSlot(slotName: string, node: ComponentSlotsItem, parentNodeRef: string, beforeNodeRef?: string, cancelRender?: boolean): void;
-
-    /**
-     * 追加一个子节点(基于ref属性)
-     * @param node          增加的节点对象
-     * @param parentNodeRef 增加节点所属父节点ref
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    appendItem(node: ComponentSlotsItem, parentNodeRef: string, cancelRender?: boolean): void;
-
-    /**
-     * 追加一个插槽节点(基于ref属性)
-     * @param slotName      插槽名
-     * @param node          增加的节点对象
-     * @param parentNodeRef 增加节点所属父节点ref
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    appendSlot(slotName: string, node: ComponentSlotsItem, parentNodeRef: string, cancelRender?: boolean): void;
-
-    /**
-     * 批量删除节点(基于ref属性)
-     * @param nodeRefs      删除的节点ref集合
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    batchRemove(nodeRefs: Array<string>, cancelRender?: boolean): void;
-
-    /**
-     * 删除一个节点(基于ref属性)
-     * @param nodeRef       删除的节点ref
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    removeItem(nodeRef: string, cancelRender?: boolean): void;
-}
-
-/** 定义一个简单明了的别名 */
+/** Block组件类型 */
 interface Block extends ComponentInstance {
     /** 创建 BlockComponent 时的全局上下文对象 */
     __global: Global;
-    /** Block支持的操作函数 */
-    __ops: BlockOperation;
+    /** Block支持的操作函数(基于ref属性) */
+    readonly blockOps: BlockOperation;
+    /** Block支持的操作函数(基于id属性) */
+    readonly blockOpsById: BlockOperationById;
 }
 
 /**
@@ -241,227 +67,6 @@ const defConfig: CreateBlockConfig = {
     componentManage: componentManage,
     isDesigning: false,
 };
-
-/** 批量增加节点 */
-type BatchAddNode = (targets: Array<RuntimeComponentSlotsItem>, runtimeNodes: Array<RuntimeComponentSlotsItem>) => void;
-
-/** Block支持的操作函数实现 */
-class BlockOps implements BlockOperation {
-    private readonly runtimeBlock: RuntimeBlock;
-    private readonly instance: ComponentInstance;
-    private readonly global: Global;
-
-    constructor(runtimeBlock: RuntimeBlock, instance: ComponentInstance, global: Global) {
-        this.runtimeBlock = runtimeBlock;
-        this.instance = instance;
-        this.global = global;
-    }
-
-    protected findNodeIdx(arr: Array<RuntimeComponentSlotsItem>, nodeIdOrRef: string, useId?: boolean) {
-        return arr.findIndex(item => {
-            if (!isObj(item) || isArray(item)) return false;
-            const child = item as RuntimeNode;
-            if (useId) return child.id === nodeIdOrRef;
-            return child.ref === nodeIdOrRef;
-        });
-    }
-
-    /**
-     * 批量增加节点
-     * @param doAdd             增加节点逻辑
-     * @param nodes             增加的节点集合
-     * @param parentNodeIdOrRef 增加节点所属父节点id/ref
-     * @param slotName          插槽名称(存在表示是节点增加到插槽)
-     * @param useId             基于id属性 or 基于ref属性
-     * @param cancelRender      操作完成后不重新渲染组件
-     */
-    protected batchAdd(doAdd: BatchAddNode, nodes: Array<ComponentSlotsItem>, parentNodeIdOrRef: string, slotName?: string, useId?: boolean, cancelRender?: boolean) {
-        nodes = nodes.filter(node => hasValue(node));
-        slotName = lodash.trim(slotName);
-        if (nodes.length <= 0) return;
-        const parentNodeId = useId ? parentNodeIdOrRef : this.global.refId[parentNodeIdOrRef];
-        if (noValue(parentNodeId)) throw new Error(`未找到ref对应的id值，ref=${parentNodeIdOrRef}`);
-        const parent = this.global.allNode[parentNodeId];
-        if (!parent) throw new Error(`ParentNode不存在，parentNodeId=${parentNodeId}`);
-        let targets: Array<RuntimeComponentSlotsItem>;
-        if (slotName.length > 0) {
-            targets = parent.slots[lodash.trim(slotName)];
-            if (!targets) throw new Error(`slot不存在，slotName=${slotName}`);
-        } else {
-            targets = parent.items;
-        }
-        const runtimeNodes: Array<RuntimeComponentSlotsItem> = [];
-        for (let node of nodes) {
-            let runtimeNode: RuntimeComponentSlotsItem;
-            if (isStr(node)) {
-                runtimeNode = node;
-            } else {
-                // TODO 应用 defaults 属性
-                // if(parent.defaults)
-                runtimeNode = blockDeepTransform(node, this.global.componentManage, this.runtimeBlock);
-            }
-            runtimeNodes.push(runtimeNode);
-        }
-        doAdd(targets, runtimeNodes);
-        if (!cancelRender) this.instance.$forceUpdate();
-    }
-
-    /**
-     * 批量增加子节点
-     * @param nodes             增加的节点集合
-     * @param parentNodeIdOrRef 增加节点所属父节点id/ref
-     * @param beforeNodeIdOrRef 增加节点的位置，在指定的兄弟节点之后，如果为空增加的节点就是第一个子节点
-     * @param slotName          插槽名称
-     * @param useId             基于id属性 or 基于ref属性
-     * @param cancelRender      操作完成后不重新渲染组件
-     */
-    protected batchAddNode(nodes: Array<ComponentSlotsItem>, parentNodeIdOrRef: string, beforeNodeIdOrRef?: string, slotName?: string, useId?: boolean, cancelRender?: boolean): void {
-        this.batchAdd(
-            (targets, runtimeNodes) => {
-                let idx = 0;
-                if (beforeNodeIdOrRef) {
-                    idx = this.findNodeIdx(targets, beforeNodeIdOrRef, useId);
-                    if (idx < 0) throw new Error(`BeforeNode不存在，${useId ? 'beforeNodeId' : 'beforeNodeRef'}=${beforeNodeIdOrRef}`);
-                }
-                targets.splice(idx, 0, ...runtimeNodes);
-            },
-            nodes,
-            parentNodeIdOrRef,
-            slotName,
-            cancelRender,
-        );
-    }
-
-    /**
-     * 批量删除子节点
-     * @param nodeIdsOrRefs 删除的节点id/ref集合
-     * @param useId         基于id属性 or 基于ref属性
-     * @param cancelRender  操作完成后不重新渲染组件
-     */
-    protected batchRemoveNode(nodeIdsOrRefs: Array<string>, useId?: boolean, cancelRender?: boolean) {
-        nodeIdsOrRefs = nodeIdsOrRefs.filter(node => hasValue(node));
-        if (nodeIdsOrRefs.length <= 0) return;
-        for (let nodeIdOrRef of nodeIdsOrRefs) {
-            const nodeId = useId ? nodeIdOrRef : this.global.refId[nodeIdOrRef];
-            if (noValue(nodeId)) throw new Error(`未找到ref对应的id值，ref=${nodeIdOrRef}`);
-            const parent = this.global.nodeParent[nodeId];
-            if (!parent) throw new Error(`Node不存在，${useId ? 'id' : 'ref'}=${nodeIdOrRef}`);
-            let idx = this.findNodeIdx(parent.items, nodeId, true);
-            if (idx >= 0) {
-                parent.items.splice(idx, 1);
-                continue;
-            }
-            for (let name in parent.slots) {
-                const slot = parent.slots[name];
-                idx = this.findNodeIdx(slot, nodeIdOrRef, useId);
-                if (idx >= 0) {
-                    slot.splice(idx, 1);
-                    break;
-                }
-            }
-            if (idx < 0) throw new Error(`Node不存在，${useId ? 'id' : 'ref'}=${nodeIdOrRef}`);
-        }
-        if (!cancelRender) this.instance.$forceUpdate();
-    }
-
-    /**
-     * 批量增加子节点
-     * @param nodes             增加的节点集合
-     * @param parentNodeIdOrRef 增加节点所属父节点id/ref
-     * @param slotName          插槽名称
-     * @param useId             基于id属性 or 基于ref属性
-     * @param cancelRender      操作完成后不重新渲染组件
-     */
-    protected batchAppendNode(nodes: Array<ComponentSlotsItem>, parentNodeIdOrRef: string, slotName?: string, useId?: boolean, cancelRender?: boolean) {
-        this.batchAdd(
-            (targets, runtimeNodes) => targets.push(...runtimeNodes),
-            nodes,
-            parentNodeIdOrRef,
-            slotName,
-            cancelRender,
-        );
-    }
-
-    batchAddItemById(nodes: Array<ComponentSlotsItem>, parentNodeId: string, beforeNodeId?: string, cancelRender?: boolean): void {
-        this.batchAddNode(nodes, parentNodeId, beforeNodeId, undefined, true, cancelRender);
-    }
-
-    batchAddSlotById(slotName: string, nodes: Array<ComponentSlotsItem>, parentNodeId: string, beforeNodeId?: string, cancelRender?: boolean): void {
-        this.batchAddNode(nodes, parentNodeId, beforeNodeId, slotName, true, cancelRender);
-    }
-
-    batchAppendItemById(nodes: Array<ComponentSlotsItem>, parentNodeId: string, cancelRender?: boolean): void {
-        this.batchAppendNode(nodes, parentNodeId, undefined, true, cancelRender);
-    }
-
-    batchAppendSlotBById(slotName: string, nodes: Array<ComponentSlotsItem>, parentNodeId: string, cancelRender?: boolean): void {
-        this.batchAppendNode(nodes, parentNodeId, slotName, true, cancelRender);
-    }
-
-    addItemById(node: ComponentSlotsItem, parentNodeId: string, beforeNodeId?: string, cancelRender?: boolean): void {
-        this.batchAddNode([node], parentNodeId, beforeNodeId, undefined, true, cancelRender);
-    }
-
-    addSlotById(slotName: string, node: ComponentSlotsItem, parentNodeId: string, beforeNodeId?: string, cancelRender?: boolean): void {
-        this.batchAddNode([node], parentNodeId, beforeNodeId, slotName, true, cancelRender);
-    }
-
-    appendItemById(node: ComponentSlotsItem, parentNodeId: string, cancelRender?: boolean): void {
-        this.batchAppendNode([node], parentNodeId, undefined, true, cancelRender);
-    }
-
-    appendSlotById(slotName: string, node: ComponentSlotsItem, parentNodeId: string, cancelRender?: boolean): void {
-        this.batchAppendNode([node], parentNodeId, slotName, true, cancelRender);
-    }
-
-    batchRemoveById(nodeIds: Array<string>, cancelRender?: boolean): void {
-        this.batchRemoveNode(nodeIds, true, cancelRender);
-    }
-
-    removeById(nodeId: string, cancelRender?: boolean): void {
-        this.batchRemoveNode([nodeId], true, cancelRender);
-    }
-
-    batchAddItem(nodes: Array<ComponentSlotsItem>, parentNodeRef: string, beforeNodeRef?: string, cancelRender?: boolean): void {
-        this.batchAddNode(nodes, parentNodeRef, beforeNodeRef, undefined, false, cancelRender);
-    }
-
-    batchAddSlot(slotName: string, nodes: Array<ComponentSlotsItem>, parentNodeRef: string, beforeNodeRef?: string, cancelRender?: boolean): void {
-        this.batchAddNode(nodes, parentNodeRef, beforeNodeRef, slotName, false, cancelRender);
-    }
-
-    batchAppendItem(nodes: Array<ComponentSlotsItem>, parentNodeRef: string, cancelRender?: boolean): void {
-        this.batchAppendNode(nodes, parentNodeRef, undefined, false, cancelRender);
-    }
-
-    batchAppendSlot(slotName: string, nodes: Array<ComponentSlotsItem>, parentNodeRef: string, cancelRender?: boolean): void {
-        this.batchAppendNode(nodes, parentNodeRef, slotName, false, cancelRender);
-    }
-
-    addItem(node: ComponentSlotsItem, parentNodeRef: string, beforeNodeRef?: string, cancelRender?: boolean): void {
-        this.batchAddNode([node], parentNodeRef, beforeNodeRef, undefined, false, cancelRender);
-    }
-
-    addSlot(slotName: string, node: ComponentSlotsItem, parentNodeRef: string, beforeNodeRef?: string, cancelRender?: boolean): void {
-        this.batchAddNode([node], parentNodeRef, beforeNodeRef, slotName, false, cancelRender);
-    }
-
-    appendItem(node: ComponentSlotsItem, parentNodeRef: string, cancelRender?: boolean): void {
-        this.batchAppendNode([node], parentNodeRef, undefined, false, cancelRender);
-    }
-
-    appendSlot(slotName: string, node: ComponentSlotsItem, parentNodeRef: string, cancelRender?: boolean): void {
-        this.batchAppendNode([node], parentNodeRef, slotName, false, cancelRender);
-    }
-
-    batchRemove(nodeRefs: Array<string>, cancelRender?: boolean): void {
-        this.batchRemoveNode(nodeRefs, false, cancelRender);
-    }
-
-    removeItem(nodeRef: string, cancelRender?: boolean): void {
-        this.batchRemoveNode([nodeRef], false, cancelRender);
-    }
-}
 
 /**
  * 基于 DesignBlock 动态创建 vue 组件
@@ -547,7 +152,16 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, global: Global)
         },
         data(vm: any) {
             vm.__global = global;
-            vm.__ops = new BlockOps(runtimeBlock, vm, global);
+            const blockOps = new AllBlockOperation({
+                componentManage: global.componentManage,
+                runtimeBlock: runtimeBlock,
+                instance: vm,
+                allNode: global.allNode,
+                nodeParent: global.nodeParent,
+                refId: global.refId,
+            })
+            vm.blockOps = blockOps;
+            vm.blockOpsById = blockOps;
             // 深度绑定 this 指针
             deepBindThis(runtimeBlock, vm);
             // 更新 global.allBlock
@@ -885,18 +499,18 @@ function _toExtData(global: Global, context: Context) {
     return extData;
 }
 
-/**
- * 设置组件是否显示
- */
-function _setShowStyle(props: any, show: boolean) {
-    const cssShow = show ? 'unset' : 'hidden';
-    if (!props.style) props.style = {};
-    if (isObj(props.style)) {
-        props.style.visibility = cssShow;
-    } else if (isStr(props.style)) {
-        props.style = `${props.style};visibility: ${cssShow};`
-    }
-}
+// /**
+//  * 设置组件是否显示
+//  */
+// function _setShowStyle(props: any, show: boolean) {
+//     const cssShow = show ? 'unset' : 'hidden';
+//     if (!props.style) props.style = {};
+//     if (isObj(props.style)) {
+//         props.style.visibility = cssShow;
+//     } else if (isStr(props.style)) {
+//         props.style = `${props.style};visibility: ${cssShow};`
+//     }
+// }
 
 /**
  *  应用其他用户自定义指令

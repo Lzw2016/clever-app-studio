@@ -9,7 +9,13 @@ const instance = ref<InstanceType<typeof RuntimeBlock> | undefined>();
 function updateDesignerTest() {
     if (isArray(designerTest.items)) {
         // console.log("instance", instance.value)
-        instance.value?.addNode(createSpan(), "c_000");
+        instance.value?.addNode(createSpan({
+            props: {
+                style: {
+                    backgroundColor: '#ddd',
+                },
+            },
+        }), "c_000");
     }
 }
 </script>

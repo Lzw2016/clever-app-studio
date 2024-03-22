@@ -14,6 +14,7 @@ interface RuntimeListener {
 
 /** 组件节点(运行时) */
 interface RuntimeNode {
+    // TODO __designNode
     /** 当前节点是html标签 */
     readonly __htmlTag: boolean;
     /** 组件唯一id */

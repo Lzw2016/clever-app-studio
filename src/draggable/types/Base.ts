@@ -1,12 +1,32 @@
-import { Component, ComponentPublicInstance, DefineComponent } from "vue";
+import { Component, ComponentInternalInstance, ComponentPublicInstance, DefineComponent } from "vue";
 import { I18N, Language, LanguageName } from "@/i18n";
 
 // -------------------------------------------------------------------------------------------------------------------
 // 参考vue类型定义(vue内部的类型定义，直接复制过来的)
 // -------------------------------------------------------------------------------------------------------------------
 
-/** 通用的vue组件实例 */
-type ComponentInstance = ComponentPublicInstance<any, any, any, any, any, any, any, any, any, any, any, any>;
+// /** 通用的vue组件实例 */
+// type ComponentInstance = ComponentPublicInstance<any, any, any, any, any, any, any, any, any, any, any, any>;
+
+/** 自定义的 vue 组件实例类型 */
+interface ComponentInstance {
+    $: ComponentInternalInstance;
+    $data: any;
+    $props: Record<string, any>;
+    $attrs: Record<string, any>;
+    $refs: Record<string, HTMLElement & ComponentInstance>;
+    $slots: Record<string, any>;
+    $root?: ComponentPublicInstance;
+    $parent?: ComponentPublicInstance;
+    $emit: ComponentPublicInstance['$emit'];
+    $el: HTMLElement;
+    $options: ComponentPublicInstance['$options'];
+    $forceUpdate: ComponentPublicInstance['$forceUpdate'];
+    $nextTick: ComponentPublicInstance['$nextTick'];
+    $watch: ComponentPublicInstance['$watch'];
+
+    [name: string]: any;
+}
 
 /** 错误处理函数 */
 type ErrorCapturedHook<TError = unknown> = (this: ComponentInstance, err: TError, instance: ComponentPublicInstance | null, info: string) => boolean | void;

@@ -34,6 +34,7 @@ function createSpan(designBlock?: Partial<DesignBlock>) {
                 height: "40px",
                 border: "1px solid #ccc",
                 margin: "4px",
+                verticalAlign: 'bottom',
                 ...(designBlock?.props?.style as any ?? {}),
             },
         },
@@ -112,21 +113,18 @@ const designerTest = defineDesignBlock({
     ],
     methods: {
         addSpan(this: Block) {
-            this.__ops.addItem(
-                createSpan({
-                    props: {
-                        style: {
-                            backgroundColor: '#eee',
-                        },
+            const span = createSpan({
+                props: {
+                    style: {
+                        backgroundColor: '#eee',
                     },
-                    // items: [
-                    //     `${this.count++}`,
-                    // ],
-                }),
-                "c_000",
-                "c_001"
-            )
-        }
+                },
+                items: [
+                    `<div>${this.count++}</div>`,
+                ],
+            });
+            this.blockOps.beforeAddItem("c_001", span);
+        },
     },
 });
 
