@@ -249,7 +249,7 @@ function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: Co
     if (!runtime.__component) {
         const errMsg = `UI组件未注册也不是html原生标签，组件: ${type}`
         console.warn(errMsg);
-        runtime.__loadComponentErr = new Error(errMsg);
+        runtime.__error = new Error(errMsg);
     }
     // 处理 tpl 属性
     runtime.tpl = tpl;

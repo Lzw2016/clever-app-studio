@@ -16,12 +16,12 @@ interface RuntimeListener {
 interface RuntimeNode {
     /** 对应的 DesignNode 对象 */
     readonly __designNode: DesignNode;
-    /** 当前节点是html标签 */
+    /** 组件不存在时的错误(组件未注册、加载组件失败等) */
+    readonly __error?: Error;
+    /** 当前节点是不是html标签 */
     readonly __htmlTag: boolean;
     /** 组件类型(HtmlTag或vue组件对象) */
     readonly __component?: string | VueComponent;
-    /** 组件不存在时的错误(组件未注册、加载组件失败等) */
-    readonly __loadComponentErr?: Error;
     /** 组件唯一id */
     readonly id: string;
     /** 组件类型(HtmlTag或vue组件名称，DesignNode配置) */

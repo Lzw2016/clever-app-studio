@@ -5,6 +5,12 @@ import { DefComponentManage } from "@/draggable/models/DefComponentManage";
 /** 组件管理器实例 */
 const componentManage: ComponentManage = new DefComponentManage();
 
+/** 内部指令名称 */
+const innerDirectiveNames = {
+    inner_show: '__inner_show',
+    inner_model: '__inner_model',
+};
+
 /** 物料元素区域 */
 const materialItem: string = '.draggable.material-item';
 
@@ -27,6 +33,7 @@ const defCursorPosition: CursorPosition = {
 
 export {
     componentManage,
+    innerDirectiveNames,
     materialItem,
     draggableArea,
     defCursorPosition,

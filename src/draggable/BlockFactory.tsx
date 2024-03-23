@@ -2,7 +2,7 @@ import { ComponentPublicInstance, createVNode, defineComponent, Fragment, render
 import lodash from "lodash";
 import { isArray, isObj, isStr, noValue } from "@/utils/Typeof";
 import { calcExpression, getKeyPathValue, setKeyPathValue } from "@/utils/Expression";
-import { componentManage } from "@/draggable/Constant";
+import { componentManage, innerDirectiveNames } from "@/draggable/Constant";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { ComponentInstance } from "@/draggable/types/Base";
 import { BaseDirectives, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
@@ -238,12 +238,12 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
     // RuntimeNode
     const runtimeNode = child as RuntimeNode;
     // 组件不存在时的错误(组件未注册、加载组件失败等)
-    if (runtimeNode.__loadComponentErr) {
+    if (runtimeNode.__error) {
         return createVNode(BlockRenderError, {
             msg: `渲染的组件不存在，type: ${runtimeNode.type}\n`,
             errType: RenderErrType.componentNotExists,
             errConfig: runtimeNode.props,
-            node: child, error: runtimeNode.__loadComponentErr,
+            node: child, error: runtimeNode.__error,
         });
     }
     // 组件类型
@@ -286,7 +286,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
         try {
             const show = expTransform(runtimeNode.directives.show, fromInstance, fromBlock, extData);
             // 这里配置一下 show 指令参数，具有应用指令需要在 _applyDirectives 中实现
-            runtimeNode.directives.__inner_show = {
+            runtimeNode.directives[innerDirectiveNames.inner_show] = {
                 value: show,
             };
             // _setShowStyle(allProps, show);
@@ -323,7 +323,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
                 }
             }
             // 原生html，这里配置一下 model 指令参数，具有应用指令需要在 _applyDirectives 中实现
-            runtimeNode.directives.__inner_model = { value: modelValue };
+            runtimeNode.directives[innerDirectiveNames.inner_model] = { value: modelValue };
             let fun: any = vModelText;
             if (child.__component === "input") {
                 if ("checkbox" === child.props?.type) {
@@ -334,7 +334,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
             } else if (child.__component === "select") {
                 fun = vModelSelect;
             }
-            runtimeNode.directives.__inner_model.fun = fun;
+            runtimeNode.directives[innerDirectiveNames.inner_model].fun = fun;
         }
     }
     // 应用指令 - for
@@ -532,9 +532,9 @@ function _applyDirectives<Directives extends BaseDirectives = BaseDirectives>(vn
         }
         const param = directives[name];
         let directive: any = undefined;
-        if (name === '__inner_show') {
+        if (name === innerDirectiveNames.inner_show) {
             directive = vShow;
-        } else if (name === '__inner_model') {
+        } else if (name === innerDirectiveNames.inner_model) {
             directive = param.fun;
         } else {
             directive = resolveDirective(name);
