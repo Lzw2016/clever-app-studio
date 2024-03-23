@@ -133,7 +133,7 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, globalContext: 
     // 内置默认的异常处理
     if (!lifeCycles.errorCaptured) {
         lifeCycles.errorCaptured = function (err: Error, instance: ComponentPublicInstance | null, info: string) {
-            // 组件渲染报错时的默认处理
+            // TODO 组件渲染报错时的默认处理
         }
     }
     // 组件卸载时释放资源

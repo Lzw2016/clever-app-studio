@@ -65,7 +65,7 @@ const blockInstance = ref<Block | undefined>();
 //     console.log("onBeforeUpdate");
 // });
 defineExpose({
-    /** block示例对象 */
+    /** block实例对象 */
     blockInstance: blockInstance,
 });
 

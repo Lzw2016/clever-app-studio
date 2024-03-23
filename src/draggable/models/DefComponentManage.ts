@@ -61,7 +61,7 @@ class DefComponentManage implements ComponentManage {
                     }
                     return cmp;
                 } catch (reason) {
-                    console.warn(`加载组件 ${type} 失败，错误信息：${reason}`);
+                    console.warn(`加载组件 ${type} 失败：${reason}`);
                     console.warn(reason);
                 }
                 return null;
@@ -102,9 +102,9 @@ class DefComponentManage implements ComponentManage {
                     this.componentMetas.set(type, meta);
                     return meta;
                 } catch (reason) {
-                    // console.warn(`加载组件 ${type} 元信息失败，错误信息：${reason}`);
+                    // console.warn(`加载组件 ${type} 元信息失败：${reason}`);
                     // console.warn(reason);
-                    throw new Error(`加载组件 ${type} 元信息失败，错误信息：${reason}`);
+                    throw new Error(`加载组件 ${type} 元信息失败：${reason}`);
                 }
             }));
         }

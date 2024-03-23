@@ -61,12 +61,15 @@ const designerTest = defineDesignBlock({
     },
     items: [
         {
+            // block: true,
             type: "button",
             items: "新增",
             listeners: {
                 onClick: 'addSpan',
             },
         },
+        // function () {
+        // },
         {
             type: "button",
             items: "删除",

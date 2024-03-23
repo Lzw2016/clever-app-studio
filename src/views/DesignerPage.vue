@@ -22,7 +22,7 @@ function updateDesignerTest() {
 <template>
     <button @click="updateDesignerTest">更新</button>
     <div class="container">
-        <RuntimeBlock ref="instance" :block="designerTest"/>
+        <RuntimeBlock ref="instance" :block="designerTest" :is-designing="true"/>
     </div>
 </template>
 
