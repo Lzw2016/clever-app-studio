@@ -7,7 +7,7 @@ import { createRefID, createVNodeID } from "@/utils/IDCreate";
 import { compileTpl } from "@/utils/Template";
 import { AnyFunction, FunctionConfig } from "@/draggable/types/Base";
 import { BlockWatchItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
-import { RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { RenderErrType, RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 
@@ -23,16 +23,19 @@ function createFunction(functionConfig: FunctionConfig): AnyFunction {
 /**
  * 给 Block 对象属性设置默认值
  */
-function fillBlockDefValue(block: DesignNode | DesignBlock): Required<DesignBlock> | Required<DesignNode> {
+function fillBlockDefValue(block: DesignNode | DesignBlock | RuntimeNode | RuntimeBlock, createIDRef: boolean): any {
     // DesignNode
-    if (!block.id || lodash.trim(block.id).length <= 0) block.id = createVNodeID();
-    if (!block.ref || lodash.trim(block.ref).length <= 0) block.ref = createRefID();
-    if (!block.props) block.props = {};
-    if (!block.listeners) block.listeners = {};
-    if (!block.directives) block.directives = {};
-    if (!block.slots) block.slots = {};
-    if (!block.items) block.items = [];
-    if (!block.tpl) block.tpl = [];
+    const designNode = block as DesignNode;
+    if (createIDRef) {
+        if (!designNode.id || lodash.trim(designNode.id).length <= 0) designNode.id = createVNodeID();
+        if (!designNode.ref || lodash.trim(designNode.ref).length <= 0) designNode.ref = createRefID();
+    }
+    if (!designNode.props) designNode.props = {};
+    if (!designNode.listeners) designNode.listeners = {};
+    if (!designNode.directives) designNode.directives = {};
+    if (!designNode.slots) designNode.slots = {};
+    if (!designNode.items) designNode.items = [];
+    if (!designNode.tpl) designNode.tpl = [];
     // DesignBlock
     const designBlock = block as DesignBlock;
     if (designBlock.block) {
@@ -44,6 +47,20 @@ function fillBlockDefValue(block: DesignNode | DesignBlock): Required<DesignBloc
         if (!designBlock.i18n) designBlock.i18n = {};
     }
     return block as any;
+}
+
+/**
+ * 给 DesignBlock 对象属性设置默认值
+ */
+function fillDesignBlockDefValue(block: DesignNode | DesignBlock): Required<DesignBlock> {
+    return fillBlockDefValue(block as any, true);
+}
+
+/**
+ * 给 RuntimeBlock 对象属性设置默认值
+ */
+function fillRuntimeBlockDefValue(block: RuntimeNode | RuntimeBlock): Required<RuntimeBlock> {
+    return fillBlockDefValue(block as any, false);
 }
 
 /**
@@ -224,7 +241,7 @@ function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: Co
         methods,
         lifeCycles,
         ...other
-    } = fillBlockDefValue(block) as DesignBlock;
+    } = fillDesignBlockDefValue(block) as DesignBlock;
     // 应用 defaults 属性
     if (defaults && Object.keys(defaults).length > 0) {
         if (isArray(items)) {
@@ -246,27 +263,29 @@ function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: Co
     } else {
         runtime.__component = Fragment;
     }
-    if (!runtime.__component) {
-        const errMsg = `UI组件未注册也不是html原生标签，组件: ${type}`
-        console.warn(errMsg);
-        runtime.__error = new Error(errMsg);
-    }
+    _doBlockTransform(() => {
+        if (!runtime.__component) {
+            throw new Error(`UI组件未注册也不是html原生标签，组件: ${type}`);
+        }
+    }, runtime, RenderErrType.componentNotExists);
     // 处理 tpl 属性
     runtime.tpl = tpl;
     if (isStr(tpl)) runtime.tpl = [tpl];
     // 处理 Block 属性
     if (runtime.block) {
-        runtime.methods = methodsTransform(methods);
-        runtime.lifeCycles = lifeCyclesTransform(lifeCycles, runtime.methods);
-        runtime.computed = computedTransform(computed, runtime.methods);
-        runtime.watch = watchTransform(watch);
+        _doBlockTransform(() => runtime.methods = methodsTransform(methods), runtime, RenderErrType.methodsTransform);
+        _doBlockTransform(() => runtime.lifeCycles = lifeCyclesTransform(lifeCycles, runtime.methods), runtime, RenderErrType.lifeCyclesTransform);
+        _doBlockTransform(() => runtime.computed = computedTransform(computed, runtime.methods), runtime, RenderErrType.computedTransform);
+        _doBlockTransform(() => runtime.watch = watchTransform(watch), runtime, RenderErrType.watchTransform);
     }
     // 处理 listeners
-    if (runtime.block) {
-        runtime.listeners = listenersTransform(listeners, runtime.methods);
-    } else if (parent) {
-        runtime.listeners = listenersTransform(listeners, parent.methods);
-    }
+    _doBlockTransform(() => {
+        if (runtime.block) {
+            runtime.listeners = listenersTransform(listeners, runtime.methods);
+        } else if (parent) {
+            runtime.listeners = listenersTransform(listeners, parent.methods);
+        }
+    }, runtime, RenderErrType.listenersTransform);
     // 递归处理 slots
     runtime.slots = {};
     const designBlock: RuntimeBlock = (parent ? parent : runtime);
@@ -277,7 +296,7 @@ function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: Co
     // 递归处理 items
     runtime.items = _deepTransformSlotsOrItems(items, componentManage, designBlock, "items", "items");
     // 返回数据
-    return { ...other, ...runtime };
+    return fillRuntimeBlockDefValue({ ...other, ...runtime });
 }
 
 // blockDeepTransform 处理 slots 或者 items
@@ -286,21 +305,41 @@ function _deepTransformSlotsOrItems(itemsOrSlots: DesignNode['items'], component
     if (isStr(itemsOrSlots)) {
         result = [itemsOrSlots];
     } else if (isArray(itemsOrSlots)) {
-        result = itemsOrSlots.map((item: any, idx) => {
+        result = itemsOrSlots.map((item: any, idx: number) => {
             if (isStr(item)) {
                 return item;
             } else if (isObj(item) && !isArray(item)) {
                 return blockDeepTransform(item, componentManage, parent);
             } else {
-                throw new Error(`Block ${propName} 定义错误(${slotName}[${idx}]=${JSON.stringify(item)})`);
+                return fillBlockDefValue({
+                    __designNode: item,
+                    __error: new Error(`节点 ${propName} 定义错误(${slotName}[${idx}]=${JSON.stringify(item)})`),
+                    __errorType: RenderErrType.nodeDefine,
+                }, true);
             }
         });
     } else if (isObj(itemsOrSlots)) {
         result = [blockDeepTransform(itemsOrSlots as any, componentManage, parent)];
     } else {
-        throw new Error(`Block ${propName} 定义错误(${slotName}=${JSON.stringify(itemsOrSlots)})`);
+        return fillBlockDefValue({
+            __designNode: itemsOrSlots,
+            __error: new Error(`节点 ${propName} 定义错误(${slotName}=${JSON.stringify(itemsOrSlots)})`),
+            __errorType: RenderErrType.nodeDefine,
+        }, true);
     }
     return result;
+}
+
+// 执行转换逻辑
+function _doBlockTransform(transform: AnyFunction, runtimeBlock: RuntimeBlock, errType: RenderErrType) {
+    if (runtimeBlock.__error) return;
+    try {
+        transform();
+    } catch (err: any) {
+        console.warn(err);
+        runtimeBlock.__error = err;
+        runtimeBlock.__errorType = errType;
+    }
 }
 
 /**
@@ -547,19 +586,21 @@ function renderTpl(tpl: string[], props: Record<string, any>, instance: any, run
     return compileTpl(template, { cache: true }).bind(instance)(data);
 }
 
-// 当访问不存在的属性时返回空字符串
-function _createSafeObject(obj: object) {
-    // 在with语句中Proxy 的 get不生效
-    return new Proxy(obj, {
-        get(target: object, prop: string | symbol, receiver: any): any {
-            return Reflect.get(target, prop, receiver) || '';
-        },
-    });
-}
+// // 当访问不存在的属性时返回空字符串
+// function _createSafeObject(obj: object) {
+//     // 在with语句中Proxy 的 get不生效
+//     return new Proxy(obj, {
+//         get(target: object, prop: string | symbol, receiver: any): any {
+//             return Reflect.get(target, prop, receiver) || '';
+//         },
+//     });
+// }
 
 export {
     createFunction,
     fillBlockDefValue,
+    fillDesignBlockDefValue,
+    fillRuntimeBlockDefValue,
     methodsTransform,
     lifeCyclesTransform,
     computedTransform,

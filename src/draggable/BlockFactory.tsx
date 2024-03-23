@@ -240,9 +240,9 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
     // 组件不存在时的错误(组件未注册、加载组件失败等)
     if (runtimeNode.__error) {
         return createVNode(BlockRenderError, {
-            msg: `渲染的组件不存在，type: ${runtimeNode.type}\n`,
-            errType: RenderErrType.componentNotExists,
-            errConfig: runtimeNode.props,
+            msg: `渲染节点失败，组件: ${runtimeNode.type}\n`,
+            errType: runtimeNode.__errorType ?? RenderErrType.unknown,
+            errConfig: null,
             node: child, error: runtimeNode.__error,
         });
     }

@@ -16,8 +16,10 @@ interface RuntimeListener {
 interface RuntimeNode {
     /** 对应的 DesignNode 对象 */
     readonly __designNode: DesignNode;
-    /** 组件不存在时的错误(组件未注册、加载组件失败等) */
-    readonly __error?: Error;
+    /** 渲染节点存在错误(组件未注册、加载组件失败、属性配置错误等) */
+    __error?: Error;
+    /** 错误类型 */
+    __errorType?: RenderErrType;
     /** 当前节点是不是html标签 */
     readonly __htmlTag: boolean;
     /** 组件类型(HtmlTag或vue组件对象) */
@@ -84,18 +86,32 @@ type RuntimeBlockNode = RuntimeComponentSlotsItem | RuntimeBlock;
 
 /** Block渲染失败类型 */
 enum RenderErrType {
+    /** 未知的错误 */
+    unknown = "未知的错误",
     /** 渲染的组件不存在 */
-    componentNotExists = "componentNotExists",
-    /** 创建BlockComponent */
-    createBlockComponent = "createBlockComponent",
-    /** 深度解析DesignBlock */
-    blockDeepTransform = "blockDeepTransform",
-    /** 渲染模版 */
-    renderTpl = "renderTpl",
-    /** 计算node属性 */
-    propsTransform = "propsTransform",
-    /** 表达式计算 */
-    expTransform = "expTransform",
+    componentNotExists = "渲染的组件不存在",
+    /** 创建Block组件错误 */
+    createBlockComponent = "创建Block组件错误",
+    /** 解析methods错误 */
+    methodsTransform = "解析methods错误",
+    /** 解析lifeCycles错误 */
+    lifeCyclesTransform = "解析lifeCycles错误",
+    /** 解析computed错误 */
+    computedTransform = "解析computed错误",
+    /** 解析watch错误 */
+    watchTransform = "解析watch错误",
+    /** 解析listeners错误 */
+    listenersTransform = "解析listeners错误",
+    /** 递归解析DesignBlock错误 */
+    blockDeepTransform = "递归解析DesignBlock错误",
+    /** 渲染模版错误 */
+    renderTpl = "渲染模版错误",
+    /** 计算props错误 */
+    propsTransform = "计算Props错误",
+    /** 计算表达式错误 */
+    expTransform = "计算表达式错误",
+    /** 渲染节点定义错误 */
+    nodeDefine = "渲染节点定义错误",
 }
 
 export type {

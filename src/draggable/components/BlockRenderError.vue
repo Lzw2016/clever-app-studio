@@ -2,7 +2,7 @@
 import lodash from "lodash";
 import { isStr } from "@/utils/Typeof";
 import { DesignBlock } from "@/draggable/types/DesignBlock";
-import { RuntimeBlockNode } from "@/draggable/types/RuntimeBlock";
+import { RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 
 // 定义组件选项
 defineOptions({
@@ -38,9 +38,14 @@ const existsErrInfo = lodash.trim(props.msg).length > 0;
 
 // TODO 可以使用对话框显示错误信息
 function showError() {
-    console.info("错误类型", props.errType);
-    console.info("渲染节点信息", props.node);
-    console.info("渲染失败的配置", props.errConfig);
+    if (props.errType) console.info("错误类型:", props.errType);
+    const runtimeNode = props.node as RuntimeNode;
+    if (runtimeNode?.__designNode) {
+        console.info("渲染节点信息:", runtimeNode.__designNode);
+    } else if (props.node) {
+        console.info("渲染节点信息:", props.node);
+    }
+    if (props.errConfig) console.info("渲染失败的配置:", props.errConfig);
     if (props.error) {
         console.error(props.msg, props.error);
     } else {
