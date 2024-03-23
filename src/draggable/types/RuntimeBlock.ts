@@ -1,6 +1,7 @@
 import { WatchCallback, WatchOptions } from "vue";
 import { AnyFunction, ComponentInstance, I18N, VueComponent } from "@/draggable/types/Base";
 import { BaseDirectives, BlockMeta, DesignNode } from "@/draggable/types/DesignBlock";
+import { ComponentManage } from "@/draggable/types/ComponentManage";
 
 /** 组件插槽类型(运行时) */
 type RuntimeComponentSlotsItem = RuntimeNode | Omit<RuntimeBlock, "meta" | "i18n"> | string;
@@ -112,6 +113,18 @@ enum RenderErrType {
     expTransform = "计算表达式错误",
     /** 渲染节点定义错误 */
     nodeDefine = "渲染节点定义错误",
+    /** 组件元信息不存在 */
+    componentMetaNotExists = "组件元信息不存在",
+    /** 设计时组件不存在 */
+    designComponentNotExists = "设计时组件不存在",
+}
+
+/** 创建渲染组件的配置 */
+interface CreateConfig {
+    /** 组件管理器 */
+    componentManage: ComponentManage;
+    /** 是否是设计时 */
+    isDesigning: boolean;
 }
 
 export type {
@@ -121,6 +134,7 @@ export type {
     RuntimeNode,
     RuntimeBlock,
     RuntimeBlockNode,
+    CreateConfig,
 }
 
 export {

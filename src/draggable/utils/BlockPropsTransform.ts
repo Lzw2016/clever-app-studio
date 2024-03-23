@@ -7,9 +7,9 @@ import { createRefID, createVNodeID } from "@/utils/IDCreate";
 import { compileTpl } from "@/utils/Template";
 import { AnyFunction, FunctionConfig } from "@/draggable/types/Base";
 import { BlockWatchItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
-import { RenderErrType, RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
-import { ComponentManage } from "@/draggable/types/ComponentManage";
+import { CreateConfig, RenderErrType, RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
+import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 
 /**
  * 根据 FunctionConfig 动态创建函数对象
@@ -227,7 +227,7 @@ function listenersTransform(listeners: DesignBlock["listeners"], methods: Record
  * 深度转换 DesignBlock。
  * 会转换的属性：type、listeners、slots、items、tpl、computed、watch、methods、lifeCycles
  */
-function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: ComponentManage, parent?: RuntimeBlock): RuntimeBlock {
+function blockDeepTransform(block: DesignNode | DesignBlock, createConfig: CreateConfig, parent?: RuntimeBlock): RuntimeBlock {
     const {
         block: isBlock,
         defaults,
@@ -241,7 +241,7 @@ function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: Co
         methods,
         lifeCycles,
         ...other
-    } = fillDesignBlockDefValue(block) as DesignBlock;
+    } = fillDesignBlockDefValue(block);
     // 应用 defaults 属性
     if (defaults && Object.keys(defaults).length > 0) {
         if (isArray(items)) {
@@ -252,20 +252,51 @@ function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: Co
             }
         }
     }
-    // if(!other.props) {
-    // }
-    // other.props
-
-
-    const runtime: any = { __designNode: block, block: isBlock, type: type };
+    other.props[htmlExtAttr.nodeId] = other.id;
+    other.props[htmlExtAttr.nodeRef] = other.ref;
+    const runtime: any = { __designNode: block, block: isBlock, type: lodash.trim(type) };
     // 如果没有父级 Block 强制让当前节点为 Block
     if (!parent) runtime.block = true;
     // 读取组件类型
-    if (type && lodash.trim(type).length > 0) {
-        runtime.__component = type.trim();
-        runtime.__htmlTag = isHtmlTag(runtime.__component);
-        if (!runtime.__htmlTag) runtime.__component = componentManage.getComponent(runtime.__component);
+    runtime.__htmlTag = isHtmlTag(runtime.type);
+    if (runtime.type && runtime.type.length > 0) {
+        // 获取设计时组件
+        if (createConfig.isDesigning) {
+            const componentMeta = createConfig.componentManage.getComponentMeta(runtime.type);
+            if (!componentMeta && !runtime.__htmlTag) {
+                _doBlockTransform(() => {
+                    throw new Error(`未找到组件元信息，组件: ${type}`);
+                }, runtime, RenderErrType.componentMetaNotExists);
+            } else if (componentMeta?.designComponent) {
+                // 应用 designComponent
+                if (isStr(componentMeta.designComponent)) {
+                    runtime.__component = lodash.trim(componentMeta.designComponent);
+                    runtime.__htmlTag = isHtmlTag(runtime.__component);
+                    if (runtime.__component.length <= 0) {
+                        runtime.__component = Fragment;
+                    } else if (!runtime.__htmlTag) {
+                        runtime.__component = createConfig.componentManage.getComponent(runtime.type);
+                        _doBlockTransform(() => {
+                            if (!runtime.__component) {
+                                throw new Error(`设计时组件不存在，组件: ${type}`);
+                            }
+                        }, runtime, RenderErrType.designComponentNotExists);
+                    }
+                } else {
+                    runtime.__component = componentMeta.designComponent;
+                }
+            }
+        }
+        // 获取运行时时组件
+        if (!runtime.__error && !runtime.__component) {
+            if (runtime.__htmlTag) {
+                runtime.__component = runtime.type;
+            } else {
+                runtime.__component = createConfig.componentManage.getComponent(runtime.type);
+            }
+        }
     } else {
+        // 未设置 type
         runtime.__component = Fragment;
     }
     _doBlockTransform(() => {
@@ -296,16 +327,16 @@ function blockDeepTransform(block: DesignNode | DesignBlock, componentManage: Co
     const designBlock: RuntimeBlock = (parent ? parent : runtime);
     for (let name in slots) {
         const slot = slots[name];
-        runtime.slots[name] = _deepTransformSlotsOrItems(slot, componentManage, designBlock, "slots", name);
+        runtime.slots[name] = _deepTransformSlotsOrItems(slot, createConfig, designBlock, "slots", name);
     }
     // 递归处理 items
-    runtime.items = _deepTransformSlotsOrItems(items, componentManage, designBlock, "items", "items");
+    runtime.items = _deepTransformSlotsOrItems(items, createConfig, designBlock, "items", "items");
     // 返回数据
     return fillRuntimeBlockDefValue({ ...other, ...runtime });
 }
 
 // blockDeepTransform 处理 slots 或者 items
-function _deepTransformSlotsOrItems(itemsOrSlots: DesignNode['items'], componentManage: ComponentManage, parent: RuntimeBlock, propName: 'items' | 'slots', slotName: string): Array<RuntimeComponentSlotsItem> {
+function _deepTransformSlotsOrItems(itemsOrSlots: DesignNode['items'], createConfig: CreateConfig, parent: RuntimeBlock, propName: 'items' | 'slots', slotName: string): Array<RuntimeComponentSlotsItem> {
     let result: Array<RuntimeComponentSlotsItem>;
     if (isStr(itemsOrSlots)) {
         result = [itemsOrSlots];
@@ -314,7 +345,7 @@ function _deepTransformSlotsOrItems(itemsOrSlots: DesignNode['items'], component
             if (isStr(item)) {
                 return item;
             } else if (isObj(item) && !isArray(item)) {
-                return blockDeepTransform(item, componentManage, parent);
+                return blockDeepTransform(item, createConfig, parent);
             } else {
                 return fillBlockDefValue({
                     __designNode: item,
@@ -324,7 +355,7 @@ function _deepTransformSlotsOrItems(itemsOrSlots: DesignNode['items'], component
             }
         });
     } else if (isObj(itemsOrSlots)) {
-        result = [blockDeepTransform(itemsOrSlots as any, componentManage, parent)];
+        result = [blockDeepTransform(itemsOrSlots as any, createConfig, parent)];
     } else {
         return fillBlockDefValue({
             __designNode: itemsOrSlots,

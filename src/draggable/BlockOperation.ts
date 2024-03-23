@@ -3,7 +3,7 @@ import { hasValue, isArray, isObj, isStr, noValue } from "@/utils/Typeof";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { ComponentInstance } from "@/draggable/types/Base";
 import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
-import { RuntimeBlock, RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { CreateConfig, RuntimeBlock, RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { blockDeepTransform, deepTraverseNodes } from "@/draggable/utils/BlockPropsTransform";
 
 /** 操作选项 */
@@ -327,7 +327,7 @@ interface BlockOperation {
     remove(ref: string, options?: Options): void;
 }
 
-interface AllBlockOperationProps {
+interface AllBlockOperationProps extends CreateConfig {
     /** 组件管理器 */
     componentManage: ComponentManage;
     /** 当前的 RuntimeBlock 对象 */
@@ -433,7 +433,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                 // 应用 defaults 属性
                 if (parent.__designNode.defaults) lodash.defaultsDeep(node, parent.__designNode.defaults);
                 // 深度转换成 RuntimeNode
-                runtimeNode = blockDeepTransform(node, this.props.componentManage, this.props.runtimeBlock);
+                runtimeNode = blockDeepTransform(node, this.props, this.props.runtimeBlock);
                 // 递归初始化 allNode nodeParent refId
                 deepTraverseNodes(
                     runtimeNode,

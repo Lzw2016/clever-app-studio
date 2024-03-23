@@ -3,27 +3,18 @@ import lodash from "lodash";
 import { isArray, isObj, isStr, noValue } from "@/utils/Typeof";
 import { calcExpression, getKeyPathValue, setKeyPathValue } from "@/utils/Expression";
 import { componentManage, innerDirectiveNames } from "@/draggable/Constant";
-import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { ComponentInstance } from "@/draggable/types/Base";
 import { BaseDirectives, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
-import { RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { CreateConfig, RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { isHtmlTag, parseHTML } from "@/draggable/utils/HtmlTag";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, deepTraverseNodes, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
 import { AllBlockOperation, BlockOperation, BlockOperationById } from "@/draggable/BlockOperation";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
 
-/** 创建渲染组件的配置 */
-interface CreateBlockConfig {
-    /** 组件管理器 */
-    componentManage: ComponentManage;
-    /** 是否是设计时 */
-    isDesigning: boolean;
-}
-
 /**
  * 创建 BlockComponent 时的全局上下文
  */
-interface GlobalContext extends CreateBlockConfig {
+interface GlobalContext extends CreateConfig {
     /** 当前渲染的顶层 DesignBlock(原始的DesignBlock对象) */
     readonly designBlock: DesignBlock;
     /** 当前所有的 Block vue 组件 | RuntimeBlock.ref -> Block vue组件实例 */
@@ -63,7 +54,7 @@ interface Context {
 }
 
 // 创建渲染组件的默认配置
-const defConfig: CreateBlockConfig = {
+const defConfig: CreateConfig = {
     componentManage: componentManage,
     isDesigning: false,
 };
@@ -71,7 +62,7 @@ const defConfig: CreateBlockConfig = {
 /**
  * 基于 DesignBlock 动态创建 vue 组件
  */
-function createBlockComponent(block: DesignBlock, config: Partial<CreateBlockConfig> = defConfig) {
+function createBlockComponent(block: DesignBlock, config: Partial<CreateConfig> = defConfig) {
     const designBlock: DesignBlock = block;
     // 深度克隆 block 对象，保护原始 block 对象不被篡改
     block = lodash.cloneDeep(designBlock);
@@ -88,7 +79,7 @@ function createBlockComponent(block: DesignBlock, config: Partial<CreateBlockCon
     let runtimeBlock: RuntimeBlock;
     try {
         // 递归处理 Block 属性，使它符合 vue 组件的规范
-        runtimeBlock = blockDeepTransform(block, globalContext.componentManage);
+        runtimeBlock = blockDeepTransform(block, globalContext);
     } catch (e) {
         return createVNode(BlockRenderError, {
             msg: "解析 DesignBlock 失败",
@@ -153,12 +144,13 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, globalContext: 
             vm.globalContext = globalContext;
             const blockOps = new AllBlockOperation({
                 componentManage: globalContext.componentManage,
+                isDesigning: globalContext.isDesigning,
                 runtimeBlock: runtimeBlock,
                 instance: vm,
                 allNode: globalContext.allNode,
                 nodeParent: globalContext.nodeParent,
                 refId: globalContext.refId,
-            })
+            });
             vm.blockOps = blockOps;
             vm.blockOpsById = blockOps;
             // 深度绑定 this 指针
@@ -609,7 +601,7 @@ function defineDesignBlock(designBlock: DesignBlock): DesignBlock {
 }
 
 export type  {
-    CreateBlockConfig,
+    CreateConfig,
     Block,
 }
 
