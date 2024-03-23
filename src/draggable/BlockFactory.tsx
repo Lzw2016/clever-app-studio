@@ -179,10 +179,14 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, globalContext: 
                     node: runtimeBlock,
                 };
                 return createChildVNode(runtimeBlock, context, globalContext, true);
-            } catch (e) {
-                console.warn("组件渲染失败", runtimeBlock, e);
-                // TODO 优化错误渲染组件(使用对话框查看错误详情)
-                return createVNode('span', {}, ['组件渲染失败']);
+            } catch (err) {
+                console.warn("Block渲染失败", runtimeBlock, err);
+                return createVNode(BlockRenderError, {
+                    msg: `渲染节点失败，组件: ${runtimeBlock.type}\n`,
+                    errType: runtimeBlock.__errorType ?? RenderErrType.unknown,
+                    errConfig: null,
+                    node: runtimeBlock, error: err,
+                });
             }
         },
     });
