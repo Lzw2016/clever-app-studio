@@ -100,14 +100,14 @@ enum VarType {
 }
 
 /** 变量类型 */
-type FunctionVarType = VarType | string;
+type ParamVarType = VarType | string;
 
 /** 函数参数信息 */
-interface FunctionParamMeta {
+interface ParamMeta {
     /** 函数参数名称 */
     name: string;
     /** 参数类型 */
-    type: FunctionVarType;
+    type: ParamVarType;
     /** 参数描述 */
     note?: string
 }
@@ -121,9 +121,9 @@ interface FunctionMeta {
     /** 函数名称 */
     name: string;
     /** 函数参数 */
-    params?: Array<FunctionParamMeta>;
+    params?: Array<ParamMeta>;
     /** 返回值类型 */
-    return?: FunctionVarType;
+    return?: ParamVarType;
     /** 使用示例(代码片段) */
     examples?: Array<CodeExample>;
 }
@@ -137,7 +137,7 @@ interface ComponentSlotMeta {
     /** 插槽名称 */
     name: string;
     /** 插槽属性 */
-    slotProps?: Record<string, Omit<FunctionParamMeta, 'name'>>;
+    slotProps?: Record<string, Omit<ParamMeta, 'name'>>;
     /** 使用示例(代码片段) */
     examples?: Array<CodeExample>;
 }
@@ -153,8 +153,8 @@ export type {
     FunctionConfig,
     AnyFunction,
     CodeExample,
-    FunctionVarType,
-    FunctionParamMeta,
+    ParamVarType,
+    ParamMeta,
     FunctionMeta,
     ComponentSlotMeta,
 }

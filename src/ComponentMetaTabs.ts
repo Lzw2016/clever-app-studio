@@ -1,7 +1,7 @@
 import { ComponentMeta, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 import { componentManage } from "@/draggable/Constant";
 
-const componentMetaTabs: Array<MaterialMetaTab> = [
+const materialMetaTabs: Array<MaterialMetaTab> = [
     {
         title: "常用组件",
         groups: [
@@ -194,20 +194,18 @@ const componentMetaTabs: Array<MaterialMetaTab> = [
     },
 ];
 
-function createComponentMeta(cfg: any): ComponentMeta {
+function createComponentMeta(cfg: Partial<ComponentMeta>): ComponentMeta {
     return {
-        type: cfg.type,
+        type: cfg.type!,
         designComponent: "",
-        name: cfg.name,
+        name: cfg.name!,
         description: "",
         version: "0.0.1",
         docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/button",
-        icon: cfg.icon,
+        icon: cfg.icon!,
         defDesignNode: {},
-        schema: {
-            events: {},
-            slots: {},
-        },
+        events: {},
+        slots: {},
         setter: {
             props: {
                 title: "",
@@ -441,6 +439,7 @@ function createComponentMeta(cfg: any): ComponentMeta {
                 ],
             },
         },
+        placeholder: cfg.placeholder ?? {},
         i18n: {},
     };
 }
@@ -449,8 +448,33 @@ const componentMeta = createComponentMeta({ type: "Button", name: "按钮", icon
 
 componentManage.registerComponentMeta(componentMeta);
 componentManage.registerComponentMeta(createComponentMeta({ type: "ButtonGroup", name: "按钮组", icon: "" }));
+componentManage.registerComponentMeta(createComponentMeta({
+    type: "div",
+    name: "div容器",
+    icon: "",
+    placeholder: {
+        default: {
+            type: "div",
+            props: {
+                style: {
+                    height: "100%",
+                    width: "100%",
+                    minHeight: "32px",
+                    fontSize: "12px",
+                    backgroundColor: "#f0f0f0",
+                    color: "#a7b1bd",
+                    border: "1px dotted #a7b1bd",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                },
+            },
+            items: "拖拽组件或模板到这里",
+        },
+    },
+}));
 
 export {
-    componentMetaTabs,
+    materialMetaTabs,
     componentMeta,
 }

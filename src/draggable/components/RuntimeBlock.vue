@@ -3,7 +3,7 @@ import { defineExpose, Fragment, reactive, ref } from "vue";
 import { componentManage } from "@/draggable/Constant";
 import { DesignBlock } from "@/draggable/types/DesignBlock";
 import { RenderErrType } from "@/draggable/types/RuntimeBlock";
-import { Block, createBlockComponent, CreateBlockConfig, getAllComponentType } from "@/draggable/BlockFactory";
+import { Block, createBlockComponent, CreateConfig, getAllComponentType } from "@/draggable/BlockFactory";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
 
 // 定义组件选项
@@ -74,7 +74,7 @@ defineExpose({
 
 // 基于 Block 创建 vue 组件
 function createComponent() {
-    const config: Partial<CreateBlockConfig> = {
+    const config: Partial<CreateConfig> = {
         isDesigning: props.isDesigning,
     };
     if (!props.block) return;

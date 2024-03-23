@@ -20,14 +20,6 @@ interface MaterialMeta {
 /** 组件节点默认配置 */
 type DefDesignNode = Partial<Omit<DesignNode, 'type' | 'ref'>>
 
-/** 组件schema */
-interface ComponentSchema {
-    /** 组件事件元信息 */
-    events: Record<string, Omit<FunctionMeta, 'name'>>;
-    /** 组件插槽元信息 */
-    slots: Record<string, Omit<ComponentSlotMeta, 'name'>>;
-}
-
 /** 监听属性值变化逻辑配置 */
 interface WatchPropsConfig<TargetProps> {
     /** 监听的属性名 */
@@ -118,10 +110,14 @@ interface ComponentMeta extends MaterialMeta {
     designComponent?: VueComponent | string;
     /** 默认的组件节点配置 */
     defDesignNode: DefDesignNode;
-    /** 组件Schema(定义的事件、插槽等) */
-    schema: ComponentSchema;
+    /** 组件事件元信息 */
+    events: Record<string, Omit<FunctionMeta, 'name'>>;
+    /** 组件插槽元信息 */
+    slots: Record<string, Omit<ComponentSlotMeta, 'name'>>;
     /** 组件设计器 */
     setter: ComponentSetter;
+    /** 设计时的占位组件，插槽名对应占位节点，items占位名为“default”，配置占位节点值为true表示使用默认的占位组件 */
+    placeholder: Record<"default" | string, DesignNode | boolean>;
     /** 多语言词条 */
     i18n?: I18N;
 }
@@ -149,7 +145,6 @@ type AsyncComponentMeta = (type: string) => Promise<ComponentMeta>;
 
 export type {
     DefDesignNode,
-    ComponentSchema,
     WatchPropsConfig,
     Setter,
     SetterGroup,

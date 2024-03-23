@@ -3,7 +3,7 @@ import { onMounted, onUnmounted, reactive } from "vue";
 import { globalThisPolyfill } from "@/utils/GlobalThisPolyfill";
 import { style } from "@/utils/UseType";
 import SplitPane from "@/components/SplitPane.vue";
-import { componentMeta, componentMetaTabs } from "@/ComponentMetaTabs";
+import { componentMeta, materialMetaTabs } from "@/ComponentMetaTabs";
 import { componentManage } from "@/draggable/Constant";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { setDesignerEngine } from "@/draggable/InjectVars";
@@ -145,7 +145,7 @@ onUnmounted(() => {
                         :custom-two-pane="true"
                     >
                         <template #onePane>
-                            <MaterialPanel :tabs="componentMetaTabs"/>
+                            <MaterialPanel :tabs="materialMetaTabs"/>
                         </template>
                         <template #twoPane="slotProps">
                             <SplitPane

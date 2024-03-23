@@ -10,6 +10,7 @@ import { BlockWatchItem, DesignBlock, DesignNode } from "@/draggable/types/Desig
 import { CreateConfig, RenderErrType, RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
+import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 
 /**
  * 根据 FunctionConfig 动态创建函数对象
@@ -243,18 +244,41 @@ function blockDeepTransform(block: DesignNode | DesignBlock, createConfig: Creat
         ...other
     } = fillDesignBlockDefValue(block);
     // 应用 defaults 属性
-    if (defaults && Object.keys(defaults).length > 0) {
-        if (isArray(items)) {
-            for (let item of items) {
-                if (isObj(item) && !isArray(item)) {
-                    lodash.defaultsDeep(item, defaults);
+    if (defaults && Object.keys(defaults).length > 0 && isArray(items)) {
+        for (let item of items) {
+            if (isObj(item) && !isArray(item)) {
+                lodash.defaultsDeep(item, defaults);
+            }
+        }
+    }
+    // 自定义html标签属性
+    other.props[htmlExtAttr.nodeId] = other.id;
+    other.props[htmlExtAttr.nodeRef] = other.ref;
+    // 创建 RuntimeBlock 对象
+    const runtime: any = { __designNode: block, block: isBlock, type: lodash.trim(type) };
+    // 读取组件元信息
+    let componentMeta: ComponentMeta | undefined = undefined;
+    if (createConfig.isDesigning) {
+        componentMeta = createConfig.componentManage.getComponentMeta(runtime.type);
+        if (componentMeta?.placeholder) {
+            runtime.__designPlaceholder = {};
+            for (let name in componentMeta.placeholder) {
+                const placeholder = componentMeta.placeholder[name];
+                if (placeholder === true) {
+                    // TODO 默认的占位组件
+                } else {
+                    const newPlaceholder = lodash.cloneDeep(placeholder) as DesignNode;
+                    if (!newPlaceholder.props) newPlaceholder.props = {};
+                    newPlaceholder.props[htmlExtAttr.slotsContainer] = name;
+                    runtime.__designPlaceholder[name] = blockDeepTransform(
+                        newPlaceholder,
+                        { ...createConfig, isDesigning: false },
+                        parent,
+                    );
                 }
             }
         }
     }
-    other.props[htmlExtAttr.nodeId] = other.id;
-    other.props[htmlExtAttr.nodeRef] = other.ref;
-    const runtime: any = { __designNode: block, block: isBlock, type: lodash.trim(type) };
     // 如果没有父级 Block 强制让当前节点为 Block
     if (!parent) runtime.block = true;
     // 读取组件类型
@@ -262,12 +286,11 @@ function blockDeepTransform(block: DesignNode | DesignBlock, createConfig: Creat
     if (runtime.type && runtime.type.length > 0) {
         // 获取设计时组件
         if (createConfig.isDesigning) {
-            const componentMeta = createConfig.componentManage.getComponentMeta(runtime.type);
             if (!componentMeta && !runtime.__htmlTag) {
                 _doBlockTransform(() => {
                     throw new Error(`未找到组件元信息，组件: ${type}`);
                 }, runtime, RenderErrType.componentMetaNotExists);
-            } else if (componentMeta?.designComponent) {
+            } else if (componentMeta && componentMeta.designComponent) {
                 // 应用 designComponent
                 if (isStr(componentMeta.designComponent)) {
                     runtime.__component = lodash.trim(componentMeta.designComponent);
@@ -509,7 +532,7 @@ function _deepBlockSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, call
  *     1.this指向当前tpl所属block对应的vue组件实例
  *     2.lodash 对象 _ 属性
  *     3.当前node所属block对应的vue实例 $block 属性
- *     4.自定义扩展属性 $allBlock
+ *     4.自定义扩展属性 $allBlock $slotProps
  *     5.for指令中的数据，通过 index、item 配置的属性名
  *     6.当前node所属block对应的vue实例平铺的 methods 函数
  *     7.当前node所属block对应的vue实例平铺的 computed 数据
@@ -565,7 +588,7 @@ function getExpData(instance: any, runtimeBlock?: RuntimeBlock, extData?: object
  *      2.包含当前tpl的node的props(计算后的props)
  *      3.lodash 对象 _ 属性
  *      4.当前node所属block对应的vue实例 $block 属性
- *      5.自定义扩展属性 $allBlock
+ *      5.自定义扩展属性 $allBlock $slotProps
  *      6.for指令中的数据，通过 index、item 配置的属性名
  *      7.当前node所属block对应的vue实例平铺的 methods 函数
  *      8.当前node所属block对应的vue实例平铺的 computed 数据

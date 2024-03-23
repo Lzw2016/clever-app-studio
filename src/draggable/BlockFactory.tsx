@@ -1,6 +1,6 @@
 import { ComponentPublicInstance, createVNode, defineComponent, Fragment, renderList, resolveDirective, vModelCheckbox, vModelRadio, vModelSelect, vModelText, VNode, vShow, withCtx, withDirectives } from "vue";
 import lodash from "lodash";
-import { isArray, isObj, isStr, noValue } from "@/utils/Typeof";
+import { hasValue, isArray, isObj, isStr, noValue } from "@/utils/Typeof";
 import { calcExpression, getKeyPathValue, setKeyPathValue } from "@/utils/Expression";
 import { componentManage, innerDirectiveNames } from "@/draggable/Constant";
 import { ComponentInstance } from "@/draggable/types/Base";
@@ -401,9 +401,28 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, globalCo
                 return createChildVNode(item, { ...newContext, slotProps: slotProps }, globalContext);
             }));
         }
+        // 设计时占位组件
+        if (globalContext.isDesigning) {
+            const placeholders = runtimeNode.__designPlaceholder;
+            if (placeholders) {
+                for (let name in placeholders) {
+                    // if (name === "default") continue;
+                    if (slots[name]) continue;
+                    const placeholder = placeholders[name];
+                    slots[name] = withCtx((slotProps: any) => [createChildVNode(placeholder, { ...newContext, slotProps: slotProps }, globalContext)]);
+                }
+            }
+        }
         return slots;
     };
     const createItemsVNode = function (): Array<VNode> {
+        // 设计时占位组件
+        if (globalContext.isDesigning && runtimeNode.items.length <= 0) {
+            const placeholder = runtimeNode.__designPlaceholder?.default;
+            if (placeholder) {
+                return [createChildVNode(placeholder, newContext, globalContext)];
+            }
+        }
         return runtimeNode.items.map(item => createChildVNode(item, newContext, globalContext));
     };
     const createTplVNode = function (): VNode {
@@ -419,16 +438,23 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, globalCo
             });
         }
     };
+    // 设计时的占位组件数量
+    const placeholderCount = runtimeNode.__designPlaceholder ? Object.keys(runtimeNode.__designPlaceholder).length : 0;
+    // 设计时 & 存在 slots
+    const designingAndExistsSlots = globalContext.isDesigning && ((placeholderCount > 1 && hasValue(runtimeNode.__designPlaceholder?.default)) || (placeholderCount > 0 && noValue(runtimeNode.__designPlaceholder?.default)));
+    // 设计时 & 存在 items
+    const designingAndExistsItems = globalContext.isDesigning && hasValue(runtimeNode.__designPlaceholder?.default);
     // 当前 component 是 html 标签
     const isHtmlTag = runtimeNode.__htmlTag;
     // 当前 component 是 Fragment 标签
     const isFragment = component === Fragment;
     // 存在 slots
-    const existsSlots = !isHtmlTag && !isFragment && Object.keys(runtimeNode.slots).length > 0;
+    const existsSlots = (!isHtmlTag && !isFragment && Object.keys(runtimeNode.slots).length > 0) || designingAndExistsSlots;
     // 存在 items
-    const existsItems = runtimeNode.items.length > 0;
+    const existsItems = (runtimeNode.items.length > 0) || designingAndExistsItems;
     // 存在 tpl
     const existsTpl = runtimeNode.tpl.length > 0;
+    // console.log("###", runtimeNode.__designPlaceholder)
     // 创建 VNode
     let vnode: any;
     if (existsSlots) {
