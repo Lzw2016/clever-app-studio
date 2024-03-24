@@ -224,11 +224,34 @@ function listenersTransform(listeners: DesignBlock["listeners"], methods: Record
     return vueListeners;
 }
 
+/** 默认的占位节点 */
+const defPlaceholder: DesignNode = {
+    type: "div",
+    props: {
+        style: {
+            height: "100%",
+            width: "100%",
+            minHeight: "32px",
+            fontSize: "12px",
+            backgroundColor: "#f0f0f0",
+            color: "#a7b1bd",
+            border: "1px dotted #a7b1bd",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+        },
+    },
+    tpl: "将组件拖拽到这里",
+};
+
 /**
  * 深度转换 DesignBlock。
  * 会转换的属性：type、listeners、slots、items、tpl、computed、watch、methods、lifeCycles
+ * @param node          node
+ * @param createConfig  创建运行时vue组件的配置
+ * @param parent        当前的 node 所属的 RuntimeBlock 对象
  */
-function blockDeepTransform(block: DesignNode | DesignBlock, createConfig: CreateConfig, parent?: RuntimeBlock): RuntimeBlock {
+function blockDeepTransform(node: DesignNode, createConfig: CreateConfig, parent?: RuntimeBlock): RuntimeBlock {
     const {
         block: isBlock,
         defaults,
@@ -242,7 +265,7 @@ function blockDeepTransform(block: DesignNode | DesignBlock, createConfig: Creat
         methods,
         lifeCycles,
         ...other
-    } = fillDesignBlockDefValue(block);
+    } = fillDesignBlockDefValue(node);
     // 应用 defaults 属性
     if (defaults && Object.keys(defaults).length > 0 && isArray(items)) {
         for (let item of items) {
@@ -251,36 +274,13 @@ function blockDeepTransform(block: DesignNode | DesignBlock, createConfig: Creat
             }
         }
     }
-    // 自定义html标签属性
-    other.props[htmlExtAttr.nodeId] = other.id;
-    other.props[htmlExtAttr.nodeRef] = other.ref;
     // 创建 RuntimeBlock 对象
-    const runtime: any = { __designNode: block, block: isBlock, type: lodash.trim(type) };
-    // 读取组件元信息
-    let componentMeta: ComponentMeta | undefined = undefined;
-    if (createConfig.isDesigning) {
-        componentMeta = createConfig.componentManage.getComponentMeta(runtime.type);
-        if (componentMeta?.placeholder) {
-            runtime.__designPlaceholder = {};
-            for (let name in componentMeta.placeholder) {
-                const placeholder = componentMeta.placeholder[name];
-                if (placeholder === true) {
-                    // TODO 默认的占位组件
-                } else {
-                    const newPlaceholder = lodash.cloneDeep(placeholder) as DesignNode;
-                    if (!newPlaceholder.props) newPlaceholder.props = {};
-                    newPlaceholder.props[htmlExtAttr.slotsContainer] = name;
-                    runtime.__designPlaceholder[name] = blockDeepTransform(
-                        newPlaceholder,
-                        { ...createConfig, isDesigning: false },
-                        parent,
-                    );
-                }
-            }
-        }
-    }
+    const runtime: any = { __designNode: node, block: isBlock, type: lodash.trim(type) };
     // 如果没有父级 Block 强制让当前节点为 Block
     if (!parent) runtime.block = true;
+    // 读取组件元信息
+    let componentMeta: ComponentMeta | undefined = undefined;
+    if (createConfig.isDesigning) componentMeta = createConfig.componentManage.getComponentMeta(runtime.type);
     // 读取组件类型
     runtime.__htmlTag = isHtmlTag(runtime.type);
     if (runtime.type && runtime.type.length > 0) {
@@ -327,6 +327,10 @@ function blockDeepTransform(block: DesignNode | DesignBlock, createConfig: Creat
             throw new Error(`UI组件未注册也不是html原生标签，组件: ${type}`);
         }
     }, runtime, RenderErrType.componentNotExists);
+    // 自定义html标签属性
+    other.props[htmlExtAttr.nodeId] = other.id;
+    other.props[htmlExtAttr.nodeRef] = other.ref;
+    other.props[htmlExtAttr.componentType] = runtime.type;
     // 处理 tpl 属性
     runtime.tpl = tpl;
     if (isStr(tpl)) runtime.tpl = [tpl];
@@ -345,15 +349,34 @@ function blockDeepTransform(block: DesignNode | DesignBlock, createConfig: Creat
             runtime.listeners = listenersTransform(listeners, parent.methods);
         }
     }, runtime, RenderErrType.listenersTransform);
+    // 重新计算
+    const newParent: RuntimeBlock = (parent ? parent : runtime);
+    // 处理组件拖拽时的占位组件
+    if (createConfig.isDesigning && componentMeta && componentMeta.placeholder) {
+        runtime.__designPlaceholder = {};
+        for (let name in componentMeta.placeholder) {
+            let placeholder = componentMeta.placeholder[name];
+            if (placeholder === true) placeholder = defPlaceholder;
+            const newPlaceholder = lodash.cloneDeep(placeholder) as DesignNode;
+            if (!newPlaceholder.props) newPlaceholder.props = {};
+            newPlaceholder.props[htmlExtAttr.slotContainer] = name;
+            runtime.__designPlaceholder[name] = blockDeepTransform(
+                newPlaceholder,
+                { ...createConfig, isDesigning: false },
+                newParent,
+            );
+        }
+    }
     // 递归处理 slots
     runtime.slots = {};
-    const designBlock: RuntimeBlock = (parent ? parent : runtime);
     for (let name in slots) {
         const slot = slots[name];
-        runtime.slots[name] = _deepTransformSlotsOrItems(slot, createConfig, designBlock, "slots", name);
+        runtime.slots[name] = _deepTransformSlotsOrItems(slot, createConfig, newParent, "slots", name);
+        if (createConfig.isDesigning) _setInSlot(runtime.slots[name], name);
     }
     // 递归处理 items
-    runtime.items = _deepTransformSlotsOrItems(items, createConfig, designBlock, "items", "items");
+    runtime.items = _deepTransformSlotsOrItems(items, createConfig, newParent, "items", "items");
+    if (createConfig.isDesigning) _setInSlot(runtime.items, "default");
     // 返回数据
     return fillRuntimeBlockDefValue({ ...other, ...runtime });
 }
@@ -398,6 +421,15 @@ function _doBlockTransform(transform: AnyFunction, runtimeBlock: RuntimeBlock, e
         console.warn(err);
         runtimeBlock.__error = err;
         runtimeBlock.__errorType = errType;
+    }
+}
+
+// 设置 data-in-slot 属性
+function _setInSlot(nodes: Array<RuntimeComponentSlotsItem>, slotName: string) {
+    for (let node of nodes) {
+        if (!isObj(node)) continue;
+        const runtimeNode = node as RuntimeNode;
+        runtimeNode.props[htmlExtAttr.inSlot] = slotName;
     }
 }
 

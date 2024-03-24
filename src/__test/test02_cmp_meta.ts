@@ -166,7 +166,7 @@ const componentMeta = defineComponentMeta({
                     minHeight: "30px",
                 },
             },
-            items: "拖拽组件到这里",
+            tpl: "将组件拖拽到这里",
         },
         default: true,
     },

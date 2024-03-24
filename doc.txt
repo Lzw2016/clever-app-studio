@@ -49,6 +49,11 @@ tpl数据范围(优先级由上到下)
     4.详情：https://www.lodashjs.com/docs/lodash.template#_templatestring-options
 
 基于DesignBlock创建的vue组件的实例扩展了以下属性/函数
-    1.global:       创建 BlockComponent 时的全局上下文对象
-    2.blockOps:     Block支持的操作函数(基于ref属性)
-    2.blockOpsById: Block支持的操作函数(基于id属性)
+    1.global：       创建 BlockComponent 时的全局上下文对象
+    2.blockOps：     Block支持的操作函数(基于ref属性)
+    2.blockOpsById： Block支持的操作函数(基于id属性)
+
+组件拖拽时的容器规则
+    1.所有的渲染节点包含的属性：data-component-type、data-node-id、data-node-ref
+    2.容器组件渲染时，可以拖拽组件到容器指定占位位置的节点包含的属性：data-slot-container (仅设计时才会有的属性)
+    3.如果节点在一个容器组件中，那么这个节点在包含属性：data-in-slot (仅设计时才会有的属性)

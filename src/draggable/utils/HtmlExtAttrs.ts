@@ -16,8 +16,10 @@ const htmlExtAttr = {
     nodeId: 'data-node-id',
     /** 组件节点ref(值是：RuntimeNode.ref) */
     nodeRef: 'data-node-ref',
-    /** 可以容纳插槽的容器(值是：slot_name，子节点是一种特殊的插槽名为：default) */
-    slotsContainer: 'data-slots-container',
+    /** 可以容纳插槽的容器(值是：slot_name，子节点是一种特殊的插槽，名为：default) */
+    slotContainer: 'data-slot-container',
+    /** 当前组件在父组件的插槽内(值是：slot_name，子节点是一种特殊的插槽，名为：default) */
+    inSlot: 'data-in-slot',
 };
 
 /**

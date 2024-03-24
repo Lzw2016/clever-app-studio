@@ -395,6 +395,7 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, globalCo
     const newContext: Context = { ...context, node: runtimeNode };
     const createSlotsVNode = function (): Record<string, Function> {
         const slots: any = { default: () => ([]) };
+        // 运行时组件
         for (let name in runtimeNode.slots) {
             const slot = runtimeNode.slots[name];
             slots[name] = withCtx((slotProps: any) => slot.map(item => {
@@ -423,6 +424,7 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, globalCo
                 return [createChildVNode(placeholder, newContext, globalContext)];
             }
         }
+        // 运行时组件
         return runtimeNode.items.map(item => createChildVNode(item, newContext, globalContext));
     };
     const createTplVNode = function (): VNode {
@@ -440,10 +442,10 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, globalCo
     };
     // 设计时的占位组件数量
     const placeholderCount = runtimeNode.__designPlaceholder ? Object.keys(runtimeNode.__designPlaceholder).length : 0;
-    // 设计时 & 存在 slots
+    // 设计时 & 存在 placeholder slots | -> 没有 slots 时，可以渲染 placeholder slots
     const designingAndExistsSlots = globalContext.isDesigning && ((placeholderCount > 1 && hasValue(runtimeNode.__designPlaceholder?.default)) || (placeholderCount > 0 && noValue(runtimeNode.__designPlaceholder?.default)));
-    // 设计时 & 存在 items
-    const designingAndExistsItems = globalContext.isDesigning && hasValue(runtimeNode.__designPlaceholder?.default);
+    // 设计时 & 存在 placeholder items && 没有 tpl | -> 没有 items 时，可以渲染 placeholder items
+    const designingAndExistsItems = globalContext.isDesigning && hasValue(runtimeNode.__designPlaceholder?.default) && runtimeNode.tpl.length <= 0;
     // 当前 component 是 html 标签
     const isHtmlTag = runtimeNode.__htmlTag;
     // 当前 component 是 Fragment 标签
@@ -454,7 +456,6 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, globalCo
     const existsItems = (runtimeNode.items.length > 0) || designingAndExistsItems;
     // 存在 tpl
     const existsTpl = runtimeNode.tpl.length > 0;
-    // console.log("###", runtimeNode.__designPlaceholder)
     // 创建 VNode
     let vnode: any;
     if (existsSlots) {

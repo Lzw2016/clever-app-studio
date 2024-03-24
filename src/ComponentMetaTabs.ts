@@ -453,24 +453,25 @@ componentManage.registerComponentMeta(createComponentMeta({
     name: "div容器",
     icon: "",
     placeholder: {
-        default: {
-            type: "div",
-            props: {
-                style: {
-                    height: "100%",
-                    width: "100%",
-                    minHeight: "32px",
-                    fontSize: "12px",
-                    backgroundColor: "#f0f0f0",
-                    color: "#a7b1bd",
-                    border: "1px dotted #a7b1bd",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                },
-            },
-            items: "拖拽组件或模板到这里",
-        },
+        default: true,
+        // default: {
+        //     type: "div",
+        //     props: {
+        //         style: {
+        //             height: "100%",
+        //             width: "100%",
+        //             minHeight: "32px",
+        //             fontSize: "12px",
+        //             backgroundColor: "#f0f0f0",
+        //             color: "#a7b1bd",
+        //             border: "1px dotted #a7b1bd",
+        //             display: "flex",
+        //             alignItems: "center",
+        //             justifyContent: "center",
+        //         },
+        //     },
+        //     tpl: "将组件拖拽到这里",
+        // },
     },
 }));
 

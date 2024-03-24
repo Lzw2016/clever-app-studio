@@ -78,7 +78,15 @@ const designerTest = defineDesignBlock({
             },
         },
         createDiv(),
-        createDiv(),
+        createDiv({
+            items: [
+                {
+                    type: "div",
+                    tpl: "测试1",
+                },
+                "测试2",
+            ],
+        }),
         createSpan(),
         createSpan(),
         createSpan(),
@@ -92,7 +100,7 @@ const designerTest = defineDesignBlock({
             },
             defaults: {
                 props: {
-                    'data-def': 'test001',
+                    // 'data-def': 'test001',
                 },
             },
             items: [
@@ -116,7 +124,7 @@ const designerTest = defineDesignBlock({
         createSpan(),
         createSpan(),
         {
-            // type: "AAA",
+            // type: "div",
             props: {
                 'data-test': 'test',
             },
@@ -127,6 +135,10 @@ const designerTest = defineDesignBlock({
                 createSpan(),
                 createSpan(),
             ],
+        },
+        {
+            type: "div",
+            tpl: "div容器",
         },
     ],
     methods: {
