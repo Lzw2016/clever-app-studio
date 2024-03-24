@@ -54,6 +54,22 @@ tpl数据范围(优先级由上到下)
     2.blockOpsById： Block支持的操作函数(基于id属性)
 
 组件拖拽时的容器规则
-    1.所有的渲染节点包含的属性：data-component-type、data-node-id、data-node-ref
-    2.容器组件渲染时，可以拖拽组件到容器指定占位位置的节点包含的属性：data-slot-container (仅设计时才会有的属性)
-    3.如果节点在一个容器组件中，那么这个节点在包含属性：data-in-slot (仅设计时才会有的属性)
+    1.组件通过配置ComponentMeta.placeholder属性来支持拖拽时容纳子节点或者插槽节点
+    2.所有的渲染节点包含的属性：data-component-type、data-node-id、data-node-ref、data-node-parent-id
+    3.容器组件渲染时，可以拖拽组件到容器指定占位位置的节点包含的属性：data-slot-container (仅设计时才会有的属性)
+    4.如果节点在一个容器组件中，那么这个节点在包含属性：data-in-slot (仅设计时才会有的属性)
+    5.
+
+拖拽设计器选中组件算法
+    1.根据鼠标事件获取所属容器组件，基于event.target dom往外层找，找到最近的含有data-node-id属性的dom即可找到渲染节点，关键代码：target.closest('[data-node-ref]')
+    2.根据data-node-ref值获取当前组件的dom对象、RuntimeNode、MaterialMeta
+    3.前端显示选中效果(hover和click)
+
+拖拽设计器拖拽定位算法
+    1.根据鼠标事件获取所属容器组件，基于event.target dom往外层找，找到最近的含有data-node-id属性的dom即可找到渲染节点，关键代码：target.closest('[data-node-id]')
+    2.根据data-node-id值获取RuntimeNode对象，根据其__designPlaceholder值得到当前容器中的可拖拽位置，关键代码：target.querySelectorAll('[data-node-parent-id=xxx]')
+    3.如果没有__designPlaceholder属性，表示当前渲染节点不是容器组件，那就继续往外层找，重复1、2流程直到找出容器组件为止
+    4.根据“当前鼠标所处的位置”和“容器组件中已经渲染节点(子节点和插槽)的位置和大小”计算出新插入的节点的放置位置
+    5.
+    6.
+

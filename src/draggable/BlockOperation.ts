@@ -433,7 +433,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                 // 应用 defaults 属性
                 if (parent.__designNode.defaults) lodash.defaultsDeep(node, parent.__designNode.defaults);
                 // 深度转换成 RuntimeNode
-                runtimeNode = blockDeepTransform(node, this.props, this.props.runtimeBlock);
+                runtimeNode = blockDeepTransform(node, this.props, this.props.runtimeBlock, this.props.runtimeBlock);
                 // 递归初始化 allNode nodeParent refId
                 deepTraverseNodes(
                     runtimeNode,
