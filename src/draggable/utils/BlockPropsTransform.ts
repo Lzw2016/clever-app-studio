@@ -531,32 +531,39 @@ function _deepExtractSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, al
 }
 
 /** 遍历 RuntimeNode 的回调函数 */
-type TraverseNode = (current: RuntimeNode, isSlot: boolean, parent?: RuntimeNode) => void;
+type TraverseNode = (current: RuntimeNode, isSlot: boolean, parent?: RuntimeNode, currentBlock?: RuntimeBlock) => void;
 
 /**
  * 深度递归 RuntimeNode 遍历所有的 node(包含slot)
+ * @param node          node
+ * @param callback      遍历时的回调函数
+ * @param isSlot        当前 node 是否时插槽
+ * @param parentNode    当前 node 的父节点
+ * @param currentBlock  当前的 node 所属的 RuntimeBlock 对象
  */
-function deepTraverseNodes(node: RuntimeNode, callback: TraverseNode, isSlot: boolean = false, parentNode?: RuntimeNode): void {
+function deepTraverseNodes(node: RuntimeNode, callback: TraverseNode, isSlot: boolean = false, parentNode?: RuntimeNode, currentBlock?: RuntimeBlock): void {
     const { items, slots } = node;
-    callback(node, isSlot, parentNode);
+    callback(node, isSlot, parentNode, currentBlock);
+    const runtimeBlock = node as RuntimeBlock;
+    const newCurrentBlock = runtimeBlock.block ? runtimeBlock : currentBlock;
     // 递归 slots
     for (let name in slots) {
         const slot = slots[name];
         if (slot.length <= 0) continue;
-        _deepBlockSlotsOrItems(slot, callback, true, node);
+        _deepBlockSlotsOrItems(slot, callback, true, node, newCurrentBlock);
     }
     // 递归 items
     if (items && items.length > 0) {
-        _deepBlockSlotsOrItems(items, callback, false, node);
+        _deepBlockSlotsOrItems(items, callback, false, node, newCurrentBlock);
     }
 }
 
 // deepTraverseNodes 处理 slots 或者 items
-function _deepBlockSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, callback: TraverseNode, isSlot: boolean, parentNode?: RuntimeNode) {
+function _deepBlockSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, callback: TraverseNode, isSlot: boolean, parentNode: RuntimeNode, currentBlock?: RuntimeBlock) {
     for (let cmpNode of cmpNodes) {
         const node = cmpNode as RuntimeNode;
         if (isObj(node) && !isArray(node)) {
-            deepTraverseNodes(node, callback, isSlot, parentNode);
+            deepTraverseNodes(node, callback, isSlot, parentNode, currentBlock);
         }
     }
 }

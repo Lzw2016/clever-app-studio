@@ -11,6 +11,16 @@ import { blockDeepTransform, deepBindThis, deepExtractBlock, deepTraverseNodes, 
 import { AllBlockOperation, BlockOperation, BlockOperationById } from "@/draggable/BlockOperation";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
 
+/** Block组件类型 */
+interface Block extends ComponentInstance {
+    /** 创建 BlockComponent 时的全局上下文对象 */
+    readonly globalContext: GlobalContext;
+    /** Block支持的操作函数(基于ref属性) */
+    readonly blockOps: BlockOperation;
+    /** Block支持的操作函数(基于id属性) */
+    readonly blockOpsById: BlockOperationById;
+}
+
 /**
  * 创建 BlockComponent 时的全局上下文
  */
@@ -25,16 +35,8 @@ interface GlobalContext extends CreateConfig {
     readonly nodeParent: Record<string, RuntimeNode>;
     /** ref属性与id属性的映射 | RuntimeNode.ref -> RuntimeNode.id */
     readonly refId: Record<string, string>;
-}
-
-/** Block组件类型 */
-interface Block extends ComponentInstance {
-    /** 创建 BlockComponent 时的全局上下文对象 */
-    readonly globalContext: GlobalContext;
-    /** Block支持的操作函数(基于ref属性) */
-    readonly blockOps: BlockOperation;
-    /** Block支持的操作函数(基于id属性) */
-    readonly blockOpsById: BlockOperationById;
+    /** 渲染节点的ref与所属Block实例的ref之间的映射 | RuntimeNode.ref -> allBlock.ref */
+    readonly nodeRefVueRef: Record<string, string>;
 }
 
 /**
@@ -75,6 +77,7 @@ function createBlockComponent(block: DesignBlock, config: Partial<CreateConfig> 
         allNode: {},
         nodeParent: {},
         refId: {},
+        nodeRefVueRef: {},
     };
     let runtimeBlock: RuntimeBlock;
     try {
@@ -94,11 +97,12 @@ function createBlockComponent(block: DesignBlock, config: Partial<CreateConfig> 
     // 递归初始化 allNode nodeParent refId
     deepTraverseNodes(
         runtimeBlock,
-        (current, isSlot, parent) => {
+        (current, isSlot, parent, currentBlock) => {
             globalContext.allNode[current.id] = current;
             if (parent) globalContext.nodeParent[current.id] = parent;
             if (globalContext.refId[current.ref]) console.warn(`ref属性重复，ref=${current.ref}`);
             globalContext.refId[current.ref] = current.id;
+            if (currentBlock) globalContext.nodeRefVueRef[current.ref] = currentBlock.ref;
         }
     );
     // 创建组件
@@ -150,6 +154,7 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, globalContext: 
                 allNode: globalContext.allNode,
                 nodeParent: globalContext.nodeParent,
                 refId: globalContext.refId,
+                nodeRefVueRef: globalContext.nodeRefVueRef,
             });
             vm.blockOps = blockOps;
             vm.blockOpsById = blockOps;

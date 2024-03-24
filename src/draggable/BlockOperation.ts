@@ -1,6 +1,5 @@
 import lodash from "lodash";
 import { hasValue, isArray, isObj, isStr, noValue } from "@/utils/Typeof";
-import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { ComponentInstance } from "@/draggable/types/Base";
 import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
 import { CreateConfig, RuntimeBlock, RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
@@ -328,8 +327,6 @@ interface BlockOperation {
 }
 
 interface AllBlockOperationProps extends CreateConfig {
-    /** 组件管理器 */
-    componentManage: ComponentManage;
     /** 当前的 RuntimeBlock 对象 */
     runtimeBlock: RuntimeBlock;
     /** 当前 RuntimeBlock 对应的 vue 组件实例 */
@@ -340,6 +337,8 @@ interface AllBlockOperationProps extends CreateConfig {
     nodeParent: Record<string, RuntimeNode>;
     /** ref属性与id属性的映射 | RuntimeNode.ref -> RuntimeNode.id */
     refId: Record<string, string>;
+    /** 渲染节点的ref与所属Block实例的ref之间的映射 | RuntimeNode.ref -> allBlock.ref */
+    readonly nodeRefVueRef: Record<string, string>;
 }
 
 /** 插入节点的位置 */
@@ -434,17 +433,19 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                 if (parent.__designNode.defaults) lodash.defaultsDeep(node, parent.__designNode.defaults);
                 // 深度转换成 RuntimeNode
                 runtimeNode = blockDeepTransform(node, this.props, this.props.runtimeBlock, this.props.runtimeBlock);
-                // 递归初始化 allNode nodeParent refId
+                // 维护属性 allNode nodeParent refId
                 deepTraverseNodes(
                     runtimeNode,
-                    (current, isSlot, parentNode) => {
+                    (current, isSlot, parentNode, currentBlock) => {
                         this.props.allNode[current.id] = current;
                         if (parentNode) this.props.nodeParent[current.id] = parentNode;
                         if (this.props.refId[current.ref]) console.warn(`ref属性重复，ref=${current.ref}`);
                         this.props.refId[current.ref] = current.id;
+                        if (currentBlock) this.props.nodeRefVueRef[current.ref] = currentBlock.ref;
                     },
                     isSlot,
                     parent,
+                    this.props.runtimeBlock,
                 );
             }
             runtimeNodes.push(runtimeNode);
@@ -538,9 +539,13 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                 },
                 nodeInSlot[id],
                 parent,
+                this.props.runtimeBlock,
             );
             ids.forEach(delId => delete this.props.allNode[delId]);
-            refs.forEach(delRef => delete this.props.refId[delRef]);
+            refs.forEach(delRef => {
+                delete this.props.refId[delRef];
+                delete this.props.nodeRefVueRef[delRef];
+            });
             parentIds.forEach(delId => delete this.props.nodeParent[delId]);
         }
         // 重新渲染组件
