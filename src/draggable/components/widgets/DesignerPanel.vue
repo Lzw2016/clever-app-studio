@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed, reactive } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useRoute } from "vue-router";
 import { IconArrowBackUp, IconArrowForwardUp, IconArrowsMove, IconClick, IconCode, IconDeviceLaptop, IconDeviceMobile, IconDevices, IconPalette, IconPlayerPlay } from "@tabler/icons-vue";
 import { DesignerCursorMode, DesignerLayout, DesignerTab } from "@/draggable/types/Designer";
+import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
+import { designerTest } from "@/views/DesignerTest";
 
 // 定义组件选项
 defineOptions({
@@ -32,24 +34,31 @@ const state = reactive<DesignerPanelState>({
     layout: DesignerLayout.PC,
     activeTab: DesignerTab.Designer,
 });
-
 // 内部数据
 const data = {};
-
+// 撤销
 const canRevoke = computed(() => true);
+// 反撤销
 const canBackRevoke = computed(() => false);
-
+// 拖拽
 const isDragDropCursor = computed(() => state.cursorMode === DesignerCursorMode.DragDrop);
+// 自由选择
 const isSelectionCursor = computed(() => state.cursorMode === DesignerCursorMode.Selection);
-
+// PC布局
 const isPCLayout = computed(() => state.layout === DesignerLayout.PC);
+// 移动端布局
 const isMobileLayout = computed(() => state.layout === DesignerLayout.Mobile);
+// 响应式布局
 const isResponsiveLayout = computed(() => state.layout === DesignerLayout.Responsive);
-
+// 设计器
 const isDesignerTab = computed(() => state.activeTab === DesignerTab.Designer);
+// 源码
 const isCodeTab = computed(() => state.activeTab === DesignerTab.Code);
+// 预览
 const isPreviewTab = computed(() => state.activeTab === DesignerTab.Preview);
-
+// 设计器组件实例
+const designer = ref<InstanceType<typeof RuntimeBlock> | undefined>();
+window['a'] = designer
 // 当前命中的路由
 const route = useRoute();
 </script>
@@ -141,8 +150,7 @@ const route = useRoute();
         </div>
         <div class="flex-item-fill">
             <div v-if="isDesignerTab" class="designer-content">
-                设计器
-                {{ route.params }}
+                <RuntimeBlock ref="designer" :block="designerTest" :is-designing="true"/>
             </div>
             <div v-else-if="isCodeTab" class="designer-content">
                 源码

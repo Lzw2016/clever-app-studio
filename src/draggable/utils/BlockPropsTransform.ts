@@ -249,9 +249,9 @@ const defPlaceholder: DesignNode = {
  * 会转换的属性：type、listeners、slots、items、tpl、computed、watch、methods、lifeCycles
  * @param node          node
  * @param createConfig  创建运行时vue组件的配置
- * @param parent        当前的 node 所属的 RuntimeBlock 对象
+ * @param currentBlock  当前的 node 所属的 RuntimeBlock 对象
  */
-function blockDeepTransform(node: DesignNode, createConfig: CreateConfig, parent?: RuntimeBlock): RuntimeBlock {
+function blockDeepTransform(node: DesignNode, createConfig: CreateConfig, currentBlock?: RuntimeBlock): RuntimeBlock {
     const {
         block: isBlock,
         defaults,
@@ -277,7 +277,7 @@ function blockDeepTransform(node: DesignNode, createConfig: CreateConfig, parent
     // 创建 RuntimeBlock 对象
     const runtime: any = { __designNode: node, block: isBlock, type: lodash.trim(type) };
     // 如果没有父级 Block 强制让当前节点为 Block
-    if (!parent) runtime.block = true;
+    if (!currentBlock) runtime.block = true;
     // 读取组件元信息
     let componentMeta: ComponentMeta | undefined = undefined;
     if (createConfig.isDesigning) componentMeta = createConfig.componentManage.getComponentMeta(runtime.type);
@@ -331,6 +331,7 @@ function blockDeepTransform(node: DesignNode, createConfig: CreateConfig, parent
     other.props[htmlExtAttr.nodeId] = other.id;
     other.props[htmlExtAttr.nodeRef] = other.ref;
     other.props[htmlExtAttr.componentType] = runtime.type;
+    // other.props[htmlExtAttr.nodeParentId] = runtime.type;
     // 处理 tpl 属性
     runtime.tpl = tpl;
     if (isStr(tpl)) runtime.tpl = [tpl];
@@ -345,12 +346,12 @@ function blockDeepTransform(node: DesignNode, createConfig: CreateConfig, parent
     _doBlockTransform(() => {
         if (runtime.block) {
             runtime.listeners = listenersTransform(listeners, runtime.methods);
-        } else if (parent) {
-            runtime.listeners = listenersTransform(listeners, parent.methods);
+        } else if (currentBlock) {
+            runtime.listeners = listenersTransform(listeners, currentBlock.methods);
         }
     }, runtime, RenderErrType.listenersTransform);
     // 重新计算
-    const newParent: RuntimeBlock = (parent ? parent : runtime);
+    const newParent: RuntimeBlock = (currentBlock ? currentBlock : runtime);
     // 处理组件拖拽时的占位组件
     if (createConfig.isDesigning && componentMeta && componentMeta.placeholder) {
         runtime.__designPlaceholder = {};
@@ -382,7 +383,7 @@ function blockDeepTransform(node: DesignNode, createConfig: CreateConfig, parent
 }
 
 // blockDeepTransform 处理 slots 或者 items
-function _deepTransformSlotsOrItems(itemsOrSlots: DesignNode['items'], createConfig: CreateConfig, parent: RuntimeBlock, propName: 'items' | 'slots', slotName: string): Array<RuntimeComponentSlotsItem> {
+function _deepTransformSlotsOrItems(itemsOrSlots: DesignNode['items'], createConfig: CreateConfig, currentBlock: RuntimeBlock, propName: 'items' | 'slots', slotName: string): Array<RuntimeComponentSlotsItem> {
     let result: Array<RuntimeComponentSlotsItem>;
     if (isStr(itemsOrSlots)) {
         result = [itemsOrSlots];
@@ -391,7 +392,7 @@ function _deepTransformSlotsOrItems(itemsOrSlots: DesignNode['items'], createCon
             if (isStr(item)) {
                 return item;
             } else if (isObj(item) && !isArray(item)) {
-                return blockDeepTransform(item, createConfig, parent);
+                return blockDeepTransform(item, createConfig, currentBlock);
             } else {
                 return fillBlockDefValue({
                     __designNode: item,
@@ -401,7 +402,7 @@ function _deepTransformSlotsOrItems(itemsOrSlots: DesignNode['items'], createCon
             }
         });
     } else if (isObj(itemsOrSlots)) {
-        result = [blockDeepTransform(itemsOrSlots as any, createConfig, parent)];
+        result = [blockDeepTransform(itemsOrSlots as any, createConfig, currentBlock)];
     } else {
         return fillBlockDefValue({
             __designNode: itemsOrSlots,
