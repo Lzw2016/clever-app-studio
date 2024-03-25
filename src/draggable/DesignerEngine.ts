@@ -39,7 +39,7 @@ class DesignerEngine {
     // 活动的设计器页面路由路径(fullPath)
     // readonly activeDesignerPath: string;
     // 所有的设计器
-    // readonly allDesignerPanel: Map<string, DesignerPanel>
+    // readonly allDesignerPanel: Record<string, DesignerPanel>
 
     /** TODO 临时测试数据 */
     readonly tmp = reactive<any>({});

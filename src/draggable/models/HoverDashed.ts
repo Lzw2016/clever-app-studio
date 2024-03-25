@@ -7,6 +7,10 @@ class HoverDashed {
     /** 设计器引擎 */
     readonly designerEngine: DesignerEngine;
 
+
+
+
+
     constructor(designerEngine: DesignerEngine) {
         this.designerEngine = designerEngine;
     }
