@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { markRaw, onMounted, reactive, watch } from "vue";
+import { computed, markRaw, onMounted, reactive, watch } from "vue";
 import { RouteComponent, RouteLocationNormalizedLoaded, RouterView, useRoute, useRouter } from "vue-router";
 import { Notify, TabItem, Tabs } from "@opentiny/vue"
 import ProgressSpinner from 'primevue/progressspinner';
@@ -10,6 +10,7 @@ import { isAsyncFunction } from "@/utils/Typeof";
 import PageNotFound from "@/components/PageNotFound.vue";
 import PageLoadError from "@/components/PageLoadError.vue";
 import { LoadDesignPageMate } from "@/draggable/types/DesignBlock";
+import { DesignerEngine } from "@/draggable/DesignerEngine";
 
 // 定义组件选项
 defineOptions({
@@ -18,7 +19,8 @@ defineOptions({
 
 // 定义 Props 类型
 interface WorkspaceTabsProps {
-    a?: string;
+    /** 设计器引擎 */
+    designerEngine: DesignerEngine;
 }
 
 interface PageInfo {
@@ -54,13 +56,14 @@ const data = {
 const route = useRoute();
 // 路由控制对象
 const router = useRouter();
+// 当前是 WelcomeRoute
+const isWelcomeRoute = computed(() => route.matched?.[1].name === data.welcomeRoute);
 
 onMounted(() => {
     showMatchedPage(route);
 });
 watch(route, newRoute => {
     showMatchedPage(newRoute);
-
 });
 
 // 显示当前匹配的页面(如果是新页面就加载显示)
@@ -97,6 +100,7 @@ function showMatchedPage(route: RouteLocationNormalizedLoaded) {
     // 加载 DesignerPanel 页面内容
     if (isAsyncFunction(meta.loader)) {
         pageInfo.loading = true;
+        pageInfo.props.designerEngine = props.designerEngine;
         const loader: LoadDesignPageMate = meta.loader;
         loader(route.params).then(designPageMate => {
             if (!designPageMate) {
@@ -156,7 +160,7 @@ function setPageLoadError(path: string, err: Error) {
 </script>
 
 <template>
-    <RouterView v-if="state.pages.size <= 0"/>
+    <RouterView v-if="isWelcomeRoute && state.pages.size <= 0"/>
     <Tabs
         v-else
         class="workspace-tabs"

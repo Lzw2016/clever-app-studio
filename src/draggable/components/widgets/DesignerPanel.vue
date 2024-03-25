@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from "vue";
-import { useRoute } from "vue-router";
+import { RouteParams, useRoute } from "vue-router";
 import { IconArrowBackUp, IconArrowForwardUp, IconArrowsMove, IconClick, IconCode, IconDeviceLaptop, IconDeviceMobile, IconDevices, IconPalette, IconPlayerPlay } from "@tabler/icons-vue";
+import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerCursorMode, DesignerLayout, DesignerTab } from "@/draggable/types/Designer";
+import { DesignPageMate } from "@/draggable/types/DesignBlock";
 import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
 import AuxTool from "@/draggable/components/widgets/AuxTool.vue";
 import { designerTest } from "@/views/DesignerTest";
@@ -14,6 +16,14 @@ defineOptions({
 
 // 定义 Props 类型
 interface DesignerPanelProps {
+    /** 路由全路径 */
+    path: string;
+    /** 路由参数 */
+    routeParams: RouteParams;
+    /** 设计器引擎 */
+    designerEngine: DesignerEngine;
+    /** 设计页面元数据 */
+    designPageMate?: DesignPageMate;
 }
 
 // 读取组件 props 属性
@@ -152,7 +162,7 @@ const route = useRoute();
         <div class="flex-item-fill">
             <div v-if="isDesignerTab" class="designer-content">
                 <RuntimeBlock ref="designer" :block="designerTest" :is-designing="true"/>
-                <AuxTool/>
+                <AuxTool :designerEngine="props.designerEngine"/>
             </div>
             <div v-else-if="isCodeTab" class="designer-content">
                 源码

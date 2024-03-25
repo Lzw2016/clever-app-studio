@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, CSSProperties, reactive } from "vue";
-import { getDesignerEngine } from "@/draggable/InjectVars";
 import { IconArrowDown, IconArrowUp, IconChevronLeft, IconCopy, IconSettings, IconTrash } from "@tabler/icons-vue";
+import { DesignerEngine } from "@/draggable/DesignerEngine";
 
 // 定义组件选项
 defineOptions({
@@ -10,6 +10,8 @@ defineOptions({
 
 // 定义 Props 类型
 interface AuxToolProps {
+    /** 设计器引擎 */
+    designerEngine: DesignerEngine;
 }
 
 // 读取组件 props 属性
@@ -20,12 +22,10 @@ const state = reactive({});
 // 内部数据
 const data = {};
 
-const designerEngine = getDesignerEngine();
-
 // TODO
 const dashedStyle = computed(() => {
     const style: CSSProperties = {};
-    const position = designerEngine.tmp.position;
+    const position = props.designerEngine.tmp.position;
     if (position) {
         style.top = `${position.top}px`;
         style.left = `${position.left}px`;
@@ -39,7 +39,7 @@ const dashedStyle = computed(() => {
 
 const selectionStyle = computed(() => {
     const style: CSSProperties = {};
-    const selection = designerEngine.tmp.selection;
+    const selection = props.designerEngine.tmp.selection;
     if (selection) {
         style.top = `${selection.top}px`;
         style.left = `${selection.left}px`;
@@ -85,6 +85,7 @@ const selectionStyle = computed(() => {
                 </span>
             </div>
         </div>
+<!--        aux-free-selection-->
     </div>
 </template>
 
@@ -122,7 +123,7 @@ const selectionStyle = computed(() => {
 
 .aux-dashed-box > .mark-top-left {
     position: relative;
-    top: -16px;
+    top: -20px;
     font-size: 12px;
     padding: 0 4px;
     color: #1476ff;
@@ -184,6 +185,7 @@ const selectionStyle = computed(() => {
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
 .aux-selection-box > .mark-bottom-right > .mark-bottom-button {
     cursor: pointer;
     height: 18px;

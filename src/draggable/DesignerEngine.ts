@@ -35,6 +35,12 @@ class DesignerEngine {
     readonly cursor: Cursor;
     /** 正在拖拽的组件的元信息 */
     readonly draggingCmpMetas: DraggingCmpMetas;
+
+    // 活动的设计器页面路由路径(fullPath)
+    // readonly activeDesignerPath: string;
+    // 所有的设计器
+    // readonly allDesignerPanel: Map<string, DesignerPanel>
+
     /** TODO 临时测试数据 */
     readonly tmp = reactive<any>({});
 
@@ -48,7 +54,7 @@ class DesignerEngine {
     mount(container: EventContainer, window: Window): void {
         // 先卸载
         this.unmount();
-        console.log("DesignerEngine mount")
+        console.log("DesignerEngine mount");
         // 创建设计器功能模块集合
         const drivers = this.props.drivers.map(driver => new driver(this, container, window));
         this.drivers.push(...drivers);
@@ -60,7 +66,7 @@ class DesignerEngine {
 
     /** 卸载当前设计器 */
     unmount(): void {
-        console.log("DesignerEngine unmount")
+        console.log("DesignerEngine unmount");
         this.eventbus.clearAllSubscribe();
         this.drivers.forEach(driver => driver.detach());
         this.drivers.length = 0;

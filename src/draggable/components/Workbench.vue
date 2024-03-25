@@ -161,7 +161,7 @@ onUnmounted(() => {
                                 :two-collapse="true"
                             >
                                 <template #onePane>
-                                    <WorkspaceTabs/>
+                                    <WorkspaceTabs :designerEngine="designerEngine"/>
                                 </template>
                                 <template #twoPane>
                                     <SettingsPanel :componentMeta="componentMeta"/>

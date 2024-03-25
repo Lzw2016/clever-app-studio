@@ -84,10 +84,13 @@ export default defineConfig(env => {
             rollupOptions: {
                 output: {
                     manualChunks: function (id) {
-                        // if (!id.includes('/node_modules/')) {
+                        // if (id.includes('/node_modules/')) {
                         //     console.log("id->", id);
                         // }
-                        if (id.includes('lodash')) {
+                        if (id.includes('/mitt/')) {
+                            return 'mitt';
+                        }
+                        if (id.includes('/lodash/') || id.includes('/lodash-es/')) {
                             return 'lodash';
                         }
                         if (id.includes('@tabler/')) {
@@ -102,7 +105,7 @@ export default defineConfig(env => {
                         if (id.includes('@opentiny/')) {
                             return 'opentiny';
                         }
-                        if (id.includes('sortablejs')) {
+                        if (id.includes('/sortablejs/')) {
                             return 'sortablejs';
                         }
                     },
