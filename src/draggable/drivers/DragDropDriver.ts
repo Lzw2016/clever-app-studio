@@ -81,7 +81,7 @@ class DragDropDriver extends DesignerDriver {
         //     return;
         // }
         const element = target.closest(materialItem);
-        const componentMeta = useHtmlExtAttr.componentType(element, this.componentManage);
+        const componentMeta = useHtmlExtAttr.componentMeta(element, this.componentManage);
         if (!componentMeta) return;
         this.componentMeta = componentMeta;
         // 设置拖拽状态

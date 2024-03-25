@@ -13,6 +13,8 @@ const innerDirectiveNames = {
 
 /** 物料元素区域 */
 const materialItem: string = '.draggable.material-item';
+/** 设计器拖拽区域 */
+const designerContent: string = '.designer-layout > .flex-item-fill > .designer-content';
 
 /** 定义 DragDropDriver 的可拖拽区域(白名单) */
 const draggableArea = [
@@ -35,6 +37,7 @@ export {
     componentManage,
     innerDirectiveNames,
     materialItem,
+    designerContent,
     draggableArea,
     defCursorPosition,
 }

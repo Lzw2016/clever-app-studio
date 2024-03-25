@@ -60,6 +60,7 @@ onMounted(() => {
 });
 watch(route, newRoute => {
     showMatchedPage(newRoute);
+
 });
 
 // 显示当前匹配的页面(如果是新页面就加载显示)

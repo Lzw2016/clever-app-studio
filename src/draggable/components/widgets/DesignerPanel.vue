@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 import { IconArrowBackUp, IconArrowForwardUp, IconArrowsMove, IconClick, IconCode, IconDeviceLaptop, IconDeviceMobile, IconDevices, IconPalette, IconPlayerPlay } from "@tabler/icons-vue";
 import { DesignerCursorMode, DesignerLayout, DesignerTab } from "@/draggable/types/Designer";
 import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
+import AuxTool from "@/draggable/components/widgets/AuxTool.vue";
 import { designerTest } from "@/views/DesignerTest";
 
 // 定义组件选项
@@ -151,6 +152,7 @@ const route = useRoute();
         <div class="flex-item-fill">
             <div v-if="isDesignerTab" class="designer-content">
                 <RuntimeBlock ref="designer" :block="designerTest" :is-designing="true"/>
+                <AuxTool/>
             </div>
             <div v-else-if="isCodeTab" class="designer-content">
                 源码
@@ -247,5 +249,7 @@ const route = useRoute();
     height: 100%;
     width: 100%;
     overflow: auto;
+    position: relative;
+    padding: 4px;
 }
 </style>

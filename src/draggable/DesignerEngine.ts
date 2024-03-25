@@ -1,3 +1,4 @@
+import { reactive } from "vue";
 import { EventBus } from "@/draggable/EventBus";
 import { DesignerDriver, DesignerDriverConstructor } from "@/draggable/DesignerDriver";
 import { EventContainer } from "@/draggable/types/Designer";
@@ -34,6 +35,8 @@ class DesignerEngine {
     readonly cursor: Cursor;
     /** 正在拖拽的组件的元信息 */
     readonly draggingCmpMetas: DraggingCmpMetas;
+    /** TODO 临时测试数据 */
+    readonly tmp = reactive<any>({});
 
     constructor(props: Partial<DesignerEngineProps>) {
         this.props = { ...defaultProps, ...props };

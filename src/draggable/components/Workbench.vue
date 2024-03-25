@@ -9,6 +9,7 @@ import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { setDesignerEngine } from "@/draggable/InjectVars";
 import { DragDropDriver } from "@/draggable/drivers/DragDropDriver";
 import { MouseMoveDriver } from "@/draggable/drivers/MouseMoveDriver";
+import { MouseClickDriver } from "@/draggable/drivers/MouseClickDriver";
 import DragGhost from "@/draggable/components/widgets/DragGhost.vue";
 import MaterialPanel from "@/draggable/components/widgets/MaterialPanel.vue";
 import SettingsPanel from "@/draggable/components/widgets/SettingsPanel.vue";
@@ -75,6 +76,7 @@ const designerEngine = new DesignerEngine({
     drivers: [
         DragDropDriver,
         MouseMoveDriver,
+        MouseClickDriver,
     ],
 });
 setDesignerEngine(designerEngine);

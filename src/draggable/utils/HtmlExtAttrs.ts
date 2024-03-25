@@ -1,8 +1,8 @@
 import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 
-function getAttribute(attr: string, element?: Element): string | null | undefined {
-    if (!element) return;
+function getAttribute(attr: string, element: Element | null): string | null {
+    if (!element) return null;
     return element.getAttribute(attr);
 }
 
@@ -29,9 +29,12 @@ const htmlExtAttr = {
  */
 const useHtmlExtAttr = {
     /** 获取被拖拽的组件类型 */
-    componentType(element: Element | null, componentManage: ComponentManage): ComponentMeta | undefined {
-        if (!element) return;
-        const type = getAttribute(htmlExtAttr.componentType, element);
+    componentType(element: Element | null): string | null {
+        return getAttribute(htmlExtAttr.componentType, element);
+    },
+    /** 获取被拖拽的组件元信息 */
+    componentMeta(element: Element | null, componentManage: ComponentManage): ComponentMeta | undefined {
+        const type = this.componentType(element);
         if (!type) return;
         return componentManage.getComponentMeta(type);
     },
