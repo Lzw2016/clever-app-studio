@@ -2,9 +2,10 @@ import { requestIdle } from "@/utils/RequestIdle";
 import { DesignerEffect } from "@/draggable/DesignerEffect";
 import { designerContent } from "@/draggable/Constant";
 import { htmlExtAttr, useHtmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
+import { AuxToolPosition } from "@/draggable/types/Designer";
 import { MouseMoveEvent } from "@/draggable/events/cursor/MouseMoveEvent";
 import { MouseClickEvent } from "@/draggable/events/cursor/MouseClickEvent";
-import { AuxToolPosition } from "@/draggable/types/Designer";
+import { Selection } from "@/draggable/models/Selection";
 
 interface NodeAndDesigner {
     /** 渲染节点dom */
@@ -58,6 +59,7 @@ class AuxToolEffect extends DesignerEffect {
         // 鼠标移动
         this.eventbus.subscribe(MouseMoveEvent, event => {
             const now = Date.now();
+            // target dom 没有变
             if (event.data.target === this.lastEventTarget) {
                 this.lastMouseMoveTime = now;
                 return;
@@ -65,6 +67,7 @@ class AuxToolEffect extends DesignerEffect {
             const interval = now - this.lastMouseMoveTime;
             if (interval < this.minHoverChangeTime) return;
             this.lastMouseMoveTime = now;
+            // 在浏览器空闲时期计算
             requestIdle(() => {
                 console.log("hoverDashedEffect MouseMoveEvent");
                 const designerState = this.designerEngine.activeDesignerState;
@@ -73,8 +76,14 @@ class AuxToolEffect extends DesignerEffect {
                 const target = event.data.target as HTMLElement;
                 const nodeAndDesigner = this.getNodeAndDesigner(target);
                 if (!nodeAndDesigner) return;
-                hover.position = this.getAuxToolPosition(nodeAndDesigner.designer, nodeAndDesigner.node);
+                const nodeId = useHtmlExtAttr.nodeId(nodeAndDesigner.node);
+                if (designerState.selections.some(item => item.nodeId === nodeId)) {
+                    hover.clear();
+                    return;
+                }
                 hover.componentMeta = useHtmlExtAttr.componentMeta(nodeAndDesigner.node, this.componentManage);
+                hover.nodeId = useHtmlExtAttr.nodeId(nodeAndDesigner.node);
+                hover.position = this.getAuxToolPosition(nodeAndDesigner.designer, nodeAndDesigner.node);
                 this.lastEventTarget = event.data.target;
             });
         });
@@ -87,21 +96,25 @@ class AuxToolEffect extends DesignerEffect {
         // 鼠标单击
         this.eventbus.subscribe(MouseClickEvent, event => {
             console.log("selectionEffect MouseClickEvent");
+            const designerState = this.designerEngine.activeDesignerState;
+            if (!designerState) return;
             const target = event.data.target as HTMLElement;
-            if (!target?.closest) return;
-            const container = target.closest(designerContent);
-            if (!container) return;
-            const element = target.closest(`[${htmlExtAttr.nodeRef}]`);
-            if (!element) return;
-            const containerRect = container.getBoundingClientRect()
-            const elementRect = element.getBoundingClientRect()
-            this.designerEngine.tmp.selection = {
-                height: elementRect.height - 2,
-                width: elementRect.width - 2,
-                top: elementRect.top - containerRect.top + container.scrollTop + 1,
-                left: elementRect.left - containerRect.left + 1,
-                componentType: useHtmlExtAttr.componentType(element),
-            };
+            const nodeAndDesigner = this.getNodeAndDesigner(target);
+            if (!nodeAndDesigner) return;
+            const hover = designerState.hover;
+            const selections = designerState.selections;
+            const selection = new Selection(designerState);
+            selection.nodeId = useHtmlExtAttr.nodeId(nodeAndDesigner.node);
+            if (selections.some(item => item.nodeId === selection.nodeId)) {
+                return;
+            }
+            selection.componentMeta = useHtmlExtAttr.componentMeta(nodeAndDesigner.node, this.componentManage);
+            selection.position = this.getAuxToolPosition(nodeAndDesigner.designer, nodeAndDesigner.node);
+            designerState.selections.length = 0;
+            selections.push(selection);
+            if (hover.nodeId && selections.some(item => item.nodeId === hover.nodeId)) {
+                hover.clear();
+            }
         });
     }
 }

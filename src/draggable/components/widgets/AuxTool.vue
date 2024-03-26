@@ -2,6 +2,7 @@
 import { computed, CSSProperties, reactive } from "vue";
 import { IconArrowDown, IconArrowUp, IconChevronLeft, IconCopy, IconSettings, IconTrash } from "@tabler/icons-vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { AuxToolPosition } from "@/draggable/types/Designer";
 import { DesignerState } from "@/draggable/models/DesignerState";
 
 // 定义组件选项
@@ -26,13 +27,12 @@ const state = reactive({});
 const data = {};
 
 const hover = computed(() => props.designerState.hover);
-const hoverIsTop = computed(() => props.designerState.hover.position?.isTop);
-const hoverIsBottom = computed(() => props.designerState.hover.position?.isBottom);
+const hoverIsTop = computed(() => isTop(props.designerState.hover.position));
+const hoverIsBottom = computed(() => isBottom(props.designerState.hover.position));
+const hoverStyle = computed(() => positionToStyle(hover.value.position));
 
-// 设计器鼠标悬停时的虚线
-const dashedStyle = computed(() => {
+function positionToStyle(position?: AuxToolPosition) {
     const style: CSSProperties = {};
-    const position = hover.value.position;
     if (position) {
         style.top = `${position.top}px`;
         style.left = `${position.left}px`;
@@ -42,27 +42,22 @@ const dashedStyle = computed(() => {
         style.display = "none";
     }
     return style;
-});
+}
 
-const selectionStyle = computed(() => {
-    const style: CSSProperties = {};
-    const selection = props.designerEngine.tmp.selection;
-    if (selection) {
-        style.top = `${selection.top}px`;
-        style.left = `${selection.left}px`;
-        style.height = `${selection.height}px`;
-        style.width = `${selection.width}px`;
-    } else {
-        style.display = "none";
-    }
-    return style;
-});
+function isTop(position?: AuxToolPosition) {
+    return position?.isTop;
+}
+
+function isBottom(position?: AuxToolPosition) {
+    return position?.isBottom;
+}
 </script>
 
 <template>
     <div class="aux-tool">
         <div class="aux-insertion" style="display: none;"></div>
-        <div class="aux-dashed-box" :style="dashedStyle">
+
+        <div class="aux-dashed-box" :style="hoverStyle">
             <div
                 v-if="props.designerState.hover.componentMeta"
                 :class="{
@@ -74,7 +69,7 @@ const selectionStyle = computed(() => {
                 {{ props.designerState.hover.componentMeta.name }}
             </div>
             <div
-                v-if="hover.position &&  hover.position?.height > 40 && hover.position?.width > 80"
+                v-if="hover.position &&  hover.position?.height > 24 && hover.position?.width > 60"
                 :class="{
                     'mark-bottom-right': true,
                     'mark-bottom-right-up': hoverIsBottom,
@@ -84,12 +79,27 @@ const selectionStyle = computed(() => {
                 拖放元素到容器内
             </div>
         </div>
-        <div class="aux-selection-box" :style="selectionStyle">
-            <div v-if="designerEngine.tmp.selection?.componentType" class="mark-top-left">
-                <span>{{ designerEngine.tmp.selection.componentType }}</span>
+
+        <div v-for="selection in props.designerState.selections" class="aux-selection-box" :style="positionToStyle(selection.position)">
+            <div
+                v-if="selection.componentMeta && props.designerState.singleSelection"
+                :class="{
+                    'mark-top-left': true,
+                    'mark-top-left-up': !isTop(selection.position),
+                    'mark-top-left-down': isTop(selection.position),
+                }"
+            >
+                <span>{{ selection.componentMeta.name }}</span>
                 <IconSettings style="margin-left: 2px; cursor: pointer;" :size="16"/>
             </div>
-            <div class="mark-bottom-right">
+            <div
+                v-if="props.designerState.singleSelection"
+                :class="{
+                    'mark-bottom-right': true,
+                    'mark-bottom-right-up': isBottom(selection.position),
+                    'mark-bottom-right-down': !isBottom(selection.position),
+                }"
+            >
                 <span class="mark-bottom-button" title="选择父级">
                     <IconChevronLeft :size="18"/>
                 </span>
@@ -193,8 +203,6 @@ const selectionStyle = computed(() => {
 .aux-selection-box > .mark-top-left {
     pointer-events: all;
     position: relative;
-    top: -23px;
-    left: -2px;
     font-size: 14px;
     padding: 3px 8px;
     color: #fff;
@@ -206,11 +214,19 @@ const selectionStyle = computed(() => {
     text-overflow: ellipsis;
 }
 
+.aux-selection-box > .mark-top-left-up {
+    top: -23px;
+    left: -2px;
+}
+
+.aux-selection-box > .mark-top-left-down {
+    top: 0;
+    left: 0;
+}
+
 .aux-selection-box > .mark-bottom-right {
     pointer-events: all;
     position: absolute;
-    right: -2px;
-    bottom: -24px;
     padding: 2px 4px;
     color: #fff;
     background: #1476ff;
@@ -219,6 +235,16 @@ const selectionStyle = computed(() => {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+.aux-selection-box > .mark-bottom-right-up {
+    right: 0;
+    bottom: 0;
+}
+
+.aux-selection-box > .mark-bottom-right-down {
+    right: -2px;
+    bottom: -24px;
 }
 
 .aux-selection-box > .mark-bottom-right > .mark-bottom-button {

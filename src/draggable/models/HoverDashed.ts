@@ -9,13 +9,35 @@ import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 class HoverDashed {
     /** 设计器状态数据 */
     readonly designerState: DesignerState;
+    /** 组件元信息 */
+    protected readonly _componentMeta: ShallowRef<ComponentMeta | undefined> = shallowRef<ComponentMeta | undefined>();
+    /** 组件节点id(值是：RuntimeNode.id) */
+    protected readonly _nodeId: Ref<string | undefined> = ref<string | undefined>();
     /** 虚线框区域位置 */
     protected readonly _position: Ref<AuxToolPosition | undefined> = ref<AuxToolPosition | undefined>();
-    /** 组件元信息 */
-    private _componentMeta: ShallowRef<ComponentMeta | undefined> = shallowRef<ComponentMeta | undefined>();
 
     constructor(designerState: DesignerState) {
         this.designerState = designerState;
+    }
+
+    /** 组件元信息 */
+    get componentMeta() {
+        return this._componentMeta.value;
+    }
+
+    /** 组件元信息 */
+    set componentMeta(value: ComponentMeta | undefined) {
+        this._componentMeta.value = value;
+    }
+
+    /** 组件节点id(值是：RuntimeNode.id) */
+    get nodeId() {
+        return this._nodeId.value;
+    }
+
+    /** 组件节点id(值是：RuntimeNode.id) */
+    set nodeId(value: string | undefined) {
+        this._nodeId.value = value;
     }
 
     /** 虚线框区域位置 */
@@ -28,14 +50,11 @@ class HoverDashed {
         this._position.value = value;
     }
 
-    /** 组件元信息 */
-    get componentMeta() {
-        return this._componentMeta.value;
-    }
-
-    /** 组件元信息 */
-    set componentMeta(value: ComponentMeta | undefined) {
-        this._componentMeta.value = value;
+    /** 清除选择信息 */
+    clear() {
+        this._componentMeta.value = undefined;
+        this._nodeId.value = undefined;
+        this._position.value = undefined;
     }
 }
 

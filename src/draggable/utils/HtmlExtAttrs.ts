@@ -1,9 +1,11 @@
 import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 
-function getAttribute(attr: string, element: Element | null): string | null {
-    if (!element) return null;
-    return element.getAttribute(attr);
+function getAttribute(attr: string, element: Element | null): string | undefined {
+    if (!element) return;
+    const value = element.getAttribute(attr);
+    if (value === null) return;
+    return value;
 }
 
 /**
@@ -29,7 +31,7 @@ const htmlExtAttr = {
  */
 const useHtmlExtAttr = {
     /** 获取被拖拽的组件类型 */
-    componentType(element: Element | null): string | null {
+    componentType(element: Element | null): string | undefined {
         return getAttribute(htmlExtAttr.componentType, element);
     },
     /** 获取被拖拽的组件元信息 */
@@ -38,7 +40,10 @@ const useHtmlExtAttr = {
         if (!type) return;
         return componentManage.getComponentMeta(type);
     },
-
+    /** 获取组件节点id(值是：RuntimeNode.id) */
+    nodeId(element: Element | null): string | undefined {
+        return getAttribute(htmlExtAttr.nodeId, element);
+    }
 }
 
 export {
