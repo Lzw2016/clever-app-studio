@@ -18,7 +18,7 @@ class DesignerPanel {
     /** 设计器插入组件的信息 */
     private readonly _insertion: Ref<Insertion | undefined> = ref<Insertion>();
     /** 捕捉线(多选组件时的矩形线条) */
-    private _snapLine: Ref<SnapLine | undefined> = ref<SnapLine>();
+    private readonly _snapLine: Ref<SnapLine | undefined> = ref<SnapLine>();
 
     constructor(designerEngine: DesignerEngine) {
         this.designerEngine = designerEngine;

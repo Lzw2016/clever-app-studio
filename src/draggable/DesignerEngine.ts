@@ -1,6 +1,7 @@
 import { reactive } from "vue";
 import { EventBus } from "@/draggable/EventBus";
 import { DesignerDriver, DesignerDriverConstructor } from "@/draggable/DesignerDriver";
+import { DesignerEffect, DesignerEffectConstructor } from "@/draggable/DesignerEffect";
 import { EventContainer } from "@/draggable/types/Designer";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { DefComponentManage } from "@/draggable/models/DefComponentManage";
@@ -10,13 +11,16 @@ import { DraggingCmpMetas } from "@/draggable/models/DraggingCmpMetas";
 interface DesignerEngineProps {
     /** 组件管理器 */
     componentManage: ComponentManage;
-    /** 设计器功能模块集合 */
+    /** 设计器内部业务事件生产者集合 */
     drivers: Array<DesignerDriverConstructor>;
+    /** 设计器内部业务事件消费者集合 */
+    effects: Array<DesignerEffectConstructor>;
 }
 
 const defaultProps: DesignerEngineProps = {
     componentManage: new DefComponentManage(),
     drivers: [],
+    effects: [],
 };
 
 /**
@@ -29,8 +33,10 @@ class DesignerEngine {
     readonly eventbus: EventBus = new EventBus();
     /** 初始化属性 */
     readonly props: DesignerEngineProps;
-    /** 设计器功能模块集合 */
+    /** 设计器内部业务事件生产者集合 */
     private readonly drivers: Array<DesignerDriver> = [];
+    /** 设计器内部业务事件消费者集合 */
+    private readonly effects: Array<DesignerEffect> = [];
     /** 当前光标状态 */
     readonly cursor: Cursor;
     /** 正在拖拽的组件的元信息 */
@@ -57,9 +63,11 @@ class DesignerEngine {
         console.log("DesignerEngine mount");
         // 创建设计器功能模块集合
         const drivers = this.props.drivers.map(driver => new driver(this, container, window));
+        const effects = this.props.effects.map(effect => new effect(this, container, window));
         this.drivers.push(...drivers);
+        this.effects.push(...effects);
         // 开始消费 EventBus 事件
-        this.drivers.forEach(driver => driver.effect());
+        this.effects.forEach(effect => effect.effect());
         // 启动 DesignerDriver
         this.drivers.forEach(driver => driver.attach());
     }
@@ -67,9 +75,13 @@ class DesignerEngine {
     /** 卸载当前设计器 */
     unmount(): void {
         console.log("DesignerEngine unmount");
+        // 清除所有的订阅函数
         this.eventbus.clearAllSubscribe();
+        // 停止当前 DesignerDriver 监听 HTMLElement 事件
         this.drivers.forEach(driver => driver.detach());
+        // 清空 drivers 和 effects
         this.drivers.length = 0;
+        this.effects.length = 0;
     }
 }
 

@@ -9,6 +9,8 @@ interface CursorEventData extends CursorPosition {
     target: /*  */ EventTarget;
     /** 生成事件的 document.defaultView 对象，在浏览器中，就是事件所在的 Window 对象(在 iframe 中很有用) */
     view: /*    */ Window;
+
+    [name: string]: any;
 }
 
 abstract class AbstractCursorEvent implements DesignerEvent<CursorEventData> {

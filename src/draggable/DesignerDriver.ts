@@ -1,32 +1,11 @@
-import { Property } from "csstype";
 import { EventContainer } from "@/draggable/types/Designer";
-import { EventBus } from "@/draggable/EventBus";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
-import { ComponentManage } from "@/draggable/types/ComponentManage";
+import { DesignerModule } from "@/draggable/DesignerModule";
 
 /**
- * 设计器功能模块
+ * 设计器内部业务事件生产者
  */
-abstract class DesignerDriver {
-    /** 设计器引擎 */
-    readonly designerEngine: DesignerEngine;
-    /** 设计器事件总线 */
-    readonly eventbus: EventBus;
-    /** 组件管理器 */
-    readonly componentManage: ComponentManage;
-    /** 当前模块对应的 HTMLElement 对象 */
-    readonly container: EventContainer = window.document;
-    /** 当前模块对应的 window 对象 */
-    readonly window: Window = window;
-
-    constructor(designerEngine: DesignerEngine, container: EventContainer, window: Window) {
-        this.designerEngine = designerEngine;
-        this.eventbus = designerEngine.eventbus;
-        this.componentManage = designerEngine.props.componentManage;
-        this.container = container;
-        this.window = window;
-    }
-
+abstract class DesignerDriver extends DesignerModule {
     protected addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
     protected addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
     /**
@@ -53,21 +32,6 @@ abstract class DesignerDriver {
         this.container.removeEventListener(type, listener, options);
     }
 
-    protected getContainerCursorStyle() {
-        if (this.container instanceof Document) {
-            return this.container.body.style.cursor;
-        }
-        return this.container.style.cursor;
-    }
-
-    protected setContainerCursorStyle(cursorStyle: Property.Cursor) {
-        if (this.container instanceof Document) {
-            this.container.body.style.cursor = cursorStyle;
-        } else {
-            this.container.style.cursor = cursorStyle;
-        }
-    }
-
     /**
      * 启动当前 DesignerDriver 开始监听 HTMLElement 事件
      */
@@ -77,11 +41,6 @@ abstract class DesignerDriver {
      * 停止当前 DesignerDriver 监听 HTMLElement 事件
      */
     abstract detach(): void;
-
-    /**
-     * 消费 EventBus 中的事件
-     */
-    abstract effect(): void;
 }
 
 /** DesignerDriver 构造函数 */

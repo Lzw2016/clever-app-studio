@@ -1,9 +1,7 @@
 import { noValue } from "@/utils/Typeof";
-import { requestIdle } from "@/utils/RequestIdle";
 import { materialItem } from "@/draggable/Constant";
 import { calcDistance } from "@/draggable/utils/DesignerUtils";
 import { DesignerDriver } from "@/draggable/DesignerDriver";
-import { CursorStatus } from "@/draggable/types/Designer";
 import { DragStopEvent } from "@/draggable/events/cursor/DragStopEvent";
 import { DragStartEvent } from "@/draggable/events/cursor/DragStartEvent";
 import { DragMoveEvent } from "@/draggable/events/cursor/DragMoveEvent";
@@ -27,8 +25,6 @@ interface DragState {
  */
 class DragDropDriver extends DesignerDriver {
     private readonly dragState: DragState = this.initGlobalState();
-    /** 原始的鼠标指针样式 */
-    private originalCursor: string = "";
     /** 正在拖拽的组件元信息 */
     private componentMeta?: ComponentMeta;
 
@@ -40,10 +36,6 @@ class DragDropDriver extends DesignerDriver {
             moveEvent: undefined,
         };
     }
-
-    // --------------------------------------------------------------------------------------------
-    // 生产事件
-    // --------------------------------------------------------------------------------------------
 
     attach(): void {
         // 监听鼠标按下事件
@@ -152,6 +144,8 @@ class DragDropDriver extends DesignerDriver {
         this.addEventListener('dragover', this.onMouseMove);
         // 分发开始拖拽事件
         const dragStartEvent = new DragStartEvent(this.dragState.startEvent);
+        // 正在拖拽的组件元信息
+        dragStartEvent.data.componentMeta = this.componentMeta;
         this.eventbus.dispatch(dragStartEvent);
         this.dragState.dragging = true;
     }
@@ -169,70 +163,6 @@ class DragDropDriver extends DesignerDriver {
         this.eventbus.dispatch(dragMoveEvent);
         // 设置拖拽中事件对象
         this.dragState.moveEvent = event;
-    }
-
-    // --------------------------------------------------------------------------------------------
-    // 消费事件
-    // --------------------------------------------------------------------------------------------
-
-    effect(): void {
-        this.handleCursor();
-        this.handleDraggingCmpMetas();
-    }
-
-    /**
-     * 维护 cursor 状态
-     */
-    handleCursor() {
-        // 开始拖动
-        this.eventbus.subscribe(DragStartEvent, event => {
-            console.log("handleCursor DragStartEvent");
-            this.originalCursor = this.getContainerCursorStyle();
-            const cursor = this.designerEngine.cursor;
-            cursor.status = CursorStatus.DragStart;
-            cursor.dragStartPosition = event.data;
-        });
-        // 拖动中
-        this.eventbus.subscribe(DragMoveEvent, event => {
-            console.log("handleCursor DragMoveEvent");
-            const cursor = this.designerEngine.cursor;
-            cursor.status = CursorStatus.Dragging;
-            cursor.position = event.data;
-            requestIdle(() => {
-                this.setContainerCursorStyle('move');
-                // const element = document.elementFromPoint(event.data.topClientX, event.data.topClientY);
-                // console.log("element", element);
-            });
-        });
-        // 拖拽结束
-        this.eventbus.subscribe(DragStopEvent, event => {
-            console.log("handleCursor DragStopEvent");
-            const cursor = this.designerEngine.cursor;
-            cursor.status = CursorStatus.DragStop;
-            cursor.dragEndPosition = event.data;
-            cursor.dragStartPosition = undefined;
-            cursor.status = CursorStatus.Normal;
-            requestIdle(() => this.setContainerCursorStyle(this.originalCursor));
-        });
-    }
-
-    /**
-     * 维护 draggingCmpMetas 状态
-     */
-    handleDraggingCmpMetas() {
-        // 开始拖动
-        this.eventbus.subscribe(DragStartEvent, event => {
-            console.log("handleDraggingCmpMetas DragStartEvent");
-            if (!this.componentMeta) return;
-            const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
-            draggingCmpMetas.cmpMetas = [this.componentMeta];
-        });
-        // 拖拽结束
-        this.eventbus.subscribe(DragStopEvent, event => {
-            console.log("handleDraggingCmpMetas DragStopEvent");
-            const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
-            draggingCmpMetas.cmpMetas = [];
-        });
     }
 }
 

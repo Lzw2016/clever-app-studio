@@ -10,6 +10,9 @@ import { setDesignerEngine } from "@/draggable/InjectVars";
 import { DragDropDriver } from "@/draggable/drivers/DragDropDriver";
 import { MouseMoveDriver } from "@/draggable/drivers/MouseMoveDriver";
 import { MouseClickDriver } from "@/draggable/drivers/MouseClickDriver";
+import { CursorEffect } from "@/draggable/effect/CursorEffect";
+import { DraggingEffect } from "@/draggable/effect/DraggingEffect";
+import { AuxToolEffect } from "@/draggable/effect/AuxToolEffect";
 import DragGhost from "@/draggable/components/widgets/DragGhost.vue";
 import MaterialPanel from "@/draggable/components/widgets/MaterialPanel.vue";
 import SettingsPanel from "@/draggable/components/widgets/SettingsPanel.vue";
@@ -77,6 +80,11 @@ const designerEngine = new DesignerEngine({
         DragDropDriver,
         MouseMoveDriver,
         MouseClickDriver,
+    ],
+    effects: [
+        CursorEffect,
+        DraggingEffect,
+        AuxToolEffect,
     ],
 });
 setDesignerEngine(designerEngine);
