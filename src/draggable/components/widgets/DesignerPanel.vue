@@ -164,10 +164,8 @@ const route = useRoute();
         </div>
         <div class="flex-item-fill">
             <div v-if="isDesignerTab" class="designer-content">
-                <div class="render-container">
-                    <RuntimeBlock ref="designer" :block="designerTest" :is-designing="true"/>
-                    <AuxTool :designer-engine="props.designerEngine" :designerState="props.designerState"/>
-                </div>
+                <RuntimeBlock ref="designer" :block="designerTest" :is-designing="true" style="width: unset;height: unset;"/>
+                <AuxTool :designer-engine="props.designerEngine" :designerState="props.designerState"/>
             </div>
             <div v-else-if="isCodeTab" class="designer-content">
                 源码
@@ -266,10 +264,5 @@ const route = useRoute();
     overflow: auto;
     position: relative;
     padding: 4px;
-}
-
-.render-container {
-    min-height: 100%;
-    min-width: 100%;
 }
 </style>
