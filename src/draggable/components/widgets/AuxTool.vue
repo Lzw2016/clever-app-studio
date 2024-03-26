@@ -2,6 +2,7 @@
 import { computed, CSSProperties, reactive } from "vue";
 import { IconArrowDown, IconArrowUp, IconChevronLeft, IconCopy, IconSettings, IconTrash } from "@tabler/icons-vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { DesignerState } from "@/draggable/models/DesignerState";
 
 // 定义组件选项
 defineOptions({
@@ -12,6 +13,8 @@ defineOptions({
 interface AuxToolProps {
     /** 设计器引擎 */
     designerEngine: DesignerEngine;
+    /** 设计器状态数据 */
+    designerState: DesignerState;
 }
 
 // 读取组件 props 属性
@@ -22,10 +25,14 @@ const state = reactive({});
 // 内部数据
 const data = {};
 
-// TODO
+const hover = computed(() => props.designerState.hover);
+const hoverIsTop = computed(() => props.designerState.hover.position?.isTop);
+const hoverIsBottom = computed(() => props.designerState.hover.position?.isBottom);
+
+// 设计器鼠标悬停时的虚线
 const dashedStyle = computed(() => {
     const style: CSSProperties = {};
-    const position = props.designerEngine.tmp.position;
+    const position = hover.value.position;
     if (position) {
         style.top = `${position.top}px`;
         style.left = `${position.left}px`;
@@ -50,17 +57,32 @@ const selectionStyle = computed(() => {
     }
     return style;
 });
-
 </script>
 
 <template>
     <div class="aux-tool">
         <div class="aux-insertion" style="display: none;"></div>
         <div class="aux-dashed-box" :style="dashedStyle">
-            <div v-if="designerEngine.tmp.position?.componentType" class="mark-top-left">
-                {{ designerEngine.tmp.position.componentType }}
+            <div
+                v-if="props.designerState.hover.componentMeta"
+                :class="{
+                    'mark-top-left': true,
+                    'mark-top-left-up': !hoverIsTop,
+                    'mark-top-left-down': hoverIsTop,
+                }"
+            >
+                {{ props.designerState.hover.componentMeta.name }}
             </div>
-            <div class="mark-bottom-right">拖放元素到容器内</div>
+            <div
+                v-if="hover.position &&  hover.position?.height > 40 && hover.position?.width > 80"
+                :class="{
+                    'mark-bottom-right': true,
+                    'mark-bottom-right-up': hoverIsBottom,
+                    'mark-bottom-right-down': !hoverIsBottom,
+                }"
+            >
+                拖放元素到容器内
+            </div>
         </div>
         <div class="aux-selection-box" :style="selectionStyle">
             <div v-if="designerEngine.tmp.selection?.componentType" class="mark-top-left">
@@ -85,7 +107,7 @@ const selectionStyle = computed(() => {
                 </span>
             </div>
         </div>
-<!--        aux-free-selection-->
+        <!--        aux-free-selection-->
     </div>
 </template>
 
@@ -123,7 +145,6 @@ const selectionStyle = computed(() => {
 
 .aux-dashed-box > .mark-top-left {
     position: relative;
-    top: -20px;
     font-size: 12px;
     padding: 0 4px;
     color: #1476ff;
@@ -134,13 +155,17 @@ const selectionStyle = computed(() => {
     white-space: nowrap;
 }
 
+.aux-dashed-box > .mark-top-left-up {
+    top: -20px;
+}
+
+.aux-dashed-box > .mark-top-left-down {
+    top: -2px;
+}
+
 .aux-dashed-box > .mark-bottom-right {
     position: absolute;
     font-size: 12px;
-    /*    right: -1px;*/
-    /*    bottom: -20px;*/
-    right: 2px;
-    bottom: 2px;
     color: #808080;
     background: #f5f5f5;
     border: 1px solid #c2c2c2;
@@ -148,6 +173,16 @@ const selectionStyle = computed(() => {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+.aux-dashed-box > .mark-bottom-right-up {
+    right: 2px;
+    bottom: 2px;
+}
+
+.aux-dashed-box > .mark-bottom-right-down {
+    right: -1px;
+    bottom: -20px;
 }
 
 .aux-selection-box {

@@ -42,7 +42,7 @@ interface PageInfo {
 const props = withDefaults(defineProps<WorkspaceTabsProps>(), {});
 // state 属性
 const state = reactive({
-    // 活动的叶签 <path>
+    // 活动的叶签 <fullPath>
     activeTab: "",
     // 所有页面 Map<path, PageInfo>
     pages: new Map<string, PageInfo>(),
@@ -65,6 +65,11 @@ onMounted(() => {
 watch(route, newRoute => {
     showMatchedPage(newRoute);
 });
+// 切换 activeDesignerPath
+watch(
+    () => state.activeTab,
+    fullPath => props.designerEngine.activeDesignerPath = fullPath,
+);
 
 // 显示当前匹配的页面(如果是新页面就加载显示)
 function showMatchedPage(route: RouteLocationNormalizedLoaded) {
@@ -101,6 +106,7 @@ function showMatchedPage(route: RouteLocationNormalizedLoaded) {
     if (isAsyncFunction(meta.loader)) {
         pageInfo.loading = true;
         pageInfo.props.designerEngine = props.designerEngine;
+        pageInfo.props.designerState = props.designerEngine.addDesignerState(pageInfo.path);
         const loader: LoadDesignPageMate = meta.loader;
         loader(route.params).then(designPageMate => {
             if (!designPageMate) {
@@ -121,6 +127,7 @@ function showMatchedPage(route: RouteLocationNormalizedLoaded) {
 // 关闭页面
 function closePage(path: string) {
     state.pages.delete(path);
+    props.designerEngine.delDesignerState(path);
     if (path !== state.activeTab) return;
     if (state.pages.size <= 0) {
         router.push({ name: data.welcomeRoute });

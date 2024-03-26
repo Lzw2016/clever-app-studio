@@ -85,12 +85,37 @@ enum DesignerTab {
     Preview = 'Preview',
 }
 
+/**
+ * html元素矩形。
+ * 视口左上角距离，不随页面滚动而改变。
+ */
+interface ElementRect {
+    /** “html元素左上角”离“视口左上角”垂直方向的距离(像素) */
+    top: number;
+    /** “html元素左上角”离“视口左上角”水平方向的距离(像素) */
+    left: number;
+    /** html元素宽(像素) */
+    width: number;
+    /** html元素高(像素) */
+    height: number;
+}
+
+/** 辅助工具的位置 */
+interface AuxToolPosition extends ElementRect {
+    /** 是否在容器顶部 */
+    isTop: boolean;
+    /** 是否在容器底部 */
+    isBottom: boolean;
+}
+
 export type {
     AnyConstructor,
     DesignerEvent,
     Subscriber,
     EventContainer,
     CursorPosition,
+    ElementRect,
+    AuxToolPosition,
 }
 
 export {

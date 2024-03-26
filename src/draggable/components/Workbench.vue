@@ -97,7 +97,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <DragGhost :designerEngine="designerEngine"/>
+    <DragGhost :designer-engine="designerEngine"/>
     <div class="studio-layout flex-column-container box-border">
         <div
             class="flex-item-fixed flex-row-container"
@@ -169,10 +169,10 @@ onUnmounted(() => {
                                 :two-collapse="true"
                             >
                                 <template #onePane>
-                                    <WorkspaceTabs :designerEngine="designerEngine"/>
+                                    <WorkspaceTabs :designer-engine="designerEngine"/>
                                 </template>
                                 <template #twoPane>
-                                    <SettingsPanel :componentMeta="componentMeta"/>
+                                    <SettingsPanel :component-meta="componentMeta"/>
                                 </template>
                             </SplitPane>
                         </template>

@@ -450,7 +450,7 @@ componentManage.registerComponentMeta(componentMeta);
 componentManage.registerComponentMeta(createComponentMeta({ type: "ButtonGroup", name: "按钮组", icon: "" }));
 componentManage.registerComponentMeta(createComponentMeta({
     type: "div",
-    name: "div容器",
+    name: "[div]容器",
     icon: "",
     placeholder: {
         default: true,
@@ -473,6 +473,11 @@ componentManage.registerComponentMeta(createComponentMeta({
         //     tpl: "将组件拖拽到这里",
         // },
     },
+}));
+componentManage.registerComponentMeta(createComponentMeta({
+    type: "span",
+    name: "[span]容器",
+    icon: "",
 }));
 
 export {

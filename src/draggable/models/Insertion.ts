@@ -1,14 +1,14 @@
-import { DesignerPanel } from "@/draggable/models/DesignerPanel";
+import { DesignerState } from "@/draggable/models/DesignerState";
 
 /**
  * 设计器插入组件的信息
  */
 class Insertion {
     /** 设计器状态数据 */
-    readonly designerPanel: DesignerPanel;
+    readonly designerState: DesignerState;
 
-    constructor(designerPanel: DesignerPanel) {
-        this.designerPanel = designerPanel;
+    constructor(designerState: DesignerState) {
+        this.designerState = designerState;
     }
 }
 

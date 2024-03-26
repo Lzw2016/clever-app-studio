@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import { markRaw, reactive, ref, Ref, shallowReactive, ShallowReactive } from "vue";
 import { EventBus } from "@/draggable/EventBus";
 import { DesignerDriver, DesignerDriverConstructor } from "@/draggable/DesignerDriver";
 import { DesignerEffect, DesignerEffectConstructor } from "@/draggable/DesignerEffect";
@@ -7,6 +7,7 @@ import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { DefComponentManage } from "@/draggable/models/DefComponentManage";
 import { Cursor } from "@/draggable/models/Cursor";
 import { DraggingCmpMetas } from "@/draggable/models/DraggingCmpMetas";
+import { DesignerState } from "@/draggable/models/DesignerState";
 
 interface DesignerEngineProps {
     /** 组件管理器 */
@@ -41,11 +42,10 @@ class DesignerEngine {
     readonly cursor: Cursor;
     /** 正在拖拽的组件的元信息 */
     readonly draggingCmpMetas: DraggingCmpMetas;
-
-    // 活动的设计器页面路由路径(fullPath)
-    // readonly activeDesignerPath: string;
-    // 所有的设计器
-    // readonly allDesignerPanel: Record<string, DesignerPanel>
+    /** 当前活动的设计器页面路由路径(fullPath) */
+    private _activeDesignerPath: Ref<string | undefined> = ref<string>();
+    /** 所有的设计器状态数据 */
+    readonly allDesignerState: ShallowReactive<Record<string, DesignerState>> = shallowReactive<Record<string, DesignerState>>({});
 
     /** TODO 临时测试数据 */
     readonly tmp = reactive<any>({});
@@ -54,6 +54,46 @@ class DesignerEngine {
         this.props = { ...defaultProps, ...props };
         this.cursor = new Cursor(this);
         this.draggingCmpMetas = new DraggingCmpMetas(this);
+    }
+
+    /** 当前活动的设计器页面路由路径(fullPath) */
+    get activeDesignerPath(): string | undefined {
+        return this._activeDesignerPath.value;
+    }
+
+    /** 当前活动的设计器页面路由路径(fullPath) */
+    set activeDesignerPath(value: string | undefined) {
+        this._activeDesignerPath.value = value;
+    }
+
+    /** 当前活动的设计器状态数据 */
+    get activeDesignerState(): DesignerState | undefined {
+        const activeDesignerPath = this.activeDesignerPath;
+        if (!activeDesignerPath) return;
+        return this.allDesignerState[activeDesignerPath];
+    }
+
+    /**
+     * 新增 DesignerState 对象(如果存在直接返回已存在的)
+     * @param fullPath 设计器页面路由路径
+     */
+    addDesignerState(fullPath: string): DesignerState {
+        let designerState = this.allDesignerState[fullPath];
+        if (!designerState) {
+            designerState = markRaw(new DesignerState(this));
+            this.allDesignerState[fullPath] = designerState;
+        }
+        return designerState;
+    }
+
+    /**
+     * 删除 DesignerState 对象
+     * @param fullPath 设计器页面路由路径
+     */
+    delDesignerState(fullPath: string): DesignerState | undefined {
+        const designerState = this.allDesignerState[fullPath];
+        delete this.allDesignerState[fullPath];
+        return designerState;
     }
 
     /** 挂载当前设计器 */

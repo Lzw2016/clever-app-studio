@@ -15,11 +15,11 @@ class Cursor {
     /** 光标位置 */
     protected readonly _position: Ref<CursorPosition> = ref<CursorPosition>(defCursorPosition);
     /** 拖动开始位置 */
-    protected readonly _dragStartPosition: Ref<CursorPosition | undefined> = ref<CursorPosition>();
+    protected readonly _dragStartPosition: Ref<CursorPosition | undefined> = ref<CursorPosition | undefined>();
     /** 拖拽结束位置 */
-    protected readonly _dragEndPosition: Ref<CursorPosition | undefined> = ref<CursorPosition>();
+    protected readonly _dragEndPosition: Ref<CursorPosition | undefined> = ref<CursorPosition | undefined>();
     /** 拖动的增量(遇上一次的光标位置比较) */
-    readonly _dragAtomDelta: Ref<CursorPosition> = ref<CursorPosition>(defCursorPosition);
+    protected readonly _dragAtomDelta: Ref<CursorPosition> = ref<CursorPosition>(defCursorPosition);
     /** 拖拽起点到当前位置的增量 */
     protected readonly _dragStartToCurrentDelta: ComputedRef<CursorPosition> = computed<CursorPosition>(() => {
         // “拖动开始位置”为 null
