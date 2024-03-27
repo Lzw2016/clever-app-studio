@@ -62,6 +62,8 @@ function calcNodeToCursorDistance(position: CursorPosition, element: Element): N
             item => item.value,
         )!.direction;
     }
+    // TODO 处理 rowBlock inlineBlock 逻辑
+
     // 计算四个点的距离
     const leftTop = Math.abs(calcDistance(position.clientX, position.clientY, elementRect.left, elementRect.top));
     const leftBottom = Math.abs(calcDistance(position.clientX, position.clientY, elementRect.left, elementRect.top + elementRect.height));

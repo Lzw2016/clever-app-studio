@@ -11,6 +11,7 @@ import { MouseClickEvent } from "@/draggable/events/cursor/MouseClickEvent";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { Selection } from "@/draggable/models/Selection";
 import { DragMoveEvent } from "@/draggable/events/cursor/DragMoveEvent";
+import { DragStopEvent } from "@/draggable/events/cursor/DragStopEvent";
 
 interface NodeAndDesigner {
     /** 渲染节点dom */
@@ -54,6 +55,18 @@ class AuxToolEffect extends DesignerEffect {
     protected getHorizontalDistance(distance: NodeToCursorDistance) {
         if (distance.hInside) return -1;
         return Math.min(distance.left, distance.right);
+    }
+
+    protected setInsertion(designerState: DesignerState, containerId: string, distance: NodeToCursorDistance) {
+        let designerContainer = designerState.designerContainer as Element | null;
+        if (!designerContainer) designerContainer = distance.element.closest(designerContent);
+        if (!designerContainer) return;
+        this.designerEngine.insertion.clear();
+        this.designerEngine.insertion.distance = distance;
+        this.designerEngine.insertion.position = calcAuxToolPosition(designerContainer, distance.element);
+        this.designerEngine.insertion.containerId = containerId;
+        this.designerEngine.insertion.slotName = useHtmlExtAttr.slotName(distance.element);
+        this.designerEngine.insertion.nodeId = useHtmlExtAttr.nodeId(distance.element);
     }
 
     /**
@@ -122,6 +135,9 @@ class AuxToolEffect extends DesignerEffect {
         });
     }
 
+    /**
+     * 设计器插入组件的信息
+     */
     insertionEffect() {
         // 拖动中
         this.eventbus.subscribe(DragMoveEvent, event => {
@@ -158,6 +174,18 @@ class AuxToolEffect extends DesignerEffect {
                     }
                 }
                 if (!containerNode || !containerId) return;
+                // event.data.target 就是渲染容器节点本身
+                if (containerNode === event.data.target) {
+                    const distance = calcNodeToCursorDistance(event.data, containerNode);
+                    const minDistance = Math.min(distance.top, distance.bottom, distance.left, distance.right);
+                    if (minDistance <= 12) {
+                        const nodeParentId = useHtmlExtAttr.nodeParentId(distance.element);
+                        if (nodeParentId) {
+                            this.setInsertion(designerState, nodeParentId, distance);
+                            return;
+                        }
+                    }
+                }
                 // 查找当前容器组件中所有 items 和 slots 位置渲染的节点
                 const nodes = containerNode.querySelectorAll(`[${htmlExtAttr.nodeParentId}=${containerId}]`);
                 const distances: Array<NodeToCursorDistance> = [];
@@ -180,14 +208,16 @@ class AuxToolEffect extends DesignerEffect {
                     return Number.MAX_VALUE;
                 })!;
                 // 计算结果赋值
-                this.designerEngine.insertion.clear();
-                this.designerEngine.insertion.distance = minDistance;
-                this.designerEngine.insertion.position = calcAuxToolPosition(designerState.designerContainer, minDistance.element);
-                this.designerEngine.insertion.containerId = containerId;
-                this.designerEngine.insertion.slotName = useHtmlExtAttr.slotName(minDistance.element);
-                this.designerEngine.insertion.nodeId = useHtmlExtAttr.nodeId(minDistance.element);
+                this.setInsertion(designerState, containerId, minDistance);
                 // console.log("minDistance", minDistance, distances)
             });
+        });
+        // 拖拽结束
+        this.eventbus.subscribe(DragStopEvent, event => {
+            // TODO 更新设计器 DesignBlock 对象
+            requestIdle(() => {
+                this.designerEngine.insertion.clear();
+            })
         });
     }
 }

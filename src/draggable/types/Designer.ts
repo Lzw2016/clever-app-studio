@@ -115,7 +115,6 @@ enum Direction {
     right = "right",
 }
 
-
 enum PointDirection {
     leftTop = "leftTop",
     leftBottom = "leftBottom",

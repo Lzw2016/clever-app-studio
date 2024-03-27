@@ -44,6 +44,10 @@ const useHtmlExtAttr = {
     nodeId(element: Element | null): string | undefined {
         return getAttribute(htmlExtAttr.nodeId, element);
     },
+    /** 组件父节点id(值是：RuntimeNode.id) */
+    nodeParentId(element: Element | null): string | undefined {
+        return getAttribute(htmlExtAttr.nodeParentId, element);
+    },
     /** 当前组件在父组件的插槽内(值是：slot_name，子节点是一种特殊的插槽，名为：default) */
     slotName(element: Element | null): string | undefined {
         return getAttribute(htmlExtAttr.slotName, element);
