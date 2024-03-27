@@ -33,7 +33,6 @@ const hoverStyle = computed(() => positionToStyle(hover.value.position));
 const insertionStyle = computed(() => {
     const style: CSSProperties = {};
     const insertion = props.designerEngine.insertion;
-    console.log("@@@###", insertion.distance)
     if (props.designerState === props.designerEngine.activeDesignerState && !insertion.isEmpty() && insertion.distance && insertion.direction && insertion.position) {
         if ([Direction.left, Direction.top].includes(insertion.direction)) {
             style.top = `${insertion.position.top}px`;

@@ -1,4 +1,5 @@
-import { AuxToolPosition, CursorPosition, NodeToCursorDistance } from "@/draggable/types/Designer";
+import { AuxToolPosition, CursorPosition, Direction, NodeToCursorDistance, PointDirection } from "@/draggable/types/Designer";
+import lodash from "lodash";
 
 /**
  * 计算辅助工具的位置
@@ -25,10 +26,34 @@ function calcAuxToolPosition(container: Element, element: Element): AuxToolPosit
  */
 function calcNodeToCursorDistance(position: CursorPosition, element: Element): NodeToCursorDistance {
     const elementRect = element.getBoundingClientRect();
+    // 计算四个边的距离
     const top = position.clientY - elementRect.top;
     const bottom = position.clientY - elementRect.top - elementRect.height;
     const left = position.clientX - elementRect.left;
     const right = position.clientX - elementRect.left - elementRect.width;
+    const { direction } = lodash.minBy(
+        [
+            { direction: Direction.top, value: Math.abs(top) },
+            { direction: Direction.bottom, value: Math.abs(bottom) },
+            { direction: Direction.left, value: Math.abs(left) },
+            { direction: Direction.right, value: Math.abs(right) },
+        ],
+        item => item.value,
+    )!;
+    // 计算四个点的距离
+    const leftTop = Math.abs(calcDistance(position.clientX, position.clientY, elementRect.left, elementRect.top));
+    const leftBottom = Math.abs(calcDistance(position.clientX, position.clientY, elementRect.left, elementRect.top + elementRect.height));
+    const rightTop = Math.abs(calcDistance(position.clientX, position.clientY, elementRect.left + elementRect.width, elementRect.top));
+    const rightBottom = Math.abs(calcDistance(position.clientX, position.clientY, elementRect.left + elementRect.width, elementRect.top + elementRect.height));
+    const { point } = lodash.minBy(
+        [
+            { point: PointDirection.leftTop, value: leftTop },
+            { point: PointDirection.leftBottom, value: leftBottom },
+            { point: PointDirection.rightTop, value: rightTop },
+            { point: PointDirection.rightBottom, value: rightBottom },
+        ],
+        item => item.value,
+    )!;
     return {
         element: element,
         width: elementRect.width,
@@ -37,6 +62,12 @@ function calcNodeToCursorDistance(position: CursorPosition, element: Element): N
         bottom: Math.abs(bottom),
         left: Math.abs(left),
         right: Math.abs(right),
+        direction: direction,
+        leftTop: leftTop,
+        leftBottom: leftBottom,
+        rightTop: rightTop,
+        rightBottom: rightBottom,
+        point: point,
         inside: top >= 0 && bottom <= 0 && left >= 0 && right <= 0 && elementRect.width > 0 && elementRect.height > 0,
         rowBlock: true,
         inlineBlock: true,

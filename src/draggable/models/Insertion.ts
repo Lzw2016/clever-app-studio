@@ -19,8 +19,6 @@ class Insertion {
     protected readonly _slotName: Ref<string | undefined> = ref<string | undefined>();
     /** 离插入位置最近的组件节点id(值是：RuntimeNode.id) */
     protected readonly _nodeId: Ref<string | undefined> = ref<string | undefined>();
-    /** 插入的方向 */
-    protected readonly _direction: Ref<Direction | undefined> = ref<Direction | undefined>();
 
     constructor(designerEngine: DesignerEngine) {
         this.designerEngine = designerEngine;
@@ -78,29 +76,24 @@ class Insertion {
 
     /** 插入的方向 */
     get direction() {
-        return this._direction.value;
-    }
-
-    /** 插入的方向 */
-    set direction(value: Direction | undefined) {
-        this._direction.value = value;
+        return this._distance.value?.direction;
     }
 
     /** 是否在 nodeId 之前插入 */
     isBefore() {
-        if (!this._direction.value) return false;
-        return [Direction.top, Direction.left].includes(this._direction.value)
+        if (!this._distance.value?.direction) return false;
+        return [Direction.top, Direction.left].includes(this._distance.value?.direction);
     }
 
     /** 是否是水平方向插入(left、right) */
     isHorizontal() {
-        if (!this._direction.value) return false;
-        return [Direction.left, Direction.right].includes(this._direction.value)
+        if (!this._distance.value?.direction) return false;
+        return [Direction.left, Direction.right].includes(this._distance.value?.direction);
     }
 
     /** 当前是否是空的 */
     isEmpty() {
-        return noValue(this._direction.value);
+        return noValue(this._distance.value?.direction);
     }
 
     /** 清除插入信息 */
@@ -109,7 +102,6 @@ class Insertion {
         this._containerId.value = undefined;
         this._slotName.value = undefined;
         this._nodeId.value = undefined;
-        this._direction.value = undefined;
     }
 }
 

@@ -5,7 +5,7 @@ import { designerContent } from "@/draggable/Constant";
 import { htmlExtAttr, useHtmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { calcAuxToolPosition, calcNodeToCursorDistance } from "@/draggable/utils/PositionCalc";
 import { existsPlaceholder } from "@/draggable/utils/ComponentMetaUtils";
-import { Direction, NodeToCursorDistance } from "@/draggable/types/Designer";
+import { NodeToCursorDistance, PointDirection } from "@/draggable/types/Designer";
 import { MouseMoveEvent } from "@/draggable/events/cursor/MouseMoveEvent";
 import { MouseClickEvent } from "@/draggable/events/cursor/MouseClickEvent";
 import { DesignerState } from "@/draggable/models/DesignerState";
@@ -153,34 +153,26 @@ class AuxToolEffect extends DesignerEffect {
                 const distances: Array<NodeToCursorDistance> = [];
                 nodes.forEach(node => distances.push(calcNodeToCursorDistance(event.data, node)));
                 const minDistance = lodash.minBy(distances, distance => {
-                    if (distance.rowBlock) {
-                        return Math.min(distance.top, distance.bottom);
-                    } else if (distance.inlineBlock) {
-                        return Math.min(distance.left, distance.right);
-                    }
-                    return Math.min(distance.top, distance.bottom, distance.left, distance.right);
+                    if (distance.inside) return -1;
+                    if (distance.point === PointDirection.leftTop) return distance.leftTop;
+                    if (distance.point === PointDirection.leftBottom) return distance.leftBottom;
+                    if (distance.point === PointDirection.rightTop) return distance.rightTop;
+                    if (distance.point === PointDirection.rightBottom) return distance.rightBottom;
+                    return Number.MAX_VALUE;
                 });
+                // 计算结果赋值
+                this.designerEngine.insertion.clear();
                 if (!minDistance) {
                     // TODO 覆盖整个 containerNode
+                    console.log("@@@@###")
                     return;
                 }
-                this.designerEngine.insertion.clear();
                 this.designerEngine.insertion.distance = minDistance;
                 this.designerEngine.insertion.position = calcAuxToolPosition(designerState.designerContainer, minDistance.element);
                 this.designerEngine.insertion.containerId = containerId;
                 this.designerEngine.insertion.slotName = useHtmlExtAttr.slotName(minDistance.element);
                 this.designerEngine.insertion.nodeId = useHtmlExtAttr.nodeId(minDistance.element);
-                const { direction } = lodash.minBy(
-                    [
-                        { direction: Direction.top, value: minDistance.top },
-                        { direction: Direction.bottom, value: minDistance.bottom },
-                        { direction: Direction.left, value: minDistance.left },
-                        { direction: Direction.right, value: minDistance.right },
-                    ],
-                    item => item.value,
-                )!;
-                this.designerEngine.insertion.direction = direction;
-                console.log("@@@", this.designerEngine.insertion.distance)
+                console.log("minDistance", minDistance, distances)
             });
         });
     }

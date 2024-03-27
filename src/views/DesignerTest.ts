@@ -124,13 +124,13 @@ const designerTest = defineDesignBlock({
         createSpan(),
         createSpan(),
         {
-            // type: "div",
-            props: {
-                'data-test': 'test',
-            },
-            directives: {
-                show: "{{ false }}",
-            },
+            type: "div",
+            // props: {
+            //     'data-test': 'test',
+            // },
+            // directives: {
+            //     show: "{{ false }}",
+            // },
             items: [
                 createSpan(),
                 createSpan(),

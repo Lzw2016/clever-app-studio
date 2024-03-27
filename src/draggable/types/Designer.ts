@@ -108,6 +108,21 @@ interface AuxToolPosition extends ElementRect {
     isBottom: boolean;
 }
 
+enum Direction {
+    top = "top",
+    bottom = "bottom",
+    left = "left",
+    right = "right",
+}
+
+
+enum PointDirection {
+    leftTop = "leftTop",
+    leftBottom = "leftBottom",
+    rightTop = "rightTop",
+    rightBottom = "rightBottom",
+}
+
 /** 渲染节点与光标的距离信息 */
 interface NodeToCursorDistance {
     /** 渲染节点的dom */
@@ -116,23 +131,32 @@ interface NodeToCursorDistance {
     width: number;
     /** html元素高(像素) */
     height: number;
+    /** 光标与渲染节点上边框的距离 */
     top: number;
+    /** 光标与渲染节点下边框的距离 */
     bottom: number;
+    /** 光标与渲染节点左边框的距离 */
     left: number;
+    /** 光标与渲染节点右边框的距离 */
     right: number;
+    /** 最近的边 */
+    direction: Direction;
+    /** 光标与渲染节点左上角的距离 */
+    leftTop: number;
+    /** 光标与渲染节点左下角的距离 */
+    leftBottom: number;
+    /** 光标与渲染节点右上角的距离 */
+    rightTop: number;
+    /** 光标与渲染节点右下角的距离 */
+    rightBottom: number;
+    /** 最近的点 */
+    point: PointDirection;
     /** 光标是否在渲染节点里面 */
     inside: boolean;
     /** 渲染节点是否是行级块(独占一行) */
     rowBlock: boolean;
     /** 渲染节点是否是内联块(独占一行) */
     inlineBlock: boolean;
-}
-
-enum Direction {
-    top,
-    bottom,
-    left,
-    right,
 }
 
 export type {
@@ -152,4 +176,5 @@ export {
     DesignerLayout,
     DesignerTab,
     Direction,
+    PointDirection,
 }
