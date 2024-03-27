@@ -21,9 +21,9 @@ const htmlExtAttr = {
     /** 组件父节点id(值是：RuntimeNode.id) */
     nodeParentId: 'data-node-parent-id',
     /** 可以容纳插槽的容器(值是：slot_name，子节点是一种特殊的插槽，名为：default) */
-    slotContainer: 'data-slot-container',
+    placeholderName: 'data-placeholder-name',
     /** 当前组件在父组件的插槽内(值是：slot_name，子节点是一种特殊的插槽，名为：default) */
-    slotName: 'data-in-slot',
+    slotName: 'data-slot-name',
 };
 
 /**
@@ -47,6 +47,10 @@ const useHtmlExtAttr = {
     /** 组件父节点id(值是：RuntimeNode.id) */
     nodeParentId(element: Element | null): string | undefined {
         return getAttribute(htmlExtAttr.nodeParentId, element);
+    },
+    /** 可以容纳插槽的容器(值是：slot_name，子节点是一种特殊的插槽，名为：default) */
+    placeholderName(element: Element | null): string | undefined {
+        return getAttribute(htmlExtAttr.placeholderName, element);
     },
     /** 当前组件在父组件的插槽内(值是：slot_name，子节点是一种特殊的插槽，名为：default) */
     slotName(element: Element | null): string | undefined {

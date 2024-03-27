@@ -361,7 +361,7 @@ function blockDeepTransform(node: DesignNode, createConfig: CreateConfig, curren
             if (placeholder === true) placeholder = defPlaceholder;
             const newPlaceholder = lodash.cloneDeep(placeholder) as DesignNode;
             if (!newPlaceholder.props) newPlaceholder.props = {};
-            newPlaceholder.props[htmlExtAttr.slotContainer] = name;
+            newPlaceholder.props[htmlExtAttr.placeholderName] = name;
             runtime.__designPlaceholder[name] = blockDeepTransform(
                 newPlaceholder,
                 { ...createConfig, isDesigning: false },

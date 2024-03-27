@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, CSSProperties, reactive } from "vue";
+import { computed, CSSProperties } from "vue";
 import { IconArrowDown, IconArrowUp, IconChevronLeft, IconCopy, IconSettings, IconTrash } from "@tabler/icons-vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { AuxToolPosition, Direction } from "@/draggable/types/Designer";
@@ -22,9 +22,9 @@ interface AuxToolProps {
 const props = withDefaults(defineProps<AuxToolProps>(), {});
 
 // state 属性
-const state = reactive({});
+// const state = reactive({});
 // 内部数据
-const data = {};
+// const data = {};
 
 const hover = computed(() => props.designerState.hover);
 const hoverIsTop = computed(() => isTop(props.designerState.hover.position));
@@ -34,22 +34,30 @@ const insertionStyle = computed(() => {
     const style: CSSProperties = {};
     const insertion = props.designerEngine.insertion;
     if (props.designerState === props.designerEngine.activeDesignerState && !insertion.isEmpty() && insertion.distance && insertion.direction && insertion.position) {
-        if ([Direction.left, Direction.top].includes(insertion.direction)) {
+        if (insertion.placeholder) {
             style.top = `${insertion.position.top}px`;
             style.left = `${insertion.position.left}px`;
-        } else if (insertion.direction === Direction.right) {
-            style.top = `${insertion.position.top}px`;
-            style.left = `${insertion.position.left + insertion.position.width}px`;
-        } else if (insertion.direction === Direction.bottom) {
-            style.top = `${insertion.position.top + insertion.position.height}px`;
-            style.left = `${insertion.position.left}px`;
-        }
-        if (insertion.isHorizontal()) {
-            style.width = "2px";
-            style.height = `${insertion.distance.height}px`;
+            style.width = `${insertion.position.width}px`;
+            style.height = `${insertion.position.height}px`;
+            style.backgroundColor = 'rgba(24, 144, 255, 0.34)';
         } else {
-            style.height = "2px";
-            style.width = `${insertion.distance.width}px`;
+            if ([Direction.left, Direction.top].includes(insertion.direction)) {
+                style.top = `${insertion.position.top}px`;
+                style.left = `${insertion.position.left}px`;
+            } else if (insertion.direction === Direction.right) {
+                style.top = `${insertion.position.top}px`;
+                style.left = `${insertion.position.left + insertion.position.width}px`;
+            } else if (insertion.direction === Direction.bottom) {
+                style.top = `${insertion.position.top + insertion.position.height}px`;
+                style.left = `${insertion.position.left}px`;
+            }
+            if (insertion.isHorizontal()) {
+                style.width = "2px";
+                style.height = `${insertion.distance.height}px`;
+            } else {
+                style.height = "2px";
+                style.width = `${insertion.distance.width}px`;
+            }
         }
     } else {
         style.display = "none";

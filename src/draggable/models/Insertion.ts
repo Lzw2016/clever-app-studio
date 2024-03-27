@@ -19,6 +19,8 @@ class Insertion {
     protected readonly _slotName: Ref<string | undefined> = ref<string | undefined>();
     /** 离插入位置最近的组件节点id(值是：RuntimeNode.id) */
     protected readonly _nodeId: Ref<string | undefined> = ref<string | undefined>();
+    /** 当期 node 属于占位组件 */
+    protected readonly _placeholder: Ref<boolean | undefined> = ref<boolean | undefined>();
 
     constructor(designerEngine: DesignerEngine) {
         this.designerEngine = designerEngine;
@@ -74,6 +76,16 @@ class Insertion {
         this._nodeId.value = value;
     }
 
+    /** 当期 node 属于占位组件 */
+    get placeholder() {
+        return this._placeholder.value;
+    }
+
+    /** 当期 node 属于占位组件 */
+    set placeholder(value: boolean | undefined) {
+        this._placeholder.value = value;
+    }
+
     /** 插入的方向 */
     get direction() {
         return this._distance.value?.direction;
@@ -102,6 +114,7 @@ class Insertion {
         this._containerId.value = undefined;
         this._slotName.value = undefined;
         this._nodeId.value = undefined;
+        this._placeholder.value = undefined;
     }
 }
 

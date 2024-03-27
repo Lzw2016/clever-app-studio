@@ -151,6 +151,18 @@ class AuxToolEffect extends DesignerEffect {
                 if (!designerState?.designerContainer) return;
                 const designerBlock = designerState.designerBlock;
                 if (!designerBlock) return;
+                // event.data.target 属于 placeholder
+                const placeholder = useHtmlExtAttr.placeholderName(target);
+                if (placeholder) {
+                    // 覆盖整个 containerNode
+                    const distance = calcNodeToCursorDistance(event.data, event.data.target as Element);
+                    const nodeParentId = useHtmlExtAttr.nodeParentId(distance.element);
+                    if (nodeParentId) {
+                        this.setInsertion(designerState, nodeParentId, distance);
+                        this.designerEngine.insertion.placeholder = true;
+                        return;
+                    }
+                }
                 // 找出离当前鼠标位置最近的容器组件
                 let containerNode: Element | null = null;
                 let containerId: string | undefined;
@@ -190,11 +202,7 @@ class AuxToolEffect extends DesignerEffect {
                 const nodes = containerNode.querySelectorAll(`[${htmlExtAttr.nodeParentId}=${containerId}]`);
                 const distances: Array<NodeToCursorDistance> = [];
                 nodes.forEach(node => distances.push(calcNodeToCursorDistance(event.data, node)));
-                if (distances.length <= 0) {
-                    // TODO 覆盖整个 containerNode
-                    // console.log("@@@@###")
-                    return;
-                }
+                if (distances.length <= 0) return;
                 const minVertical = lodash.min(distances.map(distance => this.getVerticalDistance(distance)))!;
                 const verticalDistances = distances.filter(distance => this.getVerticalDistance(distance) <= minVertical);
                 const minHorizontal = lodash.min(verticalDistances.map(distance => this.getHorizontalDistance(distance)))!;
@@ -209,7 +217,6 @@ class AuxToolEffect extends DesignerEffect {
                 })!;
                 // 计算结果赋值
                 this.setInsertion(designerState, containerId, minDistance);
-                // console.log("minDistance", minDistance, distances)
             });
         });
         // 拖拽结束

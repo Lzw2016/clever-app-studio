@@ -54,7 +54,9 @@ const state = reactive<DesignerPanelState>({
     activeTab: DesignerTab.Designer,
 });
 // 内部数据
-const data = {};
+const data = {
+    designerContainerLastHide: false,
+};
 // 撤销
 const canRevoke = computed(() => true);
 // 反撤销
@@ -95,6 +97,18 @@ onMounted(() => {
 });
 // 设计器容器大小变化时
 useResizeObserver(designerContainer, entries => {
+    const entry = entries[0];
+    // designerContainer 被隐藏了
+    if (entry.contentRect.width <= 20 || entry.contentRect.height <= 20) {
+        data.designerContainerLastHide = true;
+        return;
+    }
+    // designerContainer 上一次是隐藏状态
+    if (data.designerContainerLastHide) {
+        data.designerContainerLastHide = false;
+        return;
+    }
+    // data.designerContainerLastHide = false;
     requestIdle(() => {
         recalcAuxToolPosition();
         auxTool.value?.$nextTick(() => calcDesignerBlockStyle());
@@ -212,7 +226,7 @@ function recalcAuxToolPosition() {
         <div class="flex-item-fill">
             <div v-if="isDesignerTab" ref="designerContainer" class="designer-content">
                 <RuntimeBlock ref="designerBlockInstance" :block="designerTest" :is-designing="true" :style="state.designerBlockStyle"/>
-                <AuxTool :designer-engine="props.designerEngine" :designerState="props.designerState"/>
+                <AuxTool ref="auxTool" :designer-engine="props.designerEngine" :designerState="props.designerState"/>
             </div>
             <div v-else-if="isCodeTab" class="designer-content">
                 源码
