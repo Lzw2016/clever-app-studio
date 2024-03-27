@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
+import { computed, CSSProperties, onMounted, reactive, ref } from "vue";
 import { RouteParams, useRoute } from "vue-router";
+import { useResizeObserver } from '@vueuse/core'
 import { IconArrowBackUp, IconArrowForwardUp, IconArrowsMove, IconClick, IconCode, IconDeviceLaptop, IconDeviceMobile, IconDevices, IconPalette, IconPlayerPlay } from "@tabler/icons-vue";
+import { requestIdle } from "@/utils/RequestIdle";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerCursorMode, DesignerLayout, DesignerTab } from "@/draggable/types/Designer";
 import { DesignPageMate } from "@/draggable/types/DesignBlock";
@@ -34,6 +36,8 @@ const props = withDefaults(defineProps<DesignerPanelProps>(), {});
 
 // 定义 State 类型
 interface DesignerPanelState {
+    /** 设计时Block样式 */
+    designerBlockStyle: CSSProperties;
     /** 设计器光标模式 */
     cursorMode: DesignerCursorMode;
     /** 设计器布局类型 */
@@ -44,6 +48,7 @@ interface DesignerPanelState {
 
 // state 属性
 const state = reactive<DesignerPanelState>({
+    designerBlockStyle: {},
     cursorMode: DesignerCursorMode.DragDrop,
     layout: DesignerLayout.PC,
     activeTab: DesignerTab.Designer,
@@ -70,11 +75,53 @@ const isDesignerTab = computed(() => state.activeTab === DesignerTab.Designer);
 const isCodeTab = computed(() => state.activeTab === DesignerTab.Code);
 // 预览
 const isPreviewTab = computed(() => state.activeTab === DesignerTab.Preview);
+// 设计器容器
+const designerContainer = ref<HTMLDivElement | undefined>();
 // 设计器组件实例
-const designer = ref<InstanceType<typeof RuntimeBlock> | undefined>();
-window['a'] = designer
+const designerBlockInstance = ref<InstanceType<typeof RuntimeBlock> | undefined>();
+// 拖拽辅助工具实例
+const auxTool = ref<InstanceType<typeof AuxTool> | undefined>();
+
+// 初始化 DesignerState 属性
+props.designerState.designerContainer = designerContainer;
+props.designerState.designerBlockInstance = designerBlockInstance;
+
 // 当前命中的路由
 const route = useRoute();
+
+// 组件加载
+onMounted(() => {
+    calcDesignerBlockStyle();
+});
+// 设计器容器大小变化时
+useResizeObserver(designerContainer, entries => {
+    requestIdle(() => {
+        recalcAuxToolPosition();
+        auxTool.value?.$nextTick(() => calcDesignerBlockStyle());
+    });
+});
+
+// 计算设计器组件的样式
+function calcDesignerBlockStyle() {
+    if (!designerContainer.value || !designerBlockInstance.value) return;
+    if (designerContainer.value.scrollWidth > designerContainer.value.clientWidth || designerContainer.value.scrollHeight > designerContainer.value.clientHeight) {
+        state.designerBlockStyle = {
+            width: 'unset',
+            height: 'unset',
+        };
+    } else {
+        state.designerBlockStyle = {
+            width: '100%',
+            height: '100%',
+        };
+    }
+}
+
+// 重新计算辅助工具的位置
+function recalcAuxToolPosition() {
+    props.designerState.hover.recalcAuxToolPosition();
+    props.designerState.selections.forEach(selection => selection.recalcAuxToolPosition());
+}
 </script>
 
 <template>
@@ -163,8 +210,8 @@ const route = useRoute();
             </div>
         </div>
         <div class="flex-item-fill">
-            <div v-if="isDesignerTab" class="designer-content">
-                <RuntimeBlock ref="designer" :block="designerTest" :is-designing="true" style="width: unset;height: unset;"/>
+            <div v-if="isDesignerTab" ref="designerContainer" class="designer-content">
+                <RuntimeBlock ref="designerBlockInstance" :block="designerTest" :is-designing="true" :style="state.designerBlockStyle"/>
                 <AuxTool :designer-engine="props.designerEngine" :designerState="props.designerState"/>
             </div>
             <div v-else-if="isCodeTab" class="designer-content">

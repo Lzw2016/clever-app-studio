@@ -1,7 +1,9 @@
 import { Ref, ref, shallowRef, ShallowRef } from "vue";
+import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { AuxToolPosition } from "@/draggable/types/Designer";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
+import { calcAuxToolPosition } from "@/draggable/utils/PositionCalc";
 
 /**
  * 设计器鼠标悬停时的虚线
@@ -48,6 +50,16 @@ class HoverDashed {
     /** 虚线框区域位置 */
     set position(value: AuxToolPosition | undefined) {
         this._position.value = value;
+    }
+
+    /** 重新计算辅助工具的位置 */
+    recalcAuxToolPosition() {
+        if (!this._nodeId.value) return;
+        const designerContainer = this.designerState.designerContainer
+        if (!designerContainer) return;
+        const node = designerContainer.querySelector(`[${htmlExtAttr.nodeId}=${this._nodeId.value}]`);
+        if (!node) return;
+        this._position.value = calcAuxToolPosition(designerContainer, node);
     }
 
     /** 清除选择信息 */

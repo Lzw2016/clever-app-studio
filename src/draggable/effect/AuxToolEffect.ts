@@ -2,9 +2,10 @@ import { requestIdle } from "@/utils/RequestIdle";
 import { DesignerEffect } from "@/draggable/DesignerEffect";
 import { designerContent } from "@/draggable/Constant";
 import { htmlExtAttr, useHtmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
-import { AuxToolPosition } from "@/draggable/types/Designer";
+import { calcAuxToolPosition } from "@/draggable/utils/PositionCalc";
 import { MouseMoveEvent } from "@/draggable/events/cursor/MouseMoveEvent";
 import { MouseClickEvent } from "@/draggable/events/cursor/MouseClickEvent";
+import { DesignerState } from "@/draggable/models/DesignerState";
 import { Selection } from "@/draggable/models/Selection";
 
 interface NodeAndDesigner {
@@ -30,26 +31,14 @@ class AuxToolEffect extends DesignerEffect {
         this.selectionEffect();
     }
 
-    protected getNodeAndDesigner(target?: HTMLElement): NodeAndDesigner | undefined {
+    protected getNodeAndDesigner(designerState: DesignerState, target?: HTMLElement): NodeAndDesigner | undefined {
         if (!target?.closest) return;
-        const container = target.closest(designerContent) as HTMLElement;
+        let container: HTMLElement | undefined = designerState.designerContainer;
+        if (!container) container = target.closest(designerContent) as HTMLElement;
         if (!container) return;
         const element = target.closest(`[${htmlExtAttr.nodeRef}]`) as HTMLElement;
         if (!element) return;
         return { node: element, designer: container };
-    }
-
-    protected getAuxToolPosition(container: Element, element: Element): AuxToolPosition {
-        const containerRect = container.getBoundingClientRect();
-        const elementRect = element.getBoundingClientRect();
-        return {
-            height: elementRect.height - 2,
-            width: elementRect.width - 2,
-            top: elementRect.top - containerRect.top + container.scrollTop + 1,
-            left: elementRect.left - containerRect.left + container.scrollLeft + 1,
-            isTop: elementRect.top - containerRect.top < 40,
-            isBottom: (containerRect.top + containerRect.height - elementRect.top - elementRect.height) < 40,
-        };
     }
 
     /**
@@ -74,7 +63,7 @@ class AuxToolEffect extends DesignerEffect {
                 if (!designerState) return;
                 const hover = designerState.hover;
                 const target = event.data.target as HTMLElement;
-                const nodeAndDesigner = this.getNodeAndDesigner(target);
+                const nodeAndDesigner = this.getNodeAndDesigner(designerState, target);
                 if (!nodeAndDesigner) return;
                 const nodeId = useHtmlExtAttr.nodeId(nodeAndDesigner.node);
                 if (designerState.selections.some(item => item.nodeId === nodeId)) {
@@ -83,7 +72,7 @@ class AuxToolEffect extends DesignerEffect {
                 }
                 hover.componentMeta = useHtmlExtAttr.componentMeta(nodeAndDesigner.node, this.componentManage);
                 hover.nodeId = useHtmlExtAttr.nodeId(nodeAndDesigner.node);
-                hover.position = this.getAuxToolPosition(nodeAndDesigner.designer, nodeAndDesigner.node);
+                hover.position = calcAuxToolPosition(nodeAndDesigner.designer, nodeAndDesigner.node);
                 this.lastEventTarget = event.data.target;
             });
         });
@@ -99,7 +88,7 @@ class AuxToolEffect extends DesignerEffect {
             const designerState = this.designerEngine.activeDesignerState;
             if (!designerState) return;
             const target = event.data.target as HTMLElement;
-            const nodeAndDesigner = this.getNodeAndDesigner(target);
+            const nodeAndDesigner = this.getNodeAndDesigner(designerState, target);
             if (!nodeAndDesigner) return;
             const hover = designerState.hover;
             const selections = designerState.selections;
@@ -109,7 +98,7 @@ class AuxToolEffect extends DesignerEffect {
                 return;
             }
             selection.componentMeta = useHtmlExtAttr.componentMeta(nodeAndDesigner.node, this.componentManage);
-            selection.position = this.getAuxToolPosition(nodeAndDesigner.designer, nodeAndDesigner.node);
+            selection.position = calcAuxToolPosition(nodeAndDesigner.designer, nodeAndDesigner.node);
             designerState.selections.length = 0;
             selections.push(selection);
             if (hover.nodeId && selections.some(item => item.nodeId === hover.nodeId)) {
