@@ -31,15 +31,35 @@ function calcNodeToCursorDistance(position: CursorPosition, element: Element): N
     const bottom = position.clientY - elementRect.top - elementRect.height;
     const left = position.clientX - elementRect.left;
     const right = position.clientX - elementRect.left - elementRect.width;
-    const { direction } = lodash.minBy(
-        [
-            { direction: Direction.top, value: Math.abs(top) },
-            { direction: Direction.bottom, value: Math.abs(bottom) },
-            { direction: Direction.left, value: Math.abs(left) },
-            { direction: Direction.right, value: Math.abs(right) },
-        ],
-        item => item.value,
-    )!;
+    const topAbs = Math.abs(top);
+    const bottomAbs = Math.abs(bottom);
+    const leftAbs = Math.abs(left);
+    const rightAbs = Math.abs(right);
+    // 光标是否在渲染节点里面
+    const inside = top >= 0 && bottom <= 0 && left >= 0 && right <= 0 && elementRect.width > 0 && elementRect.height > 0;
+    let direction: Direction | undefined;
+    if (!inside) {
+        if (top <= 0) {
+            direction = Direction.top;
+        } else if (bottom >= 0) {
+            direction = Direction.bottom;
+        } else if (left <= 0) {
+            direction = Direction.left;
+        } else if (right >= 0) {
+            direction = Direction.right;
+        }
+    }
+    if (!direction) {
+        direction = lodash.minBy(
+            [
+                { direction: Direction.top, value: topAbs },
+                { direction: Direction.bottom, value: bottomAbs },
+                { direction: Direction.left, value: leftAbs },
+                { direction: Direction.right, value: rightAbs },
+            ],
+            item => item.value,
+        )!.direction;
+    }
     // 计算四个点的距离
     const leftTop = Math.abs(calcDistance(position.clientX, position.clientY, elementRect.left, elementRect.top));
     const leftBottom = Math.abs(calcDistance(position.clientX, position.clientY, elementRect.left, elementRect.top + elementRect.height));
@@ -58,17 +78,17 @@ function calcNodeToCursorDistance(position: CursorPosition, element: Element): N
         element: element,
         width: elementRect.width,
         height: elementRect.height,
-        top: Math.abs(top),
-        bottom: Math.abs(bottom),
-        left: Math.abs(left),
-        right: Math.abs(right),
+        top: topAbs,
+        bottom: bottomAbs,
+        left: leftAbs,
+        right: rightAbs,
         direction: direction,
         leftTop: leftTop,
         leftBottom: leftBottom,
         rightTop: rightTop,
         rightBottom: rightBottom,
         point: point,
-        inside: top >= 0 && bottom <= 0 && left >= 0 && right <= 0 && elementRect.width > 0 && elementRect.height > 0,
+        inside: inside,
         rowBlock: true,
         inlineBlock: true,
     };
