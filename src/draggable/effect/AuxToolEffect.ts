@@ -1,12 +1,16 @@
+import lodash from "lodash";
 import { requestIdle } from "@/utils/RequestIdle";
 import { DesignerEffect } from "@/draggable/DesignerEffect";
 import { designerContent } from "@/draggable/Constant";
 import { htmlExtAttr, useHtmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
-import { calcAuxToolPosition } from "@/draggable/utils/PositionCalc";
+import { calcAuxToolPosition, calcNodeToCursorDistance } from "@/draggable/utils/PositionCalc";
+import { existsPlaceholder } from "@/draggable/utils/ComponentMetaUtils";
+import { Direction, NodeToCursorDistance } from "@/draggable/types/Designer";
 import { MouseMoveEvent } from "@/draggable/events/cursor/MouseMoveEvent";
 import { MouseClickEvent } from "@/draggable/events/cursor/MouseClickEvent";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { Selection } from "@/draggable/models/Selection";
+import { DragMoveEvent } from "@/draggable/events/cursor/DragMoveEvent";
 
 interface NodeAndDesigner {
     /** 渲染节点dom */
@@ -29,6 +33,7 @@ class AuxToolEffect extends DesignerEffect {
     effect(): void {
         this.hoverDashedEffect();
         this.selectionEffect();
+        this.insertionEffect();
     }
 
     protected getNodeAndDesigner(designerState: DesignerState, target?: HTMLElement): NodeAndDesigner | undefined {
@@ -104,6 +109,79 @@ class AuxToolEffect extends DesignerEffect {
             if (hover.nodeId && selections.some(item => item.nodeId === hover.nodeId)) {
                 hover.clear();
             }
+        });
+    }
+
+    insertionEffect() {
+        // 拖动中
+        this.eventbus.subscribe(DragMoveEvent, event => {
+            console.log("insertionEffect DragMoveEvent");
+            const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
+            if (!draggingCmpMetas.existsCmpMeta) return;
+            let target = event.data.target as Element | null;
+            if (!target) return;
+            requestIdle(() => {
+                const designerState = this.designerEngine.activeDesignerState;
+                if (!designerState?.designerContainer) return;
+                const designerBlock = designerState.designerBlock;
+                if (!designerBlock) return;
+                // 找出离当前鼠标位置最近的容器组件
+                let containerNode: Element | null = null;
+                let containerId: string | undefined;
+                while (true) {
+                    if (!target) return;
+                    containerNode = target.closest(`[${htmlExtAttr.nodeId}]`);
+                    if (!containerNode) return;
+                    containerId = useHtmlExtAttr.nodeId(containerNode);
+                    if (!containerId) return;
+                    const runtimeNode = designerBlock.globalContext.allNode[containerId];
+                    if (!runtimeNode) return;
+                    const isContainer = existsPlaceholder(runtimeNode.__designPlaceholder);
+                    if (isContainer) {
+                        break;
+                    } else {
+                        if (target === containerNode) {
+                            target = containerNode.parentElement;
+                        } else {
+                            target = containerNode;
+                        }
+                    }
+                }
+                if (!containerNode || !containerId) return;
+                // 查找当前容器组件中所有 items 和 slots 位置渲染的节点
+                const nodes = containerNode.querySelectorAll(`[${htmlExtAttr.nodeParentId}=${containerId}]`);
+                const distances: Array<NodeToCursorDistance> = [];
+                nodes.forEach(node => distances.push(calcNodeToCursorDistance(event.data, node)));
+                const minDistance = lodash.minBy(distances, distance => {
+                    if (distance.rowBlock) {
+                        return Math.min(distance.top, distance.bottom);
+                    } else if (distance.inlineBlock) {
+                        return Math.min(distance.left, distance.right);
+                    }
+                    return Math.min(distance.top, distance.bottom, distance.left, distance.right);
+                });
+                if (!minDistance) {
+                    // TODO 覆盖整个 containerNode
+                    return;
+                }
+                this.designerEngine.insertion.clear();
+                this.designerEngine.insertion.distance = minDistance;
+                this.designerEngine.insertion.position = calcAuxToolPosition(designerState.designerContainer, minDistance.element);
+                this.designerEngine.insertion.containerId = containerId;
+                this.designerEngine.insertion.slotName = useHtmlExtAttr.slotName(minDistance.element);
+                this.designerEngine.insertion.nodeId = useHtmlExtAttr.nodeId(minDistance.element);
+                const { direction } = lodash.minBy(
+                    [
+                        { direction: Direction.top, value: minDistance.top },
+                        { direction: Direction.bottom, value: minDistance.bottom },
+                        { direction: Direction.left, value: minDistance.left },
+                        { direction: Direction.right, value: minDistance.right },
+                    ],
+                    item => item.value,
+                )!;
+                this.designerEngine.insertion.direction = direction;
+                console.log("@@@", this.designerEngine.insertion.distance)
+            });
         });
     }
 }

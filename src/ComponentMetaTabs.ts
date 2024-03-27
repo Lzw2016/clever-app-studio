@@ -476,7 +476,7 @@ componentManage.registerComponentMeta(createComponentMeta({
 }));
 componentManage.registerComponentMeta(createComponentMeta({
     type: "span",
-    name: "[span]容器",
+    name: "[span]",
     icon: "",
 }));
 

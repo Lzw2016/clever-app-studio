@@ -2,7 +2,7 @@
 import { computed, CSSProperties, reactive } from "vue";
 import { IconArrowDown, IconArrowUp, IconChevronLeft, IconCopy, IconSettings, IconTrash } from "@tabler/icons-vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
-import { AuxToolPosition } from "@/draggable/types/Designer";
+import { AuxToolPosition, Direction } from "@/draggable/types/Designer";
 import { DesignerState } from "@/draggable/models/DesignerState";
 
 // 定义组件选项
@@ -30,6 +30,33 @@ const hover = computed(() => props.designerState.hover);
 const hoverIsTop = computed(() => isTop(props.designerState.hover.position));
 const hoverIsBottom = computed(() => isBottom(props.designerState.hover.position));
 const hoverStyle = computed(() => positionToStyle(hover.value.position));
+const insertionStyle = computed(() => {
+    const style: CSSProperties = {};
+    const insertion = props.designerEngine.insertion;
+    console.log("@@@###", insertion.distance)
+    if (props.designerState === props.designerEngine.activeDesignerState && !insertion.isEmpty() && insertion.distance && insertion.direction && insertion.position) {
+        if ([Direction.left, Direction.top].includes(insertion.direction)) {
+            style.top = `${insertion.position.top}px`;
+            style.left = `${insertion.position.left}px`;
+        } else if (insertion.direction === Direction.right) {
+            style.top = `${insertion.position.top}px`;
+            style.left = `${insertion.position.left + insertion.position.width}px`;
+        } else if (insertion.direction === Direction.bottom) {
+            style.top = `${insertion.position.top + insertion.position.height}px`;
+            style.left = `${insertion.position.left}px`;
+        }
+        if (insertion.isHorizontal()) {
+            style.width = "2px";
+            style.height = `${insertion.distance.height}px`;
+        } else {
+            style.height = "2px";
+            style.width = `${insertion.distance.width}px`;
+        }
+    } else {
+        style.display = "none";
+    }
+    return style;
+});
 
 function positionToStyle(position?: AuxToolPosition) {
     const style: CSSProperties = {};
@@ -55,8 +82,9 @@ function isBottom(position?: AuxToolPosition) {
 
 <template>
     <div class="aux-tool">
-        <div class="aux-insertion" style="display: none;"></div>
-
+        <!-- 插入占位 -->
+        <div class="aux-insertion" :style="insertionStyle"></div>
+        <!-- 设计器鼠标悬停时的虚线 -->
         <div class="aux-dashed-box" :style="hoverStyle">
             <div
                 v-if="props.designerState.hover.componentMeta"
@@ -69,7 +97,7 @@ function isBottom(position?: AuxToolPosition) {
                 {{ props.designerState.hover.componentMeta.name }}
             </div>
             <div
-                v-if="hover.position &&  hover.position?.height > 24 && hover.position?.width > 60"
+                v-if="hover.isContainer && hover.position &&  (!hoverIsBottom || hover.position?.height > 24 && hover.position?.width > 60)"
                 :class="{
                     'mark-bottom-right': true,
                     'mark-bottom-right-up': hoverIsBottom,
@@ -79,7 +107,7 @@ function isBottom(position?: AuxToolPosition) {
                 拖放元素到容器内
             </div>
         </div>
-
+        <!-- 设计器时选择组件的实线 -->
         <div v-for="selection in props.designerState.selections" class="aux-selection-box" :style="positionToStyle(selection.position)">
             <div
                 v-if="selection.componentMeta && props.designerState.singleSelection"
@@ -117,7 +145,10 @@ function isBottom(position?: AuxToolPosition) {
                 </span>
             </div>
         </div>
-        <!--        aux-free-selection-->
+        <!-- 自由选择组件组件的边框 -->
+        <div class="aux-free-selection" style="display: none;">
+            自由选择组件
+        </div>
     </div>
 </template>
 
@@ -141,11 +172,7 @@ function isBottom(position?: AuxToolPosition) {
 
 .aux-insertion {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 1896px;
-    height: 2px;
-    background-color: #1890ff;
+    background-color: #1476ff;
 }
 
 .aux-dashed-box {

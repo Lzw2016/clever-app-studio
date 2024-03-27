@@ -1,4 +1,4 @@
-import { computed, ComputedRef, Ref, ref } from "vue";
+import { computed, ComputedRef, ShallowRef, shallowRef } from "vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 
@@ -9,7 +9,7 @@ class DraggingCmpMetas {
     /** 设计器引擎 */
     readonly designerEngine: DesignerEngine;
     /** 正在拖拽的组件元信息集合 */
-    protected readonly _cmpMetas: Ref<Array<ComponentMeta>> = ref<Array<ComponentMeta>>([]);
+    protected readonly _cmpMetas: ShallowRef<Array<ComponentMeta>> = shallowRef<Array<ComponentMeta>>([]);
     /** 存在拖拽的组件 */
     protected readonly _existsCmpMeta: ComputedRef<boolean> = computed<boolean>(() => {
         return this._cmpMetas.value.length > 0;

@@ -432,7 +432,7 @@ function _setInSlot(nodes: Array<RuntimeComponentSlotsItem>, slotName: string) {
     for (let node of nodes) {
         if (!isObj(node)) continue;
         const runtimeNode = node as RuntimeNode;
-        runtimeNode.props[htmlExtAttr.inSlot] = slotName;
+        runtimeNode.props[htmlExtAttr.slotName] = slotName;
     }
 }
 

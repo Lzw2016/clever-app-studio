@@ -8,6 +8,7 @@ import { DefComponentManage } from "@/draggable/models/DefComponentManage";
 import { Cursor } from "@/draggable/models/Cursor";
 import { DraggingCmpMetas } from "@/draggable/models/DraggingCmpMetas";
 import { DesignerState } from "@/draggable/models/DesignerState";
+import { Insertion } from "@/draggable/models/Insertion";
 
 interface DesignerEngineProps {
     /** 组件管理器 */
@@ -46,6 +47,10 @@ class DesignerEngine {
     private _activeDesignerPath: Ref<string | undefined> = ref<string>();
     /** 所有的设计器状态数据 */
     readonly allDesignerState: ShallowReactive<Record<string, DesignerState>> = shallowReactive<Record<string, DesignerState>>({});
+    /** 设计器插入组件的信息 */
+    readonly insertion: Insertion;
+    // /** 捕捉线(多选组件时的矩形线条) */
+    // private readonly _snapLine: Ref<SnapLine | undefined> = ref<SnapLine>();
 
     /** TODO 临时测试数据 */
     readonly tmp = reactive<any>({});
@@ -54,6 +59,7 @@ class DesignerEngine {
         this.props = { ...defaultProps, ...props };
         this.cursor = new Cursor(this);
         this.draggingCmpMetas = new DraggingCmpMetas(this);
+        this.insertion = new Insertion(this);
     }
 
     /** 当前活动的设计器页面路由路径(fullPath) */

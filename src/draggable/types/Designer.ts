@@ -108,6 +108,33 @@ interface AuxToolPosition extends ElementRect {
     isBottom: boolean;
 }
 
+/** 渲染节点与光标的距离信息 */
+interface NodeToCursorDistance {
+    /** 渲染节点的dom */
+    element: Element;
+    /** html元素宽(像素) */
+    width: number;
+    /** html元素高(像素) */
+    height: number;
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+    /** 光标是否在渲染节点里面 */
+    inside: boolean;
+    /** 渲染节点是否是行级块(独占一行) */
+    rowBlock: boolean;
+    /** 渲染节点是否是内联块(独占一行) */
+    inlineBlock: boolean;
+}
+
+enum Direction {
+    top,
+    bottom,
+    left,
+    right,
+}
+
 export type {
     AnyConstructor,
     DesignerEvent,
@@ -116,6 +143,7 @@ export type {
     CursorPosition,
     ElementRect,
     AuxToolPosition,
+    NodeToCursorDistance,
 }
 
 export {
@@ -123,4 +151,5 @@ export {
     DesignerCursorMode,
     DesignerLayout,
     DesignerTab,
+    Direction,
 }

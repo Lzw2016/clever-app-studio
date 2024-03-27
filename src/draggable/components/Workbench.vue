@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive } from "vue";
+import { markRaw, onMounted, onUnmounted, reactive } from "vue";
 import { globalThisPolyfill } from "@/utils/GlobalThisPolyfill";
 import { style } from "@/utils/UseType";
 import SplitPane from "@/components/SplitPane.vue";
@@ -74,7 +74,7 @@ const state = reactive({});
 // 内部数据
 const data = {};
 // 设计器引擎
-const designerEngine = new DesignerEngine({
+const designerEngine = markRaw(new DesignerEngine({
     componentManage: componentManage,
     drivers: [
         DragDropDriver,
@@ -86,7 +86,7 @@ const designerEngine = new DesignerEngine({
         DraggingEffect,
         AuxToolEffect,
     ],
-});
+}));
 setDesignerEngine(designerEngine);
 onMounted(() => {
     designerEngine.mount(document, globalThisPolyfill);

@@ -2,9 +2,8 @@ import { computed, ComputedRef, Ref, shallowReactive, ShallowReactive } from "vu
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { HoverDashed } from "@/draggable/models/HoverDashed";
 import { Selection } from "@/draggable/models/Selection";
-// import { Insertion } from "@/draggable/models/Insertion";
-// import { SnapLine } from "@/draggable/models/SnapLine";
 import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
+import { Block } from "@/draggable/BlockFactory";
 
 /**
  * 设计器状态数据
@@ -23,11 +22,6 @@ class DesignerState {
     /** selections 中只有一个选择项 */
     readonly singleSelection: ComputedRef<boolean> = computed<boolean>(() => this.selections.length === 1);
 
-    // /** 设计器插入组件的信息 */
-    // private readonly _insertion: Ref<Insertion | undefined> = ref<Insertion>();
-    // /** 捕捉线(多选组件时的矩形线条) */
-    // private readonly _snapLine: Ref<SnapLine | undefined> = ref<SnapLine>();
-
     constructor(designerEngine: DesignerEngine) {
         this.designerEngine = designerEngine;
     }
@@ -45,6 +39,11 @@ class DesignerState {
     /** 设计器组件实例 */
     get designerBlockInstance(): InstanceType<typeof RuntimeBlock> | undefined {
         return this._designerBlockInstance?.value;
+    }
+
+    /** 设计器组件Block对象 */
+    get designerBlock(): Block | undefined {
+        return this._designerBlockInstance?.value?.blockInstance;
     }
 
     /** 设计器组件实例 */
