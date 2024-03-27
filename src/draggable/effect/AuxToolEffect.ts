@@ -46,6 +46,16 @@ class AuxToolEffect extends DesignerEffect {
         return { node: element, designer: container };
     }
 
+    protected getVerticalDistance(distance: NodeToCursorDistance) {
+        if (distance.vInside) return -1;
+        return Math.min(distance.top, distance.bottom);
+    }
+
+    protected getHorizontalDistance(distance: NodeToCursorDistance) {
+        if (distance.hInside) return -1;
+        return Math.min(distance.left, distance.right);
+    }
+
     /**
      * 设计器鼠标悬停时的虚线
      */
@@ -152,27 +162,31 @@ class AuxToolEffect extends DesignerEffect {
                 const nodes = containerNode.querySelectorAll(`[${htmlExtAttr.nodeParentId}=${containerId}]`);
                 const distances: Array<NodeToCursorDistance> = [];
                 nodes.forEach(node => distances.push(calcNodeToCursorDistance(event.data, node)));
-                const minDistance = lodash.minBy(distances, distance => {
-                    if (distance.inside) return -1;
+                if (distances.length <= 0) {
+                    // TODO 覆盖整个 containerNode
+                    // console.log("@@@@###")
+                    return;
+                }
+                const minVertical = lodash.min(distances.map(distance => this.getVerticalDistance(distance)))!;
+                const verticalDistances = distances.filter(distance => this.getVerticalDistance(distance) <= minVertical);
+                const minHorizontal = lodash.min(verticalDistances.map(distance => this.getHorizontalDistance(distance)))!;
+                const horizontalDistances = verticalDistances.filter(distance => this.getHorizontalDistance(distance) <= minHorizontal);
+                const minDistance = lodash.minBy(horizontalDistances, distance => {
+                    if (distance.bothInside) return -1;
                     if (distance.point === PointDirection.leftTop) return distance.leftTop;
                     if (distance.point === PointDirection.leftBottom) return distance.leftBottom;
                     if (distance.point === PointDirection.rightTop) return distance.rightTop;
                     if (distance.point === PointDirection.rightBottom) return distance.rightBottom;
                     return Number.MAX_VALUE;
-                });
+                })!;
                 // 计算结果赋值
                 this.designerEngine.insertion.clear();
-                if (!minDistance) {
-                    // TODO 覆盖整个 containerNode
-                    console.log("@@@@###")
-                    return;
-                }
                 this.designerEngine.insertion.distance = minDistance;
                 this.designerEngine.insertion.position = calcAuxToolPosition(designerState.designerContainer, minDistance.element);
                 this.designerEngine.insertion.containerId = containerId;
                 this.designerEngine.insertion.slotName = useHtmlExtAttr.slotName(minDistance.element);
                 this.designerEngine.insertion.nodeId = useHtmlExtAttr.nodeId(minDistance.element);
-                console.log("minDistance", minDistance, distances)
+                // console.log("minDistance", minDistance, distances)
             });
         });
     }

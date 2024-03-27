@@ -36,7 +36,9 @@ function calcNodeToCursorDistance(position: CursorPosition, element: Element): N
     const leftAbs = Math.abs(left);
     const rightAbs = Math.abs(right);
     // 光标是否在渲染节点里面
-    const inside = top >= 0 && bottom <= 0 && left >= 0 && right <= 0 && elementRect.width > 0 && elementRect.height > 0;
+    const vInside = top >= 0 && bottom <= 0;
+    const hInside = left >= 0 && right <= 0;
+    const inside = vInside && hInside && elementRect.width > 0 && elementRect.height > 0;
     let direction: Direction | undefined;
     if (!inside) {
         if (top <= 0) {
@@ -82,13 +84,15 @@ function calcNodeToCursorDistance(position: CursorPosition, element: Element): N
         bottom: bottomAbs,
         left: leftAbs,
         right: rightAbs,
+        vInside: vInside,
+        hInside: hInside,
+        bothInside: inside,
         direction: direction,
         leftTop: leftTop,
         leftBottom: leftBottom,
         rightTop: rightTop,
         rightBottom: rightBottom,
         point: point,
-        inside: inside,
         rowBlock: true,
         inlineBlock: true,
     };

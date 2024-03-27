@@ -139,6 +139,12 @@ interface NodeToCursorDistance {
     left: number;
     /** 光标与渲染节点右边框的距离 */
     right: number;
+    /** 光标是否在渲染节点的在垂直区域内 */
+    vInside: boolean;
+    /** 光标是否在渲染节点的在水平区域内 */
+    hInside: boolean;
+    /** 光标是否在渲染节点里面 */
+    bothInside: boolean;
     /** 最近的边 */
     direction: Direction;
     /** 光标与渲染节点左上角的距离 */
@@ -151,8 +157,6 @@ interface NodeToCursorDistance {
     rightBottom: number;
     /** 最近的点 */
     point: PointDirection;
-    /** 光标是否在渲染节点里面 */
-    inside: boolean;
     /** 渲染节点是否是行级块(独占一行) */
     rowBlock: boolean;
     /** 渲染节点是否是内联块(独占一行) */
