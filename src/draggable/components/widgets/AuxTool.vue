@@ -52,10 +52,10 @@ const insertionStyle = computed(() => {
                 style.left = `${insertion.position.left}px`;
             }
             if (insertion.isHorizontal()) {
-                style.width = "2px";
+                style.width = "4px";
                 style.height = `${insertion.distance.height}px`;
             } else {
-                style.height = "2px";
+                style.height = "4px";
                 style.width = `${insertion.distance.width}px`;
             }
         }
