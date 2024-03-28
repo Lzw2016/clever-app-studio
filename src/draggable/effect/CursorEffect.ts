@@ -24,7 +24,7 @@ class CursorEffect extends DesignerEffect {
     dragDropCursor() {
         // 开始拖动
         this.eventbus.subscribe(DragStartEvent, event => {
-            console.log("dragDropCursor DragStartEvent");
+            // console.log("dragDropCursor DragStartEvent");
             this.originalCursor = this.getContainerCursorStyle();
             const cursor = this.designerEngine.cursor;
             cursor.status = CursorStatus.DragStart;
@@ -32,19 +32,17 @@ class CursorEffect extends DesignerEffect {
         });
         // 拖动中
         this.eventbus.subscribe(DragMoveEvent, event => {
-            console.log("dragDropCursor DragMoveEvent");
+            // console.log("dragDropCursor DragMoveEvent");
             const cursor = this.designerEngine.cursor;
             cursor.status = CursorStatus.Dragging;
             cursor.position = event.data;
             requestIdle(() => {
                 this.setContainerCursorStyle('move');
-                // const element = document.elementFromPoint(event.data.topClientX, event.data.topClientY);
-                // console.log("element", element);
             });
         });
         // 拖拽结束
         this.eventbus.subscribe(DragStopEvent, event => {
-            console.log("dragDropCursor DragStopEvent");
+            // console.log("dragDropCursor DragStopEvent");
             const cursor = this.designerEngine.cursor;
             cursor.status = CursorStatus.DragStop;
             cursor.dragEndPosition = event.data;
@@ -60,7 +58,7 @@ class CursorEffect extends DesignerEffect {
     mouseMoveCursor() {
         // 鼠标移动
         this.eventbus.subscribe(MouseMoveEvent, event => {
-            console.log("mouseMoveCursor MouseMoveEvent");
+            // console.log("mouseMoveCursor MouseMoveEvent");
             const cursor = this.designerEngine.cursor;
             if (![CursorStatus.Dragging, CursorStatus.DragStart].includes(cursor.status)) {
                 cursor.status = CursorStatus.Normal;

@@ -104,7 +104,7 @@ class DesignerEngine {
     mount(container: EventContainer, window: Window): void {
         // 先卸载
         this.unmount();
-        console.log("DesignerEngine mount");
+        // console.log("DesignerEngine mount");
         // 创建设计器功能模块集合
         const drivers = this.props.drivers.map(driver => new driver(this, container, window));
         const effects = this.props.effects.map(effect => new effect(this, container, window));
@@ -118,7 +118,7 @@ class DesignerEngine {
 
     /** 卸载当前设计器 */
     unmount(): void {
-        console.log("DesignerEngine unmount");
+        // console.log("DesignerEngine unmount");
         // 清除所有的订阅函数
         this.eventbus.clearAllSubscribe();
         // 停止当前 DesignerDriver 监听 HTMLElement 事件

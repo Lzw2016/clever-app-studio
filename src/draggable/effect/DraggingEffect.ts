@@ -17,7 +17,7 @@ class DraggingEffect extends DesignerEffect {
     draggingCmpMetasEffect() {
         // 开始拖动
         this.eventbus.subscribe(DragStartEvent, event => {
-            console.log("handleDraggingCmpMetas DragStartEvent");
+            // console.log("handleDraggingCmpMetas DragStartEvent");
             const componentMeta = event.data.componentMeta as ComponentMeta;
             if (!componentMeta) return;
             const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
@@ -25,7 +25,7 @@ class DraggingEffect extends DesignerEffect {
         });
         // 拖拽结束
         this.eventbus.subscribe(DragStopEvent, event => {
-            console.log("handleDraggingCmpMetas DragStopEvent");
+            // console.log("handleDraggingCmpMetas DragStopEvent");
             const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
             draggingCmpMetas.cmpMetas = [];
         });

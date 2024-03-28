@@ -57,13 +57,6 @@ const data: RuntimeBlockData = {
 // DesignBlock 的 vue 组件实例
 const blockInstance = ref<Block | undefined>();
 
-
-// watch(props.block, (value, oldValue, onCleanup) => {
-//
-// })
-// onBeforeUpdate(() => {
-//     console.log("onBeforeUpdate");
-// });
 defineExpose({
     /** block实例对象 */
     blockInstance: blockInstance,

@@ -86,7 +86,7 @@ class AuxToolEffect extends DesignerEffect {
             this.lastMouseMoveTime = now;
             // 在浏览器空闲时期计算
             requestIdle(() => {
-                console.log("hoverDashedEffect MouseMoveEvent");
+                // console.log("hoverDashedEffect MouseMoveEvent");
                 const designerState = this.designerEngine.activeDesignerState;
                 if (!designerState) return;
                 const hover = designerState.hover;
@@ -112,7 +112,7 @@ class AuxToolEffect extends DesignerEffect {
     selectionEffect() {
         // 鼠标单击
         this.eventbus.subscribe(MouseClickEvent, event => {
-            console.log("selectionEffect MouseClickEvent");
+            // console.log("selectionEffect MouseClickEvent");
             const designerState = this.designerEngine.activeDesignerState;
             if (!designerState) return;
             const target = event.data.target as HTMLElement;
@@ -141,7 +141,7 @@ class AuxToolEffect extends DesignerEffect {
     insertionEffect() {
         // 拖动中
         this.eventbus.subscribe(DragMoveEvent, event => {
-            console.log("insertionEffect DragMoveEvent");
+            // console.log("insertionEffect DragMoveEvent");
             const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
             if (!draggingCmpMetas.existsCmpMeta) return;
             let target = event.data.target as Element | null;
