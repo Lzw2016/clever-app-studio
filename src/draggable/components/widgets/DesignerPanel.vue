@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, CSSProperties, onMounted, reactive, ref } from "vue";
 import { RouteParams, useRoute } from "vue-router";
-import { useResizeObserver } from '@vueuse/core'
+import { ResizeObserverEntry, useResizeObserver } from '@vueuse/core'
 import { IconArrowBackUp, IconArrowForwardUp, IconArrowsMove, IconClick, IconCode, IconDeviceLaptop, IconDeviceMobile, IconDevices, IconPalette, IconPlayerPlay } from "@tabler/icons-vue";
 import { requestIdle } from "@/utils/RequestIdle";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
@@ -55,6 +55,9 @@ const state = reactive<DesignerPanelState>({
 });
 // 内部数据
 const data = {
+    /** designerContainer 上一次的矩形大小 */
+    designerContainerPreRect: null as (null | ResizeObserverEntry),
+    /** designerContainer 最后一次隐藏状态 */
     designerContainerLastHide: false,
 };
 // 撤销
@@ -97,9 +100,10 @@ onMounted(() => {
 });
 // 设计器容器大小变化时
 useResizeObserver(designerContainer, entries => {
-    const entry = entries[0];
+    const preRect = data.designerContainerPreRect;
+    const rect = entries[0];
     // designerContainer 被隐藏了
-    if (entry.contentRect.width <= 20 || entry.contentRect.height <= 20) {
+    if (rect.contentRect.width <= 20 || rect.contentRect.height <= 20) {
         data.designerContainerLastHide = true;
         return;
     }
@@ -109,8 +113,14 @@ useResizeObserver(designerContainer, entries => {
         return;
     }
     recalcAuxToolPosition();
+    // 区域变化不大就不动
+    if (preRect && Math.abs(preRect.contentRect.width - rect.contentRect.width) < 12 && Math.abs(preRect.contentRect.height - rect.contentRect.height) < 12) {
+        return;
+    }
+    data.designerContainerPreRect = rect;
     requestIdle(() => {
-        auxTool.value?.$nextTick(() => calcDesignerBlockStyle());
+        calcDesignerBlockStyle();
+        // auxTool.value?.$nextTick(() => calcDesignerBlockStyle());
     });
 });
 

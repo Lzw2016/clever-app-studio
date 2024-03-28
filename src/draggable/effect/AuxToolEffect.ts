@@ -42,7 +42,7 @@ class AuxToolEffect extends DesignerEffect {
         let container: HTMLElement | undefined = designerState.designerContainer;
         if (!container) container = target.closest(designerContent) as HTMLElement;
         if (!container) return;
-        const element = target.closest(`[${htmlExtAttr.nodeRef}]`) as HTMLElement;
+        const element = target.closest(`[${htmlExtAttr.nodeRef}]:not([${htmlExtAttr.placeholderName}])`) as HTMLElement;
         if (!element) return;
         return { node: element, designer: container };
     }
@@ -128,12 +128,13 @@ class AuxToolEffect extends DesignerEffect {
             const selections = designerState.selections;
             const selection = new Selection(designerState);
             selection.nodeId = useHtmlExtAttr.nodeId(nodeAndDesigner.node);
+            selection.parentId = useHtmlExtAttr.nodeParentId(nodeAndDesigner.node);
             if (selections.some(item => item.nodeId === selection.nodeId)) {
                 return;
             }
             selection.componentMeta = useHtmlExtAttr.componentMeta(nodeAndDesigner.node, this.componentManage);
             selection.position = calcAuxToolPosition(nodeAndDesigner.designer, nodeAndDesigner.node);
-            designerState.selections.length = 0;
+            selections.length = 0;
             selections.push(selection);
             if (hover.nodeId && selections.some(item => item.nodeId === hover.nodeId)) {
                 hover.clear();

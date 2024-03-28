@@ -529,6 +529,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         for (let id of ids) {
             const parent = this.props.nodeParent[id];
             const node = this.props.allNode[id];
+            if (!node) continue;
             const ids: Array<string> = [node.id];
             const refs: Array<string> = [node.ref];
             const parentIds: Array<string> = [];

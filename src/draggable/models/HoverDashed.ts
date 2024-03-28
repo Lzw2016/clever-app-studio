@@ -14,6 +14,8 @@ class HoverDashed {
     readonly designerState: DesignerState;
     /** 组件元信息 */
     protected readonly _componentMeta: ShallowRef<ComponentMeta | undefined> = shallowRef<ComponentMeta | undefined>();
+    /** 父组件节点id(值是：RuntimeNode.id) */
+    protected readonly _parentId: Ref<string | undefined> = ref<string | undefined>();
     /** 组件节点id(值是：RuntimeNode.id) */
     protected readonly _nodeId: Ref<string | undefined> = ref<string | undefined>();
     /** 虚线框区域位置 */
@@ -31,6 +33,16 @@ class HoverDashed {
     /** 组件元信息 */
     set componentMeta(value: ComponentMeta | undefined) {
         this._componentMeta.value = value;
+    }
+
+    /** 父组件节点id(值是：RuntimeNode.id) */
+    get parentId() {
+        return this._parentId.value;
+    }
+
+    /** 父组件节点id(值是：RuntimeNode.id) */
+    set parentId(value: string | undefined) {
+        this._parentId.value = value;
     }
 
     /** 组件节点id(值是：RuntimeNode.id) */

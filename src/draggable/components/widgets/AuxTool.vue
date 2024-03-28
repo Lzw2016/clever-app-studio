@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, CSSProperties } from "vue";
-import { IconArrowDown, IconArrowUp, IconChevronLeft, IconCopy, IconSettings, IconTrash } from "@tabler/icons-vue";
+import { IconArrowDown, IconArrowUp, IconChevronLeft, IconCopy, IconSettings, IconTrash, IconX } from "@tabler/icons-vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { AuxToolPosition, Direction } from "@/draggable/types/Designer";
 import { DesignerState } from "@/draggable/models/DesignerState";
@@ -85,6 +85,22 @@ function isTop(position?: AuxToolPosition) {
 function isBottom(position?: AuxToolPosition) {
     return position?.isBottom;
 }
+
+function cancelSelection(nodeId?: string) {
+    const selections = props.designerState.selections;
+    if (!nodeId || !selections) return;
+    const idx = selections.findIndex(selection => selection.nodeId === nodeId);
+    if (idx >= 0) selections.splice(idx, 1);
+}
+
+function delNode(nodeId?: string) {
+    const blockInstance = props.designerState.blockInstance;
+    const selections = props.designerState.selections;
+    if (!nodeId || !blockInstance) return;
+    blockInstance.blockOpsById.removeById(nodeId);
+    const idx = selections.findIndex(selection => selection.nodeId === nodeId);
+    if (idx >= 0) selections.splice(idx, 1);
+}
 </script>
 
 <template>
@@ -125,7 +141,8 @@ function isBottom(position?: AuxToolPosition) {
                 }"
             >
                 <span>{{ selection.componentMeta.name }}</span>
-                <IconSettings style="margin-left: 2px; cursor: pointer;" :size="16"/>
+                <IconSettings style="margin-left: 4px; cursor: pointer;" title="设置" :size="16"/>
+                <IconX style="margin-left: 2px; cursor: pointer;" title="取消" :size="16" @click="cancelSelection(selection.nodeId)"/>
             </div>
             <div
                 v-if="props.designerState.singleSelection"
@@ -147,7 +164,7 @@ function isBottom(position?: AuxToolPosition) {
                 <span class="mark-bottom-button" title="复制">
                     <IconCopy :size="18"/>
                 </span>
-                <span class="mark-bottom-button" title="删除">
+                <span v-if="selection.parentId" class="mark-bottom-button" title="删除" @click="delNode(selection.nodeId)">
                     <IconTrash :size="18"/>
                 </span>
             </div>
@@ -164,8 +181,6 @@ function isBottom(position?: AuxToolPosition) {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
     z-index: 2;
     pointer-events: none;
     box-sizing: border-box;
@@ -238,7 +253,7 @@ function isBottom(position?: AuxToolPosition) {
     pointer-events: all;
     position: relative;
     font-size: 14px;
-    padding: 3px 8px;
+    padding: 3px 4px;
     color: #fff;
     background: #1476ff;
     display: inline-flex;
