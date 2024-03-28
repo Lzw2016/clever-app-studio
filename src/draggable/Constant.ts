@@ -1,5 +1,6 @@
 import { CursorPosition } from "@/draggable/types/Designer";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
+import { DesignNode } from "@/draggable/types/DesignBlock";
 import { DefComponentManage } from "@/draggable/models/DefComponentManage";
 
 /** 组件管理器实例 */
@@ -9,6 +10,29 @@ const componentManage: ComponentManage = new DefComponentManage();
 const innerDirectiveNames = {
     inner_show: '__inner_show',
     inner_model: '__inner_model',
+};
+
+/** 子节点是一种特殊的插槽，名为：default */
+const childSlotName = 'default';
+
+/** 默认的占位节点 */
+const defPlaceholder: DesignNode = {
+    type: "div",
+    props: {
+        style: {
+            height: "100%",
+            width: "100%",
+            minHeight: "32px",
+            fontSize: "12px",
+            backgroundColor: "#f0f0f0",
+            color: "#a7b1bd",
+            border: "1px dotted #a7b1bd",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+        },
+    },
+    tpl: "将组件拖拽到这里",
 };
 
 /** 物料元素区域 */
@@ -36,6 +60,8 @@ const defCursorPosition: CursorPosition = {
 export {
     componentManage,
     innerDirectiveNames,
+    childSlotName,
+    defPlaceholder,
     materialItem,
     designerContent,
     draggableArea,

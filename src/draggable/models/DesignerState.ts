@@ -42,7 +42,7 @@ class DesignerState {
     }
 
     /** 设计器组件Block对象 */
-    get designerBlock(): Block | undefined {
+    get blockInstance(): Block | undefined {
         return this._designerBlockInstance?.value?.blockInstance;
     }
 

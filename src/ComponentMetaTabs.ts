@@ -9,6 +9,8 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
                 title: "通用",
                 items: [
                     { type: "Button", name: "按钮", icon: "" },
+                    { type: "div", name: "[div]容器", icon: "" },
+                    { type: "span", name: "[span]", icon: "" },
                 ],
             },
             {
@@ -203,7 +205,7 @@ function createComponentMeta(cfg: Partial<ComponentMeta>): ComponentMeta {
         version: "0.0.1",
         docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/button",
         icon: cfg.icon!,
-        defDesignNode: {},
+        defDesignNode: cfg.defDesignNode ?? {},
         events: {},
         slots: {},
         setter: {
@@ -452,6 +454,16 @@ componentManage.registerComponentMeta(createComponentMeta({
     type: "div",
     name: "[div]容器",
     icon: "",
+    defDesignNode: {
+        props: {
+            style: {
+                width: "auto",
+                height: "auto",
+                border: "1px solid #d6336c",
+                margin: "4px",
+            },
+        },
+    },
     placeholder: {
         default: true,
         // default: {
@@ -478,6 +490,18 @@ componentManage.registerComponentMeta(createComponentMeta({
     type: "span",
     name: "[span]",
     icon: "",
+    defDesignNode: {
+        props: {
+            style: {
+                display: 'inline-block',
+                width: "80px",
+                height: "40px",
+                border: "1px solid #ae3ec9",
+                margin: "4px",
+            },
+        },
+        tpl: "新span",
+    },
 }));
 
 export {

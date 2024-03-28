@@ -26,8 +26,8 @@ class DraggingEffect extends DesignerEffect {
         // 拖拽结束
         this.eventbus.subscribe(DragStopEvent, event => {
             // console.log("handleDraggingCmpMetas DragStopEvent");
-            const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
-            draggingCmpMetas.cmpMetas = [];
+            // const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
+            // draggingCmpMetas.cmpMetas = [];
         });
     }
 }

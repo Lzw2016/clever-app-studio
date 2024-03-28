@@ -1,7 +1,7 @@
 import lodash from "lodash";
 import { requestIdle } from "@/utils/RequestIdle";
 import { DesignerEffect } from "@/draggable/DesignerEffect";
-import { designerContent } from "@/draggable/Constant";
+import { childSlotName, designerContent } from "@/draggable/Constant";
 import { htmlExtAttr, useHtmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { calcAuxToolPosition, calcNodeToCursorDistance } from "@/draggable/utils/PositionCalc";
 import { existsPlaceholder } from "@/draggable/utils/ComponentMetaUtils";
@@ -12,6 +12,7 @@ import { DesignerState } from "@/draggable/models/DesignerState";
 import { Selection } from "@/draggable/models/Selection";
 import { DragMoveEvent } from "@/draggable/events/cursor/DragMoveEvent";
 import { DragStopEvent } from "@/draggable/events/cursor/DragStopEvent";
+import { DesignNode } from "@/draggable/types/DesignBlock";
 
 interface NodeAndDesigner {
     /** 渲染节点dom */
@@ -57,7 +58,7 @@ class AuxToolEffect extends DesignerEffect {
         return Math.min(distance.left, distance.right);
     }
 
-    protected setInsertion(designerState: DesignerState, containerId: string, distance: NodeToCursorDistance) {
+    protected setInsertion(designerState: DesignerState, containerId: string, distance: NodeToCursorDistance, placeholder: string = "") {
         let designerContainer = designerState.designerContainer as Element | null;
         if (!designerContainer) designerContainer = distance.element.closest(designerContent);
         if (!designerContainer) return;
@@ -65,8 +66,14 @@ class AuxToolEffect extends DesignerEffect {
         this.designerEngine.insertion.distance = distance;
         this.designerEngine.insertion.position = calcAuxToolPosition(designerContainer, distance.element);
         this.designerEngine.insertion.containerId = containerId;
-        this.designerEngine.insertion.slotName = useHtmlExtAttr.slotName(distance.element);
-        this.designerEngine.insertion.nodeId = useHtmlExtAttr.nodeId(distance.element);
+        if (lodash.trim(placeholder).length <= 0) {
+            this.designerEngine.insertion.slotName = useHtmlExtAttr.slotName(distance.element);
+            this.designerEngine.insertion.nodeId = useHtmlExtAttr.nodeId(distance.element);
+        } else {
+            this.designerEngine.insertion.slotName = placeholder;
+            this.designerEngine.insertion.nodeId = containerId;
+            this.designerEngine.insertion.placeholder = true;
+        }
     }
 
     /**
@@ -149,7 +156,7 @@ class AuxToolEffect extends DesignerEffect {
             requestIdle(() => {
                 const designerState = this.designerEngine.activeDesignerState;
                 if (!designerState?.designerContainer) return;
-                const designerBlock = designerState.designerBlock;
+                const designerBlock = designerState.blockInstance;
                 if (!designerBlock) return;
                 // event.data.target 属于 placeholder
                 const placeholder = useHtmlExtAttr.placeholderName(target);
@@ -158,8 +165,7 @@ class AuxToolEffect extends DesignerEffect {
                     const distance = calcNodeToCursorDistance(event.data, event.data.target as Element);
                     const nodeParentId = useHtmlExtAttr.nodeParentId(distance.element);
                     if (nodeParentId) {
-                        this.setInsertion(designerState, nodeParentId, distance);
-                        this.designerEngine.insertion.placeholder = true;
+                        this.setInsertion(designerState, nodeParentId, distance, placeholder);
                         return;
                     }
                 }
@@ -221,10 +227,44 @@ class AuxToolEffect extends DesignerEffect {
         });
         // 拖拽结束
         this.eventbus.subscribe(DragStopEvent, event => {
+            const insertion = this.designerEngine.insertion;
+            const before = insertion.isBefore();
+            const slotName = insertion.slotName;
+            const nodeId = insertion.nodeId;
+            const placeholder = insertion.placeholder;
+            requestIdle(() => insertion.clear());
+            console.log("@@@")
             // TODO 更新设计器 DesignBlock 对象
-            requestIdle(() => {
-                this.designerEngine.insertion.clear();
-            })
+            const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
+            const designerState = this.designerEngine.activeDesignerState;
+            if (!nodeId || !slotName || !draggingCmpMetas.existsCmpMeta || !designerState?.blockInstance) return;
+            const addNodes = draggingCmpMetas.cmpMetas.map(cmpMeta => {
+                const node: DesignNode = {
+                    ...(lodash.cloneDeep(cmpMeta.defDesignNode ?? {})),
+                    type: cmpMeta.type,
+                };
+                return node;
+            });
+            draggingCmpMetas.cmpMetas = [];
+            if (placeholder) {
+                if (slotName === childSlotName) {
+                    designerState.blockInstance.blockOpsById.appendItemsById(nodeId, addNodes);
+                } else {
+                    designerState.blockInstance.blockOpsById.appendSlotsById(nodeId, slotName, addNodes);
+                }
+            } else if (before) {
+                if (slotName === childSlotName) {
+                    designerState.blockInstance.blockOpsById.beforeAddItemsById(nodeId, addNodes);
+                } else {
+                    designerState.blockInstance.blockOpsById.beforeAddSlotsById(nodeId, slotName, addNodes);
+                }
+            } else {
+                if (slotName === childSlotName) {
+                    designerState.blockInstance.blockOpsById.afterAddItemsById(nodeId, addNodes);
+                } else {
+                    designerState.blockInstance.blockOpsById.afterAddSlotsById(nodeId, slotName, addNodes);
+                }
+            }
         });
     }
 }

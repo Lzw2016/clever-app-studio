@@ -11,6 +11,7 @@ import { CreateConfig, RenderErrType, RuntimeBlock, RuntimeBlockWatchItem, Runti
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
+import { childSlotName, defPlaceholder } from "@/draggable/Constant";
 
 /**
  * 根据 FunctionConfig 动态创建函数对象
@@ -224,26 +225,6 @@ function listenersTransform(listeners: DesignBlock["listeners"], methods: Record
     return vueListeners;
 }
 
-/** 默认的占位节点 */
-const defPlaceholder: DesignNode = {
-    type: "div",
-    props: {
-        style: {
-            height: "100%",
-            width: "100%",
-            minHeight: "32px",
-            fontSize: "12px",
-            backgroundColor: "#f0f0f0",
-            color: "#a7b1bd",
-            border: "1px dotted #a7b1bd",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-        },
-    },
-    tpl: "将组件拖拽到这里",
-};
-
 /**
  * 深度转换 DesignBlock。
  * 会转换的属性：type、listeners、slots、items、tpl、computed、watch、methods、lifeCycles
@@ -376,11 +357,11 @@ function blockDeepTransform(node: DesignNode, createConfig: CreateConfig, curren
     for (let name in slots) {
         const slot = slots[name];
         runtime.slots[name] = _deepTransformSlotsOrItems(slot, createConfig, newCurrentBlock, runtime, "slots", name);
-        if (createConfig.isDesigning) _setInSlot(runtime.slots[name], name);
+        if (createConfig.isDesigning) _setSlotName(runtime.slots[name], name);
     }
     // 递归处理 items
     runtime.items = _deepTransformSlotsOrItems(items, createConfig, newCurrentBlock, runtime, "items", "items");
-    if (createConfig.isDesigning) _setInSlot(runtime.items, "default");
+    if (createConfig.isDesigning) _setSlotName(runtime.items, childSlotName);
     // 返回数据
     return fillRuntimeBlockDefValue(runtime);
 }
@@ -429,7 +410,7 @@ function _doBlockTransform(transform: AnyFunction, runtimeBlock: RuntimeBlock, e
 }
 
 // 设置 data-in-slot 属性
-function _setInSlot(nodes: Array<RuntimeComponentSlotsItem>, slotName: string) {
+function _setSlotName(nodes: Array<RuntimeComponentSlotsItem>, slotName: string) {
     for (let node of nodes) {
         if (!isObj(node)) continue;
         const runtimeNode = node as RuntimeNode;

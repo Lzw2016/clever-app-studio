@@ -15,6 +15,8 @@ interface IdleCallbackOptions {
  * @param options   超时等选项
  */
 function requestIdle(callback: (params: IIdleDeadline) => void, options?: IdleCallbackOptions): number {
+    if (!options) options = {};
+    if (!options.timeout) options.timeout = 50;
     return globalThisPolyfill['requestIdleCallback'](callback, options);
 }
 

@@ -4,6 +4,8 @@ import { ComponentInstance } from "@/draggable/types/Base";
 import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
 import { CreateConfig, RuntimeBlock, RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { blockDeepTransform, deepTraverseNodes } from "@/draggable/utils/BlockPropsTransform";
+import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
+import { childSlotName } from "@/draggable/Constant";
 
 /** 操作选项 */
 interface Options {
@@ -405,11 +407,11 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
      * @param nodes         增加的节点集合
      * @param options       操作选项
      */
-    protected addNodesById(parent: RuntimeNode, slotName: string | null, position: InsertPosition, positionId: string | null, nodes: Array<ComponentSlotsItem>, options: Options): void {
+    protected addNodesById(parent: RuntimeNode, slotName: string, position: InsertPosition, positionId: string | null, nodes: Array<ComponentSlotsItem>, options: Options): void {
         nodes = nodes.filter(node => hasValue(node));
         slotName = lodash.trim(slotName ?? "");
         if (nodes.length <= 0) return;
-        const isSlot = slotName.length > 0;
+        const isSlot = slotName !== childSlotName;
         // 获取目标集合
         let targets: Array<RuntimeComponentSlotsItem>;
         if (isSlot) {
@@ -432,7 +434,8 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                 // 应用 defaults 属性
                 if (parent.__designNode.defaults) lodash.defaultsDeep(node, parent.__designNode.defaults);
                 // 深度转换成 RuntimeNode
-                runtimeNode = blockDeepTransform(node, this.props, this.props.runtimeBlock, this.props.runtimeBlock);
+                runtimeNode = blockDeepTransform(node, this.props, this.props.runtimeBlock, parent);
+                if (this.props.isDesigning) runtimeNode.props[htmlExtAttr.slotName] = slotName || childSlotName;
                 // 维护属性 allNode nodeParent refId
                 deepTraverseNodes(
                     runtimeNode,
@@ -485,7 +488,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
      * @param nodes         增加的节点集合
      * @param options       操作选项
      */
-    protected addNodes(parent: RuntimeNode, slotName: string | null, position: InsertPosition, positionRef: string | null, nodes: Array<ComponentSlotsItem>, options: Options): void {
+    protected addNodes(parent: RuntimeNode, slotName: string, position: InsertPosition, positionRef: string | null, nodes: Array<ComponentSlotsItem>, options: Options): void {
         const positionId = positionRef ? this.props.refId[positionRef] : null;
         if (hasValue(positionRef) && noValue(positionId)) throw new Error(`未找到ref对应的id值，ref=${positionRef}`);
         this.addNodesById(parent, slotName, position, positionId, nodes, options);
@@ -563,35 +566,35 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
     }
 
     beforeAddItemsById(beforeId: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): void {
-        this.addNodesById(this.getParentNodeById(beforeId), null, InsertPosition.before, beforeId, items, options);
+        this.addNodesById(this.getParentNodeById(beforeId), childSlotName, InsertPosition.before, beforeId, items, options);
     }
 
     afterAddItemsById(afterId: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): void {
-        this.addNodesById(this.getParentNodeById(afterId), null, InsertPosition.after, afterId, items, options);
+        this.addNodesById(this.getParentNodeById(afterId), childSlotName, InsertPosition.after, afterId, items, options);
     }
 
     firstAddItemsById(parentId: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): void {
-        this.addNodesById(this.getNodeById(parentId), null, InsertPosition.first, null, items, options);
+        this.addNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.first, null, items, options);
     }
 
     appendItemsById(parentId: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): void {
-        this.addNodesById(this.getNodeById(parentId), null, InsertPosition.last, null, items, options);
+        this.addNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.last, null, items, options);
     }
 
     beforeAddItemById(beforeId: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodesById(this.getParentNodeById(beforeId), null, InsertPosition.before, beforeId, [item], options);
+        this.addNodesById(this.getParentNodeById(beforeId), childSlotName, InsertPosition.before, beforeId, [item], options);
     }
 
     afterAddItemById(afterId: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodesById(this.getParentNodeById(afterId), null, InsertPosition.after, afterId, [item], options);
+        this.addNodesById(this.getParentNodeById(afterId), childSlotName, InsertPosition.after, afterId, [item], options);
     }
 
     firstAddItemById(parentId: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodesById(this.getNodeById(parentId), null, InsertPosition.first, null, [item], options);
+        this.addNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.first, null, [item], options);
     }
 
     appendItemById(parentId: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodesById(this.getNodeById(parentId), null, InsertPosition.last, null, [item], options);
+        this.addNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.last, null, [item], options);
     }
 
     beforeAddSlotsById(beforeId: string, slotName: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): void {
@@ -635,35 +638,35 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
     }
 
     beforeAddItems(beforeRef: string, items: ComponentSlotsItem[], options: Options = defOptions): void {
-        this.addNodes(this.getParentNode(beforeRef), null, InsertPosition.before, beforeRef, items, options);
+        this.addNodes(this.getParentNode(beforeRef), childSlotName, InsertPosition.before, beforeRef, items, options);
     }
 
     afterAddItems(afterRef: string, items: ComponentSlotsItem[], options: Options = defOptions): void {
-        this.addNodes(this.getParentNode(afterRef), null, InsertPosition.after, afterRef, items, options);
+        this.addNodes(this.getParentNode(afterRef), childSlotName, InsertPosition.after, afterRef, items, options);
     }
 
     firstAddItems(parentRef: string, items: ComponentSlotsItem[], options: Options = defOptions): void {
-        this.addNodes(this.getNode(parentRef), null, InsertPosition.first, null, items, options);
+        this.addNodes(this.getNode(parentRef), childSlotName, InsertPosition.first, null, items, options);
     }
 
     appendItems(parentRef: string, items: ComponentSlotsItem[], options: Options = defOptions): void {
-        this.addNodes(this.getNode(parentRef), null, InsertPosition.last, null, items, options);
+        this.addNodes(this.getNode(parentRef), childSlotName, InsertPosition.last, null, items, options);
     }
 
     beforeAddItem(beforeRef: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodes(this.getParentNode(beforeRef), null, InsertPosition.before, beforeRef, [item], options);
+        this.addNodes(this.getParentNode(beforeRef), childSlotName, InsertPosition.before, beforeRef, [item], options);
     }
 
     afterAddItem(afterRef: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodes(this.getParentNode(afterRef), null, InsertPosition.after, afterRef, [item], options);
+        this.addNodes(this.getParentNode(afterRef), childSlotName, InsertPosition.after, afterRef, [item], options);
     }
 
     firstAddItem(parentRef: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodes(this.getNode(parentRef), null, InsertPosition.first, null, [item], options);
+        this.addNodes(this.getNode(parentRef), childSlotName, InsertPosition.first, null, [item], options);
     }
 
     appendItem(parentRef: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodes(this.getNode(parentRef), null, InsertPosition.last, null, [item], options);
+        this.addNodes(this.getNode(parentRef), childSlotName, InsertPosition.last, null, [item], options);
     }
 
     beforeAddSlots(beforeRef: string, slotName: string, items: ComponentSlotsItem[], options: Options = defOptions): void {
