@@ -27,6 +27,8 @@ interface Block extends ComponentInstance {
 interface GlobalContext extends CreateConfig {
     /** 当前渲染的顶层 DesignBlock(原始的DesignBlock对象) */
     readonly designBlock: DesignBlock;
+    /** 当前 Block 的根级 RuntimeBlock */
+    readonly runtimeBlock?: RuntimeBlock;
     /** 当前所有的 Block vue 组件 | RuntimeBlock.ref -> Block vue组件实例 */
     readonly allBlock: Record<string, Block>;
     /** 所有的 RuntimeNode 对象 | RuntimeNode.id -> RuntimeNode */
@@ -83,6 +85,7 @@ function createBlockComponent(block: DesignBlock, config: Partial<CreateConfig> 
     try {
         // 递归处理 Block 属性，使它符合 vue 组件的规范
         runtimeBlock = blockDeepTransform(block, globalContext);
+        (globalContext as MakeWritable<GlobalContext>).runtimeBlock = runtimeBlock;
     } catch (e) {
         return createVNode(BlockRenderError, {
             msg: "解析 DesignBlock 失败",

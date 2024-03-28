@@ -154,6 +154,11 @@ class AuxToolEffect extends DesignerEffect {
             let target = event.data.target as Element | null;
             if (!target) return;
             requestIdle(() => {
+                // 光标不在 designerContent 区域内直接返回
+                if (!target?.closest || !target.closest(designerContent)) {
+                    this.designerEngine.insertion.clear();
+                    return;
+                }
                 const designerState = this.designerEngine.activeDesignerState;
                 if (!designerState?.designerContainer) return;
                 const designerBlock = designerState.blockInstance;

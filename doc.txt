@@ -56,8 +56,8 @@ tpl数据范围(优先级由上到下)
 组件拖拽时的容器规则
     1.组件通过配置ComponentMeta.placeholder属性来支持拖拽时容纳子节点或者插槽节点
     2.所有的渲染节点包含的属性：data-component-type、data-node-id、data-node-ref、data-node-parent-id
-    3.容器组件渲染时，可以拖拽组件到容器指定占位位置的节点包含的属性：data-slot-container (仅设计时才会有的属性)
-    4.如果节点在一个容器组件中，那么这个节点在包含属性：data-in-slot (仅设计时才会有的属性)
+    3.容器组件渲染时，可以拖拽组件到容器指定占位位置的节点包含的属性：data-placeholder-name (仅设计时才会有的属性)
+    4.如果节点在一个容器组件中，那么这个节点在包含属性：data-slot-name (仅设计时才会有的属性)
 
 拖拽设计器选中组件算法
     1.根据鼠标事件获取所属容器组件，基于event.target dom往外层找，找到最近的含有data-node-id属性的dom即可找到渲染节点，关键代码：target.closest('[data-node-ref]')

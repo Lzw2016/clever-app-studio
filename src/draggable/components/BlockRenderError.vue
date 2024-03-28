@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { isStr } from "@/utils/Typeof";
-import { DesignBlock } from "@/draggable/types/DesignBlock";
+import { isObj, isStr } from "@/utils/Typeof";
+import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
+import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
 import { RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 
 // 定义组件选项
@@ -17,8 +18,8 @@ interface BlockRenderErrorProps {
     errType: string;
     /** 错误配置 */
     errConfig: any;
-    /** 渲染错误的节点 */
-    node: RuntimeBlockNode | DesignBlock;
+    /** 渲染错误的节点(DesignNode or RuntimeNode or string) */
+    node: ComponentSlotsItem | RuntimeBlockNode;
     /** Error对象 */
     error?: Error;
 }
@@ -54,6 +55,17 @@ function showError() {
 }
 
 const attr: any = {};
+if (isObj(props.node)) {
+    const runtimeNode = props.node as RuntimeNode;
+    if (runtimeNode.__designNode) {
+        attr[htmlExtAttr.componentType] = runtimeNode.type;
+        attr[htmlExtAttr.nodeId] = runtimeNode.id;
+        attr[htmlExtAttr.nodeRef] = runtimeNode.ref;
+        attr[htmlExtAttr.nodeParentId] = runtimeNode.__parentId;
+        if (runtimeNode.props[htmlExtAttr.placeholderName]) attr[htmlExtAttr.placeholderName] = runtimeNode.props[htmlExtAttr.placeholderName];
+        if (runtimeNode.props[htmlExtAttr.slotName]) attr[htmlExtAttr.slotName] = runtimeNode.props[htmlExtAttr.slotName];
+    }
+}
 if (existsErrInfo) {
     attr.title = "点击查看错误信息";
     attr.onClick = showError;

@@ -258,6 +258,7 @@ function blockDeepTransform(node: DesignNode, createConfig: CreateConfig, curren
     }
     // 创建 RuntimeBlock 对象
     const runtime: any = { ...other, __designNode: node, block: isBlock, type: lodash.trim(type) };
+    if (parentNode) runtime.__parentId = parentNode.id;
     // 如果没有父级 Block 强制让当前节点为 Block
     if (!currentBlock) runtime.block = true;
     // 读取组件元信息

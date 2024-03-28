@@ -27,6 +27,8 @@ interface RuntimeNode {
     readonly __component?: string | VueComponent;
     /** 设计时的占位组件，插槽名对应占位节点，items占位名为“default” */
     readonly __designPlaceholder?: Record<"default" | string, RuntimeNode>;
+    /** 组件父组件id */
+    readonly __parentId: string;
     /** 组件唯一id */
     readonly id: string;
     /** 组件类型(HtmlTag或vue组件名称，DesignNode配置) */

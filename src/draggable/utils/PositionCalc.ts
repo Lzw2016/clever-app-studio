@@ -98,9 +98,9 @@ function calcNodeToCursorDistance(position: CursorPosition, element: Element): N
     // 光标是否在渲染节点里面
     const vInside = top >= 0 && bottom <= 0;
     const hInside = left >= 0 && right <= 0;
-    const inside = vInside && hInside && elementRect.width > 0 && elementRect.height > 0;
+    const bothInside = vInside && hInside && elementRect.width > 0 && elementRect.height > 0;
     let direction: Direction | undefined;
-    if (!inside) {
+    if (!bothInside) {
         if (top <= 0) {
             direction = Direction.top;
         } else if (bottom >= 0) {
@@ -124,15 +124,17 @@ function calcNodeToCursorDistance(position: CursorPosition, element: Element): N
     const inlineBlock = calcElementIsInlineBlock(element);
     const rowBlock = !inlineBlock;
     if (inlineBlock && [Direction.top, Direction.bottom].includes(direction)) {
-        direction = leftAbs >= rightAbs ? Direction.left : Direction.right;
+        direction = leftAbs >= rightAbs ? Direction.right : Direction.left;
     }
     if (rowBlock && [Direction.left, Direction.right].includes(direction)) {
-        direction = topAbs >= bottomAbs ? Direction.top : Direction.bottom;
+        direction = topAbs >= bottomAbs ? Direction.bottom : Direction.top;
     }
     // 如果离边框太近优先使用对应的边框
-    const minDistance = lodash.minBy(directionDistances, item => item.value,)!;
-    if (minDistance.value <= 10) {
-        direction = minDistance.direction;
+    if (bothInside) {
+        const minDistance = lodash.minBy(directionDistances, item => item.value,)!;
+        if (minDistance.value <= 10) {
+            direction = minDistance.direction;
+        }
     }
     // 计算四个点的距离
     const leftTop = Math.abs(calcDistance(position.clientX, position.clientY, elementRect.left, elementRect.top));
@@ -158,7 +160,7 @@ function calcNodeToCursorDistance(position: CursorPosition, element: Element): N
         right: rightAbs,
         vInside: vInside,
         hInside: hInside,
-        bothInside: inside,
+        bothInside: bothInside,
         direction: direction,
         leftTop: leftTop,
         leftBottom: leftBottom,
