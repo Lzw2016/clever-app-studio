@@ -6,6 +6,7 @@ interface IIdleDeadline {
 }
 
 interface IdleCallbackOptions {
+    /** 回调在 timeout 毫秒过后还没有被调用，那么回调任务将放入事件循环中排队，即使这样做有可能对性能产生负面影响 */
     timeout?: number;
 }
 
@@ -15,8 +16,6 @@ interface IdleCallbackOptions {
  * @param options   超时等选项
  */
 function requestIdle(callback: (params: IIdleDeadline) => void, options?: IdleCallbackOptions): number {
-    if (!options) options = {};
-    if (!options.timeout) options.timeout = 50;
     return globalThisPolyfill['requestIdleCallback'](callback, options);
 }
 

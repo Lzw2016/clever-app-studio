@@ -112,6 +112,7 @@ class DesignerEngine {
         this.effects.push(...effects);
         // 开始消费 EventBus 事件
         this.effects.forEach(effect => effect.effect());
+        this.eventbus.startListening();
         // 启动 DesignerDriver
         this.drivers.forEach(driver => driver.attach());
     }

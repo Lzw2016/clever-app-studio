@@ -1,5 +1,6 @@
 import { computed, ComputedRef, ShallowRef, shallowRef } from "vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { InsertionData } from "@/draggable/types/Designer";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 
 /**
@@ -18,6 +19,8 @@ class DraggingCmpMetas {
     protected readonly _onlyOne: ComputedRef<boolean> = computed<boolean>(() => {
         return this._cmpMetas.value.length === 1;
     });
+    /** 设计器插入组件的位置信息 */
+    protected readonly _insertion: ShallowRef<InsertionData | undefined> = shallowRef<InsertionData | undefined>();
 
     constructor(designerEngine: DesignerEngine) {
         this.designerEngine = designerEngine;
@@ -41,6 +44,16 @@ class DraggingCmpMetas {
     /** 当前是否只有一个组件在拖拽 */
     get onlyOne(): boolean {
         return this._onlyOne.value;
+    }
+
+    /** 设计器插入组件的位置信息 */
+    get insertion(): InsertionData | undefined {
+        return this._insertion.value;
+    }
+
+    /** 设计器插入组件的位置信息 */
+    set insertion(value: InsertionData | undefined) {
+        this._insertion.value = value;
     }
 }
 

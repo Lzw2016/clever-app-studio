@@ -22,6 +22,16 @@ interface DesignerEvent<Data = any> {
  */
 type Subscriber<Event extends DesignerEvent = DesignerEvent> = (event: Event) => void;
 
+/**
+ * 事件订阅函数(支持优先级)
+ */
+interface PrioritySubscriber<Event extends DesignerEvent = DesignerEvent> {
+    /** 优先级(越小越优先) */
+    priority: number;
+    /** 事件订阅函数 */
+    fun: Subscriber<Event>;
+}
+
 /** 监听事件的DOM元素(含Window) */
 type EventContainer = HTMLElement | Document;
 
@@ -162,15 +172,37 @@ interface NodeToCursorDistance {
     inlineBlock: boolean;
 }
 
+/**
+ * 设计器插入组件的位置信息
+ */
+interface InsertionData {
+    /** 渲染节点与光标的距离信息 */
+    distance: NodeToCursorDistance,
+    /** 插入区域位置 */
+    position: AuxToolPosition,
+    /** 容器组件节点id(值是：RuntimeNode.id) */
+    containerId: string,
+    /** 插入容器节点的插槽名称(子节点是一种特殊的插槽，名为：default) */
+    slotName: string,
+    /** 离插入位置最近的组件节点id(值是：RuntimeNode.id) */
+    nodeId: string,
+    /** 当期 node 属于占位组件 */
+    placeholder: boolean,
+    /** 是否在 nodeId 之前插入 */
+    before: boolean;
+}
+
 export type {
     AnyConstructor,
     DesignerEvent,
     Subscriber,
+    PrioritySubscriber,
     EventContainer,
     CursorPosition,
     ElementRect,
     AuxToolPosition,
     NodeToCursorDistance,
+    InsertionData,
 }
 
 export {
