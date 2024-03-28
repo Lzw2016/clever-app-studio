@@ -1,4 +1,4 @@
-import { markRaw, reactive, ref, Ref, shallowReactive, ShallowReactive } from "vue";
+import { markRaw, ref, Ref, shallowReactive, ShallowReactive } from "vue";
 import { EventBus } from "@/draggable/EventBus";
 import { DesignerDriver, DesignerDriverConstructor } from "@/draggable/DesignerDriver";
 import { DesignerEffect, DesignerEffectConstructor } from "@/draggable/DesignerEffect";
@@ -52,9 +52,6 @@ class DesignerEngine {
     // /** 捕捉线(多选组件时的矩形线条) */
     // private readonly _snapLine: Ref<SnapLine | undefined> = ref<SnapLine>();
 
-    /** TODO 临时测试数据 */
-    readonly tmp = reactive<any>({});
-
     constructor(props: Partial<DesignerEngineProps>) {
         this.props = { ...defaultProps, ...props };
         this.cursor = new Cursor(this);
@@ -69,6 +66,7 @@ class DesignerEngine {
 
     /** 当前活动的设计器页面路由路径(fullPath) */
     set activeDesignerPath(value: string | undefined) {
+        if (value && !this.allDesignerState[value]) value = undefined;
         this._activeDesignerPath.value = value;
     }
 

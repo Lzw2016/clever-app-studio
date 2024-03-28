@@ -108,9 +108,8 @@ useResizeObserver(designerContainer, entries => {
         data.designerContainerLastHide = false;
         return;
     }
-    // data.designerContainerLastHide = false;
+    recalcAuxToolPosition();
     requestIdle(() => {
-        recalcAuxToolPosition();
         auxTool.value?.$nextTick(() => calcDesignerBlockStyle());
     });
 });
