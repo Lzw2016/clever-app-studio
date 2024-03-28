@@ -28,7 +28,7 @@ interface BlockOperationById {
      * @param items     增加的节点集合
      * @param options   操作选项
      */
-    beforeAddItemsById(beforeId: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    beforeAddItemsById(beforeId: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 批量增加子节点(基于id属性)
@@ -36,7 +36,7 @@ interface BlockOperationById {
      * @param items     增加的节点集合
      * @param options   操作选项
      */
-    afterAddItemsById(afterId: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    afterAddItemsById(afterId: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 在子节点的头部批量插入节点(基于id属性)
@@ -44,7 +44,7 @@ interface BlockOperationById {
      * @param items     增加的节点集合
      * @param options   操作选项
      */
-    firstAddItemsById(parentId: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    firstAddItemsById(parentId: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 在子节点的尾部批量追加节点(基于id属性)
@@ -52,7 +52,7 @@ interface BlockOperationById {
      * @param items     增加的节点集合
      * @param options   操作选项
      */
-    appendItemsById(parentId: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    appendItemsById(parentId: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 增加一个子节点(基于id属性)
@@ -60,7 +60,7 @@ interface BlockOperationById {
      * @param item      增加的节点集合
      * @param options   操作选项
      */
-    beforeAddItemById(beforeId: string, item: ComponentSlotsItem, options?: Options): void;
+    beforeAddItemById(beforeId: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 增加一个子节点(基于id属性)
@@ -68,7 +68,7 @@ interface BlockOperationById {
      * @param item      增加的节点对象
      * @param options   操作选项
      */
-    afterAddItemById(afterId: string, item: ComponentSlotsItem, options?: Options): void;
+    afterAddItemById(afterId: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 在子节点的头部插入一个节点(基于id属性)
@@ -76,7 +76,7 @@ interface BlockOperationById {
      * @param item      增加的节点对象
      * @param options   操作选项
      */
-    firstAddItemById(parentId: string, item: ComponentSlotsItem, options?: Options): void;
+    firstAddItemById(parentId: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 在子节点的尾部追加一个节点(基于id属性)
@@ -84,7 +84,7 @@ interface BlockOperationById {
      * @param item      增加的节点对象
      * @param options   操作选项
      */
-    appendItemById(parentId: string, item: ComponentSlotsItem, options?: Options): void;
+    appendItemById(parentId: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 批量增加插槽节点(基于id属性)
@@ -93,7 +93,7 @@ interface BlockOperationById {
      * @param items     增加的节点集合
      * @param options   操作选项
      */
-    beforeAddSlotsById(beforeId: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    beforeAddSlotsById(beforeId: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 批量增加插槽节点(基于id属性)
@@ -102,7 +102,7 @@ interface BlockOperationById {
      * @param items     增加的节点集合
      * @param options   操作选项
      */
-    afterAddSlotsById(afterId: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    afterAddSlotsById(afterId: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 在插槽子节点的头部批量插入节点(基于id属性)
@@ -111,7 +111,7 @@ interface BlockOperationById {
      * @param items     增加的节点集合
      * @param options   操作选项
      */
-    firstAddSlotsById(parentId: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    firstAddSlotsById(parentId: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 在插槽子节点的尾部批量追加节点(基于id属性)
@@ -120,7 +120,7 @@ interface BlockOperationById {
      * @param items     增加的节点集合
      * @param options   操作选项
      */
-    appendSlotsById(parentId: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    appendSlotsById(parentId: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 增加一个插槽节点(基于id属性)
@@ -129,7 +129,7 @@ interface BlockOperationById {
      * @param item      增加的节点对象
      * @param options   操作选项
      */
-    beforeAddSlotById(beforeId: string, slotName: string, item: ComponentSlotsItem, options?: Options): void;
+    beforeAddSlotById(beforeId: string, slotName: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 增加一个插槽节点(基于id属性)
@@ -138,7 +138,7 @@ interface BlockOperationById {
      * @param item      增加的节点对象
      * @param options   操作选项
      */
-    afterAddSlotById(afterId: string, slotName: string, item: ComponentSlotsItem, options?: Options): void;
+    afterAddSlotById(afterId: string, slotName: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 在插槽子节点的头部插入一个节点(基于id属性)
@@ -147,7 +147,7 @@ interface BlockOperationById {
      * @param item      增加的节点对象
      * @param options   操作选项
      */
-    firstAddSlotById(parentId: string, slotName: string, item: ComponentSlotsItem, options?: Options): void;
+    firstAddSlotById(parentId: string, slotName: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 在插槽子节点的尾部追加一个节点(基于id属性)
@@ -156,21 +156,21 @@ interface BlockOperationById {
      * @param item      增加的节点对象
      * @param options   操作选项
      */
-    appendSlotById(parentId: string, slotName: string, item: ComponentSlotsItem, options?: Options): void;
+    appendSlotById(parentId: string, slotName: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 批量删除节点(基于id属性)
      * @param ids       删除的节点id集合
      * @param options   操作选项
      */
-    removeAllById(ids: Array<string>, options?: Options): void;
+    removeAllById(ids: Array<string>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 删除一个节点(基于id属性)
      * @param id        删除的节点Id
      * @param options   操作选项
      */
-    removeById(id: string, options?: Options): void;
+    removeById(id: string, options?: Options): RuntimeComponentSlotsItem | undefined;
 }
 
 /**
@@ -183,7 +183,7 @@ interface BlockOperation {
      * @param items         增加的节点集合
      * @param options       操作选项
      */
-    beforeAddItems(beforeRef: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    beforeAddItems(beforeRef: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 批量增加子节点(基于ref属性)
@@ -191,7 +191,7 @@ interface BlockOperation {
      * @param items         增加的节点集合
      * @param options       操作选项
      */
-    afterAddItems(afterRef: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    afterAddItems(afterRef: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 在子节点的头部批量插入节点(基于ref属性)
@@ -199,7 +199,7 @@ interface BlockOperation {
      * @param items         增加的节点集合
      * @param options       操作选项
      */
-    firstAddItems(parentRef: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    firstAddItems(parentRef: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 在子节点的尾部批量追加节点(基于ref属性)
@@ -207,7 +207,7 @@ interface BlockOperation {
      * @param items         增加的节点集合
      * @param options       操作选项
      */
-    appendItems(parentRef: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    appendItems(parentRef: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 增加一个子节点(基于ref属性)
@@ -215,7 +215,7 @@ interface BlockOperation {
      * @param item          增加的节点集合
      * @param options       操作选项
      */
-    beforeAddItem(beforeRef: string, item: ComponentSlotsItem, options?: Options): void;
+    beforeAddItem(beforeRef: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 增加一个子节点(基于ref属性)
@@ -223,7 +223,7 @@ interface BlockOperation {
      * @param item          增加的节点对象
      * @param options       操作选项
      */
-    afterAddItem(afterRef: string, item: ComponentSlotsItem, options?: Options): void;
+    afterAddItem(afterRef: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 在子节点的头部插入一个节点(基于ref属性)
@@ -231,7 +231,7 @@ interface BlockOperation {
      * @param item          增加的节点对象
      * @param options       操作选项
      */
-    firstAddItem(parentRef: string, item: ComponentSlotsItem, options?: Options): void;
+    firstAddItem(parentRef: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 在子节点的尾部追加一个节点(基于ref属性)
@@ -239,7 +239,7 @@ interface BlockOperation {
      * @param item          增加的节点对象
      * @param options       操作选项
      */
-    appendItem(parentRef: string, item: ComponentSlotsItem, options?: Options): void;
+    appendItem(parentRef: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 批量增加插槽节点(基于ref属性)
@@ -248,7 +248,7 @@ interface BlockOperation {
      * @param items         增加的节点集合
      * @param options       操作选项
      */
-    beforeAddSlots(beforeRef: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    beforeAddSlots(beforeRef: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 批量增加插槽节点(基于ref属性)
@@ -257,7 +257,7 @@ interface BlockOperation {
      * @param items         增加的节点集合
      * @param options       操作选项
      */
-    afterAddSlots(afterRef: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    afterAddSlots(afterRef: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 在插槽子节点的头部批量插入节点(基于ref属性)
@@ -266,7 +266,7 @@ interface BlockOperation {
      * @param items         增加的节点集合
      * @param options       操作选项
      */
-    firstAddSlots(parentRef: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    firstAddSlots(parentRef: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 在插槽子节点的尾部批量追加节点(基于ref属性)
@@ -275,7 +275,7 @@ interface BlockOperation {
      * @param items         增加的节点集合
      * @param options       操作选项
      */
-    appendSlots(parentRef: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): void;
+    appendSlots(parentRef: string, slotName: string, items: Array<ComponentSlotsItem>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 增加一个插槽节点(基于ref属性)
@@ -284,7 +284,7 @@ interface BlockOperation {
      * @param item          增加的节点对象
      * @param options       操作选项
      */
-    beforeAddSlot(beforeRef: string, slotName: string, item: ComponentSlotsItem, options?: Options): void;
+    beforeAddSlot(beforeRef: string, slotName: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 增加一个插槽节点(基于ref属性)
@@ -293,7 +293,7 @@ interface BlockOperation {
      * @param item          增加的节点对象
      * @param options       操作选项
      */
-    afterAddSlot(afterRef: string, slotName: string, item: ComponentSlotsItem, options?: Options): void;
+    afterAddSlot(afterRef: string, slotName: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 在插槽子节点的头部插入一个节点(基于ref属性)
@@ -302,7 +302,7 @@ interface BlockOperation {
      * @param item          增加的节点对象
      * @param options       操作选项
      */
-    firstAddSlot(parentRef: string, slotName: string, item: ComponentSlotsItem, options?: Options): void;
+    firstAddSlot(parentRef: string, slotName: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 在插槽子节点的尾部追加一个节点(基于ref属性)
@@ -311,21 +311,21 @@ interface BlockOperation {
      * @param item          增加的节点对象
      * @param options       操作选项
      */
-    appendSlot(parentRef: string, slotName: string, item: ComponentSlotsItem, options?: Options): void;
+    appendSlot(parentRef: string, slotName: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
      * 批量删除节点(基于ref属性)
      * @param refs          删除的节点ref集合
      * @param options       操作选项
      */
-    removeAll(refs: Array<string>, options?: Options): void;
+    removeAll(refs: Array<string>, options?: Options): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 删除一个节点(基于ref属性)
      * @param ref           删除的节点ref
      * @param options       操作选项
      */
-    remove(ref: string, options?: Options): void;
+    remove(ref: string, options?: Options): RuntimeComponentSlotsItem | undefined;
 }
 
 interface AllBlockOperationProps extends CreateConfig {
@@ -407,10 +407,10 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
      * @param nodes         增加的节点集合
      * @param options       操作选项
      */
-    protected addNodesById(parent: RuntimeNode, slotName: string, position: InsertPosition, positionId: string | null, nodes: Array<ComponentSlotsItem>, options: Options): void {
+    protected addNodesById(parent: RuntimeNode, slotName: string, position: InsertPosition, positionId: string | null, nodes: Array<ComponentSlotsItem>, options: Options): Array<RuntimeComponentSlotsItem> {
         nodes = nodes.filter(node => hasValue(node));
         slotName = lodash.trim(slotName ?? "");
-        if (nodes.length <= 0) return;
+        if (nodes.length <= 0) return [];
         const isSlot = slotName !== childSlotName;
         // 获取目标集合
         let targets: Array<RuntimeComponentSlotsItem>;
@@ -477,6 +477,8 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         }
         // 重新渲染组件
         if (!options.cancelRender) this.props.instance.$forceUpdate();
+        // 返回新增的节点
+        return runtimeNodes;
     }
 
     /**
@@ -488,10 +490,10 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
      * @param nodes         增加的节点集合
      * @param options       操作选项
      */
-    protected addNodes(parent: RuntimeNode, slotName: string, position: InsertPosition, positionRef: string | null, nodes: Array<ComponentSlotsItem>, options: Options): void {
+    protected addNodes(parent: RuntimeNode, slotName: string, position: InsertPosition, positionRef: string | null, nodes: Array<ComponentSlotsItem>, options: Options): Array<RuntimeComponentSlotsItem> {
         const positionId = positionRef ? this.props.refId[positionRef] : null;
         if (hasValue(positionRef) && noValue(positionId)) throw new Error(`未找到ref对应的id值，ref=${positionRef}`);
-        this.addNodesById(parent, slotName, position, positionId, nodes, options);
+        return this.addNodesById(parent, slotName, position, positionId, nodes, options);
     }
 
     /**
@@ -499,9 +501,10 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
      * @param ids       删除的节点id集合
      * @param options   操作选项
      */
-    protected removeNodesById(ids: Array<string>, options: Options): void {
+    protected removeNodesById(ids: Array<string>, options: Options): Array<RuntimeComponentSlotsItem> {
         ids = ids.filter(id => hasValue(id));
-        if (ids.length <= 0) return;
+        if (ids.length <= 0) return [];
+        const removeNodes: Array<RuntimeComponentSlotsItem> = [];
         const nodeInSlot: Record<string, boolean> = {};
         for (let id of ids) {
             // 获取父节点
@@ -510,7 +513,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
             // 删除 items 中的元素
             let idx = this.findNodeIdx(parent.items, id);
             if (idx >= 0) {
-                parent.items.splice(idx, 1);
+                removeNodes.push(...parent.items.splice(idx, 1));
                 nodeInSlot[id] = false;
                 continue;
             }
@@ -519,7 +522,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                 const slot = parent.slots[name];
                 idx = this.findNodeIdx(slot, id);
                 if (idx >= 0) {
-                    slot.splice(idx, 1);
+                    removeNodes.push(...slot.splice(idx, 1));
                     nodeInSlot[id] = true;
                     break;
                 }
@@ -554,6 +557,8 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         }
         // 重新渲染组件
         if (!options.cancelRender) this.props.instance.$forceUpdate();
+        // 返回删除的节点
+        return removeNodes;
     }
 
     /**
@@ -561,153 +566,189 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
      * @param refs      删除的节点ref集合
      * @param options   操作选项
      */
-    protected removeNodes(refs: Array<string>, options: Options): void {
+    protected removeNodes(refs: Array<string>, options: Options): Array<RuntimeComponentSlotsItem> {
         const ids = refs.map(ref => this.props.refId[ref]).filter(id => hasValue(id));
-        this.removeNodesById(ids, options);
+        return this.removeNodesById(ids, options);
     }
 
-    beforeAddItemsById(beforeId: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): void {
-        this.addNodesById(this.getParentNodeById(beforeId), childSlotName, InsertPosition.before, beforeId, items, options);
+    beforeAddItemsById(beforeId: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodesById(this.getParentNodeById(beforeId), childSlotName, InsertPosition.before, beforeId, items, options);
     }
 
-    afterAddItemsById(afterId: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): void {
-        this.addNodesById(this.getParentNodeById(afterId), childSlotName, InsertPosition.after, afterId, items, options);
+    afterAddItemsById(afterId: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodesById(this.getParentNodeById(afterId), childSlotName, InsertPosition.after, afterId, items, options);
     }
 
-    firstAddItemsById(parentId: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): void {
-        this.addNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.first, null, items, options);
+    firstAddItemsById(parentId: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.first, null, items, options);
     }
 
-    appendItemsById(parentId: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): void {
-        this.addNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.last, null, items, options);
+    appendItemsById(parentId: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.last, null, items, options);
     }
 
-    beforeAddItemById(beforeId: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodesById(this.getParentNodeById(beforeId), childSlotName, InsertPosition.before, beforeId, [item], options);
+    beforeAddItemById(beforeId: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodesById(this.getParentNodeById(beforeId), childSlotName, InsertPosition.before, beforeId, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    afterAddItemById(afterId: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodesById(this.getParentNodeById(afterId), childSlotName, InsertPosition.after, afterId, [item], options);
+    afterAddItemById(afterId: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodesById(this.getParentNodeById(afterId), childSlotName, InsertPosition.after, afterId, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    firstAddItemById(parentId: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.first, null, [item], options);
+    firstAddItemById(parentId: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.first, null, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    appendItemById(parentId: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.last, null, [item], options);
+    appendItemById(parentId: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.last, null, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    beforeAddSlotsById(beforeId: string, slotName: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): void {
-        this.addNodesById(this.getParentNodeById(beforeId), slotName, InsertPosition.before, beforeId, items, options);
+    beforeAddSlotsById(beforeId: string, slotName: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodesById(this.getParentNodeById(beforeId), slotName, InsertPosition.before, beforeId, items, options);
     }
 
-    afterAddSlotsById(afterId: string, slotName: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): void {
-        this.addNodesById(this.getParentNodeById(afterId), slotName, InsertPosition.after, afterId, items, options);
+    afterAddSlotsById(afterId: string, slotName: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodesById(this.getParentNodeById(afterId), slotName, InsertPosition.after, afterId, items, options);
     }
 
-    firstAddSlotsById(parentId: string, slotName: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): void {
-        this.addNodesById(this.getNodeById(parentId), slotName, InsertPosition.first, null, items, options);
+    firstAddSlotsById(parentId: string, slotName: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodesById(this.getNodeById(parentId), slotName, InsertPosition.first, null, items, options);
     }
 
-    appendSlotsById(parentId: string, slotName: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): void {
-        this.addNodesById(this.getNodeById(parentId), slotName, InsertPosition.last, null, items, options);
+    appendSlotsById(parentId: string, slotName: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodesById(this.getNodeById(parentId), slotName, InsertPosition.last, null, items, options);
     }
 
-    beforeAddSlotById(beforeId: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodesById(this.getParentNodeById(beforeId), slotName, InsertPosition.before, beforeId, [item], options);
+    beforeAddSlotById(beforeId: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodesById(this.getParentNodeById(beforeId), slotName, InsertPosition.before, beforeId, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    afterAddSlotById(afterId: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodesById(this.getParentNodeById(afterId), slotName, InsertPosition.after, afterId, [item], options);
+    afterAddSlotById(afterId: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodesById(this.getParentNodeById(afterId), slotName, InsertPosition.after, afterId, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    firstAddSlotById(parentId: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodesById(this.getNodeById(parentId), slotName, InsertPosition.first, null, [item], options);
+    firstAddSlotById(parentId: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodesById(this.getNodeById(parentId), slotName, InsertPosition.first, null, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    appendSlotById(parentId: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodesById(this.getNodeById(parentId), slotName, InsertPosition.last, null, [item], options);
+    appendSlotById(parentId: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodesById(this.getNodeById(parentId), slotName, InsertPosition.last, null, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    removeAllById(ids: Array<string>, options: Options = defOptions): void {
-        this.removeNodesById(ids, options);
+    removeAllById(ids: Array<string>, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.removeNodesById(ids, options);
     }
 
-    removeById(id: string, options: Options = defOptions): void {
-        this.removeNodesById([id], options);
+    removeById(id: string, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.removeNodesById([id], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    beforeAddItems(beforeRef: string, items: ComponentSlotsItem[], options: Options = defOptions): void {
-        this.addNodes(this.getParentNode(beforeRef), childSlotName, InsertPosition.before, beforeRef, items, options);
+    beforeAddItems(beforeRef: string, items: ComponentSlotsItem[], options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodes(this.getParentNode(beforeRef), childSlotName, InsertPosition.before, beforeRef, items, options);
     }
 
-    afterAddItems(afterRef: string, items: ComponentSlotsItem[], options: Options = defOptions): void {
-        this.addNodes(this.getParentNode(afterRef), childSlotName, InsertPosition.after, afterRef, items, options);
+    afterAddItems(afterRef: string, items: ComponentSlotsItem[], options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodes(this.getParentNode(afterRef), childSlotName, InsertPosition.after, afterRef, items, options);
     }
 
-    firstAddItems(parentRef: string, items: ComponentSlotsItem[], options: Options = defOptions): void {
-        this.addNodes(this.getNode(parentRef), childSlotName, InsertPosition.first, null, items, options);
+    firstAddItems(parentRef: string, items: ComponentSlotsItem[], options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodes(this.getNode(parentRef), childSlotName, InsertPosition.first, null, items, options);
     }
 
-    appendItems(parentRef: string, items: ComponentSlotsItem[], options: Options = defOptions): void {
-        this.addNodes(this.getNode(parentRef), childSlotName, InsertPosition.last, null, items, options);
+    appendItems(parentRef: string, items: ComponentSlotsItem[], options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodes(this.getNode(parentRef), childSlotName, InsertPosition.last, null, items, options);
     }
 
-    beforeAddItem(beforeRef: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodes(this.getParentNode(beforeRef), childSlotName, InsertPosition.before, beforeRef, [item], options);
+    beforeAddItem(beforeRef: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodes(this.getParentNode(beforeRef), childSlotName, InsertPosition.before, beforeRef, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    afterAddItem(afterRef: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodes(this.getParentNode(afterRef), childSlotName, InsertPosition.after, afterRef, [item], options);
+    afterAddItem(afterRef: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodes(this.getParentNode(afterRef), childSlotName, InsertPosition.after, afterRef, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    firstAddItem(parentRef: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodes(this.getNode(parentRef), childSlotName, InsertPosition.first, null, [item], options);
+    firstAddItem(parentRef: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodes(this.getNode(parentRef), childSlotName, InsertPosition.first, null, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    appendItem(parentRef: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodes(this.getNode(parentRef), childSlotName, InsertPosition.last, null, [item], options);
+    appendItem(parentRef: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodes(this.getNode(parentRef), childSlotName, InsertPosition.last, null, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    beforeAddSlots(beforeRef: string, slotName: string, items: ComponentSlotsItem[], options: Options = defOptions): void {
-        this.addNodes(this.getParentNode(beforeRef), slotName, InsertPosition.before, beforeRef, items, options);
+    beforeAddSlots(beforeRef: string, slotName: string, items: ComponentSlotsItem[], options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodes(this.getParentNode(beforeRef), slotName, InsertPosition.before, beforeRef, items, options);
     }
 
-    afterAddSlots(afterRef: string, slotName: string, items: ComponentSlotsItem[], options: Options = defOptions): void {
-        this.addNodes(this.getParentNode(afterRef), slotName, InsertPosition.after, afterRef, items, options);
+    afterAddSlots(afterRef: string, slotName: string, items: ComponentSlotsItem[], options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodes(this.getParentNode(afterRef), slotName, InsertPosition.after, afterRef, items, options);
     }
 
-    firstAddSlots(parentRef: string, slotName: string, items: ComponentSlotsItem[], options: Options = defOptions): void {
-        this.addNodes(this.getNode(parentRef), slotName, InsertPosition.first, null, items, options);
+    firstAddSlots(parentRef: string, slotName: string, items: ComponentSlotsItem[], options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodes(this.getNode(parentRef), slotName, InsertPosition.first, null, items, options);
     }
 
-    appendSlots(parentRef: string, slotName: string, items: ComponentSlotsItem[], options: Options = defOptions): void {
-        this.addNodes(this.getNode(parentRef), slotName, InsertPosition.last, null, items, options);
+    appendSlots(parentRef: string, slotName: string, items: ComponentSlotsItem[], options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.addNodes(this.getNode(parentRef), slotName, InsertPosition.last, null, items, options);
     }
 
-    beforeAddSlot(beforeRef: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodes(this.getParentNode(beforeRef), slotName, InsertPosition.before, beforeRef, [item], options);
+    beforeAddSlot(beforeRef: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodes(this.getParentNode(beforeRef), slotName, InsertPosition.before, beforeRef, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    afterAddSlot(afterRef: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodes(this.getParentNode(afterRef), slotName, InsertPosition.after, afterRef, [item], options);
+    afterAddSlot(afterRef: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodes(this.getParentNode(afterRef), slotName, InsertPosition.after, afterRef, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    firstAddSlot(parentRef: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodes(this.getNode(parentRef), slotName, InsertPosition.first, null, [item], options);
+    firstAddSlot(parentRef: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodes(this.getNode(parentRef), slotName, InsertPosition.first, null, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    appendSlot(parentRef: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): void {
-        this.addNodes(this.getNode(parentRef), slotName, InsertPosition.last, null, [item], options);
+    appendSlot(parentRef: string, slotName: string, item: ComponentSlotsItem, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.addNodes(this.getNode(parentRef), slotName, InsertPosition.last, null, [item], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 
-    removeAll(refs: string[], options: Options = defOptions): void {
-        this.removeNodes(refs, options);
+    removeAll(refs: string[], options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.removeNodes(refs, options);
     }
 
-    remove(ref: string, options: Options = defOptions): void {
-        this.removeNodes([ref], options);
+    remove(ref: string, options: Options = defOptions): RuntimeComponentSlotsItem | undefined {
+        const arr = this.removeNodes([ref], options);
+        if (arr.length <= 0) return;
+        return arr[0];
     }
 }
 
