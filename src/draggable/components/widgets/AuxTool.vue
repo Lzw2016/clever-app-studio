@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, CSSProperties } from "vue";
 import { IconArrowDown, IconArrowUp, IconChevronLeft, IconCopy, IconSettings, IconTrash, IconX } from "@tabler/icons-vue";
-import { getChildNodePosition, NodePosition } from "@/draggable/utils/DesignerUtils";
+import { cloneDeepRuntimeNode, getChildNodePosition, NodePosition } from "@/draggable/utils/DesignerUtils";
+import { calcAuxToolPosition } from "@/draggable/utils/PositionCalc";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { AuxToolPosition, Direction } from "@/draggable/types/Designer";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { Selection } from "@/draggable/models/Selection";
-import { calcAuxToolPosition } from "@/draggable/utils/PositionCalc";
 
 // 定义组件选项
 defineOptions({
@@ -146,34 +146,46 @@ function selectParent(selection: Selection) {
     setSelection(selection, selection.parentId);
 }
 
-function moveUp(selection: Selection) {
+function moveNode(selection: Selection, up: boolean) {
     if (!selection.nodeId) return;
     const blockInstance = props.designerState.blockInstance;
     if (!blockInstance) return;
     const pos = getNodePosition(selection);
     if (!pos) return false;
     if (pos.isItems) {
-        blockInstance.blockOpsById.moveNodeToItemBeforeById(selection.nodeId, selection.nodeId);
+        if (up) {
+            blockInstance.blockOpsById.moveNodeToItemBeforeById(selection.nodeId, selection.nodeId);
+        } else {
+            blockInstance.blockOpsById.moveNodeToItemAfterById(selection.nodeId, selection.nodeId);
+        }
     } else {
-        blockInstance.blockOpsById.moveNodeToSlotBeforeById(selection.nodeId, pos.slotName, selection.nodeId);
+        if (up) {
+            blockInstance.blockOpsById.moveNodeToSlotBeforeById(selection.nodeId, pos.slotName, selection.nodeId);
+        } else {
+            blockInstance.blockOpsById.moveNodeToSlotAfterById(selection.nodeId, pos.slotName, selection.nodeId);
+        }
     }
     // 更新 selection
     blockInstance.$nextTick(() => setSelection(selection, selection.nodeId!));
 }
 
-function moveDown(selection: Selection) {
+function copyNode(selection: Selection) {
     if (!selection.nodeId) return;
     const blockInstance = props.designerState.blockInstance;
     if (!blockInstance) return;
+    const node = blockInstance.globalContext.allNode[selection.nodeId];
+    if (!node) return;
+    const newNode = cloneDeepRuntimeNode(node, blockInstance.globalContext.nodeParent[selection.nodeId]);
+    // blockInstance.blockOpsById.afterAddItemById()
+    // TODO 严谨的处理: RuntimeNode -> DesignNode -> cloneDeep(DesignNode) -> afterAddItemById(DesignNode)
     const pos = getNodePosition(selection);
     if (!pos) return false;
-    if (pos.isItems) {
-        blockInstance.blockOpsById.moveNodeToItemAfterById(selection.nodeId, selection.nodeId);
-    } else {
-        blockInstance.blockOpsById.moveNodeToSlotAfterById(selection.nodeId, pos.slotName, selection.nodeId);
-    }
-    // 更新 selection
-    blockInstance.$nextTick(() => setSelection(selection, selection.nodeId!));
+    pos.arr.splice(pos.idx + 1, 0, newNode);
+    blockInstance.$forceUpdate();
+    blockInstance.globalContext.allNode[newNode.id] = newNode;
+    blockInstance.globalContext.nodeParent[newNode.id] = blockInstance.globalContext.nodeParent[selection.nodeId];
+    blockInstance.globalContext.nodeRefVueRef[newNode.ref] = blockInstance.globalContext.nodeRefVueRef[node.ref];
+    blockInstance.$nextTick(() => setSelection(selection, newNode.id));
 }
 
 function delNode(nodeId?: string) {
@@ -242,13 +254,13 @@ function delNode(nodeId?: string) {
                 <span v-if="selection.parentId" class="mark-bottom-button" title="选择父级" @click="selectParent(selection)">
                     <IconChevronLeft :size="18"/>
                 </span>
-                <span v-if="showMoveUp(selection)" class="mark-bottom-button" title="向前移动" @click="moveUp(selection)">
+                <span v-if="showMoveUp(selection)" class="mark-bottom-button" title="向前移动" @click="moveNode(selection, true)">
                     <IconArrowUp :size="18"/>
                 </span>
-                <span v-if="showMoveDown(selection)" class="mark-bottom-button" title="向后移动" @click="moveDown(selection)">
+                <span v-if="showMoveDown(selection)" class="mark-bottom-button" title="向后移动" @click="moveNode(selection, false)">
                     <IconArrowDown :size="18"/>
                 </span>
-                <span v-if="selection.parentId" class="mark-bottom-button" title="复制">
+                <span v-if="selection.parentId" class="mark-bottom-button" title="复制" @click="copyNode(selection)">
                     <IconCopy :size="18"/>
                 </span>
                 <span v-if="selection.parentId" class="mark-bottom-button" title="删除" @click="delNode(selection.nodeId)">

@@ -1,6 +1,10 @@
+import lodash from "lodash";
 import { isObj } from "@/utils/Typeof";
+import { createRefID, createVNodeID } from "@/utils/IDCreate";
 import { childSlotName } from "@/draggable/Constant";
+import { deepTraverseNodes } from "@/draggable/utils/BlockPropsTransform";
 import { RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 
 interface NodePosition {
     /** 子节点所插槽名 */
@@ -46,10 +50,36 @@ function getChildNodePosition(node: RuntimeNode, childId?: string): NodePosition
     };
 }
 
+/**
+ * 深度克隆 渲染节点 TODO 自己递归实现
+ * @param runtimeNode
+ * @param parentNode
+ */
+function cloneDeepRuntimeNode(runtimeNode: RuntimeNode, parentNode?: RuntimeNode): RuntimeNode {
+    const newNode = lodash.cloneDeep(runtimeNode);
+    deepTraverseNodes(
+        newNode,
+        (current, isSlot, parent) => {
+            const curr = current as MakeWritable<RuntimeNode>;
+            curr.id = createVNodeID();
+            curr.ref = createRefID();
+            if (parent) curr.__parentId = parent.id;
+            curr.props[htmlExtAttr.nodeId] = curr.id;
+            curr.props[htmlExtAttr.nodeRef] = curr.ref;
+            curr.props[htmlExtAttr.nodeParentId] = curr.__parentId;
+            curr.props[htmlExtAttr.slotName] = 'default';
+        },
+        false,
+        parentNode,
+    );
+    return newNode;
+}
+
 export type  {
     NodePosition,
 }
 
 export {
     getChildNodePosition,
+    cloneDeepRuntimeNode,
 }
