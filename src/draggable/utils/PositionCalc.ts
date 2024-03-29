@@ -74,8 +74,8 @@ function calcAuxToolPosition(container: Element, element: Element): AuxToolPosit
         width: elementRect.width - 2,
         top: elementRect.top - containerRect.top + container.scrollTop + 1,
         left: elementRect.left - containerRect.left + container.scrollLeft + 1,
-        isTop: elementRect.top - containerRect.top < 40,
-        isBottom: (containerRect.top + containerRect.height - elementRect.top - elementRect.height) < 40,
+        isTop: elementRect.top - containerRect.top < 28,
+        isBottom: (containerRect.top + containerRect.height - elementRect.top - elementRect.height) < 28,
     };
 }
 

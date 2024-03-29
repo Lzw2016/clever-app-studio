@@ -81,6 +81,9 @@ class DragDropDriver extends DesignerDriver {
             this.componentMetas.set(emptyNodeId, componentMeta);
         } else {
             element = target.closest(`[${htmlExtAttr.componentType}]`);
+            if (element && element.parentElement && useHtmlExtAttr.placeholderName(element)) {
+                element = element.parentElement.closest(`[${htmlExtAttr.componentType}]`);
+            }
             const nodeId = useHtmlExtAttr.nodeId(element);
             componentMeta = useHtmlExtAttr.componentMeta(element, this.componentManage);
             const selections = this.designerEngine.activeDesignerState?.selections;
