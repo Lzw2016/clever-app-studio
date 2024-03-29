@@ -145,7 +145,7 @@ class AuxToolEffect extends DesignerEffect {
     selectionEffect() {
         // 鼠标单击
         this.eventbus.subscribe(MouseClickEvent, event => {
-            console.log("selectionEffect MouseClickEvent");
+            // console.log("selectionEffect MouseClickEvent");
             const designerState = this.designerEngine.activeDesignerState;
             if (!designerState) return;
             const target = event.data.target as HTMLElement;
