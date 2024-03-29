@@ -751,6 +751,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
             const node = this.props.allNode[moveId];
             const parentNode = this.props.nodeParent[moveId];
             if (!parentNode) continue;
+            // 在父节点删除子节点
             let rmNodes = lodash.remove(parentNode.items, n => n === node);
             if (!rmNodes || rmNodes.length <= 0) {
                 for (let name in parentNode.slots) {
@@ -760,6 +761,9 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                     }
                 }
             }
+            // 维护节点属性 data-node-parent-id data-slot-name
+            node.props[htmlExtAttr.nodeParentId] = parent.id;
+            if (this.props.isDesigning) node.props[htmlExtAttr.slotName] = slotName;
         }
         let insertIdx = 0;
         if (InsertPosition.before === position) {
