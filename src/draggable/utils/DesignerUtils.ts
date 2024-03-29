@@ -1,51 +1,55 @@
-// import { Property } from "csstype";
-import { isValidNumber } from "@/utils/Typeof";
-import { CursorPosition } from "@/draggable/types/Designer";
+import { isObj } from "@/utils/Typeof";
+import { childSlotName } from "@/draggable/Constant";
+import { RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 
-/**
- * 计算两点之间的距离(x1 - x2)
- */
-function calcDistance(x1: number, y1: number, x2: number = 0, y2: number = 0) {
-    x2 = x2 ?? 0;
-    y2 = y2 ?? 0;
-    // 两点之间的距离公式
-    return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+interface NodePosition {
+    /** 子节点所插槽名 */
+    slotName: string;
+    /** 子节点是否在items中 */
+    isItems: boolean;
+    /** 子节点所在数组 */
+    arr: Array<RuntimeComponentSlotsItem>;
+    /** 子节点在数组中的位置 */
+    idx: number;
 }
 
 /**
- * 计算位置增量
- * @param end   结束位置
- * @param start 开始位置
+ * 查找子节点在其父节点中的所在位置信息
+ * @param node      父节点
+ * @param childId   子节点id
  */
-function calcPositionDelta(end: CursorPosition, start?: CursorPosition): CursorPosition {
-    const position: any = {};
-    for (let key in end) {
-        if (isValidNumber(end[key]) && isValidNumber(start?.[key])) {
-            position[key] = end[key] - start[key];
-        } else {
-            position[key] = end[key];
+function getChildNodePosition(node: RuntimeNode, childId?: string): NodePosition | undefined {
+    if (!childId) return;
+    let slotName: string | undefined;
+    let arr: Array<RuntimeComponentSlotsItem> = [];
+    let idx = node.items.findIndex(node => isObj(node) && (node as RuntimeNode).id === childId);
+    if (idx >= 0) {
+        slotName = childSlotName;
+        arr = node.items;
+    } else {
+        for (let name in node.slots) {
+            const slot = node.slots[name];
+            idx = slot.findIndex(node => isObj(node) && (node as RuntimeNode).id === childId);
+            if (idx >= 0) {
+                slotName = name;
+                arr = slot;
+                break;
+            }
         }
     }
-    return position;
+    if (idx < 0) return;
+    return {
+        slotName: slotName!,
+        isItems: slotName === childSlotName,
+        arr: arr,
+        idx: idx,
+    };
 }
 
-// /**
-//  * 设置全局光标样式
-//  * @param contentWindow Window对象(可能是iframe中的window)
-//  * @param cursorStyle   HTML原生 style.cursor 属性值
-//  */
-// function setCursorStyle(contentWindow: Window, cursorStyle: Property.Cursor): void {
-//     const root = contentWindow.document.getElementsByTagName('html')?.[0];
-//     const currentRoot = document.getElementsByTagName('html')?.[0];
-//     [root, currentRoot].forEach(dom => {
-//         if (dom && dom.style.cursor !== cursorStyle) {
-//             dom.style.cursor = cursorStyle;
-//         }
-//     });
-// }
+export type  {
+    NodePosition,
+}
 
 export {
-    calcDistance,
-    calcPositionDelta,
-    // setCursorStyle,
+    getChildNodePosition,
 }

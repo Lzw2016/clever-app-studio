@@ -30,7 +30,9 @@ class AuxToolEffect extends DesignerEffect {
     /** 最后一次的 event.data.target 对象 */
     private lastEventTarget: EventTarget | undefined;
     /** 最后一次鼠标移动事件事件 */
-    private lastMouseMoveTime = Date.now();
+    private lastMouseMoveTime = 0;
+    /** 最后一次触发 DragStopEvent 的时间  */
+    private lastDragStopEventTime = 0;
 
     effect(): void {
         this.hoverDashedEffect();
@@ -146,6 +148,7 @@ class AuxToolEffect extends DesignerEffect {
         // 鼠标单击
         this.eventbus.subscribe(MouseClickEvent, event => {
             // console.log("selectionEffect MouseClickEvent");
+            if (Date.now() - this.lastDragStopEventTime <= 30) return;
             const designerState = this.designerEngine.activeDesignerState;
             if (!designerState) return;
             const target = event.data.target as HTMLElement;
@@ -257,6 +260,8 @@ class AuxToolEffect extends DesignerEffect {
         });
         // 拖拽结束
         this.eventbus.subscribe(DragStopEvent, event => {
+            // console.log("insertionEffect DragStopEvent");
+            this.lastDragStopEventTime = Date.now();
             const insertion = this.designerEngine.insertion;
             const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
             draggingCmpMetas.insertion = insertion.getInsertionData();

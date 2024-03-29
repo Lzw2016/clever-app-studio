@@ -1,5 +1,6 @@
 import lodash from "lodash";
 import { AuxToolPosition, CursorPosition, Direction, NodeToCursorDistance, PointDirection } from "@/draggable/types/Designer";
+import { isValidNumber } from "@/utils/Typeof";
 
 // 默认为 inline-block 的html标签
 const inlineHtmlTags = new Set([
@@ -182,8 +183,26 @@ function calcDistance(x1: number, y1: number, x2: number = 0, y2: number = 0) {
     return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
 }
 
+/**
+ * 计算位置增量
+ * @param end   结束位置
+ * @param start 开始位置
+ */
+function calcPositionDelta(end: CursorPosition, start?: CursorPosition): CursorPosition {
+    const position: any = {};
+    for (let key in end) {
+        if (isValidNumber(end[key]) && isValidNumber(start?.[key])) {
+            position[key] = end[key] - start[key];
+        } else {
+            position[key] = end[key];
+        }
+    }
+    return position;
+}
+
 export {
     calcAuxToolPosition,
     calcNodeToCursorDistance,
     calcDistance,
+    calcPositionDelta,
 }

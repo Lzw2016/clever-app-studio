@@ -730,7 +730,10 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                 childrenIds.add(current.id);
             });
         }
+        // parent 参数错误
         if (childrenIds.has(parent.id)) return false;
+        // positionId 参数错误
+        if ([InsertPosition.before, InsertPosition.after].includes(position) && childrenIds.has(positionId!)) return false;
         moveIds = moveIds.filter(id => !childrenIds.has(id));
         if (moveIds.length <= 0) return false;
         // 获取目标集合
@@ -747,6 +750,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
             targets = parent.items;
         }
         // 移动 node
+        const targetsCopy = [...targets];
         for (let moveId of moveIds) {
             const node = this.props.allNode[moveId];
             const parentNode = this.props.nodeParent[moveId];
@@ -761,7 +765,8 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                     }
                 }
             }
-            // 维护节点属性 data-node-parent-id data-slot-name
+            // 维护节点属性 __parentId data-node-parent-id data-slot-name
+            (node as MakeWritable<RuntimeNode>).__parentId = parent.id;
             node.props[htmlExtAttr.nodeParentId] = parent.id;
             if (this.props.isDesigning) node.props[htmlExtAttr.slotName] = slotName;
         }
@@ -769,13 +774,34 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         if (InsertPosition.before === position) {
             insertIdx = targets.findIndex(node => isObj(node) && (node as RuntimeNode).id === positionId);
         } else if (InsertPosition.after === position) {
-            insertIdx = targets.findIndex(node => isObj(node) && (node as RuntimeNode).id === positionId) + 1;
+            insertIdx = targets.findIndex(node => isObj(node) && (node as RuntimeNode).id === positionId);
+            if (insertIdx >= 0) insertIdx = insertIdx + 1;
         } else if (InsertPosition.last === position) {
             insertIdx = targets.length;
         } else if (InsertPosition.first === position) {
             insertIdx = 0;
         }
-        if (insertIdx < 0) insertIdx = 0;
+        // 参数 nodeIds 中包含了 positionId，导致无法计算 insertIdx
+        if (insertIdx < 0) {
+            insertIdx = targetsCopy.findIndex(node => isObj(node) && (node as RuntimeNode).id === positionId);
+            while (!targets.includes(targetsCopy[insertIdx]) && insertIdx > 0 && insertIdx <= (targetsCopy.length - 1)) {
+                if (InsertPosition.before === position) {
+                    insertIdx--;
+                } else if (InsertPosition.after === position) {
+                    insertIdx++;
+                } else {
+                    insertIdx = 0;
+                    break;
+                }
+            }
+            if (insertIdx > 0) insertIdx = targets.findIndex(node => node === targetsCopy[insertIdx]);
+            // 修正成功 & position 是 after
+            if (insertIdx >= 0 && InsertPosition.after === position) {
+                insertIdx = insertIdx + 1;
+            }
+            // 修正失败，兜底方案
+            if (insertIdx < 0) insertIdx = 0;
+        }
         targets.splice(insertIdx, 0, ...moveIds.map(id => this.props.allNode[id]));
         // 维护属性 nodeParent nodeRefVueRef
         const parentBlockRef = this.props.nodeRefVueRef[parent.ref] ?? parent.ref;

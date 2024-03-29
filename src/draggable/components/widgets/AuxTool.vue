@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { computed, CSSProperties } from "vue";
 import { IconArrowDown, IconArrowUp, IconChevronLeft, IconCopy, IconSettings, IconTrash, IconX } from "@tabler/icons-vue";
+import { getChildNodePosition, NodePosition } from "@/draggable/utils/DesignerUtils";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { AuxToolPosition, Direction } from "@/draggable/types/Designer";
 import { DesignerState } from "@/draggable/models/DesignerState";
+import { Selection } from "@/draggable/models/Selection";
+import { calcAuxToolPosition } from "@/draggable/utils/PositionCalc";
 
 // 定义组件选项
 defineOptions({
@@ -87,11 +90,90 @@ function isBottom(position?: AuxToolPosition) {
     return position?.isBottom;
 }
 
+function getNodePosition(selection: Selection): NodePosition | undefined {
+    if (!selection.parentId || !selection.nodeId) return;
+    const blockInstance = props.designerState.blockInstance;
+    if (!blockInstance) return;
+    const parentNode = blockInstance.globalContext.allNode[selection.parentId]
+    if (!parentNode) return;
+    return getChildNodePosition(parentNode, selection.nodeId);
+}
+
+function showMoveUp(selection: Selection) {
+    const pos = getNodePosition(selection);
+    if (!pos) return false;
+    return pos.idx > 0;
+}
+
+function showMoveDown(selection: Selection) {
+    const pos = getNodePosition(selection);
+    if (!pos) return false;
+    return pos.idx < (pos.arr.length - 1);
+}
+
 function cancelSelection(nodeId?: string) {
     const selections = props.designerState.selections;
     if (!nodeId || !selections) return;
     const idx = selections.findIndex(selection => selection.nodeId === nodeId);
     if (idx >= 0) selections.splice(idx, 1);
+}
+
+function setSelection(selection: Selection, nodeId: string) {
+    const idx = props.designerState.selections.findIndex(item => item === selection);
+    if (idx < 0) return;
+    if (!props.designerState.designerContainer) return;
+    if (!selection.nodeId) return;
+    const blockInstance = props.designerState.blockInstance;
+    if (!blockInstance) return;
+    const node = blockInstance.globalContext.allNode[nodeId];
+    if (!node) return;
+    const blockRef = blockInstance.globalContext.nodeRefVueRef[node.ref] ?? node.ref;
+    const block = blockInstance.globalContext.allBlock[blockRef];
+    if (!block) return;
+    let nodeEl = block.$refs[node.ref];
+    if (!nodeEl) return;
+    if (nodeEl.$el) nodeEl = nodeEl.$el as any;
+    const newSelection = new Selection(props.designerState);
+    newSelection.nodeId = node.id;
+    newSelection.parentId = node.__parentId;
+    newSelection.componentMeta = props.designerEngine.props.componentManage.getComponentMeta(node.type);
+    newSelection.position = calcAuxToolPosition(props.designerState.designerContainer, nodeEl);
+    props.designerState.selections.splice(idx, 1, newSelection);
+}
+
+function selectParent(selection: Selection) {
+    if (!selection.parentId) return;
+    setSelection(selection, selection.parentId);
+}
+
+function moveUp(selection: Selection) {
+    if (!selection.nodeId) return;
+    const blockInstance = props.designerState.blockInstance;
+    if (!blockInstance) return;
+    const pos = getNodePosition(selection);
+    if (!pos) return false;
+    if (pos.isItems) {
+        blockInstance.blockOpsById.moveNodeToItemBeforeById(selection.nodeId, selection.nodeId);
+    } else {
+        blockInstance.blockOpsById.moveNodeToSlotBeforeById(selection.nodeId, pos.slotName, selection.nodeId);
+    }
+    // 更新 selection
+    blockInstance.$nextTick(() => setSelection(selection, selection.nodeId!));
+}
+
+function moveDown(selection: Selection) {
+    if (!selection.nodeId) return;
+    const blockInstance = props.designerState.blockInstance;
+    if (!blockInstance) return;
+    const pos = getNodePosition(selection);
+    if (!pos) return false;
+    if (pos.isItems) {
+        blockInstance.blockOpsById.moveNodeToItemAfterById(selection.nodeId, selection.nodeId);
+    } else {
+        blockInstance.blockOpsById.moveNodeToSlotAfterById(selection.nodeId, pos.slotName, selection.nodeId);
+    }
+    // 更新 selection
+    blockInstance.$nextTick(() => setSelection(selection, selection.nodeId!));
 }
 
 function delNode(nodeId?: string) {
@@ -157,16 +239,16 @@ function delNode(nodeId?: string) {
                     'mark-bottom-right-down': !isBottom(selection.position),
                 }"
             >
-                <span class="mark-bottom-button" title="选择父级">
+                <span v-if="selection.parentId" class="mark-bottom-button" title="选择父级" @click="selectParent(selection)">
                     <IconChevronLeft :size="18"/>
                 </span>
-                <span class="mark-bottom-button" title="向上移动">
+                <span v-if="showMoveUp(selection)" class="mark-bottom-button" title="向前移动" @click="moveUp(selection)">
                     <IconArrowUp :size="18"/>
                 </span>
-                <span class="mark-bottom-button" title="向下移动">
+                <span v-if="showMoveDown(selection)" class="mark-bottom-button" title="向后移动" @click="moveDown(selection)">
                     <IconArrowDown :size="18"/>
                 </span>
-                <span class="mark-bottom-button" title="复制">
+                <span v-if="selection.parentId" class="mark-bottom-button" title="复制">
                     <IconCopy :size="18"/>
                 </span>
                 <span v-if="selection.parentId" class="mark-bottom-button" title="删除" @click="delNode(selection.nodeId)">
