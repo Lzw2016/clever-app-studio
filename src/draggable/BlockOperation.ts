@@ -87,6 +87,70 @@ interface BlockOperationById {
     appendItemById(parentId: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
+     * 批量移动节点到指定的子节点前面(基于id属性)
+     * @param beforeId      移动的目标位置，在指定的兄弟节点之前
+     * @param moveNodeIds   需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodesToItemBeforeById(beforeId: string, moveNodeIds: Array<string>, options?: Options): boolean;
+
+    /**
+     * 批量移动节点到指定的子节点后面(基于id属性)
+     * @param afterId       移动的目标位置，在指定的兄弟节点之后
+     * @param moveNodeIds   需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodesToItemAfterById(afterId: string, moveNodeIds: Array<string>, options?: Options): boolean;
+
+    /**
+     * 批量移动节点到指定节点的子节点头部(基于id属性)
+     * @param parentId      移动的目标位置，父节点id
+     * @param moveNodeIds   需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodesToItemFirstById(parentId: string, moveNodeIds: Array<string>, options?: Options): boolean;
+
+    /**
+     * 批量移动节点到指定节点的子节点尾部(基于id属性)
+     * @param parentId      移动的目标位置，父节点id
+     * @param moveNodeIds   需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodesToItemLastById(parentId: string, moveNodeIds: Array<string>, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定的子节点前面(基于id属性)
+     * @param beforeId      移动的目标位置，在指定的兄弟节点之前
+     * @param moveNodeId    需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodeToItemBeforeById(beforeId: string, moveNodeId: string, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定的子节点后面(基于id属性)
+     * @param afterId       移动的目标位置，在指定的兄弟节点之后
+     * @param moveNodeId    需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodeToItemAfterById(afterId: string, moveNodeId: string, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定节点的子节点头部(基于id属性)
+     * @param parentId      移动的目标位置，父节点id
+     * @param moveNodeId    需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodeToItemFirstById(parentId: string, moveNodeId: string, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定节点的子节点尾部(基于id属性)
+     * @param parentId      移动的目标位置，父节点id
+     * @param moveNodeId    需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodeToItemLastById(parentId: string, moveNodeId: string, options?: Options): boolean;
+
+    /**
      * 批量增加插槽节点(基于id属性)
      * @param beforeId  增加节点的位置，在指定的兄弟节点之前
      * @param slotName  插槽名
@@ -157,6 +221,78 @@ interface BlockOperationById {
      * @param options   操作选项
      */
     appendSlotById(parentId: string, slotName: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
+
+    /**
+     * 批量移动节点到指定的插槽节点前面(基于id属性)
+     * @param beforeId      移动的目标位置，在指定的兄弟节点之前
+     * @param slotName      插槽名
+     * @param moveNodeIds   需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodesToSlotBeforeById(beforeId: string, slotName: string, moveNodeIds: Array<string>, options?: Options): boolean;
+
+    /**
+     * 批量移动节点到指定的插槽节点后面(基于id属性)
+     * @param afterId       移动的目标位置，在指定的兄弟节点之后
+     * @param slotName      插槽名
+     * @param moveNodeIds   需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodesToSlotAfterById(afterId: string, slotName: string, moveNodeIds: Array<string>, options?: Options): boolean;
+
+    /**
+     * 批量移动节点到指定节点的插槽节点头部(基于id属性)
+     * @param parentId      移动的目标位置，父节点id
+     * @param slotName      插槽名
+     * @param moveNodeIds   需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodesToSlotFirstById(parentId: string, slotName: string, moveNodeIds: Array<string>, options?: Options): boolean;
+
+    /**
+     * 批量移动节点到指定节点的插槽节点尾部(基于id属性)
+     * @param parentId      移动的目标位置，父节点id
+     * @param slotName      插槽名
+     * @param moveNodeIds   需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodesToSlotLastById(parentId: string, slotName: string, moveNodeIds: Array<string>, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定的插槽节点前面(基于id属性)
+     * @param beforeId      移动的目标位置，在指定的兄弟节点之前
+     * @param slotName      插槽名
+     * @param moveNodeId    需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodeToSlotBeforeById(beforeId: string, slotName: string, moveNodeId: string, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定的插槽节点后面(基于id属性)
+     * @param afterId       移动的目标位置，在指定的兄弟节点之后
+     * @param slotName      插槽名
+     * @param moveNodeId    需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodeToSlotAfterById(afterId: string, slotName: string, moveNodeId: string, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定节点的插槽节点头部(基于id属性)
+     * @param parentId      移动的目标位置，父节点id
+     * @param slotName      插槽名
+     * @param moveNodeId    需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodeToSlotFirstById(parentId: string, slotName: string, moveNodeId: string, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定节点的插槽节点尾部(基于id属性)
+     * @param parentId      移动的目标位置，父节点id
+     * @param slotName      插槽名
+     * @param moveNodeId    需要移动的节点id
+     * @param options       操作选项
+     */
+    moveNodeToSlotLastById(parentId: string, slotName: string, moveNodeId: string, options?: Options): boolean;
 
     /**
      * 批量删除节点(基于id属性)
@@ -330,15 +466,15 @@ interface BlockOperation {
 
 interface AllBlockOperationProps extends CreateConfig {
     /** 当前的 RuntimeBlock 对象 */
-    runtimeBlock: RuntimeBlock;
+    readonly runtimeBlock: RuntimeBlock;
     /** 当前 RuntimeBlock 对应的 vue 组件实例 */
-    instance: ComponentInstance;
+    readonly instance: ComponentInstance;
     /** 所有的 RuntimeNode 对象 | RuntimeNode.id -> RuntimeNode */
-    allNode: Record<string, RuntimeNode>;
+    readonly allNode: Record<string, RuntimeNode>;
     /** 所有的 RuntimeNode 与其父节点关系 | RuntimeNode.id -> 所属的RuntimeNode */
-    nodeParent: Record<string, RuntimeNode>;
+    readonly nodeParent: Record<string, RuntimeNode>;
     /** ref属性与id属性的映射 | RuntimeNode.ref -> RuntimeNode.id */
-    refId: Record<string, string>;
+    readonly refId: Record<string, string>;
     /** 渲染节点的ref与所属Block实例的ref之间的映射 | RuntimeNode.ref -> allBlock.ref */
     readonly nodeRefVueRef: Record<string, string>;
 }
@@ -436,7 +572,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                 // 深度转换成 RuntimeNode
                 runtimeNode = blockDeepTransform(node, this.props, this.props.runtimeBlock, parent);
                 if (this.props.isDesigning) runtimeNode.props[htmlExtAttr.slotName] = slotName || childSlotName;
-                // 维护属性 allNode nodeParent refId
+                // 维护属性 allNode nodeParent refId nodeRefVueRef
                 deepTraverseNodes(
                     runtimeNode,
                     (current, isSlot, parentNode, currentBlock) => {
@@ -528,7 +664,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                 }
             }
         }
-        // 维护属性 allNode nodeParent refId
+        // 维护属性 allNode nodeParent refId nodeRefVueRef
         for (let id of ids) {
             const parent = this.props.nodeParent[id];
             const node = this.props.allNode[id];
@@ -539,7 +675,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
             if (node.items.length > 0 || Object.keys(node.slots).length > 0) parentIds.push(node.id);
             deepTraverseNodes(
                 node,
-                current => {
+                (current, isSlot, parent1, currentBlock) => {
                     ids.push(current.id);
                     refs.push(current.ref);
                     if (current.items.length > 0 || Object.keys(current.slots).length > 0) parentIds.push(current.id);
@@ -569,6 +705,103 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
     protected removeNodes(refs: Array<string>, options: Options): Array<RuntimeComponentSlotsItem> {
         const ids = refs.map(ref => this.props.refId[ref]).filter(id => hasValue(id));
         return this.removeNodesById(ids, options);
+    }
+
+    /**
+     * 批量移动节点
+     * @param parent        父节点
+     * @param slotName      插槽名称(存在表示是节点增加到插槽)
+     * @param position      插入位置
+     * @param positionId    beforeId or afterId
+     * @param nodeIds       移动的节点id
+     * @param options       操作选项
+     */
+    protected moveNodesById(parent: RuntimeNode, slotName: string, position: InsertPosition, positionId: string | null, nodeIds: Array<string>, options: Options): boolean {
+        if (!nodeIds || nodeIds.length <= 0) return false;
+        if ([InsertPosition.before, InsertPosition.after].includes(position) && (!positionId || !this.props.allNode[positionId])) return false;
+        const childrenIds: Set<string> = new Set<string>();
+        let moveIds: Array<string> = [];
+        for (let id of nodeIds) {
+            const runtimeNode = this.props.allNode[id];
+            if (!runtimeNode) continue;
+            moveIds.push(id);
+            deepTraverseNodes(runtimeNode, current => {
+                if (nodeIds.includes(current.id)) return;
+                childrenIds.add(current.id);
+            });
+        }
+        if (childrenIds.has(parent.id)) return false;
+        moveIds = moveIds.filter(id => !childrenIds.has(id));
+        if (moveIds.length <= 0) return false;
+        // 获取目标集合
+        let targets: Array<RuntimeComponentSlotsItem>;
+        const isSlot = slotName !== childSlotName;
+        if (isSlot) {
+            targets = parent.slots[slotName];
+            if (!targets) {
+                targets = [];
+                parent.slots[slotName] = targets;
+                // throw new Error(`slot不存在，slotName=${slotName}`);
+            }
+        } else {
+            targets = parent.items;
+        }
+        // 移动 node
+        for (let moveId of moveIds) {
+            const node = this.props.allNode[moveId];
+            const parentNode = this.props.nodeParent[moveId];
+            if (!parentNode) continue;
+            let rmNodes = lodash.remove(parentNode.items, n => n === node);
+            if (!rmNodes || rmNodes.length <= 0) {
+                for (let name in parentNode.slots) {
+                    rmNodes = lodash.remove(parentNode.slots[name], n => n === node);
+                    if (rmNodes && rmNodes.length > 0) {
+                        break;
+                    }
+                }
+            }
+        }
+        let insertIdx = 0;
+        if (InsertPosition.before === position) {
+            insertIdx = targets.findIndex(node => isObj(node) && (node as RuntimeNode).id === positionId);
+        } else if (InsertPosition.after === position) {
+            insertIdx = targets.findIndex(node => isObj(node) && (node as RuntimeNode).id === positionId) + 1;
+        } else if (InsertPosition.last === position) {
+            insertIdx = targets.length;
+        } else if (InsertPosition.first === position) {
+            insertIdx = 0;
+        }
+        if (insertIdx < 0) insertIdx = 0;
+        targets.splice(insertIdx, 0, ...moveIds.map(id => this.props.allNode[id]));
+        // 维护属性 nodeParent nodeRefVueRef
+        const parentBlockRef = this.props.nodeRefVueRef[parent.ref] ?? parent.ref;
+        for (let moveId of moveIds) {
+            const moveRef = this.props.allNode[moveId].ref;
+            delete this.props.nodeParent[moveId];
+            this.props.nodeParent[moveId] = parent;
+            // 不属于同一个 Block
+            if (moveRef !== parentBlockRef) {
+                delete this.props.nodeRefVueRef[moveId];
+                this.props.nodeRefVueRef[moveId] = parentBlockRef;
+            }
+        }
+        // 重新渲染组件
+        if (!options.cancelRender) this.props.instance.$forceUpdate();
+        return true;
+    }
+
+    /**
+     * 批量移动节点
+     * @param parent        父节点
+     * @param slotName      插槽名称(存在表示是节点增加到插槽)
+     * @param position      插入位置
+     * @param positionRef   beforeRef or afterRef
+     * @param nodeRefs      移动的节点ref
+     * @param options       操作选项
+     */
+    protected moveNodes(parent: RuntimeNode, slotName: string, position: InsertPosition, positionRef: string | null, nodeRefs: Array<string>, options: Options): boolean {
+        if (!nodeRefs || nodeRefs.length <= 0) return false;
+        return this.moveNodesById(parent, slotName, position, positionRef ? this.props.refId[positionRef] : null, nodeRefs.map(ref => this.props.refId[ref]), options);
     }
 
     beforeAddItemsById(beforeId: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
@@ -611,6 +844,38 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         return arr[0];
     }
 
+    moveNodesToItemBeforeById(beforeId: string, moveNodeIds: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getParentNodeById(beforeId), childSlotName, InsertPosition.before, beforeId, moveNodeIds, options);
+    }
+
+    moveNodesToItemAfterById(afterId: string, moveNodeIds: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getParentNodeById(afterId), childSlotName, InsertPosition.after, afterId, moveNodeIds, options);
+    }
+
+    moveNodesToItemFirstById(parentId: string, moveNodeIds: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.first, parentId, moveNodeIds, options);
+    }
+
+    moveNodesToItemLastById(parentId: string, moveNodeIds: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.last, parentId, moveNodeIds, options);
+    }
+
+    moveNodeToItemBeforeById(beforeId: string, moveNodeId: string, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getParentNodeById(beforeId), childSlotName, InsertPosition.before, beforeId, [moveNodeId], options);
+    }
+
+    moveNodeToItemAfterById(afterId: string, moveNodeId: string, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getParentNodeById(afterId), childSlotName, InsertPosition.after, afterId, [moveNodeId], options);
+    }
+
+    moveNodeToItemFirstById(parentId: string, moveNodeId: string, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.first, parentId, [moveNodeId], options);
+    }
+
+    moveNodeToItemLastById(parentId: string, moveNodeId: string, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getNodeById(parentId), childSlotName, InsertPosition.last, parentId, [moveNodeId], options);
+    }
+
     beforeAddSlotsById(beforeId: string, slotName: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
         return this.addNodesById(this.getParentNodeById(beforeId), slotName, InsertPosition.before, beforeId, items, options);
     }
@@ -649,6 +914,38 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         const arr = this.addNodesById(this.getNodeById(parentId), slotName, InsertPosition.last, null, [item], options);
         if (arr.length <= 0) return;
         return arr[0];
+    }
+
+    moveNodesToSlotBeforeById(beforeId: string, slotName: string, moveNodeIds: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getParentNodeById(beforeId), slotName, InsertPosition.before, beforeId, moveNodeIds, options);
+    }
+
+    moveNodesToSlotAfterById(afterId: string, slotName: string, moveNodeIds: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getParentNodeById(afterId), slotName, InsertPosition.after, afterId, moveNodeIds, options);
+    }
+
+    moveNodesToSlotFirstById(parentId: string, slotName: string, moveNodeIds: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getNodeById(parentId), slotName, InsertPosition.first, parentId, moveNodeIds, options);
+    }
+
+    moveNodesToSlotLastById(parentId: string, slotName: string, moveNodeIds: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getNodeById(parentId), slotName, InsertPosition.last, parentId, moveNodeIds, options);
+    }
+
+    moveNodeToSlotBeforeById(beforeId: string, slotName: string, moveNodeId: string, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getParentNodeById(beforeId), slotName, InsertPosition.before, beforeId, [moveNodeId], options);
+    }
+
+    moveNodeToSlotAfterById(afterId: string, slotName: string, moveNodeId: string, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getParentNodeById(afterId), slotName, InsertPosition.after, afterId, [moveNodeId], options);
+    }
+
+    moveNodeToSlotFirstById(parentId: string, slotName: string, moveNodeId: string, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getNodeById(parentId), slotName, InsertPosition.first, parentId, [moveNodeId], options);
+    }
+
+    moveNodeToSlotLastById(moveNodeId: string, parentId: string, slotName: string, options: Options = defOptions): boolean {
+        return this.moveNodesById(this.getNodeById(parentId), slotName, InsertPosition.last, parentId, [moveNodeId], options);
     }
 
     removeAllById(ids: Array<string>, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {

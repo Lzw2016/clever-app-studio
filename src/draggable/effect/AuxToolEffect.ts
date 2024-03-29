@@ -145,7 +145,7 @@ class AuxToolEffect extends DesignerEffect {
     selectionEffect() {
         // 鼠标单击
         this.eventbus.subscribe(MouseClickEvent, event => {
-            // console.log("selectionEffect MouseClickEvent");
+            console.log("selectionEffect MouseClickEvent");
             const designerState = this.designerEngine.activeDesignerState;
             if (!designerState) return;
             const target = event.data.target as HTMLElement;
@@ -156,9 +156,7 @@ class AuxToolEffect extends DesignerEffect {
             const selection = new Selection(designerState);
             selection.nodeId = useHtmlExtAttr.nodeId(nodeAndDesigner.node);
             selection.parentId = useHtmlExtAttr.nodeParentId(nodeAndDesigner.node);
-            if (selections.some(item => item.nodeId === selection.nodeId)) {
-                return;
-            }
+            if (selections.some(item => item.nodeId === selection.nodeId)) return;
             selection.componentMeta = useHtmlExtAttr.componentMeta(nodeAndDesigner.node, this.componentManage);
             selection.position = calcAuxToolPosition(nodeAndDesigner.designer, nodeAndDesigner.node);
             selections.length = 0;
@@ -260,9 +258,8 @@ class AuxToolEffect extends DesignerEffect {
         // 拖拽结束
         this.eventbus.subscribe(DragStopEvent, event => {
             const insertion = this.designerEngine.insertion;
-            if (insertion.isEmpty()) return;
             const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
-            if (insertion.distance) draggingCmpMetas.insertion = insertion.getInsertionData();
+            draggingCmpMetas.insertion = insertion.getInsertionData();
             requestIdle(() => insertion.clear());
         });
     }

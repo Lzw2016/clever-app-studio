@@ -96,6 +96,13 @@ class Cursor {
     get dragStartToEndDelta() {
         return this._dragStartToEndDelta.value;
     }
+
+    /**
+     * 当前是否处于拖拽中
+     */
+    isDragging() {
+        return this._status.value === CursorStatus.Dragging;
+    }
 }
 
 export {

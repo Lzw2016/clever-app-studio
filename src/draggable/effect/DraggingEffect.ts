@@ -1,6 +1,6 @@
 import lodash from "lodash";
-import { isObj } from "@/utils/Typeof";
-import { childSlotName } from "@/draggable/Constant";
+import { hasValue, isObj } from "@/utils/Typeof";
+import { childSlotName, emptyNodeId } from "@/draggable/Constant";
 import { calcAuxToolPosition } from "@/draggable/utils/PositionCalc";
 import { DesignerEffect } from "@/draggable/DesignerEffect";
 import { DesignNode } from "@/draggable/types/DesignBlock";
@@ -43,33 +43,59 @@ class DraggingEffect extends DesignerEffect {
             const insertion = draggingCmpMetas.insertion;
             const blockInstance = designerState?.blockInstance;
             if (!insertion || !draggingCmpMetas.existsCmpMeta || !blockInstance) return;
-            // 插入新nodes
+            // 更新设计器渲染节点
             const { placeholder, slotName, nodeId, before } = insertion;
-            const addNodes = draggingCmpMetas.cmpMetas.map(cmpMeta => {
-                const node: DesignNode = {
-                    ...(lodash.cloneDeep(cmpMeta.defDesignNode ?? {})),
-                    type: cmpMeta.type,
-                };
-                return node;
-            });
-            let addItems: Array<RuntimeComponentSlotsItem>;
-            if (placeholder) {
-                if (slotName === childSlotName) {
-                    addItems = blockInstance.blockOpsById.appendItemsById(nodeId, addNodes);
+            let selectionNodes: Array<RuntimeComponentSlotsItem>;
+            const moveNodeIds = draggingCmpMetas.nodeIds.filter(id => id !== emptyNodeId);
+            if (moveNodeIds.length > 0) {
+                selectionNodes = moveNodeIds.map(id => blockInstance.globalContext.allNode[id]).filter(node => hasValue(node));
+                // 移动节点
+                if (placeholder) {
+                    if (slotName === childSlotName) {
+                        blockInstance.blockOpsById.moveNodesToItemFirstById(nodeId, moveNodeIds);
+                    } else {
+                        blockInstance.blockOpsById.moveNodesToSlotFirstById(nodeId, slotName, moveNodeIds);
+                    }
+                } else if (before) {
+                    if (slotName === childSlotName) {
+                        blockInstance.blockOpsById.moveNodesToItemBeforeById(nodeId, moveNodeIds);
+                    } else {
+                        blockInstance.blockOpsById.moveNodesToSlotBeforeById(nodeId, slotName, moveNodeIds);
+                    }
                 } else {
-                    addItems = blockInstance.blockOpsById.appendSlotsById(nodeId, slotName, addNodes);
-                }
-            } else if (before) {
-                if (slotName === childSlotName) {
-                    addItems = blockInstance.blockOpsById.beforeAddItemsById(nodeId, addNodes);
-                } else {
-                    addItems = blockInstance.blockOpsById.beforeAddSlotsById(nodeId, slotName, addNodes);
+                    if (slotName === childSlotName) {
+                        blockInstance.blockOpsById.moveNodesToItemAfterById(nodeId, moveNodeIds);
+                    } else {
+                        blockInstance.blockOpsById.moveNodesToSlotAfterById(nodeId, slotName, moveNodeIds);
+                    }
                 }
             } else {
-                if (slotName === childSlotName) {
-                    addItems = blockInstance.blockOpsById.afterAddItemsById(nodeId, addNodes);
+                // 插入新nodes
+                const addNodes = draggingCmpMetas.cmpMetas.map(cmpMeta => {
+                    const node: DesignNode = {
+                        ...(lodash.cloneDeep(cmpMeta.defDesignNode ?? {})),
+                        type: cmpMeta.type,
+                    };
+                    return node;
+                });
+                if (placeholder) {
+                    if (slotName === childSlotName) {
+                        selectionNodes = blockInstance.blockOpsById.appendItemsById(nodeId, addNodes);
+                    } else {
+                        selectionNodes = blockInstance.blockOpsById.appendSlotsById(nodeId, slotName, addNodes);
+                    }
+                } else if (before) {
+                    if (slotName === childSlotName) {
+                        selectionNodes = blockInstance.blockOpsById.beforeAddItemsById(nodeId, addNodes);
+                    } else {
+                        selectionNodes = blockInstance.blockOpsById.beforeAddSlotsById(nodeId, slotName, addNodes);
+                    }
                 } else {
-                    addItems = blockInstance.blockOpsById.afterAddSlotsById(nodeId, slotName, addNodes);
+                    if (slotName === childSlotName) {
+                        selectionNodes = blockInstance.blockOpsById.afterAddItemsById(nodeId, addNodes);
+                    } else {
+                        selectionNodes = blockInstance.blockOpsById.afterAddSlotsById(nodeId, slotName, addNodes);
+                    }
                 }
             }
             // 清空 cmpMetas
@@ -78,9 +104,9 @@ class DraggingEffect extends DesignerEffect {
             if (designerState.designerContainer) {
                 const designerContainer = designerState.designerContainer;
                 blockInstance.$nextTick(() => {
-                    const addRuntimeNodes = addItems.filter(node => isObj(node)) as Array<RuntimeNode>;
+                    const addRuntimeNodes = selectionNodes.filter(node => isObj(node)) as Array<RuntimeNode>;
                     for (let node of addRuntimeNodes) {
-                        let blockRef = blockInstance.globalContext.nodeRefVueRef[node.ref];
+                        let blockRef = blockInstance.globalContext.nodeRefVueRef[node.ref] ?? node.ref;
                         if (!blockRef) continue;
                         const block = blockInstance.globalContext.allBlock[blockRef];
                         if (!block) continue;

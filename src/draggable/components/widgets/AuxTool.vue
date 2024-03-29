@@ -26,6 +26,7 @@ const props = withDefaults(defineProps<AuxToolProps>(), {});
 // 内部数据
 // const data = {};
 
+const isDragging = computed(() => props.designerEngine.cursor.isDragging());
 const hover = computed(() => props.designerState.hover);
 const hoverIsTop = computed(() => isTop(props.designerState.hover.position));
 const hoverIsBottom = computed(() => isBottom(props.designerState.hover.position));
@@ -131,7 +132,7 @@ function delNode(nodeId?: string) {
             </div>
         </div>
         <!-- 设计器时选择组件的实线 -->
-        <div v-for="selection in props.designerState.selections" class="aux-selection-box" :style="positionToStyle(selection.position)">
+        <div v-if="!isDragging" v-for="selection in props.designerState.selections" class="aux-selection-box" :style="positionToStyle(selection.position)">
             <div
                 v-if="selection.componentMeta && props.designerState.singleSelection"
                 :class="{

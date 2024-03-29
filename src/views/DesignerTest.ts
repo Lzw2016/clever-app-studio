@@ -1,6 +1,8 @@
 import { Block, defineDesignBlock } from "@/draggable/BlockFactory";
 import { DesignBlock } from "@/draggable/types/DesignBlock";
 
+let count = 1;
+
 function createDiv(designBlock?: Partial<DesignBlock>) {
     return defineDesignBlock({
         ref: designBlock?.ref,
@@ -42,7 +44,8 @@ function createSpan(designBlock?: Partial<DesignBlock>) {
         },
         items: [
             ...(designBlock?.items as any ?? []),
-        ]
+        ],
+        tpl: designBlock?.items ? undefined : `${count++}`,
     });
 }
 
