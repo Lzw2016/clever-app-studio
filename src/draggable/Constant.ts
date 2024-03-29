@@ -12,6 +12,9 @@ const innerDirectiveNames = {
     inner_model: '__inner_model',
 };
 
+/** 逻辑上的空node id */
+const emptyNodeId = "__empty_node_id";
+
 /** 子节点是一种特殊的插槽，名为：default */
 const childSlotName = 'default';
 
@@ -60,6 +63,7 @@ const defCursorPosition: CursorPosition = {
 export {
     componentManage,
     innerDirectiveNames,
+    emptyNodeId,
     childSlotName,
     defPlaceholder,
     materialItem,

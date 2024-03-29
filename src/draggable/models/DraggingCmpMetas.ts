@@ -9,6 +9,8 @@ import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 class DraggingCmpMetas {
     /** 设计器引擎 */
     readonly designerEngine: DesignerEngine;
+    /** 正在拖拽的节点ID集合(与 _cmpMetas集合 顺序一一对应) */
+    protected readonly _nodeIds: ShallowRef<Array<string>> = shallowRef<Array<string>>([]);
     /** 正在拖拽的组件元信息集合 */
     protected readonly _cmpMetas: ShallowRef<Array<ComponentMeta>> = shallowRef<Array<ComponentMeta>>([]);
     /** 存在拖拽的组件 */
@@ -24,6 +26,16 @@ class DraggingCmpMetas {
 
     constructor(designerEngine: DesignerEngine) {
         this.designerEngine = designerEngine;
+    }
+
+    /** 正在拖拽的节点ID集合(与 _cmpMetas集合 顺序一一对应) */
+    get nodeIds() {
+        return this._nodeIds.value;
+    }
+
+    /** 正在拖拽的节点ID集合(与 _cmpMetas集合 顺序一一对应) */
+    set nodeIds(value: Array<string>) {
+        this._nodeIds.value = value;
     }
 
     /** 正在拖拽的组件元信息集合 */

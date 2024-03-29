@@ -1,11 +1,11 @@
 import { noValue } from "@/utils/Typeof";
-import { materialItem } from "@/draggable/Constant";
+import { emptyNodeId, materialItem } from "@/draggable/Constant";
 import { calcDistance } from "@/draggable/utils/DesignerUtils";
 import { DesignerDriver } from "@/draggable/DesignerDriver";
 import { DragStopEvent } from "@/draggable/events/cursor/DragStopEvent";
 import { DragStartEvent } from "@/draggable/events/cursor/DragStartEvent";
 import { DragMoveEvent } from "@/draggable/events/cursor/DragMoveEvent";
-import { useHtmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
+import { htmlExtAttr, useHtmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 
 interface DragState {
@@ -25,8 +25,8 @@ interface DragState {
  */
 class DragDropDriver extends DesignerDriver {
     private readonly dragState: DragState = this.initGlobalState();
-    /** 正在拖拽的组件元信息 */
-    private componentMeta?: ComponentMeta;
+    /** 正在拖拽的组件元信息集合 Map<nodeId, ComponentMeta> */
+    private componentMetas: Map<string, ComponentMeta> = new Map<string, ComponentMeta>();
 
     protected initGlobalState(): DragState {
         return {
@@ -72,10 +72,31 @@ class DragDropDriver extends DesignerDriver {
         // if (!existsParent) {
         //     return;
         // }
-        const element = target.closest(materialItem);
-        const componentMeta = useHtmlExtAttr.componentMeta(element, this.componentManage);
-        if (!componentMeta) return;
-        this.componentMeta = componentMeta;
+        this.componentMetas.clear();
+        // 拖拽物料组件
+        let element = target.closest(materialItem);
+        let componentMeta = useHtmlExtAttr.componentMeta(element, this.componentManage);
+        if (componentMeta) {
+            // 拖拽物料组件
+            this.componentMetas.set(emptyNodeId, componentMeta);
+        } else {
+            element = target.closest(`[${htmlExtAttr.componentType}]`);
+            const nodeId = useHtmlExtAttr.nodeId(element);
+            componentMeta = useHtmlExtAttr.componentMeta(element, this.componentManage);
+            const selections = this.designerEngine.activeDesignerState?.selections;
+            if (componentMeta && selections && selections.some(selection => nodeId === selection.nodeId)) {
+                // 拖拽选中的渲染节点
+                selections.forEach(selection => {
+                    if (selection.nodeId && selection.componentMeta) {
+                        this.componentMetas.set(selection.nodeId, selection.componentMeta);
+                    }
+                });
+            } else if (nodeId && componentMeta) {
+                // 拖拽渲染节点
+                this.componentMetas.set(nodeId, componentMeta);
+            }
+        }
+        if (this.componentMetas.size <= 0) return;
         // 设置拖拽状态
         this.dragState.startEvent = event;
         this.dragState.dragging = false;
@@ -145,7 +166,7 @@ class DragDropDriver extends DesignerDriver {
         // 分发开始拖拽事件
         const dragStartEvent = new DragStartEvent(this.dragState.startEvent);
         // 正在拖拽的组件元信息
-        dragStartEvent.data.componentMeta = this.componentMeta;
+        dragStartEvent.data.componentMetas = this.componentMetas;
         this.eventbus.dispatch(dragStartEvent);
         this.dragState.dragging = true;
     }

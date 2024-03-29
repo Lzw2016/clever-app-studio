@@ -25,10 +25,15 @@ class DraggingEffect extends DesignerEffect {
         // 开始拖动
         this.eventbus.subscribe(DragStartEvent, event => {
             // console.log("handleDraggingCmpMetas DragStartEvent");
-            const componentMeta = event.data.componentMeta as ComponentMeta;
-            if (!componentMeta) return;
+            const componentMetas = event.data.componentMetas as Map<string, ComponentMeta>;
+            if (componentMetas.size <= 0) return;
             const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
-            draggingCmpMetas.cmpMetas = [componentMeta];
+            draggingCmpMetas.cmpMetas = [];
+            draggingCmpMetas.nodeIds = [];
+            componentMetas.forEach((meta, nodeId) => {
+                draggingCmpMetas.cmpMetas.push(meta);
+                draggingCmpMetas.nodeIds.push(nodeId);
+            });
         });
         // 拖拽结束
         this.eventbus.subscribe(DragStopEvent, event => {

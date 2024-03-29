@@ -5,6 +5,7 @@ import { designerContent } from "@/draggable/Constant";
 import { htmlExtAttr, useHtmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { calcAuxToolPosition, calcNodeToCursorDistance } from "@/draggable/utils/PositionCalc";
 import { existsPlaceholder } from "@/draggable/utils/ComponentMetaUtils";
+import { deepTraverseNodes } from "@/draggable/utils/BlockPropsTransform";
 import { NodeToCursorDistance, PointDirection } from "@/draggable/types/Designer";
 import { MouseMoveEvent } from "@/draggable/events/cursor/MouseMoveEvent";
 import { MouseClickEvent } from "@/draggable/events/cursor/MouseClickEvent";
@@ -62,17 +63,43 @@ class AuxToolEffect extends DesignerEffect {
         if (!designerContainer) designerContainer = distance.element.closest(designerContent);
         if (!designerContainer) return;
         this.designerEngine.insertion.clear();
+        const isPlaceholder = lodash.trim(placeholder).length > 0;
+        let nodeId: string;
+        if (isPlaceholder) {
+            nodeId = containerId;
+        } else {
+            nodeId = useHtmlExtAttr.nodeId(distance.element)!;
+        }
+        if (this.nodeIsSelfOrInside(nodeId, this.designerEngine.draggingCmpMetas.nodeIds)) {
+            return;
+        }
         this.designerEngine.insertion.distance = distance;
         this.designerEngine.insertion.position = calcAuxToolPosition(designerContainer, distance.element);
+        this.designerEngine.insertion.nodeId = nodeId
         this.designerEngine.insertion.containerId = containerId;
-        if (lodash.trim(placeholder).length <= 0) {
-            this.designerEngine.insertion.slotName = useHtmlExtAttr.slotName(distance.element);
-            this.designerEngine.insertion.nodeId = useHtmlExtAttr.nodeId(distance.element);
-        } else {
+        if (isPlaceholder) {
+            // 占位节点
             this.designerEngine.insertion.slotName = placeholder;
-            this.designerEngine.insertion.nodeId = containerId;
             this.designerEngine.insertion.placeholder = true;
+        } else {
+            // 正常节点
+            this.designerEngine.insertion.slotName = useHtmlExtAttr.slotName(distance.element);
         }
+    }
+
+    protected nodeIsSelfOrInside(nodeId: string, ids: Array<string>) {
+        if (ids.includes(nodeId)) return true;
+        const blockInstance = this.designerEngine.activeDesignerState?.blockInstance;
+        if (blockInstance) {
+            const allIds: Set<string> = new Set<string>();
+            for (let id of ids) {
+                const runtimeNode = blockInstance.globalContext.allNode[id];
+                if (!runtimeNode) continue;
+                deepTraverseNodes(runtimeNode, current => allIds.add(current.id));
+            }
+            return allIds.has(nodeId);
+        }
+        return false;
     }
 
     /**
@@ -233,18 +260,9 @@ class AuxToolEffect extends DesignerEffect {
         // 拖拽结束
         this.eventbus.subscribe(DragStopEvent, event => {
             const insertion = this.designerEngine.insertion;
+            if (insertion.isEmpty()) return;
             const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
-            if (insertion.distance) {
-                draggingCmpMetas.insertion = {
-                    distance: insertion.distance,
-                    position: insertion.position!,
-                    containerId: insertion.containerId!,
-                    slotName: insertion.slotName!,
-                    nodeId: insertion.nodeId!,
-                    placeholder: insertion.placeholder!,
-                    before: insertion.isBefore(),
-                };
-            }
+            if (insertion.distance) draggingCmpMetas.insertion = insertion.getInsertionData();
             requestIdle(() => insertion.clear());
         });
     }

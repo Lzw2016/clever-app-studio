@@ -1,7 +1,7 @@
 import { ref, Ref, ShallowRef, shallowRef } from "vue";
 import { noValue } from "@/utils/Typeof";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
-import { AuxToolPosition, Direction, NodeToCursorDistance } from "@/draggable/types/Designer";
+import { AuxToolPosition, Direction, InsertionData, NodeToCursorDistance } from "@/draggable/types/Designer";
 
 /**
  * 设计器插入组件的信息
@@ -106,6 +106,20 @@ class Insertion {
     /** 当前是否是空的 */
     isEmpty() {
         return noValue(this._distance.value?.direction);
+    }
+
+    /** 设计器插入组件的位置信息 */
+    getInsertionData(): InsertionData | undefined {
+        if (this.isEmpty()) return;
+        return {
+            distance: this.distance!,
+            position: this.position!,
+            containerId: this.containerId!,
+            slotName: this.slotName!,
+            nodeId: this.nodeId!,
+            placeholder: this.placeholder!,
+            before: this.isBefore(),
+        };
     }
 
     /** 清除插入信息 */
