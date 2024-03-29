@@ -141,8 +141,12 @@ function delNode(nodeId?: string) {
                 }"
             >
                 <span>{{ selection.componentMeta.name }}</span>
-                <IconSettings style="margin-left: 4px; cursor: pointer;" title="设置" :size="16"/>
-                <IconX style="margin-left: 2px; cursor: pointer;" title="取消" :size="16" @click="cancelSelection(selection.nodeId)"/>
+                <span style="margin-left: 4px; cursor: pointer;" class="mark-top-button" title="设置">
+                    <IconSettings :size="16"/>
+                </span>
+                <span style="margin-left: 2px; cursor: pointer;" class="mark-top-button" title="取消选择" @click="cancelSelection(selection.nodeId)">
+                    <IconX :size="16"/>
+                </span>
             </div>
             <div
                 v-if="props.designerState.singleSelection"
@@ -271,6 +275,12 @@ function delNode(nodeId?: string) {
 .aux-selection-box > .mark-top-left-down {
     top: 0;
     left: 0;
+}
+
+.aux-selection-box > .mark-top-left > .mark-top-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .aux-selection-box > .mark-bottom-right {

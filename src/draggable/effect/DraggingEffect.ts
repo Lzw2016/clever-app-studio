@@ -1,6 +1,7 @@
 import lodash from "lodash";
 import { isObj } from "@/utils/Typeof";
 import { childSlotName } from "@/draggable/Constant";
+import { calcAuxToolPosition } from "@/draggable/utils/PositionCalc";
 import { DesignerEffect } from "@/draggable/DesignerEffect";
 import { DesignNode } from "@/draggable/types/DesignBlock";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
@@ -8,7 +9,6 @@ import { DragStartEvent } from "@/draggable/events/cursor/DragStartEvent";
 import { DragStopEvent } from "@/draggable/events/cursor/DragStopEvent";
 import { RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { Selection } from "@/draggable/models/Selection";
-import { calcAuxToolPosition } from "@/draggable/utils/PositionCalc";
 
 /**
  * 设计器拖拽功能
@@ -79,9 +79,9 @@ class DraggingEffect extends DesignerEffect {
                         if (!blockRef) continue;
                         const block = blockInstance.globalContext.allBlock[blockRef];
                         if (!block) continue;
-                        let nodeEl: HTMLElement = block.$refs[node.ref];
+                        let nodeEl = block.$refs[node.ref];
                         if (!nodeEl) continue;
-                        if (nodeEl['$el']) nodeEl = nodeEl['$el'];
+                        if (nodeEl.$el) nodeEl = nodeEl.$el as any;
                         const selection = new Selection(designerState);
                         selection.nodeId = node.id;
                         selection.parentId = node.__parentId;
