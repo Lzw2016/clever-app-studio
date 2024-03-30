@@ -1261,7 +1261,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
     }
 
     moveNodeToSlotFirst(parentRef: string, slotName: string, moveNodeRef: string, options: Options = defOptions): boolean {
-        return this.moveNodes(this.getNode(parentRef), slotName, InsertPosition.first, parentRef, [parentRef], options);
+        return this.moveNodes(this.getNode(parentRef), slotName, InsertPosition.first, parentRef, [moveNodeRef], options);
     }
 
     moveNodeToSlotLast(parentRef: string, slotName: string, moveNodeRef: string, options: Options = defOptions): boolean {
