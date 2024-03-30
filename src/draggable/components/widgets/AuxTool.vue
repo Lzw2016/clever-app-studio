@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { computed, CSSProperties } from "vue";
 import { IconArrowDown, IconArrowUp, IconChevronLeft, IconCopy, IconSettings, IconTrash, IconX } from "@tabler/icons-vue";
-import { cloneDeepRuntimeNode, getChildNodePosition, NodePosition } from "@/draggable/utils/DesignerUtils";
+import { isObj } from "@/utils/Typeof";
+import { runtimeNodeToDesignNode } from "@/draggable/utils/BlockPropsTransform";
+import { getChildNodePosition, NodePosition } from "@/draggable/utils/DesignerUtils";
 import { calcAuxToolPosition } from "@/draggable/utils/PositionCalc";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { AuxToolPosition, Direction } from "@/draggable/types/Designer";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { Selection } from "@/draggable/models/Selection";
@@ -175,17 +178,14 @@ function copyNode(selection: Selection) {
     if (!blockInstance) return;
     const node = blockInstance.globalContext.allNode[selection.nodeId];
     if (!node) return;
-    const newNode = cloneDeepRuntimeNode(node, blockInstance.globalContext.nodeParent[selection.nodeId]);
-    // blockInstance.blockOpsById.afterAddItemById()
-    // TODO 严谨的处理: RuntimeNode -> DesignNode -> cloneDeep(DesignNode) -> afterAddItemById(DesignNode)
-    const pos = getNodePosition(selection);
-    if (!pos) return false;
-    pos.arr.splice(pos.idx + 1, 0, newNode);
-    blockInstance.$forceUpdate();
-    blockInstance.globalContext.allNode[newNode.id] = newNode;
-    blockInstance.globalContext.nodeParent[newNode.id] = blockInstance.globalContext.nodeParent[selection.nodeId];
-    blockInstance.globalContext.nodeRefVueRef[newNode.ref] = blockInstance.globalContext.nodeRefVueRef[node.ref];
-    blockInstance.$nextTick(() => setSelection(selection, newNode.id));
+    // T复制节点流程: RuntimeNode -> DesignNode -> cloneDeep(DesignNode) -> afterAddItemById(DesignNode)
+    const designNode = runtimeNodeToDesignNode(node);
+    const newNode = blockInstance.blockOpsById.afterAddItemById(node.id, designNode);
+    if (!newNode) return;
+    if (isObj(newNode)) {
+        const newId = (newNode as RuntimeNode).id;
+        blockInstance.$nextTick(() => setSelection(selection, newId));
+    }
 }
 
 function delNode(nodeId?: string) {

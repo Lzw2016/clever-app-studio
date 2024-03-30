@@ -1,12 +1,12 @@
 import { Fragment, withModifiers } from "vue";
 import lodash from "lodash";
-import { isArray, isFun, isObj, isStr, noValue } from "@/utils/Typeof";
+import { hasValue, isArray, isFun, isObj, isStr, noValue } from "@/utils/Typeof";
 import { AsyncFunction } from "@/utils/UseType";
 import { calcExpression } from "@/utils/Expression";
 import { createRefID, createVNodeID } from "@/utils/IDCreate";
 import { compileTpl } from "@/utils/Template";
 import { AnyFunction, FunctionConfig } from "@/draggable/types/Base";
-import { BlockWatchItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
+import { BlockWatchItem, ComponentSlotsItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
 import { CreateConfig, RenderErrType, RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
@@ -680,6 +680,95 @@ function renderTpl(tpl: string[], props: Record<string, any>, instance: any, run
 //     });
 // }
 
+/**
+ * 将 RuntimeNode 装换成 DesignNode
+ */
+function runtimeNodeToDesignNode(runtimeNode: RuntimeNode): DesignNode {
+    const {
+        __designNode,
+        type,
+        props,
+        listeners,
+        directives,
+        slots,
+        items,
+        tpl,
+        block,
+        data,
+        computed,
+        watch,
+        methods,
+        lifeCycles,
+        meta,
+        i18n,
+    } = runtimeNode as RuntimeBlock;
+    const designNode: DesignNode = { type: type };
+    if (Object.keys(props).length > 0) designNode.props = lodash.cloneDeep(props);
+    if (Object.keys(listeners).length > 0) designNode.listeners = lodash.cloneDeep(listeners);
+    if (Object.keys(directives).length > 0) designNode.directives = lodash.cloneDeep(directives);
+    if (__designNode?.defaults) designNode.defaults = __designNode.defaults;
+    if (designNode.props) {
+        delete designNode.props[htmlExtAttr.nodeId];
+        delete designNode.props[htmlExtAttr.nodeRef];
+        delete designNode.props[htmlExtAttr.nodeParentId];
+        delete designNode.props[htmlExtAttr.placeholderName];
+        delete designNode.props[htmlExtAttr.slotName];
+    }
+    // 递归处理 slots
+    if (Object.keys(slots).length > 0) {
+        designNode.slots = {};
+        for (let name in slots) {
+            const slot = slots[name];
+            if (slot.length <= 0) continue;
+            const slotTmp = _slotsOrItemsToDesignNode(slot);
+            if (slotTmp) designNode.slots[name] = slotTmp;
+        }
+    }
+    // 递归处理 items
+    if (items.length > 0) {
+        const itemsTmp = _slotsOrItemsToDesignNode(items);
+        if (itemsTmp) designNode.items = itemsTmp;
+    }
+    if (tpl) designNode.tpl = _tplToDesignNode(tpl);
+    // 处理 DesignBlock
+    if (block) {
+        const designBlock = designNode as DesignBlock;
+        if (Object.keys(data).length > 0) designBlock.data = lodash.cloneDeep(data);
+        if (Object.keys(computed).length > 0) designBlock.computed = lodash.cloneDeep(computed);
+        if (Object.keys(watch).length > 0) designBlock.watch = lodash.cloneDeep(watch);
+        if (Object.keys(methods).length > 0) designBlock.methods = lodash.cloneDeep(methods);
+        if (Object.keys(lifeCycles).length > 0) designBlock.lifeCycles = lodash.cloneDeep(lifeCycles);
+        if (meta && Object.keys(meta).length > 0) designBlock.meta = meta;
+        if (i18n && Object.keys(i18n).length > 0) designBlock.i18n = i18n;
+    }
+    return designNode;
+}
+
+// runtimeNodeToDesignNode 处理 slots 或者 items
+function _slotsOrItemsToDesignNode(itemsOrSlots: Array<RuntimeComponentSlotsItem>): Array<ComponentSlotsItem> | ComponentSlotsItem | undefined {
+    if (isStr(itemsOrSlots)) {
+        return itemsOrSlots;
+    } else if (isArray(itemsOrSlots)) {
+        return itemsOrSlots.map(itemOrSlot => {
+            if (isStr(itemOrSlot)) {
+                return itemsOrSlots;
+            } else if (isObj(itemOrSlot)) {
+                return runtimeNodeToDesignNode(itemOrSlot);
+            }
+        }).filter(item => hasValue(item));
+    } else if (isObj(itemsOrSlots)) {
+        return runtimeNodeToDesignNode(itemsOrSlots);
+    }
+}
+
+// runtimeNodeToDesignNode 处理 tpl
+function _tplToDesignNode(tpl: RuntimeNode['tpl']): DesignNode['tpl'] {
+    if (!tpl) return;
+    if (isStr(tpl)) return tpl;
+    if (tpl.length === 1) return tpl[0];
+    return tpl;
+}
+
 export {
     createFunction,
     fillBlockDefValue,
@@ -699,4 +788,5 @@ export {
     propsTransform,
     expTransform,
     renderTpl,
+    runtimeNodeToDesignNode,
 }
