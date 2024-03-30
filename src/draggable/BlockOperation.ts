@@ -378,6 +378,70 @@ interface BlockOperation {
     appendItem(parentRef: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
 
     /**
+     * 批量移动节点到指定的子节点前面(基于ref属性)
+     * @param beforeRef     移动的目标位置，在指定的兄弟节点之前
+     * @param moveNodeRefs  需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodesToItemBefore(beforeRef: string, moveNodeRefs: Array<string>, options?: Options): boolean;
+
+    /**
+     * 批量移动节点到指定的子节点后面(基于ref属性)
+     * @param afterRef      移动的目标位置，在指定的兄弟节点之后
+     * @param moveNodeRefs  需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodesToItemAfter(afterRef: string, moveNodeRefs: Array<string>, options?: Options): boolean;
+
+    /**
+     * 批量移动节点到指定节点的子节点头部(基于ref属性)
+     * @param parentRef     移动的目标位置，父节点ref
+     * @param moveNodeRefs  需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodesToItemFirst(parentRef: string, moveNodeRefs: Array<string>, options?: Options): boolean;
+
+    /**
+     * 批量移动节点到指定节点的子节点尾部(基于ref属性)
+     * @param parentRef     移动的目标位置，父节点ref
+     * @param moveNodeRefs  需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodesToItemLast(parentRef: string, moveNodeRefs: Array<string>, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定的子节点前面(基于ref属性)
+     * @param beforeRef     移动的目标位置，在指定的兄弟节点之前
+     * @param moveNodeRef   需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodeToItemBefore(beforeRef: string, moveNodeRef: string, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定的子节点后面(基于ref属性)
+     * @param afterRef      移动的目标位置，在指定的兄弟节点之后
+     * @param moveNodeRef   需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodeToItemAfter(afterRef: string, moveNodeRef: string, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定节点的子节点头部(基于ref属性)
+     * @param parentRef     移动的目标位置，父节点ref
+     * @param moveNodeRef   需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodeToItemFirst(parentRef: string, moveNodeRef: string, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定节点的子节点尾部(基于ref属性)
+     * @param parentRef     移动的目标位置，父节点ref
+     * @param moveNodeRef   需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodeToItemLast(parentRef: string, moveNodeRef: string, options?: Options): boolean;
+
+    /**
      * 批量增加插槽节点(基于ref属性)
      * @param beforeRef     增加节点的位置，在指定的兄弟节点之前
      * @param slotName      插槽名
@@ -448,6 +512,78 @@ interface BlockOperation {
      * @param options       操作选项
      */
     appendSlot(parentRef: string, slotName: string, item: ComponentSlotsItem, options?: Options): RuntimeComponentSlotsItem | undefined;
+
+    /**
+     * 批量移动节点到指定的插槽节点前面(基于ref属性)
+     * @param beforeRef     移动的目标位置，在指定的兄弟节点之前
+     * @param slotName      插槽名
+     * @param moveNodeRefs  需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodesToSlotBefore(beforeRef: string, slotName: string, moveNodeRefs: Array<string>, options?: Options): boolean;
+
+    /**
+     * 批量移动节点到指定的插槽节点后面(基于ref属性)
+     * @param afterRef      移动的目标位置，在指定的兄弟节点之后
+     * @param slotName      插槽名
+     * @param moveNodeRefs  需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodesToSlotAfter(afterRef: string, slotName: string, moveNodeRefs: Array<string>, options?: Options): boolean;
+
+    /**
+     * 批量移动节点到指定节点的插槽节点头部(基于ref属性)
+     * @param parentRef     移动的目标位置，父节点ref
+     * @param slotName      插槽名
+     * @param moveNodeRefs  需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodesToSlotFirst(parentRef: string, slotName: string, moveNodeRefs: Array<string>, options?: Options): boolean;
+
+    /**
+     * 批量移动节点到指定节点的插槽节点尾部(基于ref属性)
+     * @param parentRef     移动的目标位置，父节点ref
+     * @param slotName      插槽名
+     * @param moveNodeRefs  需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodesToSlotLast(parentRef: string, slotName: string, moveNodeRefs: Array<string>, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定的插槽节点前面(基于ref属性)
+     * @param beforeRef     移动的目标位置，在指定的兄弟节点之前
+     * @param slotName      插槽名
+     * @param moveNodeRef   需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodeToSlotBefore(beforeRef: string, slotName: string, moveNodeRef: string, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定的插槽节点后面(基于ref属性)
+     * @param afterRef      移动的目标位置，在指定的兄弟节点之后
+     * @param slotName      插槽名
+     * @param moveNodeRef   需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodeToSlotAfter(afterRef: string, slotName: string, moveNodeRef: string, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定节点的插槽节点头部(基于ref属性)
+     * @param parentRef     移动的目标位置，父节点ref
+     * @param slotName      插槽名
+     * @param moveNodeRef   需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodeToSlotFirst(parentRef: string, slotName: string, moveNodeRef: string, options?: Options): boolean;
+
+    /**
+     * 移动一个节点到指定节点的插槽节点尾部(基于ref属性)
+     * @param parentRef     移动的目标位置，父节点ref
+     * @param slotName      插槽名
+     * @param moveNodeRef   需要移动的节点ref
+     * @param options       操作选项
+     */
+    moveNodeToSlotLast(parentRef: string, slotName: string, moveNodeRef: string, options?: Options): boolean;
 
     /**
      * 批量删除节点(基于ref属性)
@@ -675,7 +811,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
             if (node.items.length > 0 || Object.keys(node.slots).length > 0) parentIds.push(node.id);
             deepTraverseNodes(
                 node,
-                (current, isSlot, parent1, currentBlock) => {
+                (current) => {
                     ids.push(current.id);
                     refs.push(current.ref);
                     if (current.items.length > 0 || Object.keys(current.slots).length > 0) parentIds.push(current.id);
@@ -1028,6 +1164,38 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         return arr[0];
     }
 
+    moveNodesToItemBefore(beforeRef: string, moveNodeRefs: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getParentNode(beforeRef), childSlotName, InsertPosition.before, beforeRef, moveNodeRefs, options);
+    }
+
+    moveNodesToItemAfter(afterRef: string, moveNodeRefs: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getParentNode(afterRef), childSlotName, InsertPosition.after, afterRef, moveNodeRefs, options);
+    }
+
+    moveNodesToItemFirst(parentRef: string, moveNodeRefs: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getNode(parentRef), childSlotName, InsertPosition.first, parentRef, moveNodeRefs, options);
+    }
+
+    moveNodesToItemLast(parentRef: string, moveNodeRefs: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getNode(parentRef), childSlotName, InsertPosition.last, parentRef, moveNodeRefs, options);
+    }
+
+    moveNodeToItemBefore(beforeRef: string, moveNodeRef: string, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getParentNode(beforeRef), childSlotName, InsertPosition.before, beforeRef, [moveNodeRef], options);
+    }
+
+    moveNodeToItemAfter(afterRef: string, moveNodeRef: string, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getParentNode(afterRef), childSlotName, InsertPosition.after, afterRef, [moveNodeRef], options);
+    }
+
+    moveNodeToItemFirst(parentRef: string, moveNodeRef: string, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getNode(parentRef), childSlotName, InsertPosition.first, parentRef, [moveNodeRef], options);
+    }
+
+    moveNodeToItemLast(parentRef: string, moveNodeRef: string, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getNode(parentRef), childSlotName, InsertPosition.last, parentRef, [moveNodeRef], options);
+    }
+
     beforeAddSlots(beforeRef: string, slotName: string, items: ComponentSlotsItem[], options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
         return this.addNodes(this.getParentNode(beforeRef), slotName, InsertPosition.before, beforeRef, items, options);
     }
@@ -1066,6 +1234,38 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         const arr = this.addNodes(this.getNode(parentRef), slotName, InsertPosition.last, null, [item], options);
         if (arr.length <= 0) return;
         return arr[0];
+    }
+
+    moveNodesToSlotBefore(beforeRef: string, slotName: string, moveNodeRefs: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getParentNode(beforeRef), slotName, InsertPosition.before, beforeRef, moveNodeRefs, options);
+    }
+
+    moveNodesToSlotAfter(afterRef: string, slotName: string, moveNodeRefs: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getParentNode(afterRef), slotName, InsertPosition.after, afterRef, moveNodeRefs, options);
+    }
+
+    moveNodesToSlotFirst(parentRef: string, slotName: string, moveNodeRefs: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getNode(parentRef), slotName, InsertPosition.first, parentRef, moveNodeRefs, options);
+    }
+
+    moveNodesToSlotLast(parentRef: string, slotName: string, moveNodeRefs: Array<string>, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getNode(parentRef), slotName, InsertPosition.last, parentRef, moveNodeRefs, options);
+    }
+
+    moveNodeToSlotBefore(beforeRef: string, slotName: string, moveNodeRef: string, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getParentNode(beforeRef), slotName, InsertPosition.before, beforeRef, [moveNodeRef], options);
+    }
+
+    moveNodeToSlotAfter(afterRef: string, slotName: string, moveNodeRef: string, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getParentNode(afterRef), slotName, InsertPosition.after, afterRef, [moveNodeRef], options);
+    }
+
+    moveNodeToSlotFirst(parentRef: string, slotName: string, moveNodeRef: string, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getNode(parentRef), slotName, InsertPosition.first, parentRef, [parentRef], options);
+    }
+
+    moveNodeToSlotLast(parentRef: string, slotName: string, moveNodeRef: string, options: Options = defOptions): boolean {
+        return this.moveNodes(this.getNode(parentRef), slotName, InsertPosition.last, parentRef, [moveNodeRef], options);
     }
 
     removeAll(refs: string[], options: Options = defOptions): Array<RuntimeComponentSlotsItem> {

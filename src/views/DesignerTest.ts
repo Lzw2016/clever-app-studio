@@ -17,7 +17,6 @@ function createDiv(designBlock?: Partial<DesignBlock>) {
                 margin: "4px",
                 ...(designBlock?.props?.style as any ?? {}),
             },
-
         },
         items: [
             ...(designBlock?.items as any ?? []),
