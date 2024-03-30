@@ -1,6 +1,6 @@
 import { computed, ComputedRef, ShallowRef, shallowRef } from "vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
-import { InsertionData } from "@/draggable/types/Designer";
+import { AuxToolPosition, InsertionData } from "@/draggable/types/Designer";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 
 /**
@@ -11,6 +11,8 @@ class DraggingCmpMetas {
     readonly designerEngine: DesignerEngine;
     /** 正在拖拽的节点ID集合(与 _cmpMetas集合 顺序一一对应) */
     protected readonly _nodeIds: ShallowRef<Array<string>> = shallowRef<Array<string>>([]);
+    /** 正在拖拽节点的区域位置 */
+    protected readonly _positions: ShallowRef<Array<AuxToolPosition>> = shallowRef<Array<AuxToolPosition>>([]);
     /** 正在拖拽的组件元信息集合 */
     protected readonly _cmpMetas: ShallowRef<Array<ComponentMeta>> = shallowRef<Array<ComponentMeta>>([]);
     /** 存在拖拽的组件 */
@@ -36,6 +38,16 @@ class DraggingCmpMetas {
     /** 正在拖拽的节点ID集合(与 _cmpMetas集合 顺序一一对应) */
     set nodeIds(value: Array<string>) {
         this._nodeIds.value = value;
+    }
+
+    /** 正在拖拽节点的区域位置 */
+    get positions() {
+        return this._positions.value;
+    }
+
+    /** 正在拖拽节点的区域位置 */
+    set positions(value: Array<AuxToolPosition>) {
+        this._positions.value = value;
     }
 
     /** 正在拖拽的组件元信息集合 */

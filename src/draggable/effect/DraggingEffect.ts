@@ -9,6 +9,7 @@ import { DragStartEvent } from "@/draggable/events/cursor/DragStartEvent";
 import { DragStopEvent } from "@/draggable/events/cursor/DragStopEvent";
 import { RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { Selection } from "@/draggable/models/Selection";
+import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 
 /**
  * 设计器拖拽功能
@@ -25,15 +26,21 @@ class DraggingEffect extends DesignerEffect {
         // 开始拖动
         this.eventbus.subscribe(DragStartEvent, event => {
             // console.log("handleDraggingCmpMetas DragStartEvent");
+            const designerContainer = this.designerEngine.activeDesignerState?.designerContainer;
             const componentMetas = event.data.componentMetas as Map<string, ComponentMeta>;
             if (componentMetas.size <= 0) return;
             const draggingCmpMetas = this.designerEngine.draggingCmpMetas;
             draggingCmpMetas.cmpMetas = [];
             draggingCmpMetas.nodeIds = [];
-            componentMetas.forEach((meta, nodeId) => {
+            draggingCmpMetas.positions = [];
+            for (let [nodeId, meta] of componentMetas) {
                 draggingCmpMetas.cmpMetas.push(meta);
                 draggingCmpMetas.nodeIds.push(nodeId);
-            });
+                if (designerContainer) {
+                    const element = designerContainer.querySelector(`[${htmlExtAttr.nodeId}=${nodeId}]`);
+                    if (element) draggingCmpMetas.positions.push(calcAuxToolPosition(designerContainer, element));
+                }
+            }
         });
         // 拖拽结束
         this.eventbus.subscribe(DragStopEvent, event => {

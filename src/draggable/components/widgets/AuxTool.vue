@@ -268,6 +268,8 @@ function delNode(nodeId?: string) {
                 </span>
             </div>
         </div>
+        <!-- 拖拽组件时 -->
+        <div v-if="isDragging" v-for="position in props.designerEngine.draggingCmpMetas.positions" class="aux-cover-rect-dragging" :style="positionToStyle(position)"></div>
         <!-- 自由选择组件组件的边框 -->
         <div class="aux-free-selection" style="display: none;">
             自由选择组件
@@ -405,5 +407,10 @@ function delNode(nodeId?: string) {
     cursor: pointer;
     height: 18px;
     padding: 0 2px;
+}
+
+.aux-cover-rect-dragging {
+    position: absolute;
+    background-color: rgba(24, 144, 255, 0.26);
 }
 </style>
