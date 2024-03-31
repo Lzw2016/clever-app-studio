@@ -739,7 +739,12 @@ function runtimeNodeToDesignNode(runtimeNode: RuntimeNode): DesignNode {
     // 处理 DesignBlock
     if (block) {
         const designBlock = designNode as DesignBlock;
-        if (Object.keys(data).length > 0) designBlock.data = lodash.cloneDeep(data);
+        if (Object.keys(data).length > 0) {
+            // TODO 生成代码时需要读取原始的 data
+            // const __designBlock = __designNode as DesignBlock;
+            // designBlock.data = lodash.cloneDeep(__designBlock.data);
+            designBlock.data = lodash.cloneDeep(data);
+        }
         if (Object.keys(computed).length > 0) designBlock.computed = lodash.cloneDeep(computed);
         if (Object.keys(watch).length > 0) designBlock.watch = lodash.cloneDeep(watch);
         if (Object.keys(methods).length > 0) designBlock.methods = lodash.cloneDeep(methods);

@@ -178,7 +178,7 @@ function copyNode(selection: Selection) {
     if (!blockInstance) return;
     const node = blockInstance.globalContext.allNode[selection.nodeId];
     if (!node) return;
-    // T复制节点流程: RuntimeNode -> DesignNode -> cloneDeep(DesignNode) -> afterAddItemById(DesignNode)
+    // 复制节点流程: RuntimeNode -> DesignNode -> cloneDeep(DesignNode) -> afterAddItemById(DesignNode)
     const designNode = runtimeNodeToDesignNode(node);
     const newNode = blockInstance.blockOpsById.afterAddItemById(node.id, designNode);
     if (!newNode) return;

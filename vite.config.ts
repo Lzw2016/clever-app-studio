@@ -93,7 +93,7 @@ export default defineConfig(env => {
                         if (id.includes('/lodash/') || id.includes('/lodash-es/')) {
                             return 'lodash';
                         }
-                        if (id.includes('@tabler/')) {
+                        if (id.includes('@tabler/icons')) {
                             return 'tabler-icons';
                         }
                         if (id.includes('@fortawesome/')) {
@@ -110,6 +110,9 @@ export default defineConfig(env => {
                         }
                         if (id.includes('/codemirror/') || id.includes('/codemirror-editor-vue3/')) {
                             return 'codemirror';
+                        }
+                        if (id.includes('/monaco-editor/') || id.includes('@guolao/vue-monaco-editor')) {
+                            return 'monaco-editor';
                         }
                     },
                 },

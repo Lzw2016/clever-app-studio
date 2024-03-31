@@ -52,6 +52,8 @@
         "@tabler/icons-vue": "^3.0.0",
         "codemirror": "^5.65.16",
         "codemirror-editor-vue3": "^2.4.1",
+        "monaco-editor": "^0.47.0",
+        "@guolao/vue-monaco-editor": "^1.5.1",
         "sortablejs": "^1.15.2",
         "@opentiny/vue": "^3.14.0",
         "@opentiny/vue-locale": "^3.14.0",
