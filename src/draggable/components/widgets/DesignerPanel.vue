@@ -3,14 +3,22 @@ import { computed, CSSProperties, onMounted, reactive, ref } from "vue";
 import { RouteParams, useRoute } from "vue-router";
 import { ResizeObserverEntry, useResizeObserver } from '@vueuse/core'
 import { IconArrowBackUp, IconArrowForwardUp, IconArrowsMove, IconClick, IconCode, IconDeviceLaptop, IconDeviceMobile, IconDevices, IconPalette, IconPlayerPlay } from "@tabler/icons-vue";
+import "codemirror/mode/javascript/javascript";
+import "codemirror/addon/fold/foldgutter.css";
+import "codemirror/addon/fold/foldcode";
+import "codemirror/addon/fold/foldgutter";
+import "codemirror/addon/fold/brace-fold";
+import "codemirror/addon/fold/comment-fold";
+import Codemirror from "codemirror-editor-vue3";
+import type { Editor, EditorConfiguration } from "codemirror";
 import { requestIdle } from "@/utils/RequestIdle";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerCursorMode, DesignerLayout, DesignerTab } from "@/draggable/types/Designer";
 import { DesignPageMate } from "@/draggable/types/DesignBlock";
+import { DesignerState } from "@/draggable/models/DesignerState";
 import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
 import AuxTool from "@/draggable/components/widgets/AuxTool.vue";
 import { designerTest } from "@/views/DesignerTest";
-import { DesignerState } from "@/draggable/models/DesignerState";
 
 // 定义组件选项
 defineOptions({
@@ -44,6 +52,12 @@ interface DesignerPanelState {
     layout: DesignerLayout;
     /** 当前活动页 */
     activeTab: DesignerTab;
+    /** 设计时的代码(DesignBlock源码) */
+    designerBlockCode: string;
+    /** 代码编辑器是否已经加载 */
+    codeEditorLoaded: boolean;
+    /** 代码编辑器配置 */
+    codeEditorOptions: EditorConfiguration;
 }
 
 // state 属性
@@ -52,6 +66,18 @@ const state = reactive<DesignerPanelState>({
     cursorMode: DesignerCursorMode.DragDrop,
     layout: DesignerLayout.PC,
     activeTab: DesignerTab.Designer,
+    designerBlockCode: "",
+    codeEditorLoaded: false,
+    codeEditorOptions: {
+        mode: {
+            name: "javascript",
+            json: true,
+        },
+        lineWrapping: false,
+        readOnly: true,
+        foldGutter: true,
+        gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
+    },
 });
 // 内部数据
 const data = {
@@ -86,6 +112,8 @@ const designerContainer = ref<HTMLDivElement | undefined>();
 const designerBlockInstance = ref<InstanceType<typeof RuntimeBlock> | undefined>();
 // 拖拽辅助工具实例
 const auxTool = ref<InstanceType<typeof AuxTool> | undefined>();
+// 代码编辑器实例
+const codeEditorInstance = ref<Editor | undefined>();
 
 // 初始化 DesignerState 属性
 props.designerState.designerContainer = designerContainer;
@@ -98,6 +126,10 @@ const route = useRoute();
 onMounted(() => {
     calcDesignerBlockStyle();
 });
+// watch(() => props.designerState.blockInstance, () => {
+//     state.designerBlockCode = props.designerState.generateDesignBlockCode();
+//     // console.log("designerBlockCode", state.designerBlockCode);
+// });
 // 设计器容器大小变化时
 useResizeObserver(designerContainer, entries => {
     const preRect = data.designerContainerPreRect;
@@ -219,7 +251,13 @@ function recalcAuxToolPosition() {
                 class="flex-item-fixed designer-tool-button"
                 :class="{'designer-tool-button-active': isCodeTab}"
                 title="源码"
-                @click="state.activeTab=DesignerTab.Code"
+                @click="()=> {
+                    if(state.activeTab!==DesignerTab.Code) {
+                        state.designerBlockCode = props.designerState.generateDesignBlockCode();
+                    }
+                    state.activeTab=DesignerTab.Code;
+                    state.codeEditorLoaded = true;
+                }"
             >
                 <IconCode :size="22" stroke-width="1.5" viewBox="-1 -1 26 26"/>
             </div>
@@ -233,14 +271,18 @@ function recalcAuxToolPosition() {
             </div>
         </div>
         <div class="flex-item-fill">
-            <div v-if="isDesignerTab" ref="designerContainer" class="designer-content">
+            <div v-show="isDesignerTab" ref="designerContainer" class="designer-content">
                 <RuntimeBlock ref="designerBlockInstance" :block="designerTest" :is-designing="true" :style="state.designerBlockStyle"/>
                 <AuxTool ref="auxTool" :designer-engine="props.designerEngine" :designerState="props.designerState"/>
             </div>
-            <div v-else-if="isCodeTab" class="designer-content">
-                源码
+            <div v-if="state.codeEditorLoaded" v-show="isCodeTab" class="designer-code">
+                <Codemirror
+                    v-model:value="state.designerBlockCode"
+                    :options="state.codeEditorOptions"
+                    @ready="cm => codeEditorInstance=cm"
+                />
             </div>
-            <div v-else-if="isPreviewTab" class="designer-content">
+            <div v-show="isPreviewTab" class="designer-content">
                 预览
             </div>
         </div>
@@ -334,5 +376,11 @@ function recalcAuxToolPosition() {
     overflow: auto;
     position: relative;
     padding: 4px;
+}
+
+.designer-code {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
 }
 </style>

@@ -169,6 +169,8 @@ const designerTest = defineDesignBlock({
     },
 });
 
+console.log("designerTest", JSON.stringify(designerTest, null, 4));
+
 export {
     designerTest,
     createSpan,
