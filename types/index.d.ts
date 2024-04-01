@@ -44,6 +44,8 @@ interface UserPermission {
 
 /** 全局配置 */
 interface GlobalConfig {
+    /** 物料配置 */
+    materialMetaTabs: Array<MaterialMetaTab>
     /** 系统授权对象 */
     security: UserPermission,
     /** 当前登录的用户信息 */

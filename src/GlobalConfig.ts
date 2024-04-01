@@ -4,11 +4,12 @@ import { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "a
 import { Notify } from "@opentiny/vue";
 import Format from "@/utils/Format";
 import { isFun } from "@/utils/Typeof";
+import { materialMetaTabs } from "@/register/MaterialMetaTabs";
 
 if (!window.globalConfig) window.globalConfig = {} as any;
 
+// 代理 globalConfig
 const globalConfig = window.globalConfig;
-
 const globalConfigProxy: GlobalConfig = new Proxy(globalConfig, {
     get(target: GlobalConfig, property: string | symbol, receiver: any) {
         const value = target[property];
@@ -46,7 +47,12 @@ const globalConfigProxy: GlobalConfig = new Proxy(globalConfig, {
     },
 });
 
-/** 系统授权对象 */
+// 物料信息
+if (!globalConfig.materialMetaTabs) {
+    globalConfig.materialMetaTabs = materialMetaTabs;
+}
+
+// 系统授权对象
 if (!globalConfig.security) {
     globalConfig.security = {
         roles: [],
@@ -110,7 +116,7 @@ if (!globalConfig.security) {
     };
 }
 
-/** 当前用户信息 */
+// 当前用户信息
 if (!globalConfig.user) {
     globalConfig.user = {
         uid: "Admin",
@@ -119,7 +125,7 @@ if (!globalConfig.user) {
     };
 }
 
-/** http状态码错误信息映射 */
+// http状态码错误信息映射
 const httpErrorMsg = globalConfig.httpErrorMsg ?? {};
 globalConfig.httpErrorMsg = lodash.defaults(httpErrorMsg, {
     200: "服务器成功返回请求的数据",
@@ -139,7 +145,7 @@ globalConfig.httpErrorMsg = lodash.defaults(httpErrorMsg, {
     504: "网关超时",
 });
 
-/** axios请求默认配置 */
+// axios请求默认配置
 const axiosRequestDef = globalConfig.axiosRequestDef;
 globalConfig.axiosRequestDef = () => {
     let config = {};
@@ -163,7 +169,7 @@ globalConfig.axiosRequestDef = () => {
     } as AxiosRequestConfig);
 };
 
-/** 自定义全局axios实例 */
+// 自定义全局axios实例
 const customAxios = globalConfig.customAxios;
 globalConfig.customAxios = axiosInstance => {
     const notifyDef = {
@@ -211,17 +217,17 @@ globalConfig.customAxios = axiosInstance => {
     return axiosInstance;
 };
 
-/** 字段缓存 */
+// 字段缓存
 if (!globalConfig.dictCache) {
     (globalConfig as MakeWritable<GlobalConfig>).dictCache = new Map<string, DictArray>();
 }
 
-/** 自定义读取所有的字典数据 */
+// 自定义读取所有的字典数据
 if (!globalConfig.getAllDict) {
     globalConfig.getAllDict = async () => new Map<string, DictArray>();
 }
 
-/** 自定义读取字典数据 */
+// 自定义读取字典数据
 if (!globalConfig.getDict) {
     globalConfig.getDict = async dictName => {
         // if (dict === "AAA") {
@@ -235,12 +241,12 @@ if (!globalConfig.getDict) {
     }
 }
 
-/** 获取服务端时间 */
+// 获取服务端时间
 if (!globalConfig.serverDate) {
     globalConfig.serverDate = (date = new Date()) => date;
 }
 
-/** 定义可选外部库 */
+// 定义可选外部库
 const optionalExternalLib = globalConfig.useExternalLib ?? {};
 globalConfig.useExternalLib = lodash.defaults(optionalExternalLib, {
     /** 使用 Ace Editor 编辑器 */

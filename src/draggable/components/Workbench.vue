@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { markRaw, onMounted, onUnmounted, reactive } from "vue";
+import globalConfig from "@/GlobalConfig";
 import { globalThisPolyfill } from "@/utils/GlobalThisPolyfill";
 import { style } from "@/utils/UseType";
 import SplitPane from "@/components/SplitPane.vue";
-import { componentMeta, materialMetaTabs } from "@/ComponentMetaTabs";
+import { componentMeta } from "@/ComponentMetaTabs";
 import { componentManage } from "@/draggable/Constant";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { setDesignerEngine } from "@/draggable/InjectVars";
@@ -155,7 +156,7 @@ onUnmounted(() => {
                         :custom-two-pane="true"
                     >
                         <template #onePane>
-                            <MaterialPanel :designer-engine="designerEngine" :tabs="materialMetaTabs"/>
+                            <MaterialPanel :designer-engine="designerEngine" :tabs="globalConfig.materialMetaTabs"/>
                         </template>
                         <template #twoPane="slotProps">
                             <SplitPane
