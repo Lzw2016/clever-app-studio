@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
-import { Collapse, CollapseItem, Loading, Search, TabItem, Tabs } from "@opentiny/vue";
+import { Collapse, CollapseItem, Loading, Notify, Search, TabItem, Tabs } from "@opentiny/vue";
 import { IconCalendarPlus, IconX } from "@tabler/icons-vue";
 import { getMaterialMetaTabAllTypes } from "@/draggable/utils/DesignerUtils";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
@@ -62,7 +62,7 @@ function loadAllTypes(allTypes: Array<string>) {
         props.designerEngine.componentManage.loadAsyncComponent(allTypes),
         props.designerEngine.componentManage.loadAsyncComponentMeta(allTypes),
     ]).catch(reason => {
-
+        Notify({ type: 'error', position: 'top-right', title: "加载元数据失败", message: `加载组件元数据失败：${reason}` });
     }).finally(() => state.allTypesLoaded = true);
 }
 
