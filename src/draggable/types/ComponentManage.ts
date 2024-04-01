@@ -1,5 +1,5 @@
 import { AsyncVueComponent, VueComponent } from "@/draggable/types/Base";
-import { AsyncComponentMeta, ComponentMeta } from "@/draggable/types/ComponentMeta";
+import { AsyncComponentMeta, ComponentMeta, MaterialMeta } from "@/draggable/types/ComponentMeta";
 
 /**
  * 批量注册组件，内部使用 componentManage.registerComponent() 注册组件
@@ -48,6 +48,18 @@ interface ComponentManage {
      * @param def   组件不存在时返回默认组件
      */
     getComponent(type: string, def: VueComponent): VueComponent | undefined;
+
+    /**
+     * 注册物料元信息
+     * @param materialMeta 物料元信息
+     */
+    registerMaterialMeta(materialMeta: MaterialMeta): void;
+
+    /**
+     * 获取物料元信息
+     * @param type 组件类型(唯一值)
+     */
+    getMaterialMeta(type: string): MaterialMeta | undefined;
 
     /**
      * 注册组件元信息

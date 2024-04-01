@@ -1,10 +1,7 @@
-import lodash from "lodash";
 import { isObj } from "@/utils/Typeof";
-import { createRefID, createVNodeID } from "@/utils/IDCreate";
 import { childSlotName } from "@/draggable/Constant";
-import { deepTraverseNodes } from "@/draggable/utils/BlockPropsTransform";
 import { RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
-import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
+import { MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 
 interface NodePosition {
     /** 子节点所插槽名 */
@@ -51,29 +48,22 @@ function getChildNodePosition(node: RuntimeNode, childId?: string): NodePosition
 }
 
 /**
- * 深度克隆 渲染节点 TODO 自己递归实现
- * @param runtimeNode
- * @param parentNode
+ * 获取所有的组件类型
  */
-function cloneDeepRuntimeNode(runtimeNode: RuntimeNode, parentNode?: RuntimeNode): RuntimeNode {
-    const newNode = lodash.cloneDeep(runtimeNode);
-    deepTraverseNodes(
-        newNode,
-        (current, isSlot, parent) => {
-            const curr = current as MakeWritable<RuntimeNode>;
-            curr.id = createVNodeID();
-            curr.ref = createRefID();
-            if (parent) curr.__parentId = parent.id;
-            curr.props[htmlExtAttr.nodeId] = curr.id;
-            curr.props[htmlExtAttr.nodeRef] = curr.ref;
-            curr.props[htmlExtAttr.nodeParentId] = curr.__parentId;
-            curr.props[htmlExtAttr.slotName] = 'default';
-        },
-        false,
-        parentNode,
-    );
-    return newNode;
+function getMaterialMetaTabAllTypes(materialMetaTab: MaterialMetaTab): Array<string> {
+    const types: Array<string> = [];
+    const { groups } = materialMetaTab;
+    for (let group of groups) {
+        const { items } = group;
+        for (let item of items) {
+            const { type } = item;
+            if (types.includes(type)) continue;
+            types.push(type);
+        }
+    }
+    return types;
 }
+
 
 export type  {
     NodePosition,
@@ -81,5 +71,5 @@ export type  {
 
 export {
     getChildNodePosition,
-    cloneDeepRuntimeNode,
+    getMaterialMetaTabAllTypes,
 }

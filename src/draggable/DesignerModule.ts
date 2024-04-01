@@ -19,7 +19,7 @@ abstract class DesignerModule {
     constructor(designerEngine: DesignerEngine, container: EventContainer, window: Window) {
         this.designerEngine = designerEngine;
         this.eventbus = designerEngine.eventbus;
-        this.componentManage = designerEngine.props.componentManage;
+        this.componentManage = designerEngine.componentManage;
         this.container = container;
         this.window = window;
     }

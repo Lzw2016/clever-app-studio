@@ -59,6 +59,11 @@ class DesignerEngine {
         this.insertion = new Insertion(this);
     }
 
+    /** 组件管理器 */
+    get componentManage() {
+        return this.props.componentManage;
+    }
+
     /** 当前活动的设计器页面路由路径(fullPath) */
     get activeDesignerPath(): string | undefined {
         return this._activeDesignerPath.value;

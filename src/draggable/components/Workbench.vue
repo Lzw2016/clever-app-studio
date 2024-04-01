@@ -155,7 +155,7 @@ onUnmounted(() => {
                         :custom-two-pane="true"
                     >
                         <template #onePane>
-                            <MaterialPanel :tabs="materialMetaTabs"/>
+                            <MaterialPanel :designer-engine="designerEngine" :tabs="materialMetaTabs"/>
                         </template>
                         <template #twoPane="slotProps">
                             <SplitPane

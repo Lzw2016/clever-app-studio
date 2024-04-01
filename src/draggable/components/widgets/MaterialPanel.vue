@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
-import { Collapse, CollapseItem, Search, TabItem, Tabs } from "@opentiny/vue";
+import { Collapse, CollapseItem, Loading, Search, TabItem, Tabs } from "@opentiny/vue";
 import { IconCalendarPlus, IconX } from "@tabler/icons-vue";
+import { getMaterialMetaTabAllTypes } from "@/draggable/utils/DesignerUtils";
+import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { MaterialMetaTab } from "@/draggable/types/ComponentMeta";
+
+const vLoading = Loading.directive;
 
 // 定义组件选项
 defineOptions({
@@ -11,6 +15,8 @@ defineOptions({
 
 // 定义 Props 类型
 interface ComponentPaneProps {
+    /** 设计器引擎 */
+    designerEngine: DesignerEngine;
     /** 组件叶签信息 */
     tabs: Array<MaterialMetaTab>;
     /** 默认的叶签 */
@@ -21,15 +27,44 @@ interface ComponentPaneProps {
 const props = withDefaults(defineProps<ComponentPaneProps>(), {});
 // state 属性
 const state = reactive({
+    /** 所有的组件及其元数据是否已经加载 */
+    allTypesLoaded: false,
     // 活动的叶签
     activeTab: props.defTab ?? props.tabs[0]?.title,
     // 展开的组件分组
     expandGroups: getAllExpandTitles(props.tabs),
 });
 // 内部数据
-const data = {};
+const data = {
+    allTypes: getAllTypes(),
+};
 // 组件元信息
 const componentMetaTabs = computed(() => filterEmptyTabs(props.tabs));
+// 加载所有的组件及其元数据
+loadAllTypes(data.allTypes);
+
+// 获取所有的物理组件类型
+function getAllTypes() {
+    const allTypes: Array<string> = [];
+    for (let tab of props.tabs) {
+        const types = getMaterialMetaTabAllTypes(tab);
+        for (let type of types) {
+            if (allTypes.includes(type)) continue;
+            allTypes.push(type);
+        }
+    }
+    return allTypes;
+}
+
+// 加载所有的组件及其元数据
+function loadAllTypes(allTypes: Array<string>) {
+    Promise.all([
+        props.designerEngine.componentManage.loadAsyncComponent(allTypes),
+        props.designerEngine.componentManage.loadAsyncComponentMeta(allTypes),
+    ]).catch(reason => {
+
+    }).finally(() => state.allTypesLoaded = true);
+}
 
 // 获取所有展开的 group title
 function getAllExpandTitles(tabs: Array<MaterialMetaTab>): Record<string, Array<string>> {
@@ -79,6 +114,9 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
             />
         </div>
         <Tabs
+            v-loading="!state.allTypesLoaded"
+            tiny-loading__text="加载中..."
+            tiny-loading__background="rgba(0, 0, 0, 0.25)"
             class="flex-item-fill material-tabs flex-column-container"
             :separator="true"
             :active-name="state.activeTab"

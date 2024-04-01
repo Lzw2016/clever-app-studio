@@ -139,7 +139,7 @@ function setSelection(selection: Selection, nodeId: string) {
     const newSelection = new Selection(props.designerState);
     newSelection.nodeId = node.id;
     newSelection.parentId = node.__parentId;
-    newSelection.componentMeta = props.designerEngine.props.componentManage.getComponentMeta(node.type);
+    newSelection.componentMeta = props.designerEngine.componentManage.getComponentMeta(node.type);
     newSelection.position = calcAuxToolPosition(props.designerState.designerContainer, nodeEl);
     props.designerState.selections.splice(idx, 1, newSelection);
 }

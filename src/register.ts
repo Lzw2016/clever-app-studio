@@ -50,13 +50,22 @@ function registerComponent() {
     // 注册 google 图标
     // componentManage.registerAsyncComponent("GoogleIcon", () => import("@/components/GoogleIcon.vue").then(module => module.default));
     // opentiny 组件注册
-    // componentManage.registerAsyncComponent("OpenTiny", () => import("@/components/OpenTiny"));
+    const openTinyTypes = [
+        "Button", "ButtonGroup", "Cascader",
+    ];
+    componentManage.batchRegisterComponent(new RegExp(openTinyTypes.join("|")), async () => {
+        const openTiny = await import("@/draggable/material/OpenTiny");
+        for (let type of openTinyTypes) {
+            const component = openTiny[type];
+            if (component) componentManage.registerComponent(type, component);
+        }
+    });
     // primevue 组件注册
-    componentManage.registerAsyncComponent("Button", () => import("primevue/button").then(module => module.default));
-    componentManage.registerAsyncComponent("InputNumber", () => import("primevue/inputnumber").then(module => module.default));
-    componentManage.registerAsyncComponent("Calendar", () => import("primevue/calendar").then(module => module.default));
+    // componentManage.registerAsyncComponent("Button", () => import("primevue/button").then(module => module.default));
+    // componentManage.registerAsyncComponent("InputNumber", () => import("primevue/inputnumber").then(module => module.default));
+    // componentManage.registerAsyncComponent("Calendar", () => import("primevue/calendar").then(module => module.default));
     // ant-design-vue 组件注册
-    componentManage.registerAsyncComponent("Avatar", () => import("ant-design-vue/es/avatar").then(module => module.default));
+    // componentManage.registerAsyncComponent("Avatar", () => import("ant-design-vue/es/avatar").then(module => module.default));
 }
 
 /**

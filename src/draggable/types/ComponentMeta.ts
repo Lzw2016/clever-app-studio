@@ -104,8 +104,10 @@ interface ComponentSetter {
     advanced: SetterPanel;
 }
 
-/** 组件元信息 */
+/** 组件元信息 */ // TODO 删除继承关系
 interface ComponentMeta extends MaterialMeta {
+    // /** 组件类型(唯一值) */
+    // type: string;
     /** 设计时的组件对象 */
     designComponent?: VueComponent | string;
     /** 默认的组件节点配置 */
@@ -144,6 +146,7 @@ interface MaterialMetaTab {
 type AsyncComponentMeta = (type: string) => Promise<ComponentMeta>;
 
 export type {
+    MaterialMeta,
     DefDesignNode,
     WatchPropsConfig,
     Setter,
