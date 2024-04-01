@@ -2,8 +2,9 @@ import { ComponentPublicInstance, createVNode, defineComponent, Fragment, render
 import lodash from "lodash";
 import { hasValue, isArray, isObj, isStr, noValue } from "@/utils/Typeof";
 import { calcExpression, getKeyPathValue, setKeyPathValue } from "@/utils/Expression";
-import { componentManage, innerDirectiveNames } from "@/draggable/Constant";
+import { innerDirectiveNames } from "@/draggable/Constant";
 import { ComponentInstance } from "@/draggable/types/Base";
+import { DefComponentManage } from "@/draggable/DefComponentManage";
 import { BaseDirectives, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
 import { CreateConfig, RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { isHtmlTag, parseHTML } from "@/draggable/utils/HtmlTag";
@@ -59,7 +60,7 @@ interface Context {
 
 // 创建渲染组件的默认配置
 const defConfig: CreateConfig = {
-    componentManage: componentManage,
+    componentManage: new DefComponentManage(),
     isDesigning: false,
 };
 

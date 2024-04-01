@@ -63,6 +63,7 @@ function loadAllTypes(allTypes: Array<string>) {
         props.designerEngine.componentManage.loadAsyncComponentMeta(allTypes),
     ]).catch(reason => {
         Notify({ type: 'error', position: 'top-right', title: "加载元数据失败", message: `加载组件元数据失败：${reason}` });
+        console.error(reason);
     }).finally(() => state.allTypesLoaded = true);
 }
 

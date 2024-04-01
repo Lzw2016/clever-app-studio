@@ -205,14 +205,14 @@ function delNode(nodeId?: string) {
         <!-- 设计器鼠标悬停时的虚线 -->
         <div class="aux-dashed-box" :style="hoverStyle">
             <div
-                v-if="props.designerState.hover.componentMeta"
+                v-if="props.designerState.hover.materialMeta"
                 :class="{
                     'mark-top-left': true,
                     'mark-top-left-up': !hoverIsTop,
                     'mark-top-left-down': hoverIsTop,
                 }"
             >
-                {{ props.designerState.hover.componentMeta.name }}
+                {{ props.designerState.hover.materialMeta.name }}
             </div>
             <div
                 v-if="hover.isContainer && hover.position &&  (!hoverIsBottom || hover.position?.height > 24 && hover.position?.width > 60)"
@@ -228,14 +228,14 @@ function delNode(nodeId?: string) {
         <!-- 设计器时选择组件的实线 -->
         <div v-if="!isDragging" v-for="selection in props.designerState.selections" class="aux-selection-box" :style="positionToStyle(selection.position)">
             <div
-                v-if="selection.componentMeta && props.designerState.singleSelection"
+                v-if="selection.materialMeta && props.designerState.singleSelection"
                 :class="{
                     'mark-top-left': true,
                     'mark-top-left-up': !isTop(selection.position),
                     'mark-top-left-down': isTop(selection.position),
                 }"
             >
-                <span>{{ selection.componentMeta.name }}</span>
+                <span>{{ selection.materialMeta.name }}</span>
                 <span style="margin-left: 4px; cursor: pointer;" class="mark-top-button" title="设置">
                     <IconSettings :size="16"/>
                 </span>

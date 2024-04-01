@@ -1,7 +1,7 @@
 import lodash from "lodash";
 import { BatchRegister, ComponentManage } from "@/draggable/types/ComponentManage";
-import { AsyncVueComponent, VueComponent } from "../types/Base";
-import { AsyncComponentMeta, ComponentMeta, MaterialMeta } from "../types/ComponentMeta";
+import { AsyncVueComponent, VueComponent } from "@/draggable/types/Base";
+import { AsyncComponentMeta, ComponentMeta, MaterialMeta } from "@/draggable/types/ComponentMeta";
 
 /**
  * 组件管理器模型

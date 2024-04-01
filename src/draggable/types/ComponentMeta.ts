@@ -104,10 +104,22 @@ interface ComponentSetter {
     advanced: SetterPanel;
 }
 
-/** 组件元信息 */ // TODO 删除继承关系
-interface ComponentMeta extends MaterialMeta {
-    // /** 组件类型(唯一值) */
-    // type: string;
+/** 组件元信息 */
+interface ComponentMeta   {
+    /** 组件类型(唯一值) */
+    type: string;
+
+    // /** 组件名称 */
+    // name: string;
+    // /** 组件介绍描述 */
+    // description?: string;
+    // /** 组件图标 */
+    // icon: VueComponent | string;
+    // /** 组件版本 */
+    // version?: string;
+    // /** 组件文档连接 */
+    // docLink?: string;
+
     /** 设计时的组件对象 */
     designComponent?: VueComponent | string;
     /** 默认的组件节点配置 */

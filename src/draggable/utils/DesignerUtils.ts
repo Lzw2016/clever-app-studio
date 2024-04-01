@@ -1,7 +1,14 @@
 import { isObj } from "@/utils/Typeof";
 import { childSlotName } from "@/draggable/Constant";
 import { RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
-import { MaterialMetaTab } from "@/draggable/types/ComponentMeta";
+import { ComponentMeta, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
+
+/**
+ * 定义一个 ComponentMeta 对象，仅仅是为了类型声明，无任何处理逻辑
+ */
+function defineComponentMeta(componentMeta: ComponentMeta): ComponentMeta {
+    return componentMeta;
+}
 
 interface NodePosition {
     /** 子节点所插槽名 */
@@ -70,6 +77,7 @@ export type  {
 }
 
 export {
+    defineComponentMeta,
     getChildNodePosition,
     getMaterialMetaTabAllTypes,
 }

@@ -1,10 +1,5 @@
 import { CursorPosition } from "@/draggable/types/Designer";
-import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { DesignNode } from "@/draggable/types/DesignBlock";
-import { DefComponentManage } from "@/draggable/models/DefComponentManage";
-
-/** 组件管理器实例 */
-const componentManage: ComponentManage = new DefComponentManage();
 
 /** 内部指令名称 */
 const innerDirectiveNames = {
@@ -61,7 +56,6 @@ const defCursorPosition: CursorPosition = {
 };
 
 export {
-    componentManage,
     innerDirectiveNames,
     emptyNodeId,
     childSlotName,

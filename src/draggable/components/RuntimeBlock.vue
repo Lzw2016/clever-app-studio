@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { defineExpose, Fragment, reactive, ref } from "vue";
-import { componentManage } from "@/draggable/Constant";
 import { DesignBlock } from "@/draggable/types/DesignBlock";
 import { RenderErrType } from "@/draggable/types/RuntimeBlock";
 import { Block, createBlockComponent, CreateConfig, getAllComponentType } from "@/draggable/BlockFactory";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
+import { ComponentManage } from "@/draggable/types/ComponentManage";
 
 // 定义组件选项
 defineOptions({
@@ -13,6 +13,8 @@ defineOptions({
 
 // 定义 Props 类型
 interface RuntimeBlockProps {
+    /** 组件管理器实例 */
+    componentManage: ComponentManage;
     /** block配置 */
     block?: DesignBlock;
     /** 是否自动加载依赖的组件 */
@@ -74,7 +76,7 @@ function createComponent() {
     if (props.autoLoadComponent) {
         const types = getAllComponentType(props.block);
         state.loading = true;
-        componentManage.loadAsyncComponent(types).then(result => {
+        props.componentManage.loadAsyncComponent(types).then(result => {
             data.component = createBlockComponent(props.block!, config);
             state.blockCreated = true;
         }).catch(reason => {

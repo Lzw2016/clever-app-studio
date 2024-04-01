@@ -1,10 +1,12 @@
 import lodash from "lodash";
 import qs from "qs";
 import { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import { markRaw } from "vue";
 import { Notify } from "@opentiny/vue";
 import Format from "@/utils/Format";
 import { isFun } from "@/utils/Typeof";
-import { materialMetaTabs } from "@/register/MaterialMetaTabs";
+import { DefComponentManage } from "@/draggable/DefComponentManage";
+import { materialMetaTabs } from "@/draggable/register/MaterialMetaTabs";
 
 if (!window.globalConfig) window.globalConfig = {} as any;
 
@@ -46,6 +48,11 @@ const globalConfigProxy: GlobalConfig = new Proxy(globalConfig, {
         return (...args: any[]) => Reflect.apply(value, target, args);
     },
 });
+
+// 组件管理器实例
+if (!globalConfig.componentManage) {
+    globalConfig.componentManage = markRaw(new DefComponentManage());
+}
 
 // 物料信息
 if (!globalConfig.materialMetaTabs) {

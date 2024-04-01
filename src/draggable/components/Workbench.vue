@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { markRaw, onMounted, onUnmounted, reactive } from "vue";
-import globalConfig from "@/GlobalConfig";
 import { globalThisPolyfill } from "@/utils/GlobalThisPolyfill";
 import { style } from "@/utils/UseType";
 import SplitPane from "@/components/SplitPane.vue";
-import { componentMeta } from "@/ComponentMetaTabs";
-import { componentManage } from "@/draggable/Constant";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { setDesignerEngine } from "@/draggable/InjectVars";
 import { DragDropDriver } from "@/draggable/drivers/DragDropDriver";
@@ -14,10 +11,13 @@ import { MouseClickDriver } from "@/draggable/drivers/MouseClickDriver";
 import { CursorEffect } from "@/draggable/effect/CursorEffect";
 import { DraggingEffect } from "@/draggable/effect/DraggingEffect";
 import { AuxToolEffect } from "@/draggable/effect/AuxToolEffect";
+import { ComponentManage } from "@/draggable/types/ComponentManage";
+import { MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 import DragGhost from "@/draggable/components/widgets/DragGhost.vue";
 import MaterialPanel from "@/draggable/components/widgets/MaterialPanel.vue";
 import SettingsPanel from "@/draggable/components/widgets/SettingsPanel.vue";
 import WorkspaceTabs from "@/draggable/components/widgets/WorkspaceTabs.vue";
+import ButtonMeta from "@/draggable/register/meta/Button";
 
 // 定义组件选项
 defineOptions({
@@ -26,6 +26,10 @@ defineOptions({
 
 // 定义 Props 类型
 interface StudioLayoutProps {
+    /** 组件管理器实例 */
+    componentManage: ComponentManage;
+    /** 物料配置 */
+    materialMetaTabs: Array<MaterialMetaTab>;
     /** 顶部导航栏高度，单位(px) */
     topNavHeight?: number;
     /** 顶部工具栏高度，单位(px) */
@@ -76,7 +80,7 @@ const state = reactive({});
 const data = {};
 // 设计器引擎
 const designerEngine = markRaw(new DesignerEngine({
-    componentManage: componentManage,
+    componentManage: props.componentManage,
     drivers: [
         DragDropDriver,
         MouseMoveDriver,
@@ -156,7 +160,7 @@ onUnmounted(() => {
                         :custom-two-pane="true"
                     >
                         <template #onePane>
-                            <MaterialPanel :designer-engine="designerEngine" :tabs="globalConfig.materialMetaTabs"/>
+                            <MaterialPanel :designer-engine="designerEngine" :tabs="props.materialMetaTabs"/>
                         </template>
                         <template #twoPane="slotProps">
                             <SplitPane
@@ -173,7 +177,7 @@ onUnmounted(() => {
                                     <WorkspaceTabs :designer-engine="designerEngine"/>
                                 </template>
                                 <template #twoPane>
-                                    <SettingsPanel :component-meta="componentMeta"/>
+                                    <SettingsPanel :component-meta="ButtonMeta"/>
                                 </template>
                             </SplitPane>
                         </template>

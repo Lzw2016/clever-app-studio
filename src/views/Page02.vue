@@ -5,6 +5,7 @@ import { block01 } from "./Block01";
 import { block02 } from "./Block02";
 import { block03 } from "@/views/Block03";
 import { block04 } from "@/views/Block04";
+import globalConfig from "@/GlobalConfig";
 
 const show = ref(1);
 const block01ref = ref();
@@ -18,23 +19,23 @@ const block01ref = ref();
     <div style="height: 12px;"/>
     <div style="width:300px;border: 1px solid #ccc;">
         空组件
-        <RuntimeBlock/>
+        <RuntimeBlock :component-manage="globalConfig.componentManage"/>
     </div>
 
     <div style="height: 12px;"/>
-    <RuntimeBlock ref="block01ref" v-if="show%2===0" :block="block01"/>
+    <RuntimeBlock ref="block01ref" v-if="show%2===0" :component-manage="globalConfig.componentManage" :block="block01"/>
 
     <div style="height: 12px;"/>
-    <RuntimeBlock v-if="show%2===0" :block="block01"/>
+    <RuntimeBlock v-if="show%2===0" :component-manage="globalConfig.componentManage" :block="block01"/>
 
     <div style="height: 12px;"/>
-    <RuntimeBlock :block="block02"/>
+    <RuntimeBlock :component-manage="globalConfig.componentManage" :block="block02"/>
 
     <div style="height: 12px;"/>
-    <RuntimeBlock :block="block03"/>
+    <RuntimeBlock :component-manage="globalConfig.componentManage" :block="block03"/>
 
     <div style="height: 12px;"/>
-    <RuntimeBlock :block="block04"/>
+    <RuntimeBlock :component-manage="globalConfig.componentManage" :block="block04"/>
 </template>
 
 <style scoped>

@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
 import { createSpan, designerTest } from "@/views/DesignerTest";
+import globalConfig from "@/GlobalConfig";
 
 const instance = ref<InstanceType<typeof RuntimeBlock> | undefined>();
 
@@ -22,7 +23,7 @@ function updateDesignerTest() {
 <template>
     <button @click="updateDesignerTest">更新</button>
     <div class="container">
-        <RuntimeBlock ref="instance" :block="designerTest" :is-designing="true"/>
+        <RuntimeBlock ref="instance" :component-manage="globalConfig.componentManage" :block="designerTest" :is-designing="true"/>
     </div>
 </template>
 

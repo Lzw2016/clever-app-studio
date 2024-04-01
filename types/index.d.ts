@@ -44,16 +44,18 @@ interface UserPermission {
 
 /** 全局配置 */
 interface GlobalConfig {
-    /** 物料配置 */
-    materialMetaTabs: Array<MaterialMetaTab>
+    /** 组件管理器实例(ComponentManage) */
+    componentManage: any;
+    /** 物料配置(Array<MaterialMetaTab>) */
+    materialMetaTabs: any;
     /** 系统授权对象 */
-    security: UserPermission,
+    security: UserPermission;
     /** 当前登录的用户信息 */
-    user: User,
+    user: User;
     /** http状态码错误信息映射 */
     httpErrorMsg: {
         [httpCode: number]: string;
-    },
+    };
     /** axios请求默认配置, 返回类型: AxiosRequestConfig */
     axiosRequestDef: () => ({
         url?: string;
@@ -128,7 +130,7 @@ interface GlobalConfig {
 /** 全局window对象扩展 */
 interface Window {
     /** 当前应用信息 */
-    readonly APP_INFO: Readonly<AppInfo>;
+    APP_INFO: Readonly<AppInfo>;
     /** Layout打开的当前ExtPage指针 */
     cp: any;
     /** 当前打开的ExtDialog指针 */

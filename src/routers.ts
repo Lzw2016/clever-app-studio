@@ -1,4 +1,5 @@
 import { Router, RouteRecordRaw } from "vue-router";
+import globalConfig from "@/GlobalConfig";
 // import { sleep } from "@/utils/Utils";
 import { DesignPageMate, LoadDesignPageMate } from "@/draggable/types/DesignBlock";
 
@@ -43,6 +44,10 @@ const staticRouters: RouteRecordRaw[] = [
         path: '/workbench',
         strict: true,
         component: () => import("@/draggable/components/Workbench.vue"),
+        props: {
+            componentManage: globalConfig.componentManage,
+            materialMetaTabs: globalConfig.materialMetaTabs,
+        },
         children: [
             {
                 name: 'WelcomePanel',
