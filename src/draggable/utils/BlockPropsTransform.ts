@@ -704,7 +704,10 @@ function runtimeNodeToDesignNode(runtimeNode: RuntimeNode): DesignNode {
         i18n,
     } = runtimeNode as RuntimeBlock;
     const designNode: DesignNode = { block: block, type: type, ref: ref };
-    if (Object.keys(props).length > 0) designNode.props = lodash.cloneDeep(props);
+    if (Object.keys(props).length > 0) {
+        // TODO 优化 props 的处理，识别哪些props是在父节点 defaults 中定义的
+        designNode.props = lodash.cloneDeep(props);
+    }
     if (Object.keys(listeners).length > 0) designNode.listeners = lodash.cloneDeep(listeners);
     if (Object.keys(directives).length > 0) designNode.directives = lodash.cloneDeep(directives);
     if (__designNode?.defaults) designNode.defaults = __designNode.defaults;

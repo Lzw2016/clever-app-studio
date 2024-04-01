@@ -72,8 +72,13 @@ tpl数据范围(优先级由上到下)
     4.根据“当前鼠标所处的位置”和“容器组件中已经渲染节点(子节点和插槽)的位置和大小”计算出新插入的节点的放置位置
 
 拖拽设计器拖拽放置组件页面更新流程
-    1.拖拽 & 放置
-    2.
-    3.
-    4.
-    5.
+     1.根据pageId获取page对应的DesignBlock对象
+     2.根据DesignBlock对象渲染(RuntimeBlock.vue)
+     3.拖拽/配置 -> 更新渲染(RuntimeBlock.vue)
+     4.更新DesignBlock对象
+     5.保存DesignBlock对象历史
+     6.重复3~5步骤
+     7.直接编辑DesignBlock对象代码
+     8.更新渲染(RuntimeBlock.vue)
+     9.保存DesignBlock对象历史
+    10.重复7~9步骤
