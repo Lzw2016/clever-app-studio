@@ -109,6 +109,12 @@ devDependencies:
   '@types/node':
     specifier: ^20.11.21
     version: 20.11.21
+  '@types/numeral':
+    specifier: ^2.0.5
+    version: 2.0.5
+  '@types/qs':
+    specifier: ^6.9.14
+    version: 6.9.14
   '@types/sortablejs':
     specifier: ^1.15.8
     version: 1.15.8
@@ -5014,6 +5020,14 @@ packages:
     resolution: {integrity: sha512-/ySDLGscFPNasfqStUuWWPfL78jompfIoVzLJPVVAHBh6rpG68+pI2Gk+fNLeI8/f1yPYL4s46EleVIc20F1Ow==}
     dependencies:
       undici-types: 5.26.5
+    dev: true
+
+  /@types/numeral@2.0.5:
+    resolution: {integrity: sha512-kH8I7OSSwQu9DS9JYdFWbuvhVzvFRoCPCkGxNwoGgaPeDfEPJlcxNvEOypZhQ3XXHsGbfIuYcxcJxKUfJHnRfw==}
+    dev: true
+
+  /@types/qs@6.9.14:
+    resolution: {integrity: sha512-5khscbd3SwWMhFqylJBLQ0zIu7c1K6Vz0uBIt915BI3zV0q1nfjRQD3RqSBcPaO6PHEF4ov/t9y89fSiyThlPA==}
     dev: true
 
   /@types/sortablejs@1.15.8:

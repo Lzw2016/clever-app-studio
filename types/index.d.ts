@@ -125,6 +125,15 @@ interface GlobalConfig {
 
 /** 全局window对象扩展 */
 interface Window {
+    /** 当前应用信息 */
+    readonly APP_INFO: Readonly<AppInfo>;
+    /** Layout打开的当前ExtPage指针 */
+    cp: any;
+    /** 当前打开的ExtDialog指针 */
+    cw: any;
+    /** 全局配置 */
+    globalConfig: GlobalConfig;
+
     [key: string]: any;
 }
 
