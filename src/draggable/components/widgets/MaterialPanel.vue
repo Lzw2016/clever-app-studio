@@ -262,7 +262,6 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
     background-color: #efefef;
     border-radius: 0;
     border: none;
-    /*border-right: 1px solid #d9d9d9;*/
     border-bottom: 1px solid #d9d9d9;
 }
 
@@ -273,6 +272,10 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
     padding: 0;
     border: none;
     border-bottom: 1px solid #d9d9d9;
+}
+
+.material-items:last-child :deep(.tiny-collapse-item__content) {
+    border-bottom: none;
 }
 
 .material-item {

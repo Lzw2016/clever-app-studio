@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, reactive } from "vue";
+import { computed, reactive, watch } from "vue";
 import { Collapse, CollapseItem, TabItem, Tabs } from "@opentiny/vue";
 import { IconX } from "@tabler/icons-vue";
-import { ComponentMeta, SetterGroup } from "@/draggable/types/ComponentMeta";
+import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 
 // 定义组件选项
 defineOptions({
@@ -11,19 +12,14 @@ defineOptions({
 
 // 定义 Props 类型
 interface SettingsPanelProps {
-    /** 组件元信息 */
-    componentMeta: ComponentMeta;
+    /** 设计器引擎 */
+    designerEngine: DesignerEngine;
 }
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<SettingsPanelProps>(), {});
 // state 属性
-const state = reactive({
-    // 活动的叶签
-    activeTab: "props",
-    // 展开的组件分组
-    expandGroups: getAllExpandTitles(props.componentMeta),
-});
+const state = reactive({});
 // 内部数据
 const data = {
     setterTabs: {
@@ -33,26 +29,14 @@ const data = {
         advanced: "高级",
     },
 };
-const componentMeta = computed(() => filterEmptyMeta(props.componentMeta))
-
-// 获取所有展开的 group title
-function getAllExpandTitles(meta: ComponentMeta): Record<string, Array<string>> {
-    const expandGroups: Record<string, Array<string>> = {};
-    const getExpands = (groups: Array<SetterGroup>) => {
-        const expands: Array<string> = [];
-        groups.forEach(group => {
-            if (group.expand !== false) {
-                expands.push(group.title);
-            }
-        });
-        return expands;
-    };
-    expandGroups.props = getExpands(meta.setter.props.groups);
-    expandGroups.events = getExpands(meta.setter.events.groups);
-    expandGroups.style = getExpands(meta.setter.style.groups);
-    expandGroups.advanced = getExpands(meta.setter.advanced.groups);
-    return expandGroups;
-}
+// 当前活动的设计器状态数据
+const designerState = computed(() => props.designerEngine.activeDesignerState);
+// 当前选中的 ComponentMeta
+const selectedComponentMeta = computed(() => designerState.value?.selectedComponentMeta);
+// 当前活动的设计器状态数据
+const setterState = computed(() => props.designerEngine.activeDesignerState?.setterState);
+// 重新计算expandGroups(展开的组件分组)
+watch(() => selectedComponentMeta.value, () => setterState.value?.recalcExpandGroups());
 
 // 过滤所有空 props events style advanced 中的 items
 function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
@@ -74,22 +58,26 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
                 <IconX :size="18"/>
             </div>
         </div>
-        <div class="flex-row-container flex-center flex-item-fixed">
+        <div v-if="!selectedComponentMeta" class="settings-panel flex-column-container">
+            <div class="flex-item-fill settings-panel-empty">请在左侧画布选中节点</div>
+        </div>
+        <div v-if="selectedComponentMeta" class="flex-row-container flex-center flex-item-fixed">
         </div>
         <Tabs
+            v-if="selectedComponentMeta && setterState"
             class="flex-item-fill settings-tabs flex-column-container"
-            :active-name="state.activeTab"
+            :active-name="setterState.activeTab"
             tab-style="button-card"
         >
             <TabItem
                 style="height: 100%;"
-                v-for="(setter, name) in componentMeta.setter"
+                v-for="(setter, name) in selectedComponentMeta.setter"
                 :key="name"
                 :lazy="false"
                 :name="name"
                 :title="setter.title || data.setterTabs[name] || data.setterTabs"
             >
-                <Collapse class="settings-groups" v-model="state.expandGroups[name]">
+                <Collapse class="settings-groups" v-model="setterState.expandGroups[name]">
                     <CollapseItem
                         class="settings-items"
                         v-for="group in setter.groups"
@@ -109,6 +97,13 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
 .settings-panel {
     height: 100%;
     width: 100%;
+}
+
+.settings-panel-empty {
+    text-align: center;
+    margin-top: 48px;
+    font-size: 12px;
+    color: #808080;
 }
 
 .settings-panel-title {
@@ -216,6 +211,10 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
     padding: 0;
     border: none;
     border-bottom: 1px solid #d9d9d9;
+}
+
+.settings-items:last-child :deep(.tiny-collapse-item__content) {
+    border-bottom: none;
 }
 
 .settings-item {

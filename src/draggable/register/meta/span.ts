@@ -25,7 +25,29 @@ export default defineComponentMeta({
     setter: {
         props: {
             title: "",
-            groups: [],
+            groups: [
+                {
+                    title: "常规",
+                    items: [
+                        {
+                            cmp: "TextSetter",
+                            propsName: "aaa",
+                        },
+                        {
+                            cmp: "TextSetter",
+                            propsName: "aaa",
+                        },
+                        {
+                            cmp: "TextSetter",
+                            propsName: "aaa",
+                        },
+                        {
+                            cmp: "TextSetter",
+                            propsName: "aaa",
+                        },
+                    ],
+                },
+            ],
         },
         events: {
             title: "",

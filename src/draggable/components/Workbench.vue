@@ -17,7 +17,6 @@ import DragGhost from "@/draggable/components/widgets/DragGhost.vue";
 import MaterialPanel from "@/draggable/components/widgets/MaterialPanel.vue";
 import SettingsPanel from "@/draggable/components/widgets/SettingsPanel.vue";
 import WorkspaceTabs from "@/draggable/components/widgets/WorkspaceTabs.vue";
-import ButtonMeta from "@/draggable/register/meta/Button";
 
 // 定义组件选项
 defineOptions({
@@ -177,7 +176,7 @@ onUnmounted(() => {
                                     <WorkspaceTabs :designer-engine="designerEngine"/>
                                 </template>
                                 <template #twoPane>
-                                    <SettingsPanel :component-meta="ButtonMeta"/>
+                                    <SettingsPanel :designer-engine="designerEngine"/>
                                 </template>
                             </SplitPane>
                         </template>

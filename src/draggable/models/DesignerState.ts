@@ -5,6 +5,8 @@ import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { HoverDashed } from "@/draggable/models/HoverDashed";
 import { Selection } from "@/draggable/models/Selection";
 import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
+import { ComponentMeta } from "@/draggable/types/ComponentMeta";
+import { SetterState } from "@/draggable/models/SetterState";
 
 /**
  * 设计器状态数据
@@ -20,13 +22,34 @@ class DesignerState {
     protected _designerBlockCode: Ref<string> = ref<string>("");
     /** 设计器鼠标悬停时的虚线 */
     readonly hover: HoverDashed = new HoverDashed(this);
-    /** 设计器选择组件集合 */
+    /** 设计器选择节点集合 */
     readonly selections: ShallowReactive<Array<Selection>> = shallowReactive<Array<Selection>>([]);
+    /** 存在选中的节点 */
+    readonly existsSelection: ComputedRef<boolean> = computed<boolean>(() => this.selections.length > 0);
     /** selections 中只有一个选择项 */
     readonly singleSelection: ComputedRef<boolean> = computed<boolean>(() => this.selections.length === 1);
+    /** 当前选中的 ComponentMeta */
+    protected readonly _selectedComponentMeta: ComputedRef<ComponentMeta | undefined> = computed<ComponentMeta | undefined>(() => this.getCurrentComponentMeta());
+    /** 设计器的组件配置面板状态 */
+    readonly setterState: SetterState = new SetterState(this);
 
     constructor(designerEngine: DesignerEngine) {
         this.designerEngine = designerEngine;
+    }
+
+    /** 获取当前选中的 ComponentMeta */
+    protected getCurrentComponentMeta() {
+        if (this.selections.length <= 0) return;
+        if (this.selections.length === 1) return this.selections[0].componentMeta;
+        let componentMeta: ComponentMeta | undefined;
+        const types = new Set<string>();
+        for (let selection of this.selections) {
+            if (!selection.componentMeta) continue;
+            componentMeta = selection.componentMeta;
+            types.add(componentMeta.type);
+            if (types.size > 1) return;
+        }
+        return componentMeta;
     }
 
     /** 设计器容器 */
@@ -57,6 +80,11 @@ class DesignerState {
     /** 设计时的代码(DesignBlock源码) */
     get designerBlockCode() {
         return this._designerBlockCode.value;
+    }
+
+    /** 当前选中的 ComponentMeta */
+    get selectedComponentMeta() {
+        return this._selectedComponentMeta.value;
     }
 
     /**

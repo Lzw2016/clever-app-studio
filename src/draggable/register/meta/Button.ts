@@ -38,55 +38,11 @@ export default defineComponentMeta({
                             cmp: "TextSetter",
                             propsName: "aaa",
                         },
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
                     ],
                 },
                 {
                     title: "数据绑定",
                     items: [
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
                         {
                             cmp: "TextSetter",
                             propsName: "aaa",
