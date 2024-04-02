@@ -30,10 +30,10 @@ class SetterState {
             }
             return expands;
         };
-        expandGroups.props = getExpands(meta.setter.props.groups);
-        expandGroups.events = getExpands(meta.setter.events.groups);
-        expandGroups.style = getExpands(meta.setter.style.groups);
-        expandGroups.advanced = getExpands(meta.setter.advanced.groups);
+        if (meta.setter.props) expandGroups.props = getExpands(meta.setter.props.groups);
+        if (meta.setter.events) expandGroups.events = getExpands(meta.setter.events.groups);
+        if (meta.setter.style) expandGroups.style = getExpands(meta.setter.style.groups);
+        if (meta.setter.advanced) expandGroups.advanced = getExpands(meta.setter.advanced.groups);
         return expandGroups;
     }
 

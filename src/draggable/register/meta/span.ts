@@ -53,14 +53,14 @@ export default defineComponentMeta({
             title: "",
             groups: [],
         },
-        style: {
-            title: "",
-            groups: [],
-        },
-        advanced: {
-            title: "",
-            groups: [],
-        },
+        // style: {
+        //     title: "",
+        //     groups: [],
+        // },
+        // advanced: {
+        //     title: "",
+        //     groups: [],
+        // },
     },
     placeholder: {},
     i18n: {},

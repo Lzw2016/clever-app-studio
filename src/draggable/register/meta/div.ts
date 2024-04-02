@@ -51,10 +51,10 @@ export default defineComponentMeta({
             title: "",
             groups: [],
         },
-        advanced: {
-            title: "",
-            groups: [],
-        },
+        // advanced: {
+        //     title: "",
+        //     groups: [],
+        // },
     },
     placeholder: {
         default: true,

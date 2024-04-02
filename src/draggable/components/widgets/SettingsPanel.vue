@@ -32,7 +32,10 @@ const data = {
 // 当前活动的设计器状态数据
 const designerState = computed(() => props.designerEngine.activeDesignerState);
 // 当前选中的 ComponentMeta
-const selectedComponentMeta = computed(() => designerState.value?.selectedComponentMeta);
+const selectedComponentMeta = computed(() => {
+    const meta = designerState.value?.selectedComponentMeta;
+    if (meta) return filterEmptyMeta(meta);
+});
 // 当前活动的设计器状态数据
 const setterState = computed(() => props.designerEngine.activeDesignerState?.setterState);
 // 重新计算expandGroups(展开的组件分组)
@@ -41,10 +44,10 @@ watch(() => selectedComponentMeta.value, () => setterState.value?.recalcExpandGr
 // 过滤所有空 props events style advanced 中的 items
 function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
     const newMeta = { ...meta };
-    newMeta.setter.props.groups = meta.setter.props.groups.filter(group => group.items.length > 0);
-    newMeta.setter.events.groups = meta.setter.events.groups.filter(group => group.items.length > 0);
-    newMeta.setter.style.groups = meta.setter.style.groups.filter(group => group.items.length > 0);
-    newMeta.setter.advanced.groups = meta.setter.advanced.groups.filter(group => group.items.length > 0);
+    if (meta.setter.props && newMeta.setter.props) newMeta.setter.props.groups = meta.setter.props.groups.filter(group => group.items.length > 0);
+    if (meta.setter.events && newMeta.setter.events) newMeta.setter.events.groups = meta.setter.events.groups.filter(group => group.items.length > 0);
+    if (meta.setter.style && newMeta.setter.style) newMeta.setter.style.groups = meta.setter.style.groups.filter(group => group.items.length > 0);
+    if (meta.setter.advanced && newMeta.setter.advanced) newMeta.setter.advanced.groups = meta.setter.advanced.groups.filter(group => group.items.length > 0);
     return meta;
 }
 </script>
@@ -75,9 +78,9 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
                 :key="name"
                 :lazy="false"
                 :name="name"
-                :title="setter.title || data.setterTabs[name] || data.setterTabs"
+                :title="setter?.title || data.setterTabs[name] || data.setterTabs"
             >
-                <Collapse class="settings-groups" v-model="setterState.expandGroups[name]">
+                <Collapse v-if="setter" class="settings-groups" v-model="setterState.expandGroups[name]">
                     <CollapseItem
                         class="settings-items"
                         v-for="group in setter.groups"

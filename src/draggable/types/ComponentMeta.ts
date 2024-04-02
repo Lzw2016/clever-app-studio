@@ -79,13 +79,13 @@ interface SetterPanel {
 /** 组件元信息 setter */
 interface ComponentSetter {
     /** 组件属性设置 */
-    props: SetterPanel;
+    props?: SetterPanel;
     /** 组件事件绑定 */
-    events: SetterPanel;
+    events?: SetterPanel;
     /** 样式设置(内置的固定设置) */
-    style: SetterPanel;
+    style?: SetterPanel;
     /** vue指令设置(内置的固定设置) */
-    advanced: SetterPanel;
+    advanced?: SetterPanel;
 }
 
 /** 组件元信息 */
