@@ -103,9 +103,7 @@ function getMaterialMetaTabAllTypes(materialMetaTab: MaterialMetaTab): Array<str
     const types: Array<string> = [];
     const { groups } = materialMetaTab;
     for (let group of groups) {
-        const { items } = group;
-        for (let item of items) {
-            const { type } = item;
+        for (let type of group.types) {
             if (types.includes(type)) continue;
             types.push(type);
         }

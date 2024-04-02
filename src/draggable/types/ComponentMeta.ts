@@ -1,23 +1,6 @@
 import { ComponentInstance, ComponentSlotMeta, FunctionMeta, I18N, VueComponent } from "@/draggable/types/Base";
 import { BaseProps, ComponentListener, DesignNode } from "@/draggable/types/DesignBlock";
 
-/** 物料元信息 */
-interface MaterialMeta {
-    /** 组件类型(唯一值) */
-    type: string;
-    // /** 组件名称 */
-    // name: string;
-    // /** 组件介绍描述 */
-    // description?: string;
-    // /** 组件图标 */
-    // icon: VueComponent | string;
-    // /** 组件版本 */
-    // version?: string;
-    // /** 组件文档连接 */
-    // docLink?: string;
-    [name: string]: any;
-}
-
 /** 组件节点默认配置 */
 type DefDesignNode = Partial<Omit<DesignNode, 'type' | 'ref'>>
 
@@ -106,7 +89,7 @@ interface ComponentSetter {
 }
 
 /** 组件元信息 */
-interface ComponentMeta   {
+interface ComponentMeta {
     /** 组件类型(唯一值) */
     type: string;
     /** 组件名称 */
@@ -141,23 +124,32 @@ interface MaterialMetaGroup {
     title: string;
     /** 是否展开状态(默认为true) */
     expand?: boolean;
-    /** 组件元信息集合 */
-    items: Array<MaterialMeta>
+    /** 组件类型集合 */
+    types: Array<string>
 }
 
 /** 物料叶签 */
-interface MaterialMetaTab {
+interface MaterialMetaTab<Group extends MaterialMetaGroup = MaterialMetaGroup> {
     /** 组件叶签标题 */
     title: string;
     /** 组件元信息集合 */
-    groups: Array<MaterialMetaGroup>
+    groups: Array<Group>
+}
+
+/** 组件元数据分组 */
+interface ComponentMetaGroup extends MaterialMetaGroup {
+    /** 组件元信息集合与types顺序一致 */
+    metas: Array<ComponentMeta>;
+}
+
+/** 组件元数据叶签 */
+interface ComponentMetaTab extends MaterialMetaTab<ComponentMetaGroup> {
 }
 
 /** 异步获取“组件元信息” */
 type AsyncComponentMeta = (type: string) => Promise<ComponentMeta>;
 
 export type {
-    MaterialMeta,
     DefDesignNode,
     WatchPropsConfig,
     Setter,
@@ -167,5 +159,7 @@ export type {
     ComponentMeta,
     MaterialMetaGroup,
     MaterialMetaTab,
+    ComponentMetaGroup,
+    ComponentMetaTab,
     AsyncComponentMeta,
 }

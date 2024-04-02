@@ -1,14 +1,13 @@
 import lodash from "lodash";
 import { BatchRegister, ComponentManage } from "@/draggable/types/ComponentManage";
 import { AsyncVueComponent, VueComponent } from "@/draggable/types/Base";
-import { AsyncComponentMeta, ComponentMeta, MaterialMeta } from "@/draggable/types/ComponentMeta";
+import { AsyncComponentMeta, ComponentMeta } from "@/draggable/types/ComponentMeta";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 
 /**
  * 组件管理器模型
  */
 class DefComponentManage implements ComponentManage {
-    private readonly materialMetas: Map<string, MaterialMeta> = new Map<string, MaterialMeta>();
     private readonly batchRegister: Map<RegExp, BatchRegister> = new Map<RegExp, BatchRegister>();
     private readonly asyncComponents: Map<string, AsyncVueComponent> = new Map<string, AsyncVueComponent>();
     private readonly components: Map<string, VueComponent> = new Map<string, VueComponent>();
@@ -79,14 +78,6 @@ class DefComponentManage implements ComponentManage {
         const cmp = this.components.get(type);
         if (cmp) return cmp;
         return def;
-    }
-
-    getMaterialMeta(type: string): MaterialMeta | undefined {
-        return this.materialMetas.get(type);
-    }
-
-    registerMaterialMeta(materialMeta: MaterialMeta): void {
-        this.materialMetas.set(materialMeta.type, materialMeta);
     }
 
     registerComponentMeta(componentMeta: ComponentMeta): void {

@@ -5,7 +5,7 @@ import { IconCalendarPlus, IconX } from "@tabler/icons-vue";
 import { getMaterialMetaTabAllTypes } from "@/draggable/utils/DesignerUtils";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
-import { MaterialMetaTab } from "@/draggable/types/ComponentMeta";
+import { ComponentMeta, ComponentMetaTab, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 
 const vLoading = Loading.directive;
 
@@ -40,7 +40,12 @@ const data = {
     allTypes: getAllTypes(),
 };
 // 组件元信息
-const componentMetaTabs = computed(() => filterEmptyTabs(props.tabs));
+const componentMetaTabs = computed<Array<ComponentMetaTab>>(() => {
+    if (state.allTypesLoaded) {
+        return filterEmptyTabs(props.tabs);
+    }
+    return [];
+});
 // 加载所有的组件及其元数据
 loadAllTypes(data.allTypes);
 
@@ -83,17 +88,21 @@ function getAllExpandTitles(tabs: Array<MaterialMetaTab>): Record<string, Array<
 }
 
 // 过滤所有空 groups 和 items
-function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
-    const newTabs: Array<MaterialMetaTab> = [];
-    tabs.forEach(tab => {
-        if (tab.groups.length <= 0) return;
-        const newTab: MaterialMetaTab = { ...tab, groups: [] };
-        tab.groups.forEach(group => {
-            if (group.items.length <= 0) return;
-            newTab.groups.push(group);
-        });
-        newTabs.push(newTab);
-    });
+function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> {
+    const newTabs: Array<ComponentMetaTab> = [];
+    for (let tab of tabs) {
+        if (tab.groups.length <= 0) continue;
+        const newTab: ComponentMetaTab = { ...tab, groups: [] };
+        for (let group of tab.groups) {
+            const metas: Array<ComponentMeta> = [];
+            group.types.map(type => props.designerEngine.componentManage.getComponentMeta(type)).forEach(meta => {
+                if (meta) metas.push(meta);
+            });
+            const types = metas.map(meta => meta.type);
+            if (types.length > 0) newTab.groups.push({ ...group, types: types, metas: metas });
+        }
+        if (tab.groups.length > 0) newTabs.push(newTab);
+    }
     return newTabs;
 }
 </script>
@@ -140,15 +149,15 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<MaterialMetaTab> {
                     >
                         <div
                             class="material-item draggable"
-                            v-for="item in group.items"
-                            :title="`${item.name}(${item.type})`"
-                            :data-component-type="item.type"
+                            v-for="meta in group.metas"
+                            :title="`${meta.name}(${meta.type})`"
+                            :data-component-type="meta.type"
                         >
                             <div class="material-item-icon flex-item-fixed">
                                 <IconCalendarPlus :size="20"/>
                             </div>
                             <div class="material-item-name flex-item-fill">
-                                {{ item.name }}
+                                {{ meta.name }}
                             </div>
                         </div>
                     </CollapseItem>
