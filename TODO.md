@@ -4,7 +4,9 @@
 [  ]  3.tpl模板中无法监听事件，可以优化。需要完全解析 dom 然后动态调用 createVNode 函数。
 [  ]  4.createBlockComponent 中的 blockDeepTransform 函数也可以使用缓存，当入参 DesignBlock 对象相同时，直接返回缓存中的 RuntimeBlock 对象的clone副本(需要重新生成id字段)
 [  ]  5.tpl和items中的字符串如果不是模版就不需要使用模板解析，可以使用正则表达式检测实现
-[  ]  6.
+[  ]  6.原生html属性支持.capture、.once、.passive 修饰符，重写函数名即可，如：onClickCapture、onClickOnce
+[  ]  7.
+[  ]  8.
 
 ### 功能计划
 

@@ -12,6 +12,9 @@ export default defineComponentMeta({
         props: {
             text: "按钮",
         },
+        directives: {
+            'disable-event': {},
+        },
     },
     events: {},
     slots: {},
