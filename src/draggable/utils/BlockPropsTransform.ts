@@ -680,10 +680,15 @@ function renderTpl(tpl: string[], props: Record<string, any>, instance: any, run
 //     });
 // }
 
+interface RuntimeNodeToDesignNodeOps {
+    /** 保持ref属性值 */
+    keepRef?: boolean;
+}
+
 /**
  * 将 RuntimeNode 装换成 DesignNode
  */
-function runtimeNodeToDesignNode(runtimeNode: RuntimeNode): DesignNode {
+function runtimeNodeToDesignNode(runtimeNode: RuntimeNode, ops: RuntimeNodeToDesignNodeOps = {}): DesignNode {
     const {
         __designNode,
         type,
@@ -703,7 +708,8 @@ function runtimeNodeToDesignNode(runtimeNode: RuntimeNode): DesignNode {
         meta,
         i18n,
     } = runtimeNode as RuntimeBlock;
-    const designNode: DesignNode = { block: block, type: type, ref: ref };
+    const designNode: DesignNode = { block: block, type: type };
+    if (ops.keepRef) designNode.ref = ref;
     if (Object.keys(props).length > 0) {
         // TODO 优化 props 的处理，识别哪些props是在父节点 defaults 中定义的
         designNode.props = lodash.cloneDeep(props);

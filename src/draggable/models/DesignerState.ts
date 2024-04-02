@@ -94,7 +94,12 @@ class DesignerState {
         let code = "";
         const blockInstance = this.blockInstance;
         if (blockInstance?.globalContext.runtimeBlock) {
-            const designNode = runtimeNodeToDesignNode(blockInstance.globalContext.runtimeBlock);
+            const designNode = runtimeNodeToDesignNode(
+                blockInstance.globalContext.runtimeBlock,
+                {
+                    keepRef: true,
+                },
+            );
             code = JSON.stringify(designNode, null, 4);
         }
         this._designerBlockCode.value = code;
