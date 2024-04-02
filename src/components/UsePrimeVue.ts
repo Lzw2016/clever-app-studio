@@ -6,7 +6,7 @@ import { Language, primeVueLocale } from "@/i18n";
 /**
  * 配置组件库
  */
-function useComponent(app: App) {
+function usePrimeVue(app: App) {
     // 配置 PrimeVue 组件库
     app.use(PrimeVue, {
         unstyled: false,
@@ -17,5 +17,5 @@ function useComponent(app: App) {
 
 
 export {
-    useComponent,
+    usePrimeVue,
 }

@@ -4,9 +4,8 @@ import type { InitI18nOption } from "@opentiny/vue-locale/src/vue3";
 import { usePrimeVue } from "primevue/config";
 import PrimeVueZhCN from "./primevue/zh-CN.json";
 import AntDesignZhCN from 'ant-design-vue/es/locale/zh_CN';
-// import dayjs from "dayjs";
-// import "dayjs/locale/zh-cn";
-// dayjs.locale('zh-cn');
+import dayjs from "dayjs";
+import "dayjs/locale/zh-cn";
 
 /** 国际化(语言) */
 enum Language {
@@ -36,6 +35,7 @@ const antDesignLocale: Partial<Record<LanguageName, any>> = {
  * 初始化i18n
  */
 function initI18n(locale: string = "zhCN") {
+    dayjs.locale("zh-cn");
     const option: InitI18nOption = {
         i18n: { locale: locale },
         createI18n: createI18n,

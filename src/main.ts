@@ -7,7 +7,7 @@ import { initRouter } from "@/routers";
 import { initI18n } from "@/i18n";
 import { registerComponent } from "@/draggable/register/RegisterComponent";
 import { registerComponentMeta } from "@/draggable/register/RegisterComponentMeta";
-import { useComponent } from "@/register";
+import { usePrimeVue } from "@/components/UsePrimeVue";
 import globalConfig from "@/GlobalConfig";
 
 window['APP_INFO'] = readonly(__APP_INFO__);
@@ -24,7 +24,7 @@ window['APP_INFO'] = readonly(__APP_INFO__);
     // 自定义指令
     app.directive("focus", focus);
     // 配置组件库
-    useComponent(app);
+    usePrimeVue(app);
     // 注册组件
     registerComponent(globalConfig.componentManage);
     // 注册组件元信息

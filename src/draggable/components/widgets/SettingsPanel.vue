@@ -87,7 +87,7 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
                 :key="name"
                 :lazy="false"
                 :name="name"
-                :title="setter.title || data.setterTabs[name]"
+                :title="setter.title || data.setterTabs[name] || data.setterTabs"
             >
                 <Collapse class="settings-groups" v-model="state.expandGroups[name]">
                     <CollapseItem
