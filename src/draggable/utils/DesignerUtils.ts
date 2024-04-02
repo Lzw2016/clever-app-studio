@@ -1,13 +1,55 @@
-import { isObj } from "@/utils/Typeof";
+import lodash from "lodash";
+import { isArray, isObj } from "@/utils/Typeof";
 import { childSlotName } from "@/draggable/Constant";
 import { RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentMeta, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
+import { DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
+
+/**
+ * 定义一个 DesignBlock 对象，仅仅是为了类型声明，无任何处理逻辑
+ */
+function defineDesignBlock(designBlock: DesignBlock): DesignBlock {
+    return designBlock;
+}
 
 /**
  * 定义一个 ComponentMeta 对象，仅仅是为了类型声明，无任何处理逻辑
  */
 function defineComponentMeta(componentMeta: ComponentMeta): ComponentMeta {
     return componentMeta;
+}
+
+/**
+ * 递归获取当前 DesignNode 中所有的组件名称(包含html原生标签名)
+ */
+function getAllTypes(node: DesignNode, allType?: Set<string>): Array<string> {
+    if (!allType) allType = new Set<string>();
+    if (node.type) {
+        node.type = lodash.trim(node.type);
+        allType.add(node.type);
+    }
+    if (node.slots) {
+        for (let name in node.slots) {
+            const slot: any = node.slots[name];
+            if (isArray(slot)) {
+                slot.forEach(item => getAllTypes(item, allType));
+            } else if (isObj(slot)) {
+                getAllTypes(slot, allType);
+            }
+        }
+    }
+    if (node.items) {
+        if (isArray(node.items)) {
+            node.items.forEach(item => {
+                if (isObj(item)) {
+                    getAllTypes(item as any, allType);
+                }
+            });
+        } else if (isObj(node.items)) {
+            getAllTypes(node.items as any, allType);
+        }
+    }
+    return Array.from(allType);
 }
 
 interface NodePosition {
@@ -71,13 +113,14 @@ function getMaterialMetaTabAllTypes(materialMetaTab: MaterialMetaTab): Array<str
     return types;
 }
 
-
 export type  {
     NodePosition,
 }
 
 export {
+    defineDesignBlock,
     defineComponentMeta,
+    getAllTypes,
     getChildNodePosition,
     getMaterialMetaTabAllTypes,
 }

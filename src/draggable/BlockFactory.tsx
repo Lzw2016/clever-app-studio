@@ -5,9 +5,9 @@ import { calcExpression, getKeyPathValue, setKeyPathValue } from "@/utils/Expres
 import { innerDirectiveNames } from "@/draggable/Constant";
 import { ComponentInstance } from "@/draggable/types/Base";
 import { DefComponentManage } from "@/draggable/DefComponentManage";
-import { BaseDirectives, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
+import { BaseDirectives, DesignBlock } from "@/draggable/types/DesignBlock";
 import { CreateConfig, RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
-import { isHtmlTag, parseHTML } from "@/draggable/utils/HtmlTag";
+import { parseHTML } from "@/draggable/utils/HtmlTag";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, deepTraverseNodes, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
 import { AllBlockOperation, BlockOperation, BlockOperationById } from "@/draggable/BlockOperation";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
@@ -67,7 +67,8 @@ const defConfig: CreateConfig = {
 /**
  * 基于 DesignBlock 动态创建 vue 组件
  */
-function createBlockComponent(block: DesignBlock, config: Partial<CreateConfig> = defConfig) {
+function createBlockComponent(block: DesignBlock, config: CreateConfig = defConfig) {
+    lodash.defaults(config, defConfig);
     const designBlock: DesignBlock = block;
     // 深度克隆 block 对象，保护原始 block 对象不被篡改
     block = lodash.cloneDeep(designBlock);
@@ -594,48 +595,6 @@ function _applyDirectives<Directives extends BaseDirectives = BaseDirectives>(vn
     return vnode;
 }
 
-/**
- * 递归获取当前 DesignNode 中所有的 vue 组件名称
- */
-function getAllComponentType(node: DesignNode, allType?: Set<string>): Array<string> {
-    if (!allType) allType = new Set<string>();
-    if (node.type) {
-        node.type = lodash.trim(node.type);
-        if (!isHtmlTag(node.type)) {
-            allType.add(node.type)
-        }
-    }
-    if (node.slots) {
-        for (let name in node.slots) {
-            const slot: any = node.slots[name];
-            if (isArray(slot)) {
-                slot.forEach(item => getAllComponentType(item, allType));
-            } else if (isObj(slot)) {
-                getAllComponentType(slot, allType);
-            }
-        }
-    }
-    if (node.items) {
-        if (isArray(node.items)) {
-            node.items.forEach(item => {
-                if (isObj(item)) {
-                    getAllComponentType(item as any, allType);
-                }
-            });
-        } else if (isObj(node.items)) {
-            getAllComponentType(node.items as any, allType);
-        }
-    }
-    return Array.from(allType);
-}
-
-/**
- * 定义一个 DesignBlock 对象，仅仅是为了类型声明，无任何处理逻辑
- */
-function defineDesignBlock(designBlock: DesignBlock): DesignBlock {
-    return designBlock;
-}
-
 export type  {
     CreateConfig,
     Block,
@@ -643,6 +602,4 @@ export type  {
 
 export {
     createBlockComponent,
-    getAllComponentType,
-    defineDesignBlock,
 }

@@ -10,11 +10,11 @@ const componentMeta = defineComponentMeta({
     type: "Input",
     // 设计时显示的组件
     designComponent: "[DesignInput]",
-    // name: "文本输入",
-    // description: "单行文本输入",
-    // version: "0.0.1",
-    // docLink: "",
-    // icon: "input",
+    name: "文本输入",
+    description: "单行文本输入",
+    version: "0.0.1",
+    docLink: "",
+    icon: "input",
     defDesignNode: {
         props: {},
         listeners: {},

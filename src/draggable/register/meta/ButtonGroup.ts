@@ -2,6 +2,11 @@ import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 
 export default defineComponentMeta({
     type: "ButtonGroup",
+    name: "按钮组",
+    description: "",
+    version: "0.0.1",
+    docLink: "",
+    icon: "",
     // designComponent: "",
     defDesignNode: {
         props: {

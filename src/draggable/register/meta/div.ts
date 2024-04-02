@@ -2,6 +2,11 @@ import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 
 export default defineComponentMeta({
     type: "div",
+    name: "[div]容器",
+    description: "",
+    version: "0.0.1",
+    docLink: "",
+    icon: "",
     // designComponent: "",
     defDesignNode: {
         props: {

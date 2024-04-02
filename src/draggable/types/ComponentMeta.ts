@@ -5,16 +5,17 @@ import { BaseProps, ComponentListener, DesignNode } from "@/draggable/types/Desi
 interface MaterialMeta {
     /** 组件类型(唯一值) */
     type: string;
-    /** 组件名称 */
-    name: string;
-    /** 组件介绍描述 */
-    description?: string;
-    /** 组件图标 */
-    icon: VueComponent | string;
-    /** 组件版本 */
-    version?: string;
-    /** 组件文档连接 */
-    docLink?: string;
+    // /** 组件名称 */
+    // name: string;
+    // /** 组件介绍描述 */
+    // description?: string;
+    // /** 组件图标 */
+    // icon: VueComponent | string;
+    // /** 组件版本 */
+    // version?: string;
+    // /** 组件文档连接 */
+    // docLink?: string;
+    [name: string]: any;
 }
 
 /** 组件节点默认配置 */
@@ -108,18 +109,16 @@ interface ComponentSetter {
 interface ComponentMeta   {
     /** 组件类型(唯一值) */
     type: string;
-
-    // /** 组件名称 */
-    // name: string;
-    // /** 组件介绍描述 */
-    // description?: string;
-    // /** 组件图标 */
-    // icon: VueComponent | string;
-    // /** 组件版本 */
-    // version?: string;
-    // /** 组件文档连接 */
-    // docLink?: string;
-
+    /** 组件名称 */
+    name: string;
+    /** 组件介绍描述 */
+    description?: string;
+    /** 组件图标 */
+    icon: VueComponent | string;
+    /** 组件版本 */
+    version?: string;
+    /** 组件文档连接 */
+    docLink?: string;
     /** 设计时的组件对象 */
     designComponent?: VueComponent | string;
     /** 默认的组件节点配置 */

@@ -1,4 +1,5 @@
-import { Block, defineDesignBlock } from "@/draggable/BlockFactory";
+import { defineDesignBlock } from "@/draggable/utils/DesignerUtils";
+import { Block } from "@/draggable/BlockFactory";
 
 const block02 = defineDesignBlock({
     block: true,

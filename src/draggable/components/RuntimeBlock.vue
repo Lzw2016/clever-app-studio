@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { defineExpose, Fragment, reactive, ref } from "vue";
+import { isHtmlTag } from "@/draggable/utils/HtmlTag";
+import { getAllTypes } from "@/draggable/utils/DesignerUtils";
 import { DesignBlock } from "@/draggable/types/DesignBlock";
 import { RenderErrType } from "@/draggable/types/RuntimeBlock";
-import { Block, createBlockComponent, CreateConfig, getAllComponentType } from "@/draggable/BlockFactory";
-import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
+import { Block, createBlockComponent, CreateConfig } from "@/draggable/BlockFactory";
+import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
 
 // 定义组件选项
 defineOptions({
@@ -68,27 +70,39 @@ defineExpose({
 // TODO 提供 block 操作api
 
 // 基于 Block 创建 vue 组件
-function createComponent() {
-    const config: Partial<CreateConfig> = {
+async function createComponent() {
+    const config: CreateConfig = {
+        componentManage: props.componentManage,
         isDesigning: props.isDesigning,
     };
     if (!props.block) return;
     if (props.autoLoadComponent) {
-        const types = getAllComponentType(props.block);
+        const types = getAllTypes(props.block);
         state.loading = true;
-        props.componentManage.loadAsyncComponent(types).then(result => {
-            data.component = createBlockComponent(props.block!, config);
+        try {
+            try {
+                // 加载组件元数据
+                if (config.isDesigning) await props.componentManage.loadAsyncComponentMeta(types);
+            } catch (err) {
+                console.warn("加载组件元数据失败", err);
+            }
+            // 加载组件
+            await props.componentManage.loadAsyncComponent(types.filter(type => !isHtmlTag(type)));
+            // 动态创建 block 组件
+            data.component = createBlockComponent(props.block, config);
             state.blockCreated = true;
-        }).catch(reason => {
+        } catch (reason: any) {
             state.loadErr = reason;
-        }).finally(() => state.loading = false);
+        } finally {
+            state.loading = false
+        }
     } else {
         data.component = createBlockComponent(props.block, config);
         state.blockCreated = true;
     }
 }
 
-createComponent();
+createComponent().finally();
 </script>
 
 <template>

@@ -1,4 +1,5 @@
-import { Block, defineDesignBlock } from "@/draggable/BlockFactory";
+import { defineDesignBlock } from "@/draggable/utils/DesignerUtils";
+import { Block } from "@/draggable/BlockFactory";
 import { DesignBlock } from "@/draggable/types/DesignBlock";
 
 let count = 1;

@@ -1,10 +1,10 @@
-import { computed, ComputedRef, Ref, ref, shallowRef, ShallowRef } from "vue";
+import { Ref, ref, shallowRef, ShallowRef } from "vue";
 import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { calcAuxToolPosition } from "@/draggable/utils/PositionCalc";
 import { existsPlaceholder } from "@/draggable/utils/ComponentMetaUtils";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { AuxToolPosition } from "@/draggable/types/Designer";
-import { ComponentMeta, MaterialMeta } from "@/draggable/types/ComponentMeta";
+import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 
 /**
  * 设计器鼠标悬停时的虚线
@@ -14,12 +14,6 @@ class HoverDashed {
     readonly designerState: DesignerState;
     /** 组件元信息 */
     protected readonly _componentMeta: ShallowRef<ComponentMeta | undefined> = shallowRef<ComponentMeta | undefined>();
-    /** 物料元信息 */
-    protected readonly _materialMeta: ComputedRef<MaterialMeta | undefined> = computed<MaterialMeta | undefined>(() => {
-        const componentMeta = this._componentMeta.value;
-        if (!componentMeta) return;
-        return this.designerState.designerEngine.componentManage.getMaterialMeta(componentMeta.type);
-    });
     /** 父组件节点id(值是：RuntimeNode.id) */
     protected readonly _parentId: Ref<string | undefined> = ref<string | undefined>();
     /** 组件节点id(值是：RuntimeNode.id) */
@@ -39,11 +33,6 @@ class HoverDashed {
     /** 组件元信息 */
     set componentMeta(value: ComponentMeta | undefined) {
         this._componentMeta.value = value;
-    }
-
-    /** 物料元信息 TODO 删除 */
-    get materialMeta() {
-        return this._materialMeta.value;
     }
 
     /** 父组件节点id(值是：RuntimeNode.id) */

@@ -128,7 +128,7 @@ interface CreateConfig {
     /** 组件管理器 */
     componentManage: ComponentManage;
     /** 是否是设计时 */
-    isDesigning: boolean;
+    isDesigning?: boolean;
 }
 
 export type {

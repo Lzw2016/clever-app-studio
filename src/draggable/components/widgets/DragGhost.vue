@@ -49,7 +49,7 @@ const draggingCmpMetas = props.designerEngine.draggingCmpMetas;
             :style="ghostStyle"
         >
             <span class="ghost-material-name">
-                {{ draggingCmpMetas.cmpMetas.map(meta => draggingCmpMetas.designerEngine.componentManage.getMaterialMeta(meta.type)!.name).join(',') }}
+                {{ draggingCmpMetas.cmpMetas.map(meta => meta.name).join(',') }}
             </span>
         </div>
     </Teleport>

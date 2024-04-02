@@ -2,6 +2,7 @@ import lodash from "lodash";
 import { BatchRegister, ComponentManage } from "@/draggable/types/ComponentManage";
 import { AsyncVueComponent, VueComponent } from "@/draggable/types/Base";
 import { AsyncComponentMeta, ComponentMeta, MaterialMeta } from "@/draggable/types/ComponentMeta";
+import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 
 /**
  * 组件管理器模型
@@ -45,9 +46,9 @@ class DefComponentManage implements ComponentManage {
         // 异步加载组件
         const loadTypes = needLoadTypes.filter(type => !notExistTypes.includes(type));
         if (loadTypes.length > 0) {
-            await Promise.all(loadTypes.map(async type => {
+            for (let type of loadTypes) {
                 let cmp = this.components.get(type);
-                if (cmp) return cmp;
+                if (cmp) continue;
                 const asyncCmp = this.asyncComponents.get(type);
                 try {
                     if (!asyncCmp) {
@@ -60,13 +61,11 @@ class DefComponentManage implements ComponentManage {
                     if (cmp) {
                         this.components.set(type, cmp);
                     }
-                    return cmp;
                 } catch (reason) {
                     console.warn(`加载组件 ${type} 失败：${reason}`);
                     console.warn(reason);
                 }
-                return null;
-            }));
+            }
         }
         // 返回组件
         const components: Record<string, VueComponent> = {};
@@ -102,18 +101,21 @@ class DefComponentManage implements ComponentManage {
         const needLoadTypes = types.filter(type => !this.componentMetas.has(type));
         // 异步加载组件元信息
         if (needLoadTypes.length > 0) {
-            await Promise.all(needLoadTypes.map(async type => {
+            for (let type of needLoadTypes) {
                 let meta = this.componentMetas.get(type);
-                if (meta) return meta;
-                const asyncMeta = this.asyncComponentMetas.get(type)!;
+                if (meta) continue;
+                const asyncMeta = this.asyncComponentMetas.get(type);
+                if (!asyncMeta) {
+                    if (!isHtmlTag(type)) console.warn(`未注册组件 ${type} 元信息`);
+                    continue;
+                }
                 try {
                     meta = await asyncMeta(type);
                     this.componentMetas.set(type, meta);
-                    return meta;
                 } catch (reason) {
                     throw new Error(`加载组件 ${type} 元信息失败：${reason}`);
                 }
-            }));
+            }
         }
         // 返回组件元信息
         const metas: Record<string, ComponentMeta> = {};
