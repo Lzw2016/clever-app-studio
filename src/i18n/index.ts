@@ -33,6 +33,7 @@ const antDesignLocale: Partial<Record<LanguageName, any>> = {
 
 /**
  * 初始化i18n
+ * TODO 参数使用枚举 Language.zhCN
  */
 function initI18n(locale: string = "zhCN") {
     dayjs.locale("zh-cn");
@@ -49,7 +50,7 @@ function initI18n(locale: string = "zhCN") {
 
 /**
  * 切换语言
- * @param locale 语言类型，如：“zhCN”、“”、“”、“”、“”
+ * @param locale 语言类型
  */
 function switchLocale(locale: Language = Language.zhCN) {
     // 设置 PrimeVue 的语言

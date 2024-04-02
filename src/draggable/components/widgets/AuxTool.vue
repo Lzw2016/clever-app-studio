@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, CSSProperties } from "vue";
-import { IconArrowDown, IconArrowUp, IconChevronLeft, IconCopy, IconSettings, IconTrash, IconX } from "@tabler/icons-vue";
+import { IconArrowDown, IconArrowUp, IconChevronLeft, IconCopy, IconEraser, IconSettings, IconTrash, IconX } from "@tabler/icons-vue";
 import { isObj } from "@/utils/Typeof";
 import { runtimeNodeToDesignNode } from "@/draggable/utils/BlockPropsTransform";
 import { getChildNodePosition, NodePosition } from "@/draggable/utils/DesignerUtils";
@@ -188,6 +188,15 @@ function copyNode(selection: Selection) {
     }
 }
 
+function clearChild(selection: Selection) {
+    const nodeId = selection.nodeId;
+    if (!nodeId) return;
+    const blockInstance = props.designerState.blockInstance;
+    if (!blockInstance) return;
+    blockInstance.blockOpsById.removeChildrenById(nodeId);
+    blockInstance.$nextTick(() => setSelection(selection, nodeId));
+}
+
 function delNode(nodeId?: string) {
     const blockInstance = props.designerState.blockInstance;
     const selections = props.designerState.selections;
@@ -235,11 +244,11 @@ function delNode(nodeId?: string) {
                     'mark-top-left-down': isTop(selection.position),
                 }"
             >
-                <span>{{ selection.componentMeta.name }}</span>
-                <span style="margin-left: 4px; cursor: pointer;" class="mark-top-button" title="设置">
+                <span style="font-size: 12px;">{{ selection.componentMeta.name }}</span>
+                <span class="mark-top-button" title="设置">
                     <IconSettings :size="16"/>
                 </span>
-                <span style="margin-left: 2px; cursor: pointer;" class="mark-top-button" title="取消选择" @click="cancelSelection(selection.nodeId)">
+                <span class="mark-top-button" title="取消选择" @click="cancelSelection(selection.nodeId)">
                     <IconX :size="16"/>
                 </span>
             </div>
@@ -252,19 +261,22 @@ function delNode(nodeId?: string) {
                 }"
             >
                 <span v-if="selection.parentId" class="mark-bottom-button" title="选择父级" @click="selectParent(selection)">
-                    <IconChevronLeft :size="18"/>
+                    <IconChevronLeft :size="16"/>
                 </span>
                 <span v-if="showMoveUp(selection)" class="mark-bottom-button" title="向前移动" @click="moveNode(selection, true)">
-                    <IconArrowUp :size="18"/>
+                    <IconArrowUp :size="16"/>
                 </span>
                 <span v-if="showMoveDown(selection)" class="mark-bottom-button" title="向后移动" @click="moveNode(selection, false)">
-                    <IconArrowDown :size="18"/>
+                    <IconArrowDown :size="16"/>
                 </span>
                 <span v-if="selection.parentId" class="mark-bottom-button" title="复制" @click="copyNode(selection)">
-                    <IconCopy :size="18"/>
+                    <IconCopy :size="16"/>
+                </span>
+                <span class="mark-bottom-button" title="清空内容" @click="clearChild(selection)">
+                    <IconEraser :size="16"/>
                 </span>
                 <span v-if="selection.parentId" class="mark-bottom-button" title="删除" @click="delNode(selection.nodeId)">
-                    <IconTrash :size="18"/>
+                    <IconTrash :size="16"/>
                 </span>
             </div>
         </div>
@@ -354,7 +366,7 @@ function delNode(nodeId?: string) {
     pointer-events: all;
     position: relative;
     font-size: 14px;
-    padding: 3px 4px;
+    padding: 2px 4px;
     color: #fff;
     background: #1476ff;
     display: inline-flex;
@@ -365,7 +377,7 @@ function delNode(nodeId?: string) {
 }
 
 .aux-selection-box > .mark-top-left-up {
-    top: -23px;
+    top: -22px;
     left: -2px;
 }
 
@@ -378,6 +390,12 @@ function delNode(nodeId?: string) {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: 4px;
+    cursor: pointer;
+}
+
+.aux-selection-box > .mark-top-left > .mark-top-button:last-child {
+    margin-left: 2px;
 }
 
 .aux-selection-box > .mark-bottom-right {
@@ -400,12 +418,12 @@ function delNode(nodeId?: string) {
 
 .aux-selection-box > .mark-bottom-right-down {
     right: -2px;
-    bottom: -24px;
+    bottom: -22px;
 }
 
 .aux-selection-box > .mark-bottom-right > .mark-bottom-button {
     cursor: pointer;
-    height: 18px;
+    height: 16px;
     padding: 0 2px;
 }
 

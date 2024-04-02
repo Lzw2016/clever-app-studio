@@ -307,6 +307,13 @@ interface BlockOperationById {
      * @param options   操作选项
      */
     removeById(id: string, options?: Options): RuntimeComponentSlotsItem | undefined;
+
+    /**
+     * 移除指定节点的所有子节点
+     * @param id        节点Id
+     * @param options   操作选项
+     */
+    removeChildrenById(id: string, options?: Options): Array<RuntimeComponentSlotsItem>;
 }
 
 /**
@@ -598,6 +605,13 @@ interface BlockOperation {
      * @param options       操作选项
      */
     remove(ref: string, options?: Options): RuntimeComponentSlotsItem | undefined;
+
+    /**
+     * 移除指定节点的所有子节点
+     * @param ref       节点ref
+     * @param options   操作选项
+     */
+    removeChildren(ref: string, options?: Options): Array<RuntimeComponentSlotsItem>;
 }
 
 interface AllBlockOperationProps extends CreateConfig {
@@ -805,14 +819,14 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
             const parent = this.props.nodeParent[id];
             const node = this.props.allNode[id];
             if (!node) continue;
-            const ids: Array<string> = [node.id];
+            const delAllIds: Array<string> = [node.id];
             const refs: Array<string> = [node.ref];
             const parentIds: Array<string> = [];
             if (node.items.length > 0 || Object.keys(node.slots).length > 0) parentIds.push(node.id);
             deepTraverseNodes(
                 node,
                 (current) => {
-                    ids.push(current.id);
+                    delAllIds.push(current.id);
                     refs.push(current.ref);
                     if (current.items.length > 0 || Object.keys(current.slots).length > 0) parentIds.push(current.id);
                 },
@@ -820,7 +834,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                 parent,
                 this.props.runtimeBlock,
             );
-            ids.forEach(delId => delete this.props.allNode[delId]);
+            delAllIds.forEach(delId => delete this.props.allNode[delId]);
             refs.forEach(delRef => {
                 delete this.props.refId[delRef];
                 delete this.props.nodeRefVueRef[delRef];
@@ -828,7 +842,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
             parentIds.forEach(delId => delete this.props.nodeParent[delId]);
         }
         // 重新渲染组件
-        if (!options.cancelRender) this.props.instance.$forceUpdate();
+        if (removeNodes.length > 0 && !options.cancelRender) this.props.instance.$forceUpdate();
         // 返回删除的节点
         return removeNodes;
     }
@@ -969,6 +983,42 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         if (!nodeRefs || nodeRefs.length <= 0) return false;
         return this.moveNodesById(parent, slotName, position, positionRef ? this.props.refId[positionRef] : null, nodeRefs.map(ref => this.props.refId[ref]), options);
     }
+
+    /**
+     * 移除指定节点的所有子节点
+     * @param node      目标节点
+     * @param options   操作选项
+     */
+    protected removeChildrenNode(node: RuntimeNode, options: Options): Array<RuntimeComponentSlotsItem> {
+        const removeNodes: Array<RuntimeComponentSlotsItem> = [];
+        const delAllIds: Array<string> = [];
+        for (let item of node.items) {
+            removeNodes.push(item);
+            if (!isObj(item)) continue;
+            const node = item as RuntimeNode;
+            delAllIds.push(node.id);
+        }
+        this.removeNodesById(delAllIds, { ...options, cancelRender: true });
+        delAllIds.length = 0;
+        node.items.length = 0;
+        for (let name in node.slots) {
+            const slot = node.slots[name];
+            for (let item of slot) {
+                removeNodes.push(item);
+                if (!isObj(item)) continue;
+                const node = item as RuntimeNode;
+                delAllIds.push(node.id);
+            }
+            this.removeNodesById(delAllIds, { ...options, cancelRender: true });
+            delAllIds.length = 0;
+            slot.length = 0;
+        }
+        // 重新渲染组件
+        if (removeNodes.length > 0 && !options.cancelRender) this.props.instance.$forceUpdate();
+        // 返回删除的节点
+        return removeNodes;
+    }
+
 
     beforeAddItemsById(beforeId: string, items: Array<ComponentSlotsItem>, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
         return this.addNodesById(this.getParentNodeById(beforeId), childSlotName, InsertPosition.before, beforeId, items, options);
@@ -1124,6 +1174,10 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         return arr[0];
     }
 
+    removeChildrenById(id: string, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.removeChildrenNode(this.getNodeById(id), options);
+    }
+
     beforeAddItems(beforeRef: string, items: ComponentSlotsItem[], options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
         return this.addNodes(this.getParentNode(beforeRef), childSlotName, InsertPosition.before, beforeRef, items, options);
     }
@@ -1276,6 +1330,10 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         const arr = this.removeNodes([ref], options);
         if (arr.length <= 0) return;
         return arr[0];
+    }
+
+    removeChildren(ref: string, options: Options = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.removeChildrenNode(this.getNode(ref), options);
     }
 }
 
