@@ -1,2 +1,2 @@
-export * from "./focus";
+export * from "./Focus";
 export * from "./DisableEvent";
