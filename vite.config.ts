@@ -1,9 +1,9 @@
 import { resolve } from "path";
-import { defineConfig, UserConfig } from "vite";
+import { defineConfig, HtmlTagDescriptor, UserConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import legacy from "@vitejs/plugin-legacy";
-import { createHtmlPlugin } from 'vite-plugin-html';
+import { createHtmlPlugin } from "vite-plugin-html";
 import { compression } from "vite-plugin-compression2";
 import dayjs from "dayjs";
 import allEnv from "./env.config";
@@ -21,6 +21,65 @@ export default defineConfig(env => {
         version: pkg.version || '1.0.0',
         buildTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
     };
+    const externalLibs = [
+        // "vue",
+        // "vue-router",
+        // "vue-i18n",
+        // "pinia",
+        // "pinia-plugin-persistedstate",
+        // "@vueuse/core",
+        // "@vueuse/components",
+        // "csstype",
+        // "lodash",
+        // "dayjs",
+        // "localforage",
+        // "numeral",
+        // "axios",
+        // "qs",
+        // "mitt",
+        // "hotkeys-js",
+        // "@fortawesome/fontawesome-svg-core",
+        // "@fortawesome/free-solid-svg-icons",
+        // "@fortawesome/free-regular-svg-icons",
+        // "@fortawesome/free-brands-svg-icons",
+        // "@fortawesome/vue-fontawesome",
+        // "@tabler/icons-vue",
+        // "codemirror",
+        // "codemirror-editor-vue3",
+        // "monaco-editor",
+        // "@guolao/vue-monaco-editor",
+        // "sortablejs",
+        // "@opentiny/vue",
+        // "@opentiny/vue-locale",
+        // "primevue",
+        // "ant-design-vue",
+    ];
+    const injectTags: Array<HtmlTagDescriptor> = [];
+    if (isBuild) {
+        // const resourcePrefix = "https://cdn.jsdelivr.net";
+        // injectTags.push({
+        //     tag: 'link',
+        //     attrs: {
+        //         rel: 'stylesheet',
+        //         type: 'text/css',
+        //         href: `${resourcePrefix}/font-awesome.css`,
+        //     },
+        // });
+        // injectTags.push([
+        //     "https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.runtime.global.prod.js",
+        //     "https://cdn.jsdelivr.net/npm/vue-demi@0.14.7/lib/index.iife.js",
+        //     "https://cdn.jsdelivr.net/npm/vue-router@4.3.0/dist/vue-router.global.prod.js",
+        //     "https://cdn.jsdelivr.net/npm/vue-i18n@9.10.2/dist/vue-i18n.runtime.global.prod.js",
+        //     "https://cdn.jsdelivr.net/npm/pinia@2.1.7/dist/pinia.iife.prod.js",
+        // ].map(item => ({
+        //     tag: 'script',
+        //     attrs: {
+        //         // type: "module",
+        //         // src: "https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.runtime.esm-browser.prod.js",
+        //         src: item,
+        //     },
+        // })));
+    }
     const config: UserConfig = {
         base: '/',
         publicDir: 'public',
@@ -69,6 +128,7 @@ export default defineConfig(env => {
                     data: {
                         title: envConfig.htmlTitle,
                     },
+                    tags: injectTags,
                 },
                 minify: isBuild,
             }),
@@ -82,10 +142,13 @@ export default defineConfig(env => {
             reportCompressedSize: true,
             chunkSizeWarningLimit: 512,
             rollupOptions: {
-                external: [
-                    // "@tabler/icons-vue",
-                ],
+                external: externalLibs,
                 output: {
+                    // format: 'umd',
+                    // globals: {
+                    //     vue: 'Vue',
+                    //     pinia: 'Pinia',
+                    // },
                     manualChunks: function (id) {
                         // if (id.includes('/node_modules/')) {
                         //     console.log("id->", id);
@@ -118,6 +181,9 @@ export default defineConfig(env => {
                             return 'monaco-editor';
                         }
                     },
+                    // chunkFileNames: chunkInfo => {
+                    //     chunkInfo.
+                    // },
                 },
             },
         },
