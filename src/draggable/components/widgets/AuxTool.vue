@@ -246,10 +246,10 @@ function delNode(nodeId?: string) {
             >
                 <span style="font-size: 12px;">{{ selection.componentMeta.name }}</span>
                 <span class="mark-top-button" title="设置">
-                    <IconSettings :size="16"/>
+                    <IconSettings :stroke="1.6" :size="16"/>
                 </span>
                 <span class="mark-top-button" title="取消选择" @click="cancelSelection(selection.nodeId)">
-                    <IconX :size="16"/>
+                    <IconX :stroke="1.6" :size="16"/>
                 </span>
             </div>
             <div
@@ -261,22 +261,22 @@ function delNode(nodeId?: string) {
                 }"
             >
                 <span v-if="selection.parentId" class="mark-bottom-button" title="选择父级" @click="selectParent(selection)">
-                    <IconChevronLeft :size="16"/>
+                    <IconChevronLeft :stroke="1.6" :size="16"/>
                 </span>
                 <span v-if="showMoveUp(selection)" class="mark-bottom-button" title="向前移动" @click="moveNode(selection, true)">
-                    <IconArrowUp :size="16"/>
+                    <IconArrowUp :stroke="1.6" :size="16"/>
                 </span>
                 <span v-if="showMoveDown(selection)" class="mark-bottom-button" title="向后移动" @click="moveNode(selection, false)">
-                    <IconArrowDown :size="16"/>
+                    <IconArrowDown :stroke="1.6" :size="16"/>
                 </span>
                 <span v-if="selection.parentId" class="mark-bottom-button" title="复制" @click="copyNode(selection)">
-                    <IconCopy :size="16"/>
+                    <IconCopy :stroke="1.6" :size="16"/>
                 </span>
                 <span class="mark-bottom-button" title="清空内容" @click="clearChild(selection)">
-                    <IconEraser :size="16"/>
+                    <IconEraser :stroke="1.6" :size="16"/>
                 </span>
                 <span v-if="selection.parentId" class="mark-bottom-button" title="删除" @click="delNode(selection.nodeId)">
-                    <IconTrash :size="16"/>
+                    <IconTrash :stroke="1.6" :size="16"/>
                 </span>
             </div>
         </div>

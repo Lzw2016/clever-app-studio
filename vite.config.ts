@@ -82,6 +82,9 @@ export default defineConfig(env => {
             reportCompressedSize: true,
             chunkSizeWarningLimit: 512,
             rollupOptions: {
+                external: [
+                    // "@tabler/icons-vue",
+                ],
                 output: {
                     manualChunks: function (id) {
                         // if (id.includes('/node_modules/')) {
