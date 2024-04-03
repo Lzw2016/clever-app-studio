@@ -18,6 +18,7 @@ export default defineComponentMeta({
         },
         directives: {
             'disable-event': {},
+            'clear-draggable-html-attr': {},
         },
     },
     events: {},

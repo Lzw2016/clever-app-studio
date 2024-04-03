@@ -1,4 +1,5 @@
 import lodash from "lodash";
+import { isArray, isObj } from "@/utils/Typeof";
 
 /** 所有的html标签 */
 const htmlTags = [
@@ -95,7 +96,7 @@ interface HtmlInfo {
 /**
  * 解析html片段
  */
-function parseHTML(htmlFragment: string): HtmlInfo {
+function parseHtml(htmlFragment: string): HtmlInfo {
     const htmlInfo: HtmlInfo = {
         onlyOne: false,
         tagName: "",
@@ -117,7 +118,35 @@ function parseHTML(htmlFragment: string): HtmlInfo {
     return htmlInfo;
 }
 
+/**
+ * 判断指定对象是否是html dom节点
+ */
+function isHtmlNode(obj: any): boolean {
+    return !isArray(obj) && isObj(obj) && obj.nodeType === Node.ELEMENT_NODE;
+}
+
+/** 遍历 VNode 的回调函数 */
+type TraverseVNode = (current: Element, parent?: Element) => void;
+
+/**
+ * 深度递归遍历 element 节点
+ */
+// TODO 配置递归深度
+function deepTraverseElement(element: Element, callback: TraverseVNode, parent?: Element) {
+    if (!isHtmlNode(element)) return;
+    callback(element, parent);
+    const children = element.children;
+    if (!children) return;
+    for (let idx = 0; idx < children.length; idx++) {
+        const child = children[idx];
+        if (!isHtmlNode(child)) continue;
+        deepTraverseElement(child, callback, element);
+    }
+}
+
 export {
     isHtmlTag,
-    parseHTML,
+    parseHtml,
+    isHtmlNode,
+    deepTraverseElement,
 }

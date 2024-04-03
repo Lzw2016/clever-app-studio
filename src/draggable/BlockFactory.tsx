@@ -7,7 +7,7 @@ import { ComponentInstance } from "@/draggable/types/Base";
 import { DefComponentManage } from "@/draggable/DefComponentManage";
 import { BaseDirectives, DesignBlock } from "@/draggable/types/DesignBlock";
 import { CreateConfig, RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
-import { parseHTML } from "@/draggable/utils/HtmlTag";
+import { parseHtml } from "@/draggable/utils/HtmlTag";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, deepTraverseNodes, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
 import { AllBlockOperation, BlockOperation, BlockOperationById } from "@/draggable/BlockOperation";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
@@ -519,7 +519,7 @@ function createHtmlVNode(staticHtml: string, props?: Record<string, any>, compon
         if (component === Fragment) component = defComponent;
         return createVNode(component, { ...props, innerHTML: staticHtml }, null);
     }
-    const htmlInfo = parseHTML(staticHtml);
+    const htmlInfo = parseHtml(staticHtml);
     if (htmlInfo.onlyOne) {
         return createVNode(htmlInfo.tagName, { ...htmlInfo.attrs, innerHTML: htmlInfo.innerHTML }, null);
     }

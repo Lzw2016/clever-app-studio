@@ -1,5 +1,7 @@
-import { Directive, VNode } from "vue";
+import { Directive, DirectiveBinding, VNode } from "vue";
 import { isFunction, isStr, noValue } from "@/utils/Typeof";
+import { isHtmlTag } from "@/draggable/utils/HtmlTag";
+import { deepTraverseVNode } from "@/draggable/utils/DesignerUtils";
 
 function empty() {
 }
@@ -48,23 +50,22 @@ interface DirectiveValue {
     manualDisable?: (vnode: VNode) => void;
 }
 
-/**
- * 禁用组件内部的事件
- */
-const disableEvent: Directive<any, DirectiveValue> = {
-    created: (el, binding, vnode) => {
-        console.log("vnode", vnode);
-        const props: any = vnode.props;
+function doDisableEvent(binding: DirectiveBinding<DirectiveValue>, vnode: VNode) {
+    // console.log("vnode", vnode);
+    const value = binding.value ?? {};
+    const manualDisable = value.manualDisable;
+    if (isFunction(manualDisable)) {
+        manualDisable(vnode);
+        return;
+    }
+    // 递归遍历 vnode 禁用事件
+    const disableEvents = fixEventNames(!value.disableEvents ? undefined : isStr(value.disableEvents) ? [value.disableEvents] : value.disableEvents) ?? defEvents;
+    const enableEvents = fixEventNames(!value.enableEvents ? undefined : isStr(value.enableEvents) ? [value.enableEvents] : value.enableEvents);
+    // TODO 配置递归深度
+    deepTraverseVNode(vnode, current => {
+        const props: any = current.props;
         if (!props) return;
-        const value = binding.value ?? {};
-        const manualDisable = value.manualDisable;
-        if (isFunction(manualDisable)) {
-            manualDisable(vnode);
-            return;
-        }
-        // TODO 递归遍历 vnode 禁用事件
-        const disableEvents = fixEventNames(!value.disableEvents ? undefined : isStr(value.disableEvents) ? [value.disableEvents] : value.disableEvents) ?? defEvents;
-        const enableEvents = fixEventNames(!value.enableEvents ? undefined : isStr(value.enableEvents) ? [value.enableEvents] : value.enableEvents);
+        if (!isStr(current.type) || !isHtmlTag(current.type)) return;
         for (let event of disableEvents) {
             if (enableEvents && enableEvents.includes(event)) continue;
             // 这里可以移除 VNode 的事件，防止组件报非空错误
@@ -75,6 +76,19 @@ const disableEvent: Directive<any, DirectiveValue> = {
                 if (props[name]) props[name] = empty;
             });
         }
+    });
+}
+
+/**
+ * 禁用组件内部的事件
+ */
+const disableEvent: Directive<any, DirectiveValue> = {
+    created: (el, binding, vnode) => {
+        // TODO 测试深层次内部事件是否能够替换成功???
+        doDisableEvent(binding, vnode);
+    },
+    beforeUpdate: (el, binding, vnode) => {
+        doDisableEvent(binding, vnode);
     },
     // beforeMount: (el, binding, vnode) => {
     // },

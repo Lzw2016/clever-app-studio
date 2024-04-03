@@ -1,4 +1,5 @@
 import lodash from "lodash";
+import { isVNode, VNode, VNodeChild } from "vue";
 import { isArray, isObj } from "@/utils/Typeof";
 import { childSlotName } from "@/draggable/Constant";
 import { RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
@@ -111,8 +112,46 @@ function getMaterialMetaTabAllTypes(materialMetaTab: MaterialMetaTab): Array<str
     return types;
 }
 
+/** 遍历 VNode 的回调函数 */
+type TraverseVNode = (current: VNode, parent?: VNode) => void;
+
+/**
+ * 深度递归遍历 vnode 节点
+ */
+// TODO 配置递归深度
+function deepTraverseVNode(vnode: VNode, callback: TraverseVNode, parent?: VNode) {
+    if (!isVNode(vnode)) return;
+    callback(vnode, parent);
+    const children = vnode.children;
+    if (!children) return;
+    if (isArray(children)) {
+        for (let child of children) {
+            _deepTraverseChild(child, callback, vnode);
+        }
+    } else if (isObj(children)) {
+        const rawSlots = children as Record<string, VNodeChild | string>;
+        for (let name in rawSlots) {
+            const child = rawSlots[name];
+            _deepTraverseChild(child, callback, vnode);
+        }
+    }
+}
+
+// deepTraverseNodes 处理 slots 或者 child
+function _deepTraverseChild(child: VNodeChild | string, callback: TraverseVNode, parent?: VNode) {
+    if (!child) return;
+    if (isVNode(child)) {
+        deepTraverseVNode(child, callback, parent);
+    } else if (isArray(child)) {
+        for (let item of child) {
+            if (isVNode(item)) deepTraverseVNode(item, callback, parent);
+        }
+    }
+}
+
 export type  {
     NodePosition,
+    TraverseVNode,
 }
 
 export {
@@ -121,4 +160,5 @@ export {
     getAllTypes,
     getChildNodePosition,
     getMaterialMetaTabAllTypes,
+    deepTraverseVNode,
 }
