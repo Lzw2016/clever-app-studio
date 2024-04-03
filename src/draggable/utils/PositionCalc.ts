@@ -31,6 +31,9 @@ function calcElementOuterWidth(innerWidth: number, style: CSSStyleDeclaration) {
  */
 function calcElementIsInlineBlock(element: Element) {
     if (!element) return false;
+    // if (element.className === "tiny-input") {
+    //     console.log("@@@", element);
+    // }
     const parent = element.parentElement;
     if (!parent) return false;
     const tagName = lodash.lowerCase(element.tagName);
@@ -59,7 +62,7 @@ function calcElementIsInlineBlock(element: Element) {
         }
         return true;
     }
-    return false;
+    return style.display.startsWith("inline");
 }
 
 /**

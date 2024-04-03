@@ -12,7 +12,6 @@ export default defineComponentMeta({
         props: {
             text: "按钮",
         },
-        // TODO 不能这样写需要再渲染时动态执行，以免影响生成的代码
         directives: {
             'disable-event': {},
         },

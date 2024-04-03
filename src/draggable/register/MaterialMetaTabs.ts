@@ -8,7 +8,7 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
             {
                 title: "通用",
                 types: [
-                    "Button", "div", "span"
+                    "div", "span", "Button", "Input",
                 ],
             },
             {

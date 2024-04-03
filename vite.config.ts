@@ -181,9 +181,6 @@ export default defineConfig(env => {
                             return 'monaco-editor';
                         }
                     },
-                    // chunkFileNames: chunkInfo => {
-                    //     chunkInfo.
-                    // },
                 },
             },
         },

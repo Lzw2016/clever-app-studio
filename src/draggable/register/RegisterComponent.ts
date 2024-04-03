@@ -30,7 +30,7 @@ function registerComponent(componentManage: ComponentManage) {
     // componentManage.registerAsyncComponent("GoogleIcon", () => import("@/components/GoogleIcon.vue").then(module => module.default));
     // opentiny 组件注册
     const openTinyTypes = [
-        "Button", "ButtonGroup", "Cascader",
+        "Button", "ButtonGroup", "Input", "Cascader",
     ];
     componentManage.batchRegisterComponent(new RegExp(openTinyTypes.join("|")), async () => {
         const openTiny = await import("@/draggable/components/material/OpenTiny");
