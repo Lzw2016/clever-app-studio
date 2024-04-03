@@ -1,17 +1,6 @@
 import { Directive, VNode } from "vue";
 import { isFunction, isStr, noValue } from "@/utils/Typeof";
 
-// /** 阻止事件传播 */
-// function stopPropagation(event: Event) {
-//     event.stopPropagation();
-// }
-//
-// /** 事件选项 */
-// const options: EventListenerOptions = {
-//     /** 在事件捕获阶段触发事件 */
-//     capture: true,
-// };
-
 function empty() {
 }
 
@@ -59,6 +48,9 @@ interface DirectiveValue {
     manualDisable?: (vnode: VNode) => void;
 }
 
+/**
+ * 禁用组件内部的事件
+ */
 const disableEvent: Directive<any, DirectiveValue> = {
     created: (el, binding, vnode) => {
         console.log("vnode", vnode);
