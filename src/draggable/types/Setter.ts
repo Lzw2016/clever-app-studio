@@ -10,10 +10,10 @@ interface SetterProps {
     nodes: Array<RuntimeNode>;
     /** 被设置的属性名称 */
     propsName?: Setter['propsName'];
-    /** 自定义设置属性值逻辑 */
-    setProps?: Setter['setProps'];
     /** 自定义获取属性值逻辑 */
-    getProps?: Setter['getProps'];
+    getPropsValue?: Setter['getPropsValue'];
+    /** 应用属性值到组件节点 */
+    applyPropsValue?: Setter['applyPropsValue'];
     /** 监听属性值变化逻辑 */
     watchProps?: Setter['watchProps'];
 }

@@ -96,10 +96,10 @@ const componentMeta = defineComponentMeta({
                             // 设置更新的属性值
                             propsName: "addonAfter",
                             // 自定义控制如何更新属性
-                            setProps: function (props: any, value: string) {
+                            applyPropsValue: function (props: any, value: string) {
                             },
                             // 自定义控制如何显示属性
-                            getProps: function (props: any): any {
+                            getPropsValue: function (props: any): any {
                                 return {};
                             },
                             // 属性变化，更新当前组件

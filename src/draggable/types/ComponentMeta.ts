@@ -1,4 +1,5 @@
-import { ComponentInstance, ComponentSlotMeta, FunctionMeta, I18N, VueComponent } from "@/draggable/types/Base";
+import { ComponentPublicInstance } from "vue";
+import { ComponentSlotMeta, FunctionMeta, I18N, VueComponent } from "@/draggable/types/Base";
 import { BaseProps, ComponentListener, DesignNode } from "@/draggable/types/DesignBlock";
 
 /** 组件节点默认配置 */
@@ -11,12 +12,12 @@ interface WatchPropsConfig<TargetProps> {
 
     /**
      * 属性值变化时的回调
-     * @param props     目标组件的 props 对象
+     * @param props     目标组件节点的 props 对象
      * @param value     当前属性值
      * @param oldValue  之前的属性值
      * @param setter    当前设置器对象
      */
-    onChange(props: TargetProps, value: any, oldValue: any, setter: ComponentInstance): void;
+    onChange(props: TargetProps, value: any, oldValue: any, setter: ComponentPublicInstance): void;
 
     /** 在侦听器创建时立即触发回调 */
     immediate?: boolean;
@@ -34,24 +35,26 @@ interface Setter<SetterProps extends BaseProps = BaseProps, TargetProps = any> {
     cmp: VueComponent | string;
     /** 设置器组件实例的引用名称 */
     ref?: string;
+    // label 配置项名称
+    // labelTips 配置项名称说明
+    // bind 全局数据
     /** 设置器组件属性 */
     cmpProps?: SetterProps;
     /** 被设置的属性名称 */
     propsName?: string;
     /**
-     * 自定义设置属性值逻辑
-     * @param props     目标组件的 props 对象
+     * 从组件节点读取属性值
+     * @param props 目标组件的 props 对象
+     */
+    getPropsValue?: (props: TargetProps) => any;
+    /**
+     * 应用属性值到组件节点
+     * @param props     目标组件节点的 props 对象
      * @param value     设置器的当前值
-     * @param name      设置器的 propsName 配置
+     * @param oldValue  设置器更新之前的值
      * @param setter    当前设置器对象
      */
-    setProps?: (props: TargetProps, value: any, name: string, setter: ComponentInstance) => void;
-    /**
-     * 自定义获取属性值逻辑
-     * @param props 目标组件的 props 对象
-     * @param name  设置器的当前值
-     */
-    getProps?: (props: TargetProps, name: string) => any;
+    applyPropsValue?: (props: TargetProps, value: any, oldValue: any, setter: ComponentPublicInstance) => void;
     /** 监听属性值变化逻辑 */
     watchProps?: Array<WatchPropsConfig<TargetProps>>;
     /** 监听设置器的事件 */
@@ -64,6 +67,8 @@ interface SetterGroup {
     title: string;
     /** 是否展开状态(默认为true) */
     expand?: boolean;
+    // TODO 表单的配置
+    // TODO 表单项的通用配置
     /** 设置器集合 */
     items: Array<Setter>;
 }
@@ -72,6 +77,8 @@ interface SetterGroup {
 interface SetterPanel {
     /** 面板标题 */
     title?: string;
+    // TODO 表单的配置
+    // TODO 表单项的通用配置
     /** 设置器分组集合 */
     groups: Array<SetterGroup>;
 }
