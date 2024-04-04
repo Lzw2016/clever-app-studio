@@ -318,7 +318,7 @@ function delNode(nodeId?: string) {
 .aux-dashed-box > .mark-top-left {
     position: relative;
     font-size: 12px;
-    padding: 0 4px;
+    padding: 0;
     color: #1476ff;
     display: inline-flex;
     align-items: center;
@@ -332,7 +332,7 @@ function delNode(nodeId?: string) {
 }
 
 .aux-dashed-box > .mark-top-left-down {
-    top: -2px;
+    top: -4px;
 }
 
 .aux-dashed-box > .mark-bottom-right {
@@ -348,12 +348,12 @@ function delNode(nodeId?: string) {
 }
 
 .aux-dashed-box > .mark-bottom-right-up {
-    right: 2px;
-    bottom: 2px;
+    right: 1px;
+    bottom: 1px;
 }
 
 .aux-dashed-box > .mark-bottom-right-down {
-    right: -1px;
+    right: -2px;
     bottom: -20px;
 }
 
@@ -377,12 +377,12 @@ function delNode(nodeId?: string) {
 }
 
 .aux-selection-box > .mark-top-left-up {
-    top: -22px;
+    top: -21px;
     left: -2px;
 }
 
 .aux-selection-box > .mark-top-left-down {
-    top: 0;
+    top: -2px;
     left: 0;
 }
 
@@ -418,7 +418,7 @@ function delNode(nodeId?: string) {
 
 .aux-selection-box > .mark-bottom-right-down {
     right: -2px;
-    bottom: -22px;
+    bottom: -20px;
 }
 
 .aux-selection-box > .mark-bottom-right > .mark-bottom-button {
