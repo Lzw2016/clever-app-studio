@@ -34,14 +34,16 @@ const defEvents = fixEventNames([
     // 键盘事件
     "keydown", "keyup", "keypress",
     // 表单事件
-    "input", "change", "focus", "blur", "submit", "reset",
+    "input", "change", "focus", "blur", "submit", "reset", "paste",
     // 触摸设备上的触摸事件
     "touchstart", "touchmove", "touchend", "touchcancel",
     // 其他事件
     "contextmenu", "select", "error", "focusin", "focusout",
-])!;
+] as Array<keyof DocumentEventMap>)!;
 
 interface DirectiveValue {
+    /** 递归的最大深度 */
+    maxDepth?: number;
     /** 禁用的事件名称，如果未设置就是用默认的事件集合(defEvents)，优先级: manualDisable > enableEvents > disableEvents */
     disableEvents?: string | Array<string>;
     /**启用的事件名称，优先级: manualDisable > enableEvents > disableEvents  */
@@ -61,7 +63,7 @@ function doDisableEvent(binding: DirectiveBinding<DirectiveValue>, vnode: VNode)
     // 递归遍历 vnode 禁用事件
     const disableEvents = fixEventNames(!value.disableEvents ? undefined : isStr(value.disableEvents) ? [value.disableEvents] : value.disableEvents) ?? defEvents;
     const enableEvents = fixEventNames(!value.enableEvents ? undefined : isStr(value.enableEvents) ? [value.enableEvents] : value.enableEvents);
-    // TODO 配置递归深度
+    const maxDepth = value.maxDepth ?? 8;
     deepTraverseVNode(vnode, current => {
         const props: any = current.props;
         if (!props) return;
@@ -76,7 +78,7 @@ function doDisableEvent(binding: DirectiveBinding<DirectiveValue>, vnode: VNode)
                 if (props[name]) props[name] = empty;
             });
         }
-    });
+    }, maxDepth);
 }
 
 /**
@@ -87,17 +89,11 @@ const disableEvent: Directive<any, DirectiveValue> = {
         // TODO 测试深层次内部事件是否能够替换成功???
         doDisableEvent(binding, vnode);
     },
+    // beforeMount: (el, binding, vnode) => {
+    // },
     beforeUpdate: (el, binding, vnode) => {
         doDisableEvent(binding, vnode);
     },
-    // beforeMount: (el, binding, vnode) => {
-    // },
-    // mounted: (el, binding, vnode, prevVNode) => {
-    //     // el.addEventListener("click", stopPropagation, options);
-    // },
-    // unmounted: (el, binding, vnode) => {
-    //     // el.removeEventListener("click", stopPropagation, options);
-    // },
 };
 
 export {

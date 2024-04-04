@@ -4,12 +4,18 @@ import { deepTraverseElement, isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { deepTraverseVNode } from "@/draggable/utils/DesignerUtils";
 
+interface DirectiveValue {
+    /** 递归的最大深度 */
+    maxDepth?: number;
+}
 
-function delPropsAttr(binding: DirectiveBinding, vnode: VNode) {
+function delPropsAttr(binding: DirectiveBinding<DirectiveValue>, vnode: VNode) {
+    const value = binding.value ?? {};
+    const maxDepth = value.maxDepth ?? 8;
     // console.log("vnode", vnode);
     deepTraverseVNode(vnode, current => {
         // if (current.type === "input") {
-        //     console.log("vnode", current.type);
+        //     console.log("vnode", current);
         // }
         if (vnode === current) return;
         const props: any = current.props;
@@ -21,10 +27,12 @@ function delPropsAttr(binding: DirectiveBinding, vnode: VNode) {
         delete props[htmlExtAttr.nodeParentId];
         delete props[htmlExtAttr.placeholderName];
         delete props[htmlExtAttr.slotName];
-    });
+    }, maxDepth);
 }
 
-function delElementAttr(binding: DirectiveBinding, el: Element) {
+function delElementAttr(binding: DirectiveBinding<DirectiveValue>, el: Element) {
+    const value = binding.value ?? {};
+    const maxDepth = value.maxDepth ?? 8;
     // console.log("el", el);
     deepTraverseElement(el, current => {
         if (el === current) return;
@@ -34,13 +42,13 @@ function delElementAttr(binding: DirectiveBinding, el: Element) {
         current.removeAttribute(htmlExtAttr.nodeParentId);
         current.removeAttribute(htmlExtAttr.placeholderName);
         current.removeAttribute(htmlExtAttr.slotName);
-    });
+    }, maxDepth);
 }
 
 /**
  * 清除组件内部的 HTMLElement 节点上与拖拽的相关的属性
  */
-const clearDraggableHtmlAttr: Directive<Element> = {
+const clearDraggableHtmlAttr: Directive<Element, DirectiveValue> = {
     deep: false,
     created: (el, binding, vnode) => {
         delPropsAttr(binding, vnode);

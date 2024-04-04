@@ -1,6 +1,6 @@
 import lodash from "lodash";
 import { isVNode, VNode, VNodeChild } from "vue";
-import { isArray, isObj } from "@/utils/Typeof";
+import { isArray, isObj, noValue } from "@/utils/Typeof";
 import { childSlotName } from "@/draggable/Constant";
 import { RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentMeta, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
@@ -117,34 +117,41 @@ type TraverseVNode = (current: VNode, parent?: VNode) => void;
 
 /**
  * 深度递归遍历 vnode 节点
+ * @param vnode     VNode节点
+ * @param callback  遍历VNode的回调函数
+ * @param maxDepth  递归的最大深度(默认：8)
+ * @param parent    当前VNode的父节点
+ * @param currDepth 当前递归的深度
  */
-// TODO 配置递归深度
-function deepTraverseVNode(vnode: VNode, callback: TraverseVNode, parent?: VNode) {
+function deepTraverseVNode(vnode: VNode, callback: TraverseVNode, maxDepth: number = 8, parent?: VNode, currDepth?: number) {
+    if (noValue(currDepth)) currDepth = 0;
+    if (currDepth > maxDepth) return;
+    currDepth++;
     if (!isVNode(vnode)) return;
     callback(vnode, parent);
     const children = vnode.children;
     if (!children) return;
     if (isArray(children)) {
         for (let child of children) {
-            _deepTraverseChild(child, callback, vnode);
+            _deepTraverseChild(child, callback, maxDepth, vnode, currDepth);
         }
     } else if (isObj(children)) {
         const rawSlots = children as Record<string, VNodeChild | string>;
         for (let name in rawSlots) {
             const child = rawSlots[name];
-            _deepTraverseChild(child, callback, vnode);
+            _deepTraverseChild(child, callback, maxDepth, vnode, currDepth);
         }
     }
 }
 
 // deepTraverseNodes 处理 slots 或者 child
-function _deepTraverseChild(child: VNodeChild | string, callback: TraverseVNode, parent?: VNode) {
+function _deepTraverseChild(child: VNodeChild | string, callback: TraverseVNode, maxDepth: number, parent?: VNode, currDepth?: number) {
     if (!child) return;
     if (isVNode(child)) {
-        deepTraverseVNode(child, callback, parent);
+        deepTraverseVNode(child, callback, maxDepth, parent, currDepth);
     } else if (isArray(child)) {
         for (let item of child) {
-            if (isVNode(item)) deepTraverseVNode(item, callback, parent);
+            if (isVNode(item)) deepTraverseVNode(item, callback, maxDepth, parent, currDepth);
         }
     }
 }

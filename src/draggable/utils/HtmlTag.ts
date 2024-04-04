@@ -1,5 +1,5 @@
 import lodash from "lodash";
-import { isArray, isObj } from "@/utils/Typeof";
+import { isArray, isObj, noValue } from "@/utils/Typeof";
 
 /** 所有的html标签 */
 const htmlTags = [
@@ -125,14 +125,21 @@ function isHtmlNode(obj: any): boolean {
     return !isArray(obj) && isObj(obj) && obj.nodeType === Node.ELEMENT_NODE;
 }
 
-/** 遍历 VNode 的回调函数 */
+/** 遍历 Element 的回调函数 */
 type TraverseVNode = (current: Element, parent?: Element) => void;
 
 /**
  * 深度递归遍历 element 节点
+ * @param element   Element节点
+ * @param callback  遍历Element的回调函数
+ * @param maxDepth  递归的最大深度(默认：8)
+ * @param parent    当前Element的父节点
+ * @param currDepth 当前递归的深度
  */
-// TODO 配置递归深度
-function deepTraverseElement(element: Element, callback: TraverseVNode, parent?: Element) {
+function deepTraverseElement(element: Element, callback: TraverseVNode, maxDepth: number = 8, parent?: Element, currDepth?: number) {
+    if (noValue(currDepth)) currDepth = 0;
+    if (currDepth > maxDepth) return;
+    currDepth++;
     if (!isHtmlNode(element)) return;
     callback(element, parent);
     const children = element.children;
@@ -140,7 +147,7 @@ function deepTraverseElement(element: Element, callback: TraverseVNode, parent?:
     for (let idx = 0; idx < children.length; idx++) {
         const child = children[idx];
         if (!isHtmlNode(child)) continue;
-        deepTraverseElement(child, callback, element);
+        deepTraverseElement(child, callback, maxDepth, element, currDepth);
     }
 }
 
