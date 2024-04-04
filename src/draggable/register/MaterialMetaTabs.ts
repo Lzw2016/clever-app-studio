@@ -79,7 +79,7 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
     //             types: [
     //                 "Form", "Input", "Textarea", "InputNumber", "Checkbox", "CheckboxGroup", "Radio",
     //                 "RadioGroup", "Select", "Cascader", "TreeSelect", "DatePicker", "TimePicker",
-    //                 "TimeSelect", "Switch", "Upload", "Slider", "Rate", "ColorPicker", "AutoComplete",
+    //                 "TimeSelect", "Switch", "FileUpload", "Slider", "Rate", "ColorPicker", "AutoComplete",
     //                 "Transfer", "IpAddress", "Mentions", "Search", "Captcha",
     //             ],
     //         },

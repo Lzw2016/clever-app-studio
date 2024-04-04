@@ -29,14 +29,47 @@ function registerComponent(componentManage: ComponentManage) {
     // 注册 google 图标
     // componentManage.registerAsyncComponent("GoogleIcon", () => import("@/components/GoogleIcon.vue").then(module => module.default));
     // opentiny 组件注册
-    const openTinyTypes = [
-        "Button", "ButtonGroup", "Input", "Cascader",
-    ];
-    componentManage.batchRegisterComponent(new RegExp(openTinyTypes.join("|")), async () => {
+    // "Autocomplete","CascaderPanel","DropTimes","Link","Popeditor","PopUpload","CheckboxButton","RadioButton", "ColorSelectPanel",
+    const openTinyTypes: Record<string, string> = {
+        Button: "Button",
+        ButtonGroup: "ButtonGroup",
+        // 表单组件
+        Form: "Form",
+        FormItem: "FormItem",
+        Input: "Input",
+        InputNumber: "Numeric",
+        Checkbox: "Checkbox",
+        CheckboxGroup: "CheckboxGroup",
+        Radio: "Radio",
+        RadioGroup: "RadioGroup",
+        Select: "Select",
+        Cascader: "Cascader",
+        TreeSelect: "Select",
+        DatePicker: "DatePicker",
+        TimePicker: "TimePicker",
+        TimeSelect: "TimeSelect",
+        Switch: "Switch",
+        FileUpload: "FileUpload",
+        Slider: "Slider",
+        Rate: "Rate",
+        ColorPicker: "ColorPicker",
+        AutoComplete: "Autocomplete",
+        Transfer: "Transfer",
+        IpAddress: "IpAddress",
+        // Mentions: "Mentions",
+        Search: "Search",
+        // Captcha: "Captcha",
+    };
+    componentManage.batchRegisterComponent(new RegExp(Object.keys(openTinyTypes).join("|")), async () => {
         const openTiny = await import("@/draggable/components/material/OpenTiny");
-        for (let type of openTinyTypes) {
-            const component = openTiny[type];
-            if (component) componentManage.registerComponent(type, component);
+        for (let componentName in openTinyTypes) {
+            const openTinyName = openTinyTypes[componentName];
+            const component = openTiny[openTinyName];
+            if (!component) {
+                console.warn(`@opentiny/vue中不存在组件：${openTinyName}`);
+                continue;
+            }
+            componentManage.registerComponent(componentName, component);
         }
     });
     // primevue 组件注册

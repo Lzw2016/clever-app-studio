@@ -282,7 +282,13 @@ console.log("pageId", route.params.pageId)
         </div>
         <div class="flex-item-fill">
             <div v-show="isDesignerTab" ref="designerContainer" class="designer-content">
-                <RuntimeBlock ref="designerBlockInstance" :component-manage="props.designerEngine.componentManage" :block="designerTest" :is-designing="true" :style="state.designerBlockStyle"/>
+                <RuntimeBlock
+                    ref="designerBlockInstance"
+                    :style="state.designerBlockStyle"
+                    :component-manage="props.designerEngine.componentManage"
+                    :block="designerTest"
+                    :is-designing="true"
+                />
                 <AuxTool ref="auxTool" :designer-engine="props.designerEngine" :designerState="props.designerState"/>
             </div>
             <div v-if="state.codeEditorLoaded" v-show="isCodeTab" class="designer-code">
