@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { markRaw, reactive } from "vue";
-import { Form, FormItem, Loading } from "@opentiny/vue";
+import { getCurrentInstance, markRaw, reactive } from "vue";
+import { Form, FormItem, Loading, Tooltip } from "@opentiny/vue";
 import { isStr } from "@/utils/Typeof";
-import { toAny } from "@/utils/UseType";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { Setter, SetterGroup, SetterPanel } from "@/draggable/types/ComponentMeta";
@@ -77,6 +76,15 @@ function getComponent(cmp: any): any {
     return cmp;
 }
 
+function formProps() {
+    const obj: any = {
+        labelPosition: "left",
+        labelWidth: "65px",
+        ...props.setterGroup?.formProps,
+    };
+    return obj;
+}
+
 function getFormItemProps(setter: Setter) {
     const obj: any = {
         ...props.setterGroup?.formItemProps,
@@ -87,26 +95,32 @@ function getFormItemProps(setter: Setter) {
 
 function getSetterProps(setter: Setter) {
     const { designerState } = props;
+    const { label, labelTips, enableBind, watchProps, listeners, cmpProps, ...otherCmpProps } = setter;
     const obj: any = {
+        designerState: designerState,
         blockInstance: designerState.blockInstance,
         nodes: [],
-        ...setter.cmpProps,
+        ...cmpProps,
+        ...otherCmpProps,
     };
+
     if (designerState.blockInstance) {
         for (let selection of designerState.selections) {
+            if (!selection.nodeId) continue;
             const node = designerState.blockInstance.globalContext.allNode[selection.nodeId];
             obj.nodes.push(markRaw(node));
         }
     }
-    if (setter.propsName) obj.propsName = setter.propsName;
-    if (setter.getPropsValue) obj.getPropsValue = setter.getPropsValue;
-    if (setter.applyPropsValue) obj.applyPropsValue = setter.applyPropsValue;
     // if (setter.watchProps) obj.watchProps = setter.watchProps;
     // if (setter.listeners) obj.listeners = setter.listeners;
+    // TODO ref、enableBind, watchProps, listeners
     return obj;
 }
 
 loadSetterComponent().finally();
+
+// TODO 测试
+window['a'] = getCurrentInstance();
 </script>
 
 <template>
@@ -123,13 +137,19 @@ loadSetterComponent().finally();
     </div>
     <Form
         v-else
-        v-bind="toAny(props.setterGroup?.formProps)"
+        class="setter-panel"
+        v-bind="formProps()"
     >
         <template v-for="item in props.setterGroup.items">
             <FormItem
                 v-if="item.label"
                 v-bind="getFormItemProps(item)"
             >
+                <template #label v-if="item.labelTips">
+                    <Tooltip effect="dark" placement="left" :content="item.labelTips">
+                        <span class="setter-label-tips">{{ item.label }}</span>
+                    </Tooltip>
+                </template>
                 <component :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
             </FormItem>
             <component v-else :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
@@ -139,13 +159,31 @@ loadSetterComponent().finally();
 
 <style scoped>
 .setter-panel {
-
+    padding: 8px 12px;
+    font-size: 12px;
 }
 
 .setter-panel-loading {
     min-height: 80px;
 }
 
+.setter-label-tips {
+    cursor: help;
+    text-decoration-line: underline;
+    text-decoration-style: dashed;
+}
+
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
 
+.setter-panel :deep(.tiny-form-item) {
+    margin-bottom: 16px;
+}
+
+.setter-panel :deep(.tiny-form-item:last-child) {
+    margin-bottom: 0;
+}
+
+.setter-panel :deep(.tiny-form-item .tiny-form-item__label) {
+    font-size: 13px;
+}
 </style>

@@ -23,55 +23,86 @@ export default defineComponentMeta({
             title: "",
             groups: [
                 {
-                    title: "常规",
+                    title: "常用",
                     items: [
                         {
-                            cmp: "BoolSetter",
-                            label: "自动聚焦",
-                            labelTips: "是否默认聚焦",
-                            propsName: "autofocus",
+                            ref: "text",
+                            cmp: "StringSetter",
+                            cmpProps: {
+                                clearable: true,
+                            },
+                            label: "按钮文本",
+                            propsName: "text",
+                            recalcAuxToolPosition: true,
                         },
                         {
-                            cmp: "BoolSetter",
-                            label: "圆形按钮",
-                            labelTips: "是否圆形按钮",
-                            propsName: "circle",
-                        },
-                        {
-                            cmp: "BoolSetter",
-                            label: "禁用按钮",
-                            labelTips: "是否被禁用按钮",
-                            propsName: "disabled",
-                        },
-                        {
-                            cmp: "BoolSetter",
-                            label: "幽灵按钮",
-                            labelTips: "是否幽灵按钮",
-                            propsName: "ghost",
+                            cmp: "SelectSetter",
+                            label: "按钮类型",
+                            labelTips: "展示按钮不同的状态，如：“主要”、“成功”、“信息”、“警告”、“危险”等",
+                            propsName: "type",
                         },
                         {
                             cmp: "ComponentSetter",
-                            label: "图标",
-                            labelTips: "按钮左侧展示的图标，接收为Icon组件",
+                            label: "按钮图标",
                             propsName: "icon",
                         },
                         {
                             cmp: "BoolSetter",
-                            label: "加载中",
+                            label: "加载状态",
                             labelTips: "是否加载中状态",
                             propsName: "loading",
                         },
                         {
+                            cmp: "BoolSetter",
+                            label: "禁用按钮",
+                            propsName: "disabled",
+                        },
+                    ],
+                },
+                {
+                    title: "样式",
+                    items: [
+                        {
                             cmp: "SelectSetter",
-                            label: "Html type",
-                            labelTips: "对应按钮原生 type 属性",
-                            propsName: "nativeType",
+                            label: "按钮尺寸",
+                            propsName: "size",
+                        },
+                        {
+                            cmp: "BoolSetter",
+                            label: "圆形按钮",
+                            propsName: "circle",
+                        },
+                        {
+                            cmp: "BoolSetter",
+                            label: "圆角按钮",
+                            propsName: "round",
+                        },
+                        {
+                            cmp: "BoolSetter",
+                            label: "幽灵按钮",
+                            propsName: "ghost",
                         },
                         {
                             cmp: "BoolSetter",
                             label: "朴素按钮",
-                            labelTips: "是否朴素按钮",
                             propsName: "plain",
+                        },
+                    ],
+                },
+                {
+                    title: "其它",
+                    items: [
+                        {
+                            cmp: "BoolSetter",
+                            label: "自动聚焦",
+                            labelTips: "自动获取焦点",
+                            propsName: "autofocus",
+                        },
+                        {
+                            cmp: "SelectSetter",
+                            label: "Html type",
+                            labelTips: "按钮原生的 html type 属性",
+                            propsName: "nativeType",
                         },
                         {
                             cmp: "NumberSetter",
@@ -79,64 +110,8 @@ export default defineComponentMeta({
                             labelTips: "设置按钮禁用时间，防止重复提交，单位毫秒",
                             propsName: "resetTime",
                         },
-                        {
-                            cmp: "BoolSetter",
-                            label: "圆角按钮",
-                            labelTips: "是否圆角按钮",
-                            propsName: "round",
-                        },
-                        {
-                            cmp: "SelectSetter",
-                            label: "按钮尺寸",
-                            labelTips: "定义按钮尺寸",
-                            propsName: "size",
-                        },
-                        {
-                            cmp: "StringSetter",
-                            label: "按钮文本",
-                            labelTips: "按钮显示的文本",
-                            propsName: "text",
-                        },
-                        {
-                            cmp: "SelectSetter",
-                            label: "按钮类型",
-                            labelTips: "展示按钮不同的状态，设置为text则展示为文本按钮",
-                            propsName: "type",
-                        },
-
-
                     ],
                 },
-                // {
-                //     title: "数据绑定",
-                //     items: [
-                //         {
-                //             cmp: "TextSetter",
-                //             propsName: "aaa",
-                //         },
-                //         {
-                //             cmp: "TextSetter",
-                //             propsName: "aaa",
-                //         },
-                //         {
-                //             cmp: "TextSetter",
-                //             propsName: "aaa",
-                //         },
-                //     ],
-                // },
-                // {
-                //     title: "数据源",
-                //     items: [
-                //         {
-                //             cmp: "TextSetter",
-                //             propsName: "aaa",
-                //         },
-                //         {
-                //             cmp: "TextSetter",
-                //             propsName: "aaa",
-                //         },
-                //     ],
-                // },
             ],
         },
         // events: {

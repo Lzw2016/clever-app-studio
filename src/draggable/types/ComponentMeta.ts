@@ -2,9 +2,12 @@ import { ComponentPublicInstance } from "vue";
 import { ComponentSlotMeta, FunctionMeta, I18N, VueComponent } from "@/draggable/types/Base";
 import { BaseProps, ComponentListener, DesignNode } from "@/draggable/types/DesignBlock";
 import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { DesignerState } from "@/draggable/models/DesignerState";
 
 /** 设置器基本props */
 interface SetterProps {
+    /** 设计器状态数据 */
+    designerState: DesignerState;
     /** block实例对象 */
     blockInstance: BlockInstance;
     /** 当前设置的渲染节点集合 */
@@ -17,6 +20,8 @@ interface SetterProps {
     applyPropsValue?: (props: any, value: any, oldValue: any, setter: ComponentPublicInstance) => void;
     /** 监听属性值变化逻辑 */
     watchProps?: Setter['watchProps'];
+    /** 更新属性后需要重新计算辅助工具的位置 */
+    recalcAuxToolPosition?: boolean;
 }
 
 /** 设置器基本state */
@@ -70,20 +75,20 @@ interface WatchPropsConfig<TargetProps> {
 
 /** 设置器 */
 interface Setter<SetterProps extends BaseProps = BaseProps, TargetProps = any> {
-    /** 设置器组件 */
-    cmp: VueComponent | string;
     /** 设置器组件实例的引用名称 */
     ref?: string;
+    /** 设置器组件 */
+    cmp: VueComponent | string;
+    /** 设置器组件属性 */
+    cmpProps?: SetterProps;
     /** 配置项名称 */
     label?: string;
     /** 配置项名称说明 */
     labelTips?: string;
-    /** 启用数据绑定 */
-    enableBind?: boolean;
-    /** 设置器组件属性 */
-    cmpProps?: SetterProps;
     /** 被设置的属性名称 */
     propsName?: string;
+    /** 启用数据绑定 */
+    enableBind?: boolean;
     /**
      * 从组件节点读取属性值
      * @param props 目标组件的 props 对象
@@ -101,6 +106,8 @@ interface Setter<SetterProps extends BaseProps = BaseProps, TargetProps = any> {
     watchProps?: Array<WatchPropsConfig<TargetProps>>;
     /** 监听设置器的事件 */
     listeners?: Record<keyof Event, ComponentListener>;
+    /** 更新属性后需要重新计算辅助工具的位置 */
+    recalcAuxToolPosition?: boolean;
 }
 
 /** 表单的配置 */

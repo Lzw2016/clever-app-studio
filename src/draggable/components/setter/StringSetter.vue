@@ -79,7 +79,7 @@ function getValue() {
 }
 
 function applyValue(value, oldValue) {
-    const { nodes, propsName, applyPropsValue } = props;
+    const { nodes, propsName, applyPropsValue, blockInstance, designerState, recalcAuxToolPosition } = props;
     if (!nodes) return;
     if (!propsName && !isFunction(applyPropsValue)) return;
     let flag = false;
@@ -95,7 +95,18 @@ function applyValue(value, oldValue) {
     // 需要重新渲染 block
     if (flag) {
         state.multipleValues = false;
-        props.blockInstance.$forceUpdate();
+        blockInstance.$forceUpdate();
+        // 重新计算辅助工具的位置(更新属性有可能改变渲染节点的大小和位置)
+        if (recalcAuxToolPosition) {
+            blockInstance.$nextTick(() => {
+                const nodeIds = nodes.map(node => node.id);
+                for (let selection of designerState.selections) {
+                    if (selection.nodeId && nodeIds.includes(selection.nodeId)) {
+                        selection.recalcAuxToolPosition();
+                    }
+                }
+            });
+        }
     }
 }
 </script>
