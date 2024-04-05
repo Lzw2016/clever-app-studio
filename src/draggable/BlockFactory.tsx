@@ -8,7 +8,7 @@ import { BaseDirectives, DesignBlock } from "@/draggable/types/DesignBlock";
 import { BlockInstance, Context, CreateConfig, GlobalContext, RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { parseHtml } from "@/draggable/utils/HtmlTag";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, deepTraverseNodes, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
-import { AllBlockOperation } from "@/draggable/BlockOperation";
+import { AllBlockOperation } from "@/draggable/DefBlockOperation";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
 
 // 创建渲染组件的默认配置
