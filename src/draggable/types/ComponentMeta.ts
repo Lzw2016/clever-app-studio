@@ -1,12 +1,18 @@
 import { ComponentPublicInstance } from "vue";
 import { ComponentSlotMeta, FunctionMeta, I18N, VueComponent } from "@/draggable/types/Base";
 import { BaseProps, ComponentListener, DesignNode } from "@/draggable/types/DesignBlock";
+import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 
 /** 组件节点默认配置 */
 type DefDesignNode = Partial<Omit<DesignNode, 'type' | 'ref'>>
 
 /** 设置器暴露属性 */
 interface SetterExpose {
+    /** block实例对象 */
+    blockInstance: BlockInstance;
+    /** 当前设置的渲染节点集合 */
+    nodes: Array<RuntimeNode>;
+
     /** 获取当前setter值 */
     getValue(): any;
 

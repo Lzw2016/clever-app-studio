@@ -166,8 +166,8 @@ interface BlockInstance extends ComponentInstance {
  * 当前调用的上下文，不能在函数间传递这个对象(需要创建)
  */
 interface Context {
-    /**  当前渲染节点所属的 vue 组件实例 */
-    readonly instance: any;
+    /** 前渲染节点所属的 vue 组件实例 */
+    readonly instance: ComponentInstance;
     /** 当前渲染节点所属的 RuntimeBlock 对象 */
     readonly block: RuntimeBlock;
     /** 当前渲染节点所属的 RuntimeNode 对象 */

@@ -42,7 +42,8 @@ watch(() => state.value, (value, oldValue) => applyValue(value, oldValue));
 
 // 定义组件公开内容
 defineExpose<SetterExpose>({
-
+    blockInstance: props.blockInstance,
+    nodes: props.nodes,
     getValue(): any {
         return state.value;
     },
