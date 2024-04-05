@@ -116,8 +116,8 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, globalContext: 
                 refId: globalContext.refId,
                 nodeRefVueRef: globalContext.nodeRefVueRef,
             });
-            vm.blockOps = blockOps;
-            vm.blockOpsById = blockOps;
+            vm.ops = blockOps;
+            vm.opsById = blockOps;
             // 深度绑定 this 指针
             deepBindThis(runtimeBlock, vm);
             // 更新 globalContext.allBlock

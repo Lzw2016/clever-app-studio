@@ -159,13 +159,13 @@ const designerTest = defineDesignBlock({
                     `<div>${this.count++}</div>`,
                 ],
             });
-            this.blockOps.beforeAddItem("c_001", span);
+            this.ops.beforeAddItem("c_001", span);
         },
         removeSpan(this: BlockInstance) {
             if (this.refs.length <= 0) return;
             const ref = this.refs[0];
             this.refs.splice(0, 1);
-            this.blockOps.remove(ref);
+            this.ops.remove(ref);
         },
     },
 });

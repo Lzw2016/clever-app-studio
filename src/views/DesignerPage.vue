@@ -7,7 +7,7 @@ import globalConfig from "@/GlobalConfig";
 const instance = ref<InstanceType<typeof RuntimeBlock> | undefined>();
 
 function updateDesignerTest() {
-    instance.value?.blockInstance?.blockOps.appendItem(
+    instance.value?.blockInstance?.ops.appendItem(
         "c_000",
         createSpan({
             props: {

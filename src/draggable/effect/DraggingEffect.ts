@@ -59,21 +59,21 @@ class DraggingEffect extends DesignerEffect {
                 // 移动节点
                 if (placeholder) {
                     if (slotName === childSlotName) {
-                        blockInstance.blockOpsById.moveNodesToItemFirstById(nodeId, moveNodeIds);
+                        blockInstance.opsById.moveNodesToItemFirstById(nodeId, moveNodeIds);
                     } else {
-                        blockInstance.blockOpsById.moveNodesToSlotFirstById(nodeId, slotName, moveNodeIds);
+                        blockInstance.opsById.moveNodesToSlotFirstById(nodeId, slotName, moveNodeIds);
                     }
                 } else if (before) {
                     if (slotName === childSlotName) {
-                        blockInstance.blockOpsById.moveNodesToItemBeforeById(nodeId, moveNodeIds);
+                        blockInstance.opsById.moveNodesToItemBeforeById(nodeId, moveNodeIds);
                     } else {
-                        blockInstance.blockOpsById.moveNodesToSlotBeforeById(nodeId, slotName, moveNodeIds);
+                        blockInstance.opsById.moveNodesToSlotBeforeById(nodeId, slotName, moveNodeIds);
                     }
                 } else {
                     if (slotName === childSlotName) {
-                        blockInstance.blockOpsById.moveNodesToItemAfterById(nodeId, moveNodeIds);
+                        blockInstance.opsById.moveNodesToItemAfterById(nodeId, moveNodeIds);
                     } else {
-                        blockInstance.blockOpsById.moveNodesToSlotAfterById(nodeId, slotName, moveNodeIds);
+                        blockInstance.opsById.moveNodesToSlotAfterById(nodeId, slotName, moveNodeIds);
                     }
                 }
             } else {
@@ -87,21 +87,21 @@ class DraggingEffect extends DesignerEffect {
                 });
                 if (placeholder) {
                     if (slotName === childSlotName) {
-                        selectionNodes = blockInstance.blockOpsById.appendItemsById(nodeId, addNodes);
+                        selectionNodes = blockInstance.opsById.appendItemsById(nodeId, addNodes);
                     } else {
-                        selectionNodes = blockInstance.blockOpsById.appendSlotsById(nodeId, slotName, addNodes);
+                        selectionNodes = blockInstance.opsById.appendSlotsById(nodeId, slotName, addNodes);
                     }
                 } else if (before) {
                     if (slotName === childSlotName) {
-                        selectionNodes = blockInstance.blockOpsById.beforeAddItemsById(nodeId, addNodes);
+                        selectionNodes = blockInstance.opsById.beforeAddItemsById(nodeId, addNodes);
                     } else {
-                        selectionNodes = blockInstance.blockOpsById.beforeAddSlotsById(nodeId, slotName, addNodes);
+                        selectionNodes = blockInstance.opsById.beforeAddSlotsById(nodeId, slotName, addNodes);
                     }
                 } else {
                     if (slotName === childSlotName) {
-                        selectionNodes = blockInstance.blockOpsById.afterAddItemsById(nodeId, addNodes);
+                        selectionNodes = blockInstance.opsById.afterAddItemsById(nodeId, addNodes);
                     } else {
-                        selectionNodes = blockInstance.blockOpsById.afterAddSlotsById(nodeId, slotName, addNodes);
+                        selectionNodes = blockInstance.opsById.afterAddSlotsById(nodeId, slotName, addNodes);
                     }
                 }
             }

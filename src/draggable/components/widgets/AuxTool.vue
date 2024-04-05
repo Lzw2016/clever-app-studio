@@ -157,15 +157,15 @@ function moveNode(selection: Selection, up: boolean) {
     if (!pos) return false;
     if (pos.isItems) {
         if (up) {
-            blockInstance.blockOpsById.moveNodeToItemBeforeById(selection.nodeId, selection.nodeId);
+            blockInstance.opsById.moveNodeToItemBeforeById(selection.nodeId, selection.nodeId);
         } else {
-            blockInstance.blockOpsById.moveNodeToItemAfterById(selection.nodeId, selection.nodeId);
+            blockInstance.opsById.moveNodeToItemAfterById(selection.nodeId, selection.nodeId);
         }
     } else {
         if (up) {
-            blockInstance.blockOpsById.moveNodeToSlotBeforeById(selection.nodeId, pos.slotName, selection.nodeId);
+            blockInstance.opsById.moveNodeToSlotBeforeById(selection.nodeId, pos.slotName, selection.nodeId);
         } else {
-            blockInstance.blockOpsById.moveNodeToSlotAfterById(selection.nodeId, pos.slotName, selection.nodeId);
+            blockInstance.opsById.moveNodeToSlotAfterById(selection.nodeId, pos.slotName, selection.nodeId);
         }
     }
     // 更新 selection
@@ -180,7 +180,7 @@ function copyNode(selection: Selection) {
     if (!node) return;
     // 复制节点流程: RuntimeNode -> DesignNode -> cloneDeep(DesignNode) -> afterAddItemById(DesignNode)
     const designNode = runtimeNodeToDesignNode(node);
-    const newNode = blockInstance.blockOpsById.afterAddItemById(node.id, designNode);
+    const newNode = blockInstance.opsById.afterAddItemById(node.id, designNode);
     if (!newNode) return;
     if (isObj(newNode)) {
         const newId = (newNode as RuntimeNode).id;
@@ -193,7 +193,7 @@ function clearChild(selection: Selection) {
     if (!nodeId) return;
     const blockInstance = props.designerState.blockInstance;
     if (!blockInstance) return;
-    blockInstance.blockOpsById.removeChildrenById(nodeId);
+    blockInstance.opsById.removeChildrenById(nodeId);
     blockInstance.$nextTick(() => setSelection(selection, nodeId));
 }
 
@@ -201,7 +201,7 @@ function delNode(nodeId?: string) {
     const blockInstance = props.designerState.blockInstance;
     const selections = props.designerState.selections;
     if (!nodeId || !blockInstance) return;
-    blockInstance.blockOpsById.removeById(nodeId);
+    blockInstance.opsById.removeById(nodeId);
     const idx = selections.findIndex(selection => selection.nodeId === nodeId);
     if (idx >= 0) selections.splice(idx, 1);
 }

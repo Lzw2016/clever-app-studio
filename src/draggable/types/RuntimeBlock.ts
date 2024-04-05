@@ -157,9 +157,9 @@ interface BlockInstance extends ComponentInstance {
     /** 创建 BlockComponent 时的全局上下文对象 */
     readonly globalContext: GlobalContext;
     /** Block支持的操作函数(基于ref属性) */
-    readonly blockOps: BlockOperation;
+    readonly ops: BlockOperation;
     /** Block支持的操作函数(基于id属性) */
-    readonly blockOpsById: BlockOperationById;
+    readonly opsById: BlockOperationById;
 }
 
 /**
