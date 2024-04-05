@@ -5,6 +5,15 @@ import { BaseProps, ComponentListener, DesignNode } from "@/draggable/types/Desi
 /** 组件节点默认配置 */
 type DefDesignNode = Partial<Omit<DesignNode, 'type' | 'ref'>>
 
+/** 设置器暴露属性 */
+interface SetterExpose {
+    /** 获取当前setter值 */
+    getValue(): any;
+
+    /** 设置当前setter值 */
+    setValue(value: any): void;
+}
+
 /** 监听属性值变化逻辑配置 */
 interface WatchPropsConfig<TargetProps> {
     /** 监听的属性名 */
@@ -17,7 +26,7 @@ interface WatchPropsConfig<TargetProps> {
      * @param oldValue  之前的属性值
      * @param setter    当前设置器对象
      */
-    onChange(props: TargetProps, value: any, oldValue: any, setter: ComponentPublicInstance): void;
+    onChange(props: TargetProps, value: any, oldValue: any, setter: ComponentPublicInstance & SetterExpose): void;
 
     /** 在侦听器创建时立即触发回调 */
     immediate?: boolean;
@@ -54,7 +63,7 @@ interface Setter<SetterProps extends BaseProps = BaseProps, TargetProps = any> {
      * @param oldValue  设置器更新之前的值
      * @param setter    当前设置器对象
      */
-    applyPropsValue?: (props: TargetProps, value: any, oldValue: any, setter: ComponentPublicInstance) => void;
+    applyPropsValue?: (props: TargetProps, value: any, oldValue: any, setter: ComponentPublicInstance & SetterExpose) => void;
     /** 监听属性值变化逻辑 */
     watchProps?: Array<WatchPropsConfig<TargetProps>>;
     /** 监听设置器的事件 */
@@ -158,6 +167,7 @@ type AsyncComponentMeta = (type: string) => Promise<ComponentMeta>;
 
 export type {
     DefDesignNode,
+    SetterExpose,
     WatchPropsConfig,
     Setter,
     SetterGroup,

@@ -61,7 +61,7 @@ function registerComponent(componentManage: ComponentManage) {
         // Captcha: "Captcha",
     };
     componentManage.batchRegisterComponent(new RegExp(Object.keys(openTinyTypes).join("|")), async () => {
-        const openTiny = await import("@/draggable/components/material/OpenTiny");
+        const openTiny = await import("@/draggable/register/components/OpenTiny");
         for (let componentName in openTinyTypes) {
             const openTinyName = openTinyTypes[componentName];
             const component = openTiny[openTinyName];

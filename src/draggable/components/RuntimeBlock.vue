@@ -3,9 +3,9 @@ import { defineExpose, Fragment, reactive, ref } from "vue";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { getAllTypes } from "@/draggable/utils/DesignerUtils";
 import { DesignBlock } from "@/draggable/types/DesignBlock";
-import { RenderErrType } from "@/draggable/types/RuntimeBlock";
+import { BlockInstance, CreateConfig, RenderErrType } from "@/draggable/types/RuntimeBlock";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
-import { Block, createBlockComponent, CreateConfig } from "@/draggable/BlockFactory";
+import { createBlockComponent } from "@/draggable/BlockFactory";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
 
 // 定义组件选项
@@ -59,7 +59,7 @@ const data: RuntimeBlockData = {
     component: Fragment,
 };
 // DesignBlock 的 vue 组件实例
-const blockInstance = ref<Block | undefined>();
+const blockInstance = ref<BlockInstance | undefined>();
 
 defineExpose({
     /** block实例对象 */

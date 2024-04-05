@@ -8,6 +8,7 @@ import { initRouter } from "@/routers";
 import { initI18n } from "@/i18n";
 import { registerComponent } from "@/draggable/register/RegisterComponent";
 import { registerComponentMeta } from "@/draggable/register/RegisterComponentMeta";
+import { registerSetterComponent } from "@/draggable/register/RegisterSetterComponent";
 import { usePrimeVue } from "@/components/UsePrimeVue";
 import globalConfig from "@/GlobalConfig";
 
@@ -28,10 +29,10 @@ window['APP_INFO'] = readonly(__APP_INFO__);
     app.directive("clear-draggable-html-attr", clearDraggableHtmlAttr);
     // 配置组件库
     usePrimeVue(app);
-    // 注册组件
+    // 注册组件、组件元信息、组件设置器、
     registerComponent(globalConfig.componentManage);
-    // 注册组件元信息
     registerComponentMeta(globalConfig.componentManage);
+    registerSetterComponent(globalConfig.componentManage);
     // 初始化路由
     const router = createRouter({
         history: createWebHashHistory(),

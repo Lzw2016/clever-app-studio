@@ -1,6 +1,6 @@
 import { computed, ComputedRef, Ref, ref, ShallowReactive, shallowReactive } from "vue";
 import { runtimeNodeToDesignNode } from "@/draggable/utils/BlockPropsTransform";
-import { Block } from "@/draggable/BlockFactory";
+import { BlockInstance } from "@/draggable/types/RuntimeBlock";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { HoverDashed } from "@/draggable/models/HoverDashed";
 import { Selection } from "@/draggable/models/Selection";
@@ -68,7 +68,7 @@ class DesignerState {
     }
 
     /** 设计器组件Block对象 */
-    get blockInstance(): Block | undefined {
+    get blockInstance(): BlockInstance | undefined {
         return this._designerBlockInstance?.value?.blockInstance;
     }
 

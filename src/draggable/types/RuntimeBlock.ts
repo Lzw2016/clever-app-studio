@@ -1,6 +1,7 @@
 import { WatchCallback, WatchOptions } from "vue";
 import { AnyFunction, ComponentInstance, I18N, VueComponent } from "@/draggable/types/Base";
-import { BaseDirectives, BlockMeta, DesignNode } from "@/draggable/types/DesignBlock";
+import { BaseDirectives, BlockMeta, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
+import { BlockOperation, BlockOperationById } from "@/draggable/types/BlockOperation";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
 
 /** 组件插槽类型(运行时) */
@@ -131,6 +132,52 @@ interface CreateConfig {
     isDesigning?: boolean;
 }
 
+/**
+ * 创建 BlockComponent 时的全局上下文
+ */
+interface GlobalContext extends CreateConfig {
+    /** 当前渲染的顶层 DesignBlock(原始的DesignBlock对象) */
+    readonly designBlock: DesignBlock;
+    /** 当前 Block 的根级 RuntimeBlock */
+    readonly runtimeBlock?: RuntimeBlock;
+    /** 当前所有的 Block vue 组件 | RuntimeBlock.ref -> Block vue组件实例 */
+    readonly allBlock: Record<string, BlockInstance>;
+    /** 所有的 RuntimeNode 对象 | RuntimeNode.id -> RuntimeNode */
+    readonly allNode: Record<string, RuntimeNode>;
+    /** 所有的 RuntimeNode 与其父节点关系 | RuntimeNode.id -> 所属的RuntimeNode */
+    readonly nodeParent: Record<string, RuntimeNode>;
+    /** ref属性与id属性的映射 | RuntimeNode.ref -> RuntimeNode.id */
+    readonly refId: Record<string, string>;
+    /** 渲染节点的ref与所属Block实例的ref之间的映射 | RuntimeNode.ref -> allBlock.ref */
+    readonly nodeRefVueRef: Record<string, string>;
+}
+
+/** Block组件类型 */
+interface BlockInstance extends ComponentInstance {
+    /** 创建 BlockComponent 时的全局上下文对象 */
+    readonly globalContext: GlobalContext;
+    /** Block支持的操作函数(基于ref属性) */
+    readonly blockOps: BlockOperation;
+    /** Block支持的操作函数(基于id属性) */
+    readonly blockOpsById: BlockOperationById;
+}
+
+/**
+ * 当前调用的上下文，不能在函数间传递这个对象(需要创建)
+ */
+interface Context {
+    /**  当前渲染节点所属的 vue 组件实例 */
+    readonly instance: any;
+    /** 当前渲染节点所属的 RuntimeBlock 对象 */
+    readonly block: RuntimeBlock;
+    /** 当前渲染节点所属的 RuntimeNode 对象 */
+    readonly node: RuntimeNode;
+    /** v-for指令的上下文数据 */
+    vForData?: Record<string, any>;
+    /** 插槽中的 props 数据 */
+    slotProps?: Record<string, any>;
+}
+
 export type {
     RuntimeComponentSlotsItem,
     RuntimeBlockWatchItem,
@@ -139,6 +186,9 @@ export type {
     RuntimeBlock,
     RuntimeBlockNode,
     CreateConfig,
+    GlobalContext,
+    BlockInstance,
+    Context,
 }
 
 export {

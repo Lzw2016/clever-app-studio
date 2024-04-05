@@ -1,6 +1,6 @@
 import { defineDesignBlock } from "@/draggable/utils/DesignerUtils";
-import { Block } from "@/draggable/BlockFactory";
 import { DesignBlock } from "@/draggable/types/DesignBlock";
+import { BlockInstance } from "@/draggable/types/RuntimeBlock";
 
 let count = 1;
 
@@ -145,7 +145,7 @@ const designerTest = defineDesignBlock({
         },
     ],
     methods: {
-        addSpan(this: Block) {
+        addSpan(this: BlockInstance) {
             const ref = `span_${this.count}`;
             this.refs.push(ref);
             const span = createSpan({
@@ -161,7 +161,7 @@ const designerTest = defineDesignBlock({
             });
             this.blockOps.beforeAddItem("c_001", span);
         },
-        removeSpan(this: Block) {
+        removeSpan(this: BlockInstance) {
             if (this.refs.length <= 0) return;
             const ref = this.refs[0];
             this.refs.splice(0, 1);

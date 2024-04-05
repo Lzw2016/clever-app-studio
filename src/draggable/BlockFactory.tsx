@@ -3,60 +3,13 @@ import lodash from "lodash";
 import { hasValue, isArray, isObj, isStr, noValue } from "@/utils/Typeof";
 import { calcExpression, getKeyPathValue, setKeyPathValue } from "@/utils/Expression";
 import { innerDirectiveNames } from "@/draggable/Constant";
-import { ComponentInstance } from "@/draggable/types/Base";
 import { DefComponentManage } from "@/draggable/DefComponentManage";
 import { BaseDirectives, DesignBlock } from "@/draggable/types/DesignBlock";
-import { CreateConfig, RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { BlockInstance, Context, CreateConfig, GlobalContext, RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { parseHtml } from "@/draggable/utils/HtmlTag";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, deepTraverseNodes, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
-import { AllBlockOperation, BlockOperation, BlockOperationById } from "@/draggable/BlockOperation";
+import { AllBlockOperation } from "@/draggable/BlockOperation";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
-
-/** Block组件类型 */
-interface Block extends ComponentInstance {
-    /** 创建 BlockComponent 时的全局上下文对象 */
-    readonly globalContext: GlobalContext;
-    /** Block支持的操作函数(基于ref属性) */
-    readonly blockOps: BlockOperation;
-    /** Block支持的操作函数(基于id属性) */
-    readonly blockOpsById: BlockOperationById;
-}
-
-/**
- * 创建 BlockComponent 时的全局上下文
- */
-interface GlobalContext extends CreateConfig {
-    /** 当前渲染的顶层 DesignBlock(原始的DesignBlock对象) */
-    readonly designBlock: DesignBlock;
-    /** 当前 Block 的根级 RuntimeBlock */
-    readonly runtimeBlock?: RuntimeBlock;
-    /** 当前所有的 Block vue 组件 | RuntimeBlock.ref -> Block vue组件实例 */
-    readonly allBlock: Record<string, Block>;
-    /** 所有的 RuntimeNode 对象 | RuntimeNode.id -> RuntimeNode */
-    readonly allNode: Record<string, RuntimeNode>;
-    /** 所有的 RuntimeNode 与其父节点关系 | RuntimeNode.id -> 所属的RuntimeNode */
-    readonly nodeParent: Record<string, RuntimeNode>;
-    /** ref属性与id属性的映射 | RuntimeNode.ref -> RuntimeNode.id */
-    readonly refId: Record<string, string>;
-    /** 渲染节点的ref与所属Block实例的ref之间的映射 | RuntimeNode.ref -> allBlock.ref */
-    readonly nodeRefVueRef: Record<string, string>;
-}
-
-/**
- * 当前调用的上下文，不能在函数间传递这个对象(需要创建)
- */
-interface Context {
-    /**  当前渲染节点所属的 vue 组件实例 */
-    readonly instance: any;
-    /** 当前渲染节点所属的 RuntimeBlock 对象 */
-    readonly block: RuntimeBlock;
-    /** 当前渲染节点所属的 RuntimeNode 对象 */
-    readonly node: RuntimeNode;
-    /** v-for指令的上下文数据 */
-    vForData?: Record<string, any>;
-    /** 插槽中的 props 数据 */
-    slotProps?: Record<string, any>;
-}
 
 // 创建渲染组件的默认配置
 const defConfig: CreateConfig = {
@@ -134,6 +87,8 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, globalContext: 
     if (!lifeCycles.errorCaptured) {
         lifeCycles.errorCaptured = function (err: Error, instance: ComponentPublicInstance | null, info: string) {
             // TODO 组件渲染报错时的默认处理
+            console.warn("Block渲染失败", info);
+            console.error(err);
         }
     }
     // 组件卸载时释放资源
@@ -144,12 +99,12 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, globalContext: 
     };
     return defineComponent({
         ...lifeCycles,
-        setup(props, ctx) {
-            // const instance = getCurrentInstance()!;
-            // const exposed: Record<string, any> = {};
-            // ctx.expose(exposed);
-        },
-        data(vm: MakeWritable<Block>) {
+        // setup(props, ctx) {
+        //     // const instance = getCurrentInstance()!;
+        //     // const exposed: Record<string, any> = {};
+        //     // ctx.expose(exposed);
+        // },
+        data(vm: MakeWritable<BlockInstance>) {
             vm.globalContext = globalContext;
             const blockOps = new AllBlockOperation({
                 componentManage: globalContext.componentManage,
@@ -593,11 +548,6 @@ function _applyDirectives<Directives extends BaseDirectives = BaseDirectives>(vn
         vnode = withDirectives(vnode, useDirectives)
     }
     return vnode;
-}
-
-export type  {
-    CreateConfig,
-    Block,
 }
 
 export {

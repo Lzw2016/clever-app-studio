@@ -107,6 +107,7 @@ const componentMeta = defineComponentMeta({
                                 {
                                     propsNames: [],
                                     onChange(a, b, c, d) {
+                                        // d.getValue()
                                     },
                                 },
                             ],
