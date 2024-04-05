@@ -137,6 +137,12 @@ const designerTest = defineDesignBlock({
             items: [
                 createSpan(),
                 createSpan(),
+                {
+                    type: "Button",
+                    props: {
+                        text: "按钮",
+                    },
+                },
             ],
         },
         {

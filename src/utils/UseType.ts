@@ -10,7 +10,15 @@ function style(style: CSSProperties): CSSProperties {
     return style ?? {};
 }
 
+/**
+ * 仅仅是为了类型声明，无任何处理逻辑
+ */
+function toAny<R = any>(obj: any): R {
+    return obj;
+}
+
 export {
     AsyncFunction,
     style,
+    toAny,
 }

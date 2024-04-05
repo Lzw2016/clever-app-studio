@@ -4,6 +4,7 @@ import { Collapse, CollapseItem, TabItem, Tabs } from "@opentiny/vue";
 import { IconX } from "@tabler/icons-vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
+import SetterPanel from "@/draggable/components/widgets/SetterPanel.vue";
 
 // 定义组件选项
 defineOptions({
@@ -31,6 +32,21 @@ const data = {
 };
 // 当前活动的设计器状态数据
 const designerState = computed(() => props.designerEngine.activeDesignerState);
+// 存在选中的节点
+const existsSelection = computed(() => designerState.value && designerState.value?.existsSelection.value);
+// 选中了多个不同类型的节点
+const multipleSelection = computed(() => {
+    if (!designerState.value) return false;
+    const types = new Set<any>();
+    for (let selection of designerState.value?.selections) {
+        if (selection.componentMeta) {
+            types.add(selection.componentMeta?.type);
+        } else {
+            types.add(null);
+        }
+    }
+    return types.size > 1;
+});
 // 当前选中的 ComponentMeta
 const selectedComponentMeta = computed(() => {
     const meta = designerState.value?.selectedComponentMeta;
@@ -38,17 +54,39 @@ const selectedComponentMeta = computed(() => {
 });
 // 当前活动的设计器状态数据
 const setterState = computed(() => props.designerEngine.activeDesignerState?.setterState);
+
 // 重新计算expandGroups(展开的组件分组)
 watch(() => selectedComponentMeta.value, () => setterState.value?.recalcExpandGroups());
 
 // 过滤所有空 props events style advanced 中的 items
 function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
     const newMeta = { ...meta };
-    if (meta.setter.props && newMeta.setter.props) newMeta.setter.props.groups = meta.setter.props.groups.filter(group => group.items.length > 0);
-    if (meta.setter.events && newMeta.setter.events) newMeta.setter.events.groups = meta.setter.events.groups.filter(group => group.items.length > 0);
-    if (meta.setter.style && newMeta.setter.style) newMeta.setter.style.groups = meta.setter.style.groups.filter(group => group.items.length > 0);
-    if (meta.setter.advanced && newMeta.setter.advanced) newMeta.setter.advanced.groups = meta.setter.advanced.groups.filter(group => group.items.length > 0);
-    return meta;
+    if (meta.setter.props && newMeta.setter.props) {
+        newMeta.setter.props.groups = meta.setter.props.groups.filter(group => group.items.length > 0);
+        if (newMeta.setter.props.groups.length <= 0) delete newMeta.setter.props;
+    }
+    if (meta.setter.events && newMeta.setter.events) {
+        newMeta.setter.events.groups = meta.setter.events.groups.filter(group => group.items.length > 0);
+        if (newMeta.setter.events.groups.length <= 0) delete newMeta.setter.events;
+    }
+    if (meta.setter.style && newMeta.setter.style) {
+        newMeta.setter.style.groups = meta.setter.style.groups.filter(group => group.items.length > 0);
+        if (newMeta.setter.style.groups.length <= 0) delete newMeta.setter.style;
+    }
+    if (meta.setter.advanced && newMeta.setter.advanced) {
+        newMeta.setter.advanced.groups = meta.setter.advanced.groups.filter(group => group.items.length > 0);
+        if (newMeta.setter.advanced.groups.length <= 0) delete newMeta.setter.advanced;
+    }
+    return newMeta;
+}
+
+// 是否存在 setter
+function existsSetter(meta?: ComponentMeta) {
+    if (!meta) return false;
+    return (meta.setter.props && meta.setter.props.groups.length > 0)
+        || (meta.setter.events && meta.setter.events.groups.length > 0)
+        || (meta.setter.style && meta.setter.style.groups.length > 0)
+        || (meta.setter.advanced && meta.setter.advanced.groups.length > 0);
 }
 </script>
 
@@ -61,13 +99,20 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
                 <IconX :size="18"/>
             </div>
         </div>
-        <div v-if="!selectedComponentMeta" class="settings-panel flex-column-container">
+        <div v-if="!existsSelection" class="settings-panel flex-column-container">
             <div class="flex-item-fill settings-panel-empty">请在左侧画布选中节点</div>
         </div>
-        <div v-if="selectedComponentMeta" class="flex-row-container flex-center flex-item-fixed">
+        <div v-else-if="multipleSelection" class="settings-panel flex-column-container">
+            <div class="flex-item-fill settings-panel-empty">选中的节点类型不一致</div>
+        </div>
+        <div v-else-if="existsSelection && !selectedComponentMeta" class="settings-panel flex-column-container">
+            <div class="flex-item-fill settings-panel-empty">选中的节点组件未注册元数据</div>
+        </div>
+        <div v-else-if="existsSelection && !existsSetter(selectedComponentMeta)" class="settings-panel flex-column-container">
+            <div class="flex-item-fill settings-panel-empty">选中的节点未注册配置属性</div>
         </div>
         <Tabs
-            v-if="selectedComponentMeta && setterState"
+            v-else-if="selectedComponentMeta && setterState && designerState"
             class="flex-item-fill settings-tabs flex-column-container"
             :active-name="setterState.activeTab"
             tab-style="button-card"
@@ -87,8 +132,11 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
                         :name="group.title"
                         :title="group.title"
                     >
-                        <div class="settings-item flex-item-fixed" v-for="item in group.items">
-                        </div>
+                        <SetterPanel
+                            :component-manage="props.designerEngine.componentManage"
+                            :designer-state="designerState"
+                            :setter-group="group"
+                        />
                     </CollapseItem>
                 </Collapse>
             </TabItem>

@@ -28,15 +28,7 @@ export default defineComponentMeta({
                     title: "数据绑定",
                     items: [
                         {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
-                        {
-                            cmp: "TextSetter",
+                            cmp: "StringSetter",
                             propsName: "aaa",
                         },
                     ],

@@ -37,7 +37,9 @@ class DesignerState {
         this.designerEngine = designerEngine;
     }
 
-    /** 获取当前选中的 ComponentMeta */
+    /**
+     * 获取当前选中的 ComponentMeta，如果选中多个节点，节点类型不同返回空
+     */
     protected getCurrentComponentMeta() {
         if (this.selections.length <= 0) return;
         if (this.selections.length === 1) return this.selections[0].componentMeta;

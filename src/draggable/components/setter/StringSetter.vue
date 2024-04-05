@@ -16,7 +16,7 @@ interface StringSetterProps extends SetterProps {
 // 读取组件 props 属性
 const props = withDefaults(defineProps<StringSetterProps>(), {});
 
-// 读取组件 state 属性
+// 定义 State 类型
 interface StringSetterState extends SetterState<string> {
 }
 
@@ -71,7 +71,7 @@ function getValue() {
     if (values.size <= 0) {
         return;
     } else if (values.size === 1) {
-        return values.values()[0];
+        return values.values().next().value;
     } else {
         state.multipleValues = true;
         return;

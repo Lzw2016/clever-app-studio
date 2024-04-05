@@ -30,20 +30,9 @@ export default defineComponentMeta({
                     title: "常规",
                     items: [
                         {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
-                        },
-                        {
-                            cmp: "TextSetter",
-                            propsName: "aaa",
+                            cmp: "StringSetter",
+                            label: "配置A",
+                            propsName: "bbb",
                         },
                     ],
                 },

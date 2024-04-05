@@ -41,6 +41,9 @@ interface SetterExpose {
     setValue(value: any): void;
 }
 
+/** 设置器实例 */
+type SetterInstance = ComponentPublicInstance & SetterExpose;
+
 /** 监听属性值变化逻辑配置 */
 interface WatchPropsConfig<TargetProps> {
     /** 监听的属性名 */
@@ -53,7 +56,7 @@ interface WatchPropsConfig<TargetProps> {
      * @param oldValue  之前的属性值
      * @param setter    当前设置器对象
      */
-    onChange(props: TargetProps, value: any, oldValue: any, setter: ComponentPublicInstance & SetterExpose): void;
+    onChange(props: TargetProps, value: any, oldValue: any, setter: ComponentPublicInstance): void;
 
     /** 在侦听器创建时立即触发回调 */
     immediate?: boolean;
@@ -71,9 +74,12 @@ interface Setter<SetterProps extends BaseProps = BaseProps, TargetProps = any> {
     cmp: VueComponent | string;
     /** 设置器组件实例的引用名称 */
     ref?: string;
-    // label 配置项名称
-    // labelTips 配置项名称说明
-    // bind 全局数据
+    /** 配置项名称 */
+    label?: string;
+    /** 配置项名称说明 */
+    labelTips?: string;
+    /** 启用数据绑定 */
+    enableBind?: boolean;
     /** 设置器组件属性 */
     cmpProps?: SetterProps;
     /** 被设置的属性名称 */
@@ -90,11 +96,55 @@ interface Setter<SetterProps extends BaseProps = BaseProps, TargetProps = any> {
      * @param oldValue  设置器更新之前的值
      * @param setter    当前设置器对象
      */
-    applyPropsValue?: (props: TargetProps, value: any, oldValue: any, setter: ComponentPublicInstance & SetterExpose) => void;
+    applyPropsValue?: (props: TargetProps, value: any, oldValue: any, setter: ComponentPublicInstance) => void;
     /** 监听属性值变化逻辑 */
     watchProps?: Array<WatchPropsConfig<TargetProps>>;
     /** 监听设置器的事件 */
     listeners?: Record<keyof Event, ComponentListener>;
+}
+
+/** 表单的配置 */
+interface FormProps {
+    /** 行内布局模式 */
+    inline?: boolean;
+    /** 标签文本是否对齐 */
+    labelAlign?: string;
+    /** 表单中标签的布局位置 */
+    labelPosition?: 'right' | 'left' | 'top' | string;
+    /** 表单中标签占位宽度 */
+    labelWidth?: string;
+    /** 配置文本类型错误类型 */
+    messageType?: 'inline' | 'block' | string;
+    /** 标签超长是否显示提示 */
+    overflowTitle?: string;
+    /** 表单内组件的尺寸 */
+    size?: 'medium' | 'small' | 'mini' | string;
+    /** 表单验证规则 */
+    rules?: Record<string, any>;
+    /** 校验类型 */
+    validateType?: 'tip' | 'text' | string;
+
+    [name: string]: any;
+}
+
+/** 表单项的通用配置 */
+interface FormItemProps {
+    /** 表单中标签占位宽度 */
+    labelWidth?: string;
+    /** 配置文本类型错误类型 */
+    messageType?: 'inline' | 'block' | string;
+    /** 是否显示校验错误信息 */
+    showMessage?: boolean;
+    /** 表单内组件的尺寸 */
+    size?: 'medium' | 'small' | 'mini' | string;
+    /** 表单项验证规则 */
+    rules?: any;
+    /** 是否开启校验防抖 */
+    validateDebounce?: boolean;
+    /** 校验类型 */
+    validateType?: 'tip' | 'text' | string;
+
+    [name: string]: any;
 }
 
 /** 设置器分组 */
@@ -103,8 +153,10 @@ interface SetterGroup {
     title: string;
     /** 是否展开状态(默认为true) */
     expand?: boolean;
-    // TODO 表单的配置
-    // TODO 表单项的通用配置
+    /** 表单的配置 */
+    formProps?: FormProps;
+    /** 表单项的通用配置 */
+    formItemProps?: FormItemProps;
     /** 设置器集合 */
     items: Array<Setter>;
 }
@@ -113,8 +165,6 @@ interface SetterGroup {
 interface SetterPanel {
     /** 面板标题 */
     title?: string;
-    // TODO 表单的配置
-    // TODO 表单项的通用配置
     /** 设置器分组集合 */
     groups: Array<SetterGroup>;
 }
@@ -199,8 +249,11 @@ export type {
     SetterProps,
     SetterState,
     SetterExpose,
+    SetterInstance,
     WatchPropsConfig,
     Setter,
+    FormProps,
+    FormItemProps,
     SetterGroup,
     SetterPanel,
     ComponentSetter,
