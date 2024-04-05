@@ -2,8 +2,7 @@
 import { computed, defineExpose, reactive, ref, watch } from "vue";
 import { Input } from "@opentiny/vue";
 import { isFunction } from "@/utils/Typeof";
-import { SetterExpose } from "@/draggable/types/ComponentMeta";
-import { SetterProps, SetterState } from "@/draggable/types/Setter";
+import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 
 // 定义组件选项
 defineOptions({

@@ -3,8 +3,29 @@ import { ComponentSlotMeta, FunctionMeta, I18N, VueComponent } from "@/draggable
 import { BaseProps, ComponentListener, DesignNode } from "@/draggable/types/DesignBlock";
 import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 
-/** 组件节点默认配置 */
-type DefDesignNode = Partial<Omit<DesignNode, 'type' | 'ref'>>
+/** 设置器基本props */
+interface SetterProps {
+    /** block实例对象 */
+    blockInstance: BlockInstance;
+    /** 当前设置的渲染节点集合 */
+    nodes: Array<RuntimeNode>;
+    /** 被设置的属性名称 */
+    propsName?: string;
+    /** 自定义获取属性值逻辑 */
+    getPropsValue?: (props: any) => any;
+    /** 应用属性值到组件节点 */
+    applyPropsValue?: (props: any, value: any, oldValue: any, setter: ComponentPublicInstance) => void;
+    /** 监听属性值变化逻辑 */
+    watchProps?: Setter['watchProps'];
+}
+
+/** 设置器基本state */
+interface SetterState<Value = any> {
+    /** 是否存在多个RuntimeNode，而且都是不同的值 */
+    multipleValues: boolean;
+    /** 设置器值 */
+    value?: Value;
+}
 
 /** 设置器暴露属性 */
 interface SetterExpose {
@@ -110,6 +131,9 @@ interface ComponentSetter {
     advanced?: SetterPanel;
 }
 
+/** 组件节点默认配置 */
+type DefDesignNode = Partial<Omit<DesignNode, 'type' | 'ref'>>;
+
 /** 组件元信息 */
 interface ComponentMeta {
     /** 组件类型(唯一值) */
@@ -172,13 +196,15 @@ interface ComponentMetaTab extends MaterialMetaTab<ComponentMetaGroup> {
 type AsyncComponentMeta = (type: string) => Promise<ComponentMeta>;
 
 export type {
-    DefDesignNode,
+    SetterProps,
+    SetterState,
     SetterExpose,
     WatchPropsConfig,
     Setter,
     SetterGroup,
     SetterPanel,
     ComponentSetter,
+    DefDesignNode,
     ComponentMeta,
     MaterialMetaGroup,
     MaterialMetaTab,
