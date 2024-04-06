@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { defineExpose, reactive, ref, watch } from "vue";
+import { defineExpose, reactive, ref } from "vue";
 import { Input } from "@opentiny/vue";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
-import { applyValue, getSetterExpose, getValue } from "@/draggable/utils/SetterUtils";
+import { applyValue, getInputProps, getSetterExpose, getValue, toString, watchNodes } from "@/draggable/utils/SetterUtils";
 
 // 定义组件选项
 defineOptions({
@@ -25,30 +25,29 @@ const state = reactive<StringSetterState>({
     multipleValues: false,
     value: undefined,
 });
-state.value = getValue<string>(props, state);
+state.value = getValue<string>(props, state, toString);
 // 内部数据
 // const data = {};
-
-// input 引用
+// 设置器内部组件引用
 const setter = ref<InstanceType<typeof Input> | undefined>();
-// 监听 value 变化
-watch(() => state.value, (value, oldValue) => applyValue(props, state, setter, value, oldValue));
+// 设置器内部组件属性
+const inputProps = getInputProps(state);
+// 监听 nodes 变化
+watchNodes(props, state, toString);
 
 // 定义组件公开内容
 defineExpose<SetterExpose>({
-    ...getSetterExpose(props, state),
+    ...getSetterExpose(props, state, setter.value, toString),
 });
 </script>
 
 <template>
     <Input
-        v-bind="$attrs"
+        v-bind="inputProps"
         ref="setter"
         v-model="state.value"
+        @change="value => applyValue(props, state, setter, value)"
     />
-    <span v-if="state.multipleValues">
-        存在多个不同值
-    </span>
 </template>
 
 <style scoped></style>

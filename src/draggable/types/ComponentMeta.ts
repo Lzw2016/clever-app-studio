@@ -17,7 +17,7 @@ interface SetterProps {
     /** 自定义获取属性值逻辑 */
     getPropsValue?: (props: any) => any;
     /** 应用属性值到组件节点 */
-    applyPropsValue?: (props: any, value: any, oldValue: any, setter: ComponentPublicInstance) => void;
+    applyPropsValue?: (props: any, value: any, setter: ComponentPublicInstance) => void;
     /** 监听属性值变化逻辑 */
     watchProps?: Setter['watchProps'];
     /** 更新属性后需要重新计算辅助工具的位置 */
@@ -60,10 +60,9 @@ interface WatchPropsConfig<TargetProps> {
      * 属性值变化时的回调
      * @param props     目标组件节点的 props 对象
      * @param value     当前属性值
-     * @param oldValue  之前的属性值
      * @param setter    当前设置器对象
      */
-    onChange(props: TargetProps, value: any, oldValue: any, setter: ComponentPublicInstance): void;
+    onChange(props: TargetProps, value: any, setter: ComponentPublicInstance): void;
 
     /** 在侦听器创建时立即触发回调 */
     immediate?: boolean;
@@ -100,10 +99,9 @@ interface Setter<SetterProps extends BaseProps = BaseProps, TargetProps = any> {
      * 应用属性值到组件节点
      * @param props     目标组件节点的 props 对象
      * @param value     设置器的当前值
-     * @param oldValue  设置器更新之前的值
      * @param setter    当前设置器对象
      */
-    applyPropsValue?: (props: TargetProps, value: any, oldValue: any, setter: ComponentPublicInstance) => void;
+    applyPropsValue?: (props: TargetProps, value: any, setter: ComponentPublicInstance) => void;
     /** 监听属性值变化逻辑 */
     watchProps?: Array<WatchPropsConfig<TargetProps>>;
     /** 监听设置器的事件 */

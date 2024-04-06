@@ -152,7 +152,7 @@ window['a'] = getCurrentInstance();
                     </Tooltip>
                 </template>
                 <div class="flex-row-container" style="align-items: center;">
-                    <div class="flex-item-fill">
+                    <div class="flex-item-fill flex-row-container" style="align-items: center;">
                         <component :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
                     </div>
                     <span class="flex-item-fixed flex-row-container flex-center setter-button" title="使用数据绑定">

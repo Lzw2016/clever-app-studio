@@ -106,7 +106,7 @@ const componentMeta = defineComponentMeta({
                             watchProps: [
                                 {
                                     propsNames: [],
-                                    onChange(a, b, c, d) {
+                                    onChange(a, b, c) {
                                         // d.getValue()
                                     },
                                 },

@@ -1,30 +1,49 @@
-import { ComponentPublicInstance, Ref } from "vue";
-import { isFunction } from "@/utils/Typeof";
+import lodash from "lodash";
+import { computed, useAttrs, watch } from "vue";
+import { isFunction, noValue } from "@/utils/Typeof";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 
-type ValueTransform<T> = (value: any) => T;
+/** 当选中多个节点且节点的同一属性有不同值时的提示文本 */
+const multipleValuesText = "存在多个不同值";
 
+/** setter值转换函数 */
+type ValueTransform<T = any> = (value: any) => T;
+
+/** setter值转换成string */
+const toString: ValueTransform<string> = value => lodash.toString(value);
+
+/** setter值转换成boolean */
+const toBoolean: ValueTransform<boolean> = value => !!value;
+
+/**
+ * 获取setter值
+ * @param props         设置器组件 props 属性
+ * @param state         设置器组件 state 属性
+ * @param transform     setter值转换函数
+ */
 function getValue<R = any>(props: SetterProps, state: SetterState, transform?: ValueTransform<R>): R {
-    let value = _doGetValue(props, state);
+    let value = _doGetValue(props, state, transform);
     if (isFunction(transform)) {
         value = transform(value);
     }
     return value;
 }
 
-function _doGetValue(props: SetterProps, state: SetterState): any {
+function _doGetValue(props: SetterProps, state: SetterState, transform?: ValueTransform): any {
     const { nodes, propsName, getPropsValue } = props;
     if (!nodes) return;
     if (!propsName && !isFunction(getPropsValue)) return;
     const values = new Set<any>();
     for (let node of nodes) {
+        let value = undefined;
         if (getPropsValue) {
-            values.add(getPropsValue(node.props));
+            value = getPropsValue(node.props);
         } else if (propsName) {
-            values.add(node.props?.[propsName]);
-        } else {
-            values.add(undefined);
+            value = node.props?.[propsName];
         }
+        if (noValue(value)) value = undefined;
+        if (isFunction(transform)) value = transform(value);
+        values.add(value);
         if (values.size > 1) {
             break;
         }
@@ -35,11 +54,19 @@ function _doGetValue(props: SetterProps, state: SetterState): any {
         return values.values().next().value;
     } else {
         state.multipleValues = true;
+        state.value = undefined;
         return;
     }
 }
 
-function applyValue<T = any>(props: SetterProps, state: SetterState, setter: Ref<ComponentPublicInstance | any>, value: T, oldValue: T | undefined): boolean {
+/**
+ * 应用setter值到组件节点
+ * @param props     设置器组件 props 属性
+ * @param state     设置器组件 state 属性
+ * @param setter    设置器内部组件实例(ComponentPublicInstance)
+ * @param value     应用的setter值
+ */
+function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any, value: T): boolean {
     const {
         designerState,
         blockInstance,
@@ -53,7 +80,7 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: Ref
     if (!propsName && !isFunction(applyPropsValue)) return res;
     for (let node of nodes) {
         if (applyPropsValue) {
-            applyPropsValue(node.props, value, oldValue, setter.value);
+            applyPropsValue(node.props, value, setter);
             res = true;
         } else if (propsName && node.props) {
             node.props[propsName] = value;
@@ -79,7 +106,40 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: Ref
     return res;
 }
 
-function getSetterExpose<T = any>(props: SetterProps, state: SetterState, transform?: ValueTransform<T>): SetterExpose {
+/**
+ * 获取设置器内部组件的属性，动态处理属性：title、placeholder
+ * @param state 设置器组件 state 属性
+ */
+function getInputProps(state: SetterState) {
+    const attrs = useAttrs();
+    return computed(() => {
+        const obj: any = { ...attrs };
+        if (state.multipleValues) {
+            if (!obj.title) obj.title = multipleValuesText;
+            obj.placeholder = multipleValuesText;
+        }
+        return obj;
+    });
+}
+
+/**
+ * 监听选中的节点变化
+ * @param props     设置器组件 props 属性
+ * @param state     设置器组件 state 属性
+ * @param transform setter值转换函数
+ */
+function watchNodes(props: SetterProps, state: SetterState, transform?: ValueTransform) {
+    watch(() => props.nodes, () => state.value = getValue(props, state, transform));
+}
+
+/**
+ * 定义设置器组件公开内容
+ * @param props     设置器组件 props 属性
+ * @param state     设置器组件 state 属性
+ * @param setter    设置器内部组件实例(ComponentPublicInstance)
+ * @param transform setter值转换函数
+ */
+function getSetterExpose<T = any>(props: SetterProps, state: SetterState, setter: any, transform?: ValueTransform<T>): SetterExpose {
     return {
         designerState: props.designerState,
         blockInstance: props.blockInstance,
@@ -88,12 +148,20 @@ function getSetterExpose<T = any>(props: SetterProps, state: SetterState, transf
         setValue: value => {
             if (isFunction(transform)) value = transform(value);
             state.value = value;
+            applyValue(props, state, setter, value);
         },
+        // 影藏组件
+        //
     };
 }
 
 export {
+    multipleValuesText,
+    toString,
+    toBoolean,
     getValue,
     applyValue,
+    getInputProps,
+    watchNodes,
     getSetterExpose,
 }
