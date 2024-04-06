@@ -169,7 +169,7 @@ function moveNode(selection: Selection, up: boolean) {
         }
     }
     // 更新 selection
-    blockInstance.$nextTick(() => setSelection(selection, selection.nodeId!));
+    blockInstance.$nextTick(() => setSelection(selection, selection.nodeId!)).finally();
 }
 
 function copyNode(selection: Selection) {
@@ -184,7 +184,7 @@ function copyNode(selection: Selection) {
     if (!newNode) return;
     if (isObj(newNode)) {
         const newId = (newNode as RuntimeNode).id;
-        blockInstance.$nextTick(() => setSelection(selection, newId));
+        blockInstance.$nextTick(() => setSelection(selection, newId)).finally();
     }
 }
 
@@ -194,7 +194,7 @@ function clearChild(selection: Selection) {
     const blockInstance = props.designerState.blockInstance;
     if (!blockInstance) return;
     blockInstance.opsById.removeChildrenById(nodeId);
-    blockInstance.$nextTick(() => setSelection(selection, nodeId));
+    blockInstance.$nextTick(() => setSelection(selection, nodeId)).finally();
 }
 
 function delNode(nodeId?: string) {

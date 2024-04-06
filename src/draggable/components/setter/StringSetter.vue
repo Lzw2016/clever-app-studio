@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, defineExpose, reactive, ref, watch } from "vue";
+import { defineExpose, reactive, ref, watch } from "vue";
 import { Input } from "@opentiny/vue";
-import { isFunction } from "@/utils/Typeof";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
+import { applyValue, getSetterExpose, getValue } from "@/draggable/utils/SetterUtils";
 
 // 定义组件选项
 defineOptions({
@@ -23,100 +23,32 @@ interface StringSetterState extends SetterState<string> {
 // state 属性
 const state = reactive<StringSetterState>({
     multipleValues: false,
-    value: getValue(),
+    value: undefined,
 });
+state.value = getValue<string>(props, state);
 // 内部数据
 // const data = {};
 
 // input 引用
 const setter = ref<InstanceType<typeof Input> | undefined>();
-// 动态的 input props
-const inputProps = computed(() => {
-    const obj: any = {};
-    if (state.multipleValues) obj.placeholder = "存在多个不同值";
-    return obj;
-});
 // 监听 value 变化
-watch(() => state.value, (value, oldValue) => applyValue(value, oldValue));
+watch(() => state.value, (value, oldValue) => applyValue(props, state, setter, value, oldValue));
 
 // 定义组件公开内容
 defineExpose<SetterExpose>({
-    blockInstance: props.blockInstance,
-    nodes: props.nodes,
-    getValue(): any {
-        return state.value;
-    },
-    setValue(value: any) {
-        state.value = value;
-    },
+    ...getSetterExpose(props, state),
 });
-
-function getValue() {
-    const { nodes, propsName, getPropsValue } = props;
-    if (!nodes) return;
-    if (!propsName && !isFunction(getPropsValue)) return;
-    const values = new Set<any>();
-    for (let node of nodes) {
-        if (getPropsValue) {
-            values.add(getPropsValue(node.props));
-        } else if (propsName) {
-            values.add(node.props?.[propsName]);
-        } else {
-            values.add(undefined);
-        }
-        if (values.size > 1) {
-            break;
-        }
-    }
-    if (values.size <= 0) {
-        return;
-    } else if (values.size === 1) {
-        return values.values().next().value;
-    } else {
-        state.multipleValues = true;
-        return;
-    }
-}
-
-function applyValue(value, oldValue) {
-    const { nodes, propsName, applyPropsValue, blockInstance, designerState, recalcAuxToolPosition } = props;
-    if (!nodes) return;
-    if (!propsName && !isFunction(applyPropsValue)) return;
-    let flag = false;
-    for (let node of nodes) {
-        if (applyPropsValue) {
-            applyPropsValue(node.props, value, oldValue, setter.value!);
-            flag = true;
-        } else if (propsName && node.props) {
-            node.props[propsName] = value;
-            flag = true;
-        }
-    }
-    // 需要重新渲染 block
-    if (flag) {
-        state.multipleValues = false;
-        blockInstance.$forceUpdate();
-        // 重新计算辅助工具的位置(更新属性有可能改变渲染节点的大小和位置)
-        if (recalcAuxToolPosition) {
-            blockInstance.$nextTick(() => {
-                const nodeIds = nodes.map(node => node.id);
-                for (let selection of designerState.selections) {
-                    if (selection.nodeId && nodeIds.includes(selection.nodeId)) {
-                        selection.recalcAuxToolPosition();
-                    }
-                }
-            });
-        }
-    }
-}
 </script>
 
 <template>
     <Input
-        v-bind="{...$attrs, ...inputProps}"
+        v-bind="$attrs"
         ref="setter"
         v-model="state.value"
     />
+    <span v-if="state.multipleValues">
+        存在多个不同值
+    </span>
 </template>
 
 <style scoped></style>

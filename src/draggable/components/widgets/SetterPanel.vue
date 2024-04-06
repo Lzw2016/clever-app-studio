@@ -125,7 +125,7 @@ window['a'] = getCurrentInstance();
 
 <template>
     <div v-if="state.loadErr">
-
+        加载错误
     </div>
     <div
         v-else-if="state.loading"

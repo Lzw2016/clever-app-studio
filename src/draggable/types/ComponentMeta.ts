@@ -34,6 +34,8 @@ interface SetterState<Value = any> {
 
 /** 设置器暴露属性 */
 interface SetterExpose {
+    /** 设计器状态数据 */
+    designerState: DesignerState;
     /** block实例对象 */
     blockInstance: BlockInstance;
     /** 当前设置的渲染节点集合 */

@@ -51,6 +51,7 @@ export default defineComponentMeta({
                             label: "加载状态",
                             labelTips: "是否加载中状态",
                             propsName: "loading",
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "BoolSetter",
@@ -66,11 +67,13 @@ export default defineComponentMeta({
                             cmp: "SelectSetter",
                             label: "按钮尺寸",
                             propsName: "size",
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "BoolSetter",
                             label: "圆形按钮",
                             propsName: "circle",
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "BoolSetter",
