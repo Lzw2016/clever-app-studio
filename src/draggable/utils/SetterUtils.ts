@@ -143,7 +143,7 @@ function getInputProps(state: SetterState) {
     const attrs = useAttrs();
     return computed(() => {
         const obj: any = {
-            // ...attrs,
+            ...attrs,
         };
         if (state.multipleValues) {
             if (!obj.title) obj.title = multipleValuesText;

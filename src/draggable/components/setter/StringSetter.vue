@@ -42,6 +42,7 @@ defineExpose<SetterExpose>({
 
 <template>
     <Input
+        :clearable="true"
         v-bind="inputProps"
         ref="setter"
         v-model="state.value"

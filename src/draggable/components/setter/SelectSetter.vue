@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ComponentPublicInstance, defineExpose, reactive, ref } from "vue";
-import { Numeric } from "@opentiny/vue";
+import { Select } from "@opentiny/vue";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
-import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toNumber, watchNodes } from "@/draggable/utils/SetterUtils";
+import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toStr, watchNodes } from "@/draggable/utils/SetterUtils";
 
 // 定义组件选项
 defineOptions({
-    name: 'NumberSetter',
+    name: 'SelectSetter',
 });
 
 // 定义 Props 类型
@@ -24,7 +24,7 @@ interface NumberSetterState extends SetterState<number> {
 const state = reactive<NumberSetterState>({
     ...getDefState(),
 });
-state.value = getValue<number>(props, state, toNumber);
+state.value = getValue<number>(props, state, toStr);
 // 内部数据
 // const data = {};
 // 设置器内部组件引用
@@ -32,21 +32,21 @@ const setter = ref<ComponentPublicInstance | undefined>();
 // 设置器内部组件属性
 const inputProps = getInputProps(state);
 // 监听 nodes 变化
-watchNodes(props, state, toNumber);
+watchNodes(props, state, toStr);
 
 // 定义组件公开内容
 defineExpose<SetterExpose>({
-    ...getSetterExpose(props, state, setter.value, toNumber),
+    ...getSetterExpose(props, state, setter.value, toStr),
 });
 </script>
 
 <template>
-    <Numeric
+    <Select
         :clearable="true"
         v-bind="inputProps"
         ref="setter"
-        @change="value => applyValue(props, state, setter, value)"
         v-model="state.value"
+        @change="value => applyValue(props, state, setter, value)"
     />
 </template>
 

@@ -28,15 +28,22 @@ export default defineComponentMeta({
                         {
                             ref: "text",
                             cmp: "StringSetter",
-                            cmpProps: {
-                                clearable: true,
-                            },
                             label: "按钮文本",
                             propsName: "text",
                             recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "SelectSetter",
+                            cmpProps: {
+                                options: [
+                                    { value: "text", label: "默认按钮" },
+                                    { value: "primary", label: "主要按钮" },
+                                    { value: "success", label: "成功按钮" },
+                                    { value: "info", label: "信息按钮" },
+                                    { value: "warning", label: "警告按钮" },
+                                    { value: "danger", label: "危险按钮" },
+                                ],
+                            },
                             label: "按钮类型",
                             labelTips: "展示按钮不同的状态，如：“主要”、“成功”、“信息”、“警告”、“危险”等",
                             propsName: "type",
@@ -65,6 +72,14 @@ export default defineComponentMeta({
                     items: [
                         {
                             cmp: "SelectSetter",
+                            cmpProps: {
+                                options: [
+                                    { value: "large", label: "大" },
+                                    { value: "medium", label: "中等" },
+                                    { value: "small", label: "小" },
+                                    { value: "mini", label: "迷你" },
+                                ],
+                            },
                             label: "按钮尺寸",
                             propsName: "size",
                             recalcAuxToolPosition: true,
@@ -104,10 +119,17 @@ export default defineComponentMeta({
                         },
                         {
                             cmp: "SelectSetter",
+                            cmpProps: {
+                                options: [
+                                    { value: "button", label: "button" },
+                                    { value: "submit", label: "submit" },
+                                    { value: "reset", label: "reset" },
+                                ],
+                            },
                             label: "Html type",
                             labelTips: "按钮原生的 html type 属性",
                             propsName: "nativeType",
-                            // disableReRender: true,
+                            disableReRender: true,
                         },
                         {
                             cmp: "NumberSetter",
