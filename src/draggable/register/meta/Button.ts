@@ -61,7 +61,7 @@ export default defineComponentMeta({
                     ],
                 },
                 {
-                    title: "样式",
+                    title: "风格",
                     items: [
                         {
                             cmp: "SelectSetter",

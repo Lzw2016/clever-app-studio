@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getCurrentInstance, markRaw, reactive } from "vue";
+import { IconBraces } from "@tabler/icons-vue";
 import { Form, FormItem, Loading, Tooltip } from "@opentiny/vue";
 import { isStr } from "@/utils/Typeof";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
@@ -150,7 +151,14 @@ window['a'] = getCurrentInstance();
                         <span class="setter-label-tips">{{ item.label }}</span>
                     </Tooltip>
                 </template>
-                <component :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
+                <div class="flex-row-container" style="align-items: center;">
+                    <div class="flex-item-fill">
+                        <component :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
+                    </div>
+                    <span class="flex-item-fixed flex-row-container flex-center setter-button" title="使用数据绑定">
+                        <IconBraces :size="16" stroke-width="2"/>
+                    </span>
+                </div>
             </FormItem>
             <component v-else :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
         </template>
@@ -159,8 +167,28 @@ window['a'] = getCurrentInstance();
 
 <style scoped>
 .setter-panel {
-    padding: 8px 12px;
+    padding: 8px 4px 8px 12px;
     font-size: 12px;
+}
+
+.flex-row-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.flex-item-fill {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.flex-item-fixed {
+    flex-shrink: 0;
+}
+
+.flex-center {
+    align-items: center;
+    justify-content: center;
 }
 
 .setter-panel-loading {
@@ -171,6 +199,19 @@ window['a'] = getCurrentInstance();
     cursor: help;
     text-decoration-line: underline;
     text-decoration-style: dashed;
+}
+
+.setter-button {
+    margin-left: 4px;
+    width: 24px;
+    height: 24px;
+    padding: 0 4px;
+    cursor: pointer;
+}
+
+.setter-button:hover {
+    background-color: #006cff;
+    color: #fff;
 }
 
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
