@@ -20,6 +20,8 @@ interface SetterProps {
     applyPropsValue?: (props: any, value: any, setter: ComponentPublicInstance) => void;
     /** 监听属性值变化逻辑 */
     watchProps?: Setter['watchProps'];
+    /** 更新属性值后不重新渲染block */
+    disableReRender?: boolean;
     /** 更新属性后需要重新计算辅助工具的位置 */
     recalcAuxToolPosition?: boolean;
 }
@@ -62,7 +64,7 @@ interface WatchPropsConfig<TargetProps> {
      * @param value     当前属性值
      * @param setter    当前设置器对象
      */
-    onChange(props: TargetProps, value: any, setter: ComponentPublicInstance): void;
+    onChange(props: TargetProps, value: any, setter: SetterInstance): void;
 
     /** 在侦听器创建时立即触发回调 */
     immediate?: boolean;
@@ -101,11 +103,13 @@ interface Setter<SetterProps extends BaseProps = BaseProps, TargetProps = any> {
      * @param value     设置器的当前值
      * @param setter    当前设置器对象
      */
-    applyPropsValue?: (props: TargetProps, value: any, setter: ComponentPublicInstance) => void;
+    applyPropsValue?: (props: TargetProps, value: any, setter: SetterInstance) => void;
     /** 监听属性值变化逻辑 */
     watchProps?: Array<WatchPropsConfig<TargetProps>>;
     /** 监听设置器的事件 */
     listeners?: Record<keyof Event, ComponentListener>;
+    /** 更新属性值后不重新渲染block */
+    disableReRender?: boolean;
     /** 更新属性后需要重新计算辅助工具的位置 */
     recalcAuxToolPosition?: boolean;
 }

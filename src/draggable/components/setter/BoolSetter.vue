@@ -2,7 +2,7 @@
 import { ComponentPublicInstance, defineExpose, reactive, ref } from "vue";
 import { Checkbox, Switch } from "@opentiny/vue";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
-import { applyValue, getInputProps, getSetterExpose, getValue, multipleValuesText, toBoolean, watchNodes } from "@/draggable/utils/SetterUtils";
+import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, multipleValuesText, toBool, watchNodes } from "@/draggable/utils/SetterUtils";
 
 // 定义组件选项
 defineOptions({
@@ -26,10 +26,9 @@ interface BoolSetterState extends SetterState<boolean> {
 
 // state 属性
 const state = reactive<BoolSetterState>({
-    multipleValues: false,
-    value: undefined,
+    ...getDefState(),
 });
-state.value = getValue<boolean>(props, state, toBoolean);
+state.value = getValue<boolean>(props, state, toBool);
 // 内部数据
 // const data = {};
 // 设置器内部组件引用
@@ -37,11 +36,11 @@ const setter = ref<ComponentPublicInstance | undefined>();
 // 设置器内部组件属性
 const inputProps = getInputProps(state);
 // 监听 nodes 变化
-watchNodes(props, state, toBoolean);
+watchNodes(props, state, toBool);
 
 // 定义组件公开内容
 defineExpose<SetterExpose>({
-    ...getSetterExpose<boolean>(props, state, setter.value, toBoolean),
+    ...getSetterExpose<boolean>(props, state, setter.value, toBool),
 });
 </script>
 

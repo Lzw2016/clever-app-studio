@@ -7,13 +7,39 @@ import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/Compon
 const multipleValuesText = "存在多个不同值";
 
 /** setter值转换函数 */
-type ValueTransform<T = any> = (value: any) => T;
+type ValueTransform<T = any> = (value: any) => T | undefined;
 
 /** setter值转换成string */
-const toString: ValueTransform<string> = value => lodash.toString(value);
+const toStr: ValueTransform<string> = value => {
+    if (noValue(value)) return;
+    return lodash.toString(value);
+};
 
 /** setter值转换成boolean */
-const toBoolean: ValueTransform<boolean> = value => !!value;
+const toBool: ValueTransform<boolean> = value => {
+    if (noValue(value)) return;
+    return !!value;
+};
+
+/** setter值转换成number */
+const toNumber: ValueTransform<number> = value => {
+    if (noValue(value)) return;
+    value = lodash.toNumber(value);
+    if (value === Infinity || isNaN(value)) {
+        value = undefined;
+    }
+    return value;
+};
+
+/**
+ * 获取 state 默认值
+ */
+function getDefState(): SetterState {
+    return {
+        multipleValues: false,
+        value: undefined,
+    };
+}
 
 /**
  * 获取setter值
@@ -73,6 +99,7 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any
         nodes,
         propsName,
         applyPropsValue,
+        disableReRender,
         recalcAuxToolPosition,
     } = props;
     let res = false;
@@ -90,17 +117,19 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any
     // 需要重新渲染 block
     if (res) {
         state.multipleValues = false;
-        blockInstance.$forceUpdate();
-        // 重新计算辅助工具的位置(更新属性有可能改变渲染节点的大小和位置)
-        if (recalcAuxToolPosition) {
-            blockInstance.$nextTick(() => {
-                const nodeIds = nodes.map(node => node.id);
-                for (let selection of designerState.selections) {
-                    if (selection.nodeId && nodeIds.includes(selection.nodeId)) {
-                        selection.recalcAuxToolPosition();
+        if (!disableReRender) {
+            blockInstance.$forceUpdate();
+            // 重新计算辅助工具的位置(更新属性有可能改变渲染节点的大小和位置)
+            if (recalcAuxToolPosition) {
+                blockInstance.$nextTick(() => {
+                    const nodeIds = nodes.map(node => node.id);
+                    for (let selection of designerState.selections) {
+                        if (selection.nodeId && nodeIds.includes(selection.nodeId)) {
+                            selection.recalcAuxToolPosition();
+                        }
                     }
-                }
-            }).finally();
+                }).finally();
+            }
         }
     }
     return res;
@@ -113,7 +142,9 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any
 function getInputProps(state: SetterState) {
     const attrs = useAttrs();
     return computed(() => {
-        const obj: any = { ...attrs };
+        const obj: any = {
+            // ...attrs,
+        };
         if (state.multipleValues) {
             if (!obj.title) obj.title = multipleValuesText;
             obj.placeholder = multipleValuesText;
@@ -129,7 +160,10 @@ function getInputProps(state: SetterState) {
  * @param transform setter值转换函数
  */
 function watchNodes(props: SetterProps, state: SetterState, transform?: ValueTransform) {
-    watch(() => props.nodes, () => state.value = getValue(props, state, transform));
+    watch(() => props.nodes, () => {
+        state.value = getValue(props, state, transform);
+        // console.log("watchNodes state", state);
+    });
 }
 
 /**
@@ -157,8 +191,10 @@ function getSetterExpose<T = any>(props: SetterProps, state: SetterState, setter
 
 export {
     multipleValuesText,
-    toString,
-    toBoolean,
+    toStr,
+    toBool,
+    toNumber,
+    getDefState,
     getValue,
     applyValue,
     getInputProps,

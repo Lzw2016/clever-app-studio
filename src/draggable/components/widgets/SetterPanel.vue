@@ -96,7 +96,16 @@ function getFormItemProps(setter: Setter) {
 
 function getSetterProps(setter: Setter) {
     const { designerState } = props;
-    const { label, labelTips, enableBind, watchProps, listeners, cmpProps, ...otherCmpProps } = setter;
+    const {
+        cmp,
+        cmpProps,
+        label,
+        labelTips,
+        enableBind,
+        watchProps,
+        listeners,
+        ...otherCmpProps
+    } = setter;
     const obj: any = {
         designerState: designerState,
         blockInstance: designerState.blockInstance,
@@ -104,7 +113,6 @@ function getSetterProps(setter: Setter) {
         ...cmpProps,
         ...otherCmpProps,
     };
-
     if (designerState.blockInstance) {
         for (let selection of designerState.selections) {
             if (!selection.nodeId) continue;
