@@ -8,6 +8,7 @@ import { setDesignerEngine } from "@/draggable/InjectVars";
 import { DragDropDriver } from "@/draggable/drivers/DragDropDriver";
 import { MouseMoveDriver } from "@/draggable/drivers/MouseMoveDriver";
 import { MouseClickDriver } from "@/draggable/drivers/MouseClickDriver";
+import { KeyboardDriver } from "@/draggable/drivers/KeyboardDriver";
 import { CursorEffect } from "@/draggable/effect/CursorEffect";
 import { DraggingEffect } from "@/draggable/effect/DraggingEffect";
 import { AuxToolEffect } from "@/draggable/effect/AuxToolEffect";
@@ -84,6 +85,7 @@ const designerEngine = markRaw(new DesignerEngine({
         DragDropDriver,
         MouseMoveDriver,
         MouseClickDriver,
+        KeyboardDriver,
     ],
     effects: [
         CursorEffect,

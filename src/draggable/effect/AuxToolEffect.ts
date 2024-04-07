@@ -162,7 +162,7 @@ class AuxToolEffect extends DesignerEffect {
             if (selections.some(item => item.nodeId === selection.nodeId)) return;
             selection.componentMeta = useHtmlExtAttr.componentMeta(nodeAndDesigner.node, this.componentManage);
             selection.position = calcAuxToolPosition(nodeAndDesigner.designer, nodeAndDesigner.node);
-            selections.length = 0;
+            if (!this.designerEngine.onlyPressedCtrl) selections.length = 0;
             selections.push(selection);
             if (hover.nodeId && selections.some(item => item.nodeId === hover.nodeId)) {
                 hover.clear();

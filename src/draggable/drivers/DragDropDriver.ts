@@ -54,11 +54,6 @@ class DragDropDriver extends DesignerDriver {
         this.removeEventListener('contextmenu', this.preventDefault, true);
     }
 
-    /** 阻止事件的默认动作 */
-    preventDefault = (event: MouseEvent) => {
-        event.preventDefault();
-    }
-
     /**
      * 鼠标按下事件，拖拽开始准备
      */

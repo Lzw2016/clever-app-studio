@@ -32,6 +32,11 @@ abstract class DesignerDriver extends DesignerModule {
         this.container.removeEventListener(type, listener, options);
     }
 
+    /** 阻止事件的默认动作 */
+    protected preventDefault = (event: Event) => {
+        event.preventDefault();
+    }
+
     /**
      * 启动当前 DesignerDriver 开始监听 HTMLElement 事件
      */

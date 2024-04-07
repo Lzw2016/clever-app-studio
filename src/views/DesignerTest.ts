@@ -143,6 +143,20 @@ const designerTest = defineDesignBlock({
                         text: "按钮",
                     },
                 },
+                {
+                    type: "Input",
+                    props: {
+                        type: "text",
+                        placeholder: "请输入",
+                        style: {
+                            maxWidth: "300px",
+                        },
+                    },
+                    directives: {
+                        'disable-event': {},
+                        'clear-draggable-html-attr': {},
+                    },
+                },
             ],
         },
         {

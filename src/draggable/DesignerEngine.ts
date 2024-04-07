@@ -30,27 +30,31 @@ const defaultProps: DesignerEngineProps = {
  */
 class DesignerEngine {
     // /** 当前设计器是否初始化 */
-    // private _initialized: boolean = false;
+    // protected _initialized: boolean = false;
     /** 设计器事件总线 */
     readonly eventbus: EventBus = new EventBus();
     /** 初始化属性 */
     readonly props: DesignerEngineProps;
     /** 设计器内部业务事件生产者集合 */
-    private readonly drivers: Array<DesignerDriver> = [];
+    protected readonly drivers: Array<DesignerDriver> = [];
     /** 设计器内部业务事件消费者集合 */
-    private readonly effects: Array<DesignerEffect> = [];
+    protected readonly effects: Array<DesignerEffect> = [];
     /** 当前光标状态 */
     readonly cursor: Cursor;
+    /** 当前仅仅按下 ctrl 键 */
+    protected readonly _onlyPressedCtrl: Ref<boolean> = ref<boolean>(false);
+    /** 当前仅仅按下 shift 键 */
+    protected readonly _onlyPressedShift: Ref<boolean> = ref<boolean>(false);
     /** 正在拖拽的组件的元信息 */
     readonly draggingCmpMetas: DraggingCmpMetas;
     /** 当前活动的设计器页面路由路径(fullPath) */
-    private _activeDesignerPath: Ref<string | undefined> = ref<string>();
+    protected _activeDesignerPath: Ref<string | undefined> = ref<string>();
     /** 所有的设计器状态数据 */
     readonly allDesignerState: ShallowReactive<Record<string, DesignerState>> = shallowReactive<Record<string, DesignerState>>({});
     /** 设计器插入组件的信息 */
     readonly insertion: Insertion;
     // /** 捕捉线(多选组件时的矩形线条) */
-    // private readonly _snapLine: Ref<SnapLine | undefined> = ref<SnapLine>();
+    // protected readonly _snapLine: Ref<SnapLine | undefined> = ref<SnapLine>();
 
     constructor(props: Partial<DesignerEngineProps>) {
         this.props = { ...defaultProps, ...props };
@@ -62,6 +66,26 @@ class DesignerEngine {
     /** 组件管理器 */
     get componentManage() {
         return this.props.componentManage;
+    }
+
+    /** 当前仅仅按下 ctrl 键 */
+    get onlyPressedCtrl() {
+        return this._onlyPressedCtrl.value;
+    }
+
+    /** 当前仅仅按下 ctrl 键 */
+    set onlyPressedCtrl(value: boolean) {
+        this._onlyPressedCtrl.value = value;
+    }
+
+    /** 当前仅仅按下 shift 键 */
+    get onlyPressedShift() {
+        return this._onlyPressedShift.value;
+    }
+
+    /** 当前仅仅按下 shift 键 */
+    set onlyPressedShift(value: boolean) {
+        this._onlyPressedShift.value = value;
     }
 
     /** 当前活动的设计器页面路由路径(fullPath) */
