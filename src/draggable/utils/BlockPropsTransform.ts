@@ -263,7 +263,12 @@ function blockDeepTransform(node: DesignNode, createConfig: CreateConfig, curren
     if (!currentBlock) runtime.block = true;
     // 读取组件元信息
     let componentMeta: ComponentMeta | undefined = undefined;
-    if (createConfig.isDesigning) componentMeta = createConfig.componentManage.getComponentMeta(runtime.type);
+    if (createConfig.isDesigning) {
+        componentMeta = createConfig.componentManage.getComponentMeta(runtime.type);
+        if (componentMeta?.designDirectives) {
+            runtime.__designDirectives = lodash.cloneDeep(componentMeta.designDirectives);
+        }
+    }
     // 读取组件类型
     runtime.__htmlTag = isHtmlTag(runtime.type);
     if (runtime.type && runtime.type.length > 0) {

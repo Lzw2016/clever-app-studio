@@ -17,14 +17,14 @@ interface NumberSetterProps extends SetterProps {
 const props = withDefaults(defineProps<NumberSetterProps>(), {});
 
 // 定义 State 类型
-interface NumberSetterState extends SetterState<number> {
+interface NumberSetterState extends SetterState<string> {
 }
 
 // state 属性
 const state = reactive<NumberSetterState>({
     ...getDefState(),
 });
-state.value = getValue<number>(props, state, toStr);
+state.value = getValue<string>(props, state, toStr);
 // 内部数据
 // const data = {};
 // 设置器内部组件引用

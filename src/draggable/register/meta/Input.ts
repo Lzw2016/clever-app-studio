@@ -16,10 +16,10 @@ export default defineComponentMeta({
                 maxWidth: "300px",
             },
         },
-        directives: {
-            'disable-event': {},
-            'clear-draggable-html-attr': {},
-        },
+    },
+    designDirectives: {
+        "disable-event": {},
+        "clear-draggable-html-attr": {},
     },
     events: {},
     slots: {},

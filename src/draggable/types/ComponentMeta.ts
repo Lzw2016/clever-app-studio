@@ -1,6 +1,6 @@
-import { ComponentPublicInstance } from "vue";
+import { ComponentPublicInstance, VNode } from "vue";
 import { ComponentSlotMeta, FunctionMeta, I18N, VueComponent } from "@/draggable/types/Base";
-import { BaseProps, ComponentListener, DesignNode } from "@/draggable/types/DesignBlock";
+import { BaseDirectives, BaseProps, ComponentListener, DesignNode } from "@/draggable/types/DesignBlock";
 import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
 
@@ -195,6 +195,26 @@ interface ComponentSetter {
 /** 组件节点默认配置 */
 type DefDesignNode = Partial<Omit<DesignNode, 'type' | 'ref'>>;
 
+/** 设计时的组件指令 */
+interface DesignDirectives extends BaseDirectives {
+    /** 禁用组件内部事件 */
+    'disable-event'?: {
+        /** 递归的最大深度 */
+        maxDepth?: number;
+        /** 禁用的事件名称，如果未设置就是用默认的事件集合(defEvents)，优先级: manualDisable > enableEvents > disableEvents */
+        disableEvents?: string | Array<string>;
+        /**启用的事件名称，优先级: manualDisable > enableEvents > disableEvents  */
+        enableEvents?: string | Array<string>;
+        /** 手动禁用事件，优先级: manualDisable > enableEvents > disableEvents */
+        manualDisable?: (vnode: VNode) => void;
+    };
+    /** 禁用组件内部事件 */
+    'clear-draggable-html-attr'?: {
+        /** 递归的最大深度 */
+        maxDepth?: number;
+    };
+}
+
 /** 组件元信息 */
 interface ComponentMeta {
     /** 组件类型(唯一值) */
@@ -213,6 +233,8 @@ interface ComponentMeta {
     designComponent?: VueComponent | string;
     /** 默认的组件节点配置 */
     defDesignNode: DefDesignNode;
+    /** 设计时的组件指令 */
+    designDirectives?: DesignDirectives;
     /** 组件事件元信息 */
     events: Record<string, Omit<FunctionMeta, 'name'>>;
     /** 组件插槽元信息 */

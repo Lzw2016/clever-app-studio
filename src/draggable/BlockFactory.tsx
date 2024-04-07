@@ -228,41 +228,42 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
         key: runtimeNode.id,
         ref: runtimeNode.ref,
     };
+    const directives: BaseDirectives = runtimeNode.__designDirectives ? lodash.defaultsDeep(runtimeNode.__designDirectives, runtimeNode.directives) : runtimeNode.directives;
     // 应用指令 - if
-    if (runtimeNode.directives.if) {
+    if (directives.if) {
         try {
-            const needRender = expTransform(runtimeNode.directives.if, fromInstance, fromBlock, extData);
+            const needRender = expTransform(directives.if, fromInstance, fromBlock, extData);
             if (!needRender) return undefined;
         } catch (e) {
             return createVNode(BlockRenderError, {
-                msg: `计算v-if指令表达式失败，v-if: ${runtimeNode.directives.if}`,
+                msg: `计算v-if指令表达式失败，v-if: ${directives.if}`,
                 errType: RenderErrType.expTransform,
-                errConfig: runtimeNode.directives.if,
+                errConfig: directives.if,
                 node: child, error: e,
             });
         }
     }
     // 应用指令 - show
-    if (runtimeNode.directives.show) {
+    if (directives.show) {
         try {
-            const show = expTransform(runtimeNode.directives.show, fromInstance, fromBlock, extData);
+            const show = expTransform(directives.show, fromInstance, fromBlock, extData);
             // 这里配置一下 show 指令参数，具有应用指令需要在 _applyDirectives 中实现
-            runtimeNode.directives[innerDirectiveNames.inner_show] = {
+            directives[innerDirectiveNames.inner_show] = {
                 value: show,
             };
             // _setShowStyle(allProps, show);
         } catch (e) {
             return createVNode(BlockRenderError, {
-                msg: `计算v-show指令表达式失败，v-show: ${runtimeNode.directives.show}`,
+                msg: `计算v-show指令表达式失败，v-show: ${directives.show}`,
                 errType: RenderErrType.expTransform,
-                errConfig: runtimeNode.directives.show,
+                errConfig: directives.show,
                 node: child, error: e
             });
         }
     }
     // 应用指令 - v-model
-    if (runtimeNode.directives.model) {
-        const modelValue = getKeyPathValue(runtimeNode.directives.model, fromInstance);
+    if (directives.model) {
+        const modelValue = getKeyPathValue(directives.model, fromInstance);
         if (!child.__htmlTag) {
             // vue 组件
             if (noValue(allProps.modelValue)) {
@@ -270,21 +271,21 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
             }
             if (!allProps['onUpdate:modelValue']) {
                 allProps['onUpdate:modelValue'] = function (value: any) {
-                    if (runtimeNode.directives.model) {
-                        setKeyPathValue(runtimeNode.directives.model, fromInstance, value);
+                    if (directives.model) {
+                        setKeyPathValue(directives.model, fromInstance, value);
                     }
                 }
             }
         } else if (['input', 'select'].includes(child.__component as string)) {
             if (!allProps['onUpdate:modelValue']) {
                 allProps['onUpdate:modelValue'] = function (value: any) {
-                    if (runtimeNode.directives.model) {
-                        setKeyPathValue(runtimeNode.directives.model, fromInstance, value);
+                    if (directives.model) {
+                        setKeyPathValue(directives.model, fromInstance, value);
                     }
                 }
             }
             // 原生html，这里配置一下 model 指令参数，具有应用指令需要在 _applyDirectives 中实现
-            runtimeNode.directives[innerDirectiveNames.inner_model] = { value: modelValue };
+            directives[innerDirectiveNames.inner_model] = { value: modelValue };
             let fun: any = vModelText;
             if (child.__component === "input") {
                 if ("checkbox" === child.props?.type) {
@@ -295,17 +296,17 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
             } else if (child.__component === "select") {
                 fun = vModelSelect;
             }
-            runtimeNode.directives[innerDirectiveNames.inner_model].fun = fun;
+            directives[innerDirectiveNames.inner_model].fun = fun;
         }
     }
     // 应用指令 - for
-    if (runtimeNode.directives.for) {
+    if (directives.for) {
         let {
             data,
             item,
             key,
             index,
-        } = runtimeNode.directives.for;
+        } = directives.for;
         data = lodash.trim(data);
         item = lodash.trim(item);
         key = lodash.trim(key);
@@ -316,9 +317,9 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
                 renderListData = expTransform(data, fromInstance, fromBlock, extData);
             } catch (e) {
                 return createVNode(BlockRenderError, {
-                    msg: `计算v-for指令表达式失败，v-for: \n${JSON.stringify(runtimeNode.directives.for, null, 4)}\n`,
+                    msg: `计算v-for指令表达式失败，v-for: \n${JSON.stringify(directives.for, null, 4)}\n`,
                     errType: RenderErrType.expTransform,
-                    errConfig: runtimeNode.directives.for,
+                    errConfig: directives.for,
                     node: child, error: e
                 });
             }
@@ -338,12 +339,12 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
                     if (index) vForData[index] = keyOrIdx;
                     if (item) vForData[item] = itemData;
                     context.vForData = vForData;
-                    return doCreateChildVNode(runtimeNode, context, globalContext, component, allProps);
+                    return doCreateChildVNode(runtimeNode, context, globalContext, component, allProps, directives);
                 })
             );
         }
     }
-    return doCreateChildVNode(runtimeNode, context, globalContext, component, allProps);
+    return doCreateChildVNode(runtimeNode, context, globalContext, component, allProps, directives);
 }
 
 /**
@@ -352,8 +353,9 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
  * @param globalContext 全局的 globalContext 对象
  * @param component     当前 runtimeNode 应该使用的 vue 组件
  * @param props         已经计算合并了的 props(包含 listeners)
+ * @param directives    当前渲染节点的指令配置
  */
-function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, globalContext: GlobalContext, component: any, props: Record<string, any>) {
+function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, globalContext: GlobalContext, component: any, props: Record<string, any>, directives: BaseDirectives) {
     // console.log("doCreateChildVNode", runtimeNode);
     const fromInstance = context.instance;
     const fromBlock = context.block;
@@ -452,7 +454,7 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, globalCo
         return undefined;
     }
     // 应用其他用户自定义指令
-    vnode = _applyDirectives(vnode, runtimeNode.directives);
+    vnode = _applyDirectives(vnode, directives);
     return vnode;
 }
 

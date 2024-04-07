@@ -25,7 +25,7 @@ interface RuntimeNode {
     /** 当前节点是不是html标签 */
     readonly __htmlTag: boolean;
     /** 组件类型(HtmlTag或vue组件对象) */
-    readonly __component?: string | VueComponent;
+    readonly __component: string | VueComponent;
     /** 设计时的占位组件，插槽名对应占位节点，items占位名为“default” */
     readonly __designPlaceholder?: Record<"default" | string, RuntimeNode>;
     /** 组件父组件id */
@@ -44,6 +44,8 @@ interface RuntimeNode {
     __bindListeners?: Record<string, AnyFunction<ComponentInstance>>;
     /** 组件指令 */
     readonly directives: BaseDirectives;
+    /** 设计时的组件指令 */
+    __designDirectives?: BaseDirectives;
     /** 组件插槽(default插槽其实就是children) */
     readonly slots: Record<string, Array<RuntimeComponentSlotsItem>>;
     /** 子组件集合 */
