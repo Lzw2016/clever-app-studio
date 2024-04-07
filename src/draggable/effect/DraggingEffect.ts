@@ -112,6 +112,7 @@ class DraggingEffect extends DesignerEffect {
                 const designerContainer = designerState.designerContainer;
                 blockInstance.$nextTick(() => {
                     const addRuntimeNodes = selectionNodes.filter(node => isObj(node)) as Array<RuntimeNode>;
+                    designerState.selections.length = 0;
                     for (let node of addRuntimeNodes) {
                         let blockRef = blockInstance.globalContext.nodeRefVueRef[node.ref] ?? node.ref;
                         if (!blockRef) continue;
@@ -125,7 +126,6 @@ class DraggingEffect extends DesignerEffect {
                         selection.parentId = node.__parentId;
                         selection.componentMeta = this.componentManage.getComponentMeta(node.type);
                         selection.position = calcAuxToolPosition(designerContainer, nodeEl);
-                        designerState.selections.length = 0;
                         designerState.selections.push(selection);
                     }
                 }).finally();
