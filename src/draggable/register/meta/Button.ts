@@ -121,9 +121,9 @@ export default defineComponentMeta({
                             cmp: "SelectSetter",
                             cmpProps: {
                                 options: [
-                                    { value: "button", label: "button" },
-                                    { value: "submit", label: "submit" },
-                                    { value: "reset", label: "reset" },
+                                    { value: "button", label: "button(按钮)" },
+                                    { value: "submit", label: "submit(提交表单)" },
+                                    { value: "reset", label: "reset(重置表单)" },
                                 ],
                             },
                             label: "Html type",

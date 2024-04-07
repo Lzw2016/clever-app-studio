@@ -68,7 +68,7 @@ async function loadSetterComponent() {
         state.loadErr = err;
         console.warn("加载组件失败", err);
     } finally {
-        state.loading = false
+        state.loading = false;
     }
 }
 
@@ -136,16 +136,11 @@ window['a'] = getCurrentInstance();
     <div v-if="state.loadErr">
         加载错误
     </div>
-    <div
-        v-else-if="state.loading"
+    <Form
+        v-else
         v-loading="state.loading"
         tiny-loading__text="加载中..."
         tiny-loading__background="rgba(0, 0, 0, 0.25)"
-        class="setter-panel-loading"
-    >
-    </div>
-    <Form
-        v-else
         class="setter-panel"
         v-bind="formProps()"
     >
@@ -161,20 +156,21 @@ window['a'] = getCurrentInstance();
                 </template>
                 <div class="flex-row-container" style="align-items: center;">
                     <div class="flex-item-fill flex-row-container" style="align-items: center;">
-                        <component :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
+                        <component v-if="!state.loading" :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
                     </div>
                     <span class="flex-item-fixed flex-row-container flex-center setter-button" title="使用数据绑定">
                         <IconBraces :size="16" stroke-width="2"/>
                     </span>
                 </div>
             </FormItem>
-            <component v-else :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
+            <component v-else-if="!state.loading" :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
         </template>
     </Form>
 </template>
 
 <style scoped>
 .setter-panel {
+    min-height: 80px;
     padding: 8px 4px 8px 12px;
     font-size: 12px;
 }
@@ -197,10 +193,6 @@ window['a'] = getCurrentInstance();
 .flex-center {
     align-items: center;
     justify-content: center;
-}
-
-.setter-panel-loading {
-    min-height: 80px;
 }
 
 .setter-label-tips {

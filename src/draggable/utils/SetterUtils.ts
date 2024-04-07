@@ -11,13 +11,13 @@ type ValueTransform<T = any> = (value: any) => T | undefined;
 
 /** setter值转换成string */
 const toStr: ValueTransform<string> = value => {
-    if (noValue(value)) return;
+    // if (noValue(value)) return;
     return lodash.toString(value);
 };
 
 /** setter值转换成boolean */
 const toBool: ValueTransform<boolean> = value => {
-    if (noValue(value)) return;
+    // if (noValue(value)) return;
     return !!value;
 };
 
@@ -184,7 +184,7 @@ function getSetterExpose<T = any>(props: SetterProps, state: SetterState, setter
             state.value = value;
             applyValue(props, state, setter, value);
         },
-        // 影藏组件
+        // 隐藏组件
         //
     };
 }

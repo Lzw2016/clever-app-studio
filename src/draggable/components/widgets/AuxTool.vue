@@ -121,6 +121,11 @@ function cancelSelection(nodeId?: string) {
     if (idx >= 0) selections.splice(idx, 1);
 }
 
+/**
+ * 当 Selection 对应的 NodeId 变化时重新计算辅助工具的位置
+ * @param selection Selection对象
+ * @param nodeId    新的NodeId
+ */
 function setSelection(selection: Selection, nodeId: string) {
     const idx = props.designerState.selections.findIndex(item => item === selection);
     if (idx < 0) return;
@@ -169,7 +174,7 @@ function moveNode(selection: Selection, up: boolean) {
         }
     }
     // 更新 selection
-    blockInstance.$nextTick(() => setSelection(selection, selection.nodeId!)).finally();
+    blockInstance.$nextTick(() => selection.recalcAuxToolPosition()).finally();
 }
 
 function copyNode(selection: Selection) {
@@ -194,7 +199,7 @@ function clearChild(selection: Selection) {
     const blockInstance = props.designerState.blockInstance;
     if (!blockInstance) return;
     blockInstance.opsById.removeChildrenById(nodeId);
-    blockInstance.$nextTick(() => setSelection(selection, nodeId)).finally();
+    blockInstance.$nextTick(() => selection.recalcAuxToolPosition()).finally();
 }
 
 function delNode(nodeId?: string) {
@@ -204,6 +209,7 @@ function delNode(nodeId?: string) {
     blockInstance.opsById.removeById(nodeId);
     const idx = selections.findIndex(selection => selection.nodeId === nodeId);
     if (idx >= 0) selections.splice(idx, 1);
+    blockInstance.$nextTick(() => selections.forEach(selection=> selection.recalcAuxToolPosition())).finally();
 }
 </script>
 
