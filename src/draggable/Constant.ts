@@ -7,6 +7,9 @@ const innerDirectiveNames = {
     inner_model: '__inner_model',
 };
 
+/** DesignNode/DesignBlock配置的原始值 */
+const configRawValueName = "__config_raw_value";
+
 /** 逻辑上的空node id */
 const emptyNodeId = "__empty_node_id";
 
@@ -57,6 +60,7 @@ const defCursorPosition: CursorPosition = {
 
 export {
     innerDirectiveNames,
+    configRawValueName,
     emptyNodeId,
     childSlotName,
     defPlaceholder,

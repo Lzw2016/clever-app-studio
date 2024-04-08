@@ -38,9 +38,9 @@
 [  ] 26.组件配置面板中，支持常规样式的选择(边框、背景、边距、css布局...)，支持特定组件的内置样式配置(再组件元数据上注当前组件支持的内置样式)
 [OK] 27.设计时默认屏蔽所有组件的事件(dom事件或者组件事件)，支持在元数据配置启用的事件(dom事件或者组件事件)。使用 disable-event、clear-draggable-html-attr 指令实现。
 [OK] 28.生成代码时需要过滤属性：disable-event、clear-draggable-html-attr。需要在 BlockFactory.tsx 中自动处理 disable-event、clear-draggable-html-attr 指令。
-[  ] 29.组件属性配置支持配置：“组件类型”、“函数类型”
-[  ] 30.
-[  ] 31.
+[OK] 29.组件属性配置支持配置：“组件类型”、“函数类型”
+[  ] 30.重新实现 SetterForm 全动态渲染一气呵成
+[  ] 31.基于 RuntimeBlock 生成代码，基于 RuntimeBlock 对象逆向生成 DesignBlock 的源代码
 [  ] 32.
 [  ] 33.
 [  ] 34.

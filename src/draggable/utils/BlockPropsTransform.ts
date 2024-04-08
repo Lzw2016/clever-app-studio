@@ -1,17 +1,18 @@
-import { Fragment, withModifiers } from "vue";
+import { createVNode, Fragment, withModifiers } from "vue";
 import lodash from "lodash";
 import { hasValue, isArray, isFun, isObj, isStr, noValue } from "@/utils/Typeof";
 import { AsyncFunction } from "@/utils/UseType";
 import { calcExpression } from "@/utils/Expression";
 import { createRefID, createVNodeID } from "@/utils/IDCreate";
 import { compileTpl } from "@/utils/Template";
-import { AnyFunction, FunctionConfig } from "@/draggable/types/Base";
-import { BlockWatchItem, ComponentSlotsItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
-import { CreateConfig, RenderErrType, RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { childSlotName, configRawValueName, defPlaceholder } from "@/draggable/Constant";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
+import { AnyFunction, ComponentParam, FunctionConfig, FunctionParam } from "@/draggable/types/Base";
+import { ComponentManage } from "@/draggable/types/ComponentManage";
+import { BlockWatchItem, ComponentSlotsItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
+import { CreateConfig, RenderErrType, RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
-import { childSlotName, defPlaceholder } from "@/draggable/Constant";
 
 /**
  * 根据 FunctionConfig 动态创建函数对象
@@ -20,6 +21,20 @@ function createFunction(functionConfig: FunctionConfig): AnyFunction {
     const constructor = (functionConfig.async) ? AsyncFunction : Function;
     const params = noValue(functionConfig.params) ? [] : isArray(functionConfig.params) ? functionConfig.params : [functionConfig.params];
     return constructor(...params, functionConfig.code ?? "");
+}
+
+/**
+ * 根据 ComponentParam 动态创建vue组件
+ */
+function createComponentParam(param: ComponentParam, componentManage: ComponentManage) {
+    let component: any = lodash.trim(param.type);
+    if (!isHtmlTag(component)) {
+        component = componentManage.getComponent(component)
+    }
+    if (!component) throw new Error(`组件未注册，组件：${param.type}`);
+    const vnode = createVNode(component, param.props, param.children);
+    if (!param.isFunction) return vnode;
+    return () => vnode;
 }
 
 /**
@@ -63,6 +78,34 @@ function fillDesignBlockDefValue(block: DesignNode | DesignBlock): Required<Desi
  */
 function fillRuntimeBlockDefValue(block: RuntimeNode | RuntimeBlock): Required<RuntimeBlock> {
     return fillBlockDefValue(block as any, false);
+}
+
+/**
+ * 处理 Block 的 props 属性，以支持：“组件类型参数”、“函数类型参数”
+ */
+function propsPreTransform(props: DesignBlock['props'], componentManage: ComponentManage): DesignBlock['props'] {
+    if (!props || Object.keys(props).length <= 0) return props;
+    for (let name in props) {
+        const value: any = props[name];
+        if (!value) continue;
+        // 组件类型参数
+        const componentParam = value as ComponentParam;
+        if (componentParam.__component_param) {
+            const component = createComponentParam(componentParam, componentManage);
+            component[configRawValueName] = value;
+            props[name] = component;
+            continue;
+        }
+        // 函数类型参数
+        const functionParam = value as FunctionParam;
+        if (functionParam.__function_param) {
+            const fun = createFunction(functionParam);
+            fun[configRawValueName] = value;
+            fun[name] = fun;
+            // continue;
+        }
+    }
+    return props;
 }
 
 /**
@@ -238,6 +281,7 @@ function blockDeepTransform(node: DesignNode, createConfig: CreateConfig, curren
         block: isBlock,
         defaults,
         type,
+        props,
         listeners,
         slots,
         items,
@@ -258,6 +302,7 @@ function blockDeepTransform(node: DesignNode, createConfig: CreateConfig, curren
     }
     // 创建 RuntimeBlock 对象
     const runtime: any = { ...other, __designNode: node, block: isBlock, type: lodash.trim(type) };
+    runtime.props = propsPreTransform(props, createConfig.componentManage);
     if (parentNode) runtime.__parentId = parentNode.id;
     // 如果没有父级 Block 强制让当前节点为 Block
     if (!currentBlock) runtime.block = true;
@@ -275,9 +320,8 @@ function blockDeepTransform(node: DesignNode, createConfig: CreateConfig, curren
         // 获取设计时组件
         if (createConfig.isDesigning) {
             if (!componentMeta && !runtime.__htmlTag) {
-                _doBlockTransform(() => {
-                    throw new Error(`未找到组件元信息，组件: ${type}`);
-                }, runtime, RenderErrType.componentMetaNotExists);
+                _doBlockTransform(() => console.warn(`未找到组件元信息，组件: ${type}`), runtime, RenderErrType.componentMetaNotExists);
+                // console.warn(`未找到组件元信息，组件: ${type}`);
             } else if (componentMeta && componentMeta.designComponent) {
                 // 应用 designComponent
                 if (isStr(componentMeta.designComponent)) {
@@ -802,6 +846,7 @@ function _tplToDesignNode(tpl: RuntimeNode['tpl']): DesignNode['tpl'] | undefine
 
 export {
     createFunction,
+    createComponentParam,
     fillBlockDefValue,
     fillDesignBlockDefValue,
     fillRuntimeBlockDefValue,

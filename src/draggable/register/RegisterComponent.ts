@@ -5,31 +5,31 @@ import { ComponentManage } from "@/draggable/types/ComponentManage";
  */
 function registerComponent(componentManage: ComponentManage) {
     // 注册 fortawesome 图标
-    // componentManage.registerAsyncComponent("FontAwesomeIcon", async () => {
-    //     const { FontAwesomeIcon } = await import("@fortawesome/vue-fontawesome");
-    //     const { library } = await import("@fortawesome/fontawesome-svg-core");
-    //     const { fas } = await import("@fortawesome/free-solid-svg-icons");
-    //     const { far } = await import("@fortawesome/free-regular-svg-icons");
-    //     const { fab } = await import("@fortawesome/free-brands-svg-icons");
-    //     library.add(fas); // 数量: 1953
-    //     library.add(far); // 数量: 257
-    //     library.add(fab); // 数量: 518
-    //     return FontAwesomeIcon;
-    // });
+    componentManage.registerAsyncComponent("FontAwesomeIcon", async () => {
+        const { FontAwesomeIcon } = await import("@fortawesome/vue-fontawesome");
+        const { library } = await import("@fortawesome/fontawesome-svg-core");
+        const { fas } = await import("@fortawesome/free-solid-svg-icons");
+        const { far } = await import("@fortawesome/free-regular-svg-icons");
+        const { fab } = await import("@fortawesome/free-brands-svg-icons");
+        library.add(fas); // 数量: 1953
+        library.add(far); // 数量: 257
+        library.add(fab); // 数量: 518
+        return FontAwesomeIcon;
+    });
     // 注册 tabler 图标
-    // componentManage.batchRegisterComponent(/^TablerIcon\w+$/, async () => {
-    //     const TablerIcons = await import("@tabler/icons-vue");
-    //     for (let name in TablerIcons) {
-    //         if (!name.startsWith("Icon")) {
-    //             continue;
-    //         }
-    //         componentManage.registerComponent(`Tabler${name}`, TablerIcons[name]);
-    //     }
-    // });
+    componentManage.batchRegisterComponent(/^TablerIcon\w+$/, async () => {
+        const TablerIcons = await import("@tabler/icons-vue");
+        for (let name in TablerIcons) {
+            if (!name.startsWith("Icon")) {
+                continue;
+            }
+            componentManage.registerComponent(`Tabler${name}`, TablerIcons[name]);
+        }
+    });
     // 注册 google 图标
-    // componentManage.registerAsyncComponent("GoogleIcon", () => import("@/components/GoogleIcon.vue").then(module => module.default));
+    componentManage.registerAsyncComponent("GoogleIcon", () => import("@/components/GoogleIcon.vue").then(module => module.default));
     // opentiny 组件注册
-    // "Autocomplete","CascaderPanel","DropTimes","Link","Popeditor","PopUpload","CheckboxButton","RadioButton", "ColorSelectPanel",
+    // "CascaderPanel","DropTimes","Link","Popeditor","PopUpload","CheckboxButton","RadioButton", "ColorSelectPanel",
     const openTinyTypes: Record<string, string> = {
         Button: "Button",
         ButtonGroup: "ButtonGroup",

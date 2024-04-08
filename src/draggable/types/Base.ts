@@ -1,5 +1,6 @@
 import { Component, ComponentInternalInstance, ComponentPublicInstance, DefineComponent } from "vue";
 import { I18N, Language, LanguageName } from "@/i18n";
+import { BaseProps } from "@/draggable/types/DesignBlock";
 
 // -------------------------------------------------------------------------------------------------------------------
 // 参考vue类型定义(vue内部的类型定义，直接复制过来的)
@@ -142,6 +143,26 @@ interface ComponentSlotMeta {
     examples?: Array<CodeExample>;
 }
 
+/** 组件参数对象(简单的组件参数) */
+interface ComponentParam {
+    /** 组件参数对象标识 */
+    __component_param: true;
+    /** 组件类型或html标签 */
+    type: HtmlTag | string;
+    /** 组件属性 */
+    props?: BaseProps;
+    /** 子节点 */
+    children?: Array<any>;
+    /** 是否转换成函数形式 */
+    isFunction?: boolean;
+}
+
+/** 函数参数对象 */
+interface FunctionParam extends FunctionConfig {
+    /** 组件参数对象标识 */
+    __function_param: true;
+}
+
 export type {
     ComponentInstance,
     ErrorCapturedHook,
@@ -157,6 +178,8 @@ export type {
     ParamMeta,
     FunctionMeta,
     ComponentSlotMeta,
+    ComponentParam,
+    FunctionParam,
 }
 
 export {

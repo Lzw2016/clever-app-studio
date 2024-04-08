@@ -2,6 +2,7 @@ import lodash from "lodash";
 import { isVNode, VNode, VNodeChild } from "vue";
 import { isArray, isObj, noValue } from "@/utils/Typeof";
 import { childSlotName } from "@/draggable/Constant";
+import { ComponentParam } from "@/draggable/types/Base";
 import { RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentMeta, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 import { DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
@@ -28,6 +29,17 @@ function getAllTypes(node: DesignNode, allType?: Set<string>): Array<string> {
     if (node.type) {
         node.type = lodash.trim(node.type);
         allType.add(node.type);
+    }
+    if (node.props) {
+        for (let name in node.props) {
+            // 组件类型参数
+            const value: any = node.props[name];
+            if (!value) continue;
+            const componentParam = value as ComponentParam;
+            if (componentParam.__component_param) {
+                allType.add(componentParam.type);
+            }
+        }
     }
     if (node.slots) {
         for (let name in node.slots) {

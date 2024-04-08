@@ -248,9 +248,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
         try {
             const show = expTransform(directives.show, fromInstance, fromBlock, extData);
             // 这里配置一下 show 指令参数，具有应用指令需要在 _applyDirectives 中实现
-            directives[innerDirectiveNames.inner_show] = {
-                value: show,
-            };
+            directives[innerDirectiveNames.inner_show] = { value: show };
             // _setShowStyle(allProps, show);
         } catch (e) {
             return createVNode(BlockRenderError, {

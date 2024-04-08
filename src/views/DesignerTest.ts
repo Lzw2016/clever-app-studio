@@ -142,6 +142,11 @@ const designerTest = defineDesignBlock({
                     type: "Button",
                     props: {
                         text: "按钮",
+                        icon: {
+                            __component_param: true,
+                            type: "TablerIconTrash",
+                            props: { size: 16, stroke: 1.2 },
+                        },
                     },
                 },
                 {
