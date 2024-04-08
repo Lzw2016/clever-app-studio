@@ -86,10 +86,13 @@ function doDisableEvent(binding: DirectiveBinding<DirectiveValue>, vnode: VNode)
  */
 const disableEvent: Directive<any, DirectiveValue> = {
     created: (el, binding, vnode) => {
-        // TODO 测试深层次内部事件是否能够替换成功???
+        // TODO 测试深层次内部事件是否能够替换成功
         doDisableEvent(binding, vnode);
     },
     // beforeMount: (el, binding, vnode) => {
+    //     doDisableEvent(binding, vnode);
+    //     binding.instance?.$forceUpdate();
+    //     console.log("binding.instance", binding.instance);
     // },
     beforeUpdate: (el, binding, vnode) => {
         doDisableEvent(binding, vnode);

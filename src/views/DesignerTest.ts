@@ -55,6 +55,7 @@ const designerTest = defineDesignBlock({
     data: {
         count: 0,
         refs: [],
+        str: "",
     },
     props: {
         style: {
@@ -153,8 +154,7 @@ const designerTest = defineDesignBlock({
                         },
                     },
                     directives: {
-                        'disable-event': {},
-                        'clear-draggable-html-attr': {},
+                        model: "str",
                     },
                 },
             ],

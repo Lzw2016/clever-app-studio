@@ -86,7 +86,7 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, globalContext: 
     // 内置默认的异常处理
     if (!lifeCycles.errorCaptured) {
         lifeCycles.errorCaptured = function (err: Error, instance: ComponentPublicInstance | null, info: string) {
-            // TODO 组件渲染报错时的默认处理
+            // 组件渲染报错时的默认处理
             console.warn("Block渲染失败", info);
             console.error(err);
         }
@@ -228,7 +228,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
         key: runtimeNode.id,
         ref: runtimeNode.ref,
     };
-    const directives: BaseDirectives = runtimeNode.__designDirectives ? lodash.defaultsDeep(runtimeNode.__designDirectives, runtimeNode.directives) : runtimeNode.directives;
+    const directives: BaseDirectives = runtimeNode.__designDirectives ? lodash.defaults(runtimeNode.__designDirectives, runtimeNode.directives) : runtimeNode.directives;
     // 应用指令 - if
     if (directives.if) {
         try {
