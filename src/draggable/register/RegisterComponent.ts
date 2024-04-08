@@ -18,12 +18,12 @@ function registerComponent(componentManage: ComponentManage) {
     });
     // 注册 tabler 图标
     componentManage.batchRegisterComponent(/^TablerIcon\w+$/, async () => {
-        const TablerIcons = await import("@tabler/icons-vue");
-        for (let name in TablerIcons) {
+        const tablerIcons = await import("@tabler/icons-vue");
+        for (let name in tablerIcons) {
             if (!name.startsWith("Icon")) {
                 continue;
             }
-            componentManage.registerComponent(`Tabler${name}`, TablerIcons[name]);
+            componentManage.registerComponent(`Tabler${name}`, tablerIcons[name]);
         }
     });
     // 注册 google 图标

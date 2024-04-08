@@ -1,4 +1,5 @@
 import lodash from "lodash";
+import { markRaw } from "vue";
 import { BatchRegister, ComponentManage } from "@/draggable/types/ComponentManage";
 import { AsyncVueComponent, VueComponent } from "@/draggable/types/Base";
 import { AsyncComponentMeta, ComponentMeta } from "@/draggable/types/ComponentMeta";
@@ -15,7 +16,7 @@ class DefComponentManage implements ComponentManage {
     private readonly asyncComponentMetas: Map<string, AsyncComponentMeta> = new Map<string, AsyncComponentMeta>();
 
     registerComponent(type: string, component: VueComponent): void {
-        this.components.set(type, component);
+        this.components.set(type, markRaw(component));
     }
 
     registerAsyncComponent(type: string, asyncComponent: AsyncVueComponent): void {
@@ -58,7 +59,7 @@ class DefComponentManage implements ComponentManage {
                         cmp = await asyncCmp(type);
                     }
                     if (cmp) {
-                        this.components.set(type, cmp);
+                        this.components.set(type, markRaw(cmp));
                     }
                 } catch (reason) {
                     console.warn(`加载组件 ${type} 失败：${reason}`);
@@ -81,7 +82,7 @@ class DefComponentManage implements ComponentManage {
     }
 
     registerComponentMeta(componentMeta: ComponentMeta): void {
-        this.componentMetas.set(componentMeta.type, componentMeta);
+        this.componentMetas.set(componentMeta.type, markRaw(componentMeta));
     }
 
     registerAsyncComponentMeta(type: string, asyncComponentMeta: AsyncComponentMeta): void {
@@ -102,7 +103,7 @@ class DefComponentManage implements ComponentManage {
                 }
                 try {
                     meta = await asyncMeta(type);
-                    this.componentMetas.set(type, meta);
+                    this.componentMetas.set(type, markRaw(meta));
                 } catch (reason) {
                     throw new Error(`加载组件 ${type} 元信息失败：${reason}`);
                 }
