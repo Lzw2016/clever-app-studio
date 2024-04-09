@@ -4,6 +4,8 @@ import type { Component } from "vue";
 import { computed, defineModel, markRaw, reactive, ref } from "vue";
 import { useResizeObserver, useVirtualList } from "@vueuse/core";
 import { Input, Loading, Modal, Notify, TabItem, Tabs } from "@opentiny/vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { toBatch } from "@/utils/Utils";
 import TablerIconSetting from "@/components/TablerIconSetting.vue";
 
@@ -147,11 +149,17 @@ loadIcons().finally();
         <div ref="contentRef" class="icons-content flex-column-container">
             <div class="flex-item-fixed icons-form">
                 <div>
-                    <span>查找图标：</span>
-                    <Input placeholder="输入关键字查找" v-model="state.searchKey" style="width: 230px;"/>
+                    <Input placeholder="输入关键字查找" v-model="state.searchKey" style="width: 230px;">
+                        <template #prefix>
+                            <FontAwesomeIcon :icon="faMagnifyingGlass"/>
+                        </template>
+                    </Input>
                 </div>
             </div>
             <Tabs class="flex-item-fill" active-name="tabler">
+                <TabItem name="fontawesome" title="Fontawesome图标" :lazy="true">
+
+                </TabItem>
                 <TabItem name="tabler" title="Tabler图标" :lazy="true">
                     <div class="virtual-list-container" v-bind="tablerIconsVirtualList.containerProps">
                         <div v-bind="tablerIconsVirtualList.wrapperProps.value">
