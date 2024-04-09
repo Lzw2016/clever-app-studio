@@ -1,0 +1,194 @@
+/*
+=========================================================================== 基础变量说明 ===========================================================================
+品牌色
+    主色蓝 #5E7CE0
+    --ti-base-color-brand-6
+    品牌色-8 #344899
+    --ti-base-color-brand-8
+    品牌色-7 #526ECC
+    --ti-base-color-brand-7
+    品牌色-5 #7693F5
+    --ti-base-color-brand-5
+    品牌色-4 #96ADFA
+    --ti-base-color-brand-4
+    品牌色-3 #BECCFA
+    --ti-base-color-brand-3
+    品牌色-2 #E9EDFA
+    --ti-base-color-brand-2
+    品牌色-1 #F2F5FC
+    --ti-base-color-brand-1
+中性色
+    中立色-9 #181818
+    --ti-base-color-common-9
+    中立色-8 #282B33
+    --ti-base-color-common-8
+    中立色-7 #252B3A
+    --ti-base-color-common-7
+    中立色-6 #464C59
+    --ti-base-color-common-6
+    中立色-5 #575D6C
+    --ti-base-color-common-5
+    中立色-4 #5C6173
+    --ti-base-color-common-4
+    中立色-3 #8A8E99
+    --ti-base-color-common-3
+    中立色-2 #ADB0B8
+    --ti-base-color-common-2
+    中立色-1 #DFE1E6
+    --ti-base-color-common-1
+图表色
+    图表数据色-5 #A97AF8
+    --ti-base-color-data-5
+    图表数据色-4 #F3689A
+    --ti-base-color-data-4
+    图表数据色-3 #A6DD82
+    --ti-base-color-data-3
+错误色
+    错误-4 #DE504E
+    --ti-base-color-error-4
+    错误-3 #F66F6A
+    --ti-base-color-error-3
+    错误-2 #FFBCBA
+    --ti-base-color-error-2
+    错误-1 #FFEEED
+    --ti-base-color-error-1
+警示色
+    告警-5 #E37D29
+    --ti-base-color-warn-5
+    告警-4 #FA9841
+    --ti-base-color-warn-4
+    告警-3 #FAC20A
+    --ti-base-color-warn-3
+    告警-2 #FFD0A6
+    --ti-base-color-warn-2
+    告警-1 #FFF3E8
+    --ti-base-color-warn-1
+提示色
+    提示-4 #526ECC
+    --ti-base-color-prompt-4
+    提示-3 #5E7CE0
+    --ti-base-color-prompt-3
+    提示-2 #BECCFA
+    --ti-base-color-prompt-2
+    提示-1 #EBF6FF
+    --ti-base-color-prompt-1
+成功色
+    成功-4 #3AC295
+    --ti-base-color-success-4
+    成功-3 #50D4AB
+    --ti-base-color-success-3
+    成功-2 #ACF2DC
+    --ti-base-color-success-2
+    成功-1 #EDFFF9
+    --ti-base-color-success-1
+背景色
+    背景-9 #B12220
+    --ti-base-color-bg-9
+    背景-8 #C7000B
+    --ti-base-color-bg-8
+    背景-7 #D64A52
+    --ti-base-color-bg-7
+    背景-6 #EEF0F5
+    --ti-base-color-bg-6
+    背景-5 #F5F5F6
+    --ti-base-color-bg-5
+    背景-4 #FAFAFA
+    --ti-base-color-bg-4
+    背景-3 #FFFFFF
+    --ti-base-color-bg-3
+    背景-2 #FFFFFF
+    --ti-base-color-bg-2
+    背景-1 #FFFFFF
+    --ti-base-color-bg-1
+基础色
+    状态图标-常规 #6CBFFF
+    --ti-base-color-icon-info
+    透明色 transparent
+    --ti-base-color-transparent
+    纯白 #FFFFFF
+    --ti-base-color-white
+字体
+    字族
+    --ti-common-font-family: Helvetica
+    系统默认字体
+    Helvetica,Arial,PingFangSC-Regular,HiraginoSansGB,MicrosoftYaHei,微软雅黑,MicrosoftJhengHei
+    字号
+    --ti-common-font-size-7: 36px
+    --ti-common-font-size-6: 32px
+    --ti-common-font-size-5: 24px
+    --ti-common-font-size-4: 20px
+    --ti-common-font-size-3: 18px
+    --ti-common-font-size-2: 16px
+    --ti-common-font-size-1: 14px
+    --ti-common-font-size-base: 12px
+    字重
+    --ti-common-font-weight-9: 900
+    --ti-common-font-weight-8: 800
+    --ti-common-font-weight-7: bold
+    --ti-common-font-weight-6: 600
+    --ti-common-font-weight-5: 500
+    --ti-common-font-weight-4: normal
+    --ti-common-font-weight-3: 300
+    --ti-common-font-weight-2: 200
+    --ti-common-font-weight-1: 100
+    行高
+    --ti-common-line-height-number: 1.5
+基础尺寸
+    --ti-common-size-base: 4px
+    --ti-common-size-0: 0px
+    --ti-common-size-auto: auto
+=========================================================================== 基础变量说明 ===========================================================================
+*/
+
+/* tabs多页签 */
+body .tiny-tabs {
+    --ti-tabs-content-margin-horizontal: var(--ti-common-size-0);
+    --ti-tabs-content-margin-vertical: calc(var(--ti-common-size-base) * 2);
+    --ti-tabs-height: calc(var(--ti-common-size-base) * 9);
+    --ti-tabs-item-margin-right: calc(var(--ti-common-size-base) * 8);
+}
+
+body .tiny-tabs__nav.is-show-active-bar .tiny-tabs__item:last-child {
+    margin-right: 0;
+}
+
+/* modal弹框 */
+body .tiny-modal {
+    /*头部*/
+    --ti-modal-header-padding-top: calc(var(--ti-common-size-base) * 4);
+    --ti-modal-header-padding-bottom: calc(var(--ti-common-size-base) * 1);
+    --ti-modal-header-padding-horizontal: calc(var(--ti-common-size-base) * 4);
+    --ti-modal-header-font-size: var(--ti-common-font-size-1);
+    /*内容*/
+    --ti-modal-body-padding-top: var(--ti-common-size-0);
+    --ti-modal-body-padding-bottom: var(--ti-common-size-0);
+    --ti-modal-body-padding-horizontal: calc(var(--ti-common-size-base) * 4);
+    /*底部*/
+    --ti-modal-footer-padding-top: calc(var(--ti-common-size-base) * 2);
+    --ti-modal-footer-padding-bottom: calc(var(--ti-common-size-base) * 4);
+    --ti-modal-footer-padding-horizontal: calc(var(--ti-common-size-base) * 4);
+}
+
+body .tiny-modal > .tiny-modal__box > .tiny-modal__footer {
+    text-align: right;
+}
+
+/* dialog对话框 */
+body .tiny-dialog-box {
+    --ti-dialog-box-drawer-header-padding-top: calc(var(--ti-common-size-base) * 6);
+    --ti-dialog-box-drawer-header-padding-bottom: calc(var(--ti-common-size-base) * 2);
+    --ti-dialog-box-drawer-header-padding-left: calc(var(--ti-common-size-base) * 5);
+    --ti-dialog-box-drawer-header-padding-right: calc(var(--ti-common-size-base) * 5);
+
+    --ti-dialog-box-drawer-footer-padding-top: calc(var(--ti-common-size-base) * 3);
+    --ti-dialog-box-drawer-footer-padding-bottom: calc(var(--ti-common-size-base) * 6);
+    --ti-dialog-box-drawer-footer-padding-left: calc(var(--ti-common-size-base) * 5);
+    --ti-dialog-box-drawer-footer-padding-right: calc(var(--ti-common-size-base) * 5);
+
+    /*    --ti-dialog-box-footer-padding-horizontal: calc(var(--ti-common-size-base) * 5);
+        --ti-dialog-box-drawer-body-padding-left: calc(var(--ti-common-size-base) * 5);
+        --ti-dialog-box-head-padding-top: calc(var(--ti-common-size-base) * 6);
+        --ti-dialog-box-drawer-body-padding-right: calc(var(--ti-common-size-base) * 5);
+        --ti-dialog-box-head-padding-horizontal: calc(var(--ti-common-size-base) * 5);
+        --ti-dialog-box-body-padding-horizontal: calc(var(--ti-common-size-base) * 5);*/
+}

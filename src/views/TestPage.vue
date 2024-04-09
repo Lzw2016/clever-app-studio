@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import SelectTablerIcon from "@/components/SelectTablerIcon.vue"
+import SelectIcon from "@/components/SelectIcon.vue"
 </script>
 
 <template>
     111
-    <SelectTablerIcon :def-show="true"/>
+    <SelectIcon :def-show="true"/>
 </template>
 
 <style scoped>

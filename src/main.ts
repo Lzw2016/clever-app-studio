@@ -11,6 +11,7 @@ import { registerComponentMeta } from "@/draggable/register/RegisterComponentMet
 import { registerSetterComponent } from "@/draggable/register/RegisterSetterComponent";
 import { usePrimeVue } from "@/components/UsePrimeVue";
 import globalConfig from "@/GlobalConfig";
+import "@/assets/tiny-vue-themes.css";
 
 window['APP_INFO'] = readonly(__APP_INFO__);
 

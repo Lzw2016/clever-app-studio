@@ -120,8 +120,30 @@ function funToString(funInfo: FunctionInfo): string {
     return `${funInfo.async ? 'async ' : ''}function${funInfo.name ? (' ' + funInfo.name) : ''}(${funInfo.params.join(", ")}) {\n${indent}${funInfo.body}\n}`;
 }
 
+/**
+ * 把原始数据集合转换成批量数据集合
+ * @param data      原始数据集合
+ * @param batchSize 批量大小(默认：1000)
+ */
+function toBatch<T = any>(data: Array<T>, batchSize: number = 1000): Array<Array<T>> {
+    const batchData: Array<Array<T>> = [];
+    let batch: Array<T> = [];
+    for (let item of data) {
+        if (batch.length >= batchSize) {
+            batchData.push(batch);
+            batch = [];
+        }
+        batch.push(item);
+    }
+    if (batch.length > 0) {
+        batchData.push(batch);
+    }
+    return batchData;
+}
+
 export {
     sleep,
     parseFun,
     funToString,
+    toBatch,
 }
