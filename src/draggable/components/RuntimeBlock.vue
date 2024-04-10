@@ -61,6 +61,7 @@ const data: RuntimeBlockData = {
 // DesignBlock 的 vue 组件实例
 const blockInstance = ref<BlockInstance | undefined>();
 
+// 定义组件公开内容
 defineExpose({
     /** block实例对象 */
     blockInstance: blockInstance,

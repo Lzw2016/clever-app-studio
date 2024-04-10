@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import { computed, CSSProperties } from "vue";
 import { style } from "@/utils/UseType";
 
 // 定义组件选项
 defineOptions({
-    name: 'RuntimeBlock',
+    name: 'GoogleIcon',
 });
 
 /** 字体类型 */
-type FontStyle = "" | "outlined" | "round" | "sharp" | "two-tone" | "symbols-outlined" | "symbols-round" | "symbols-sharp";
+type FontStyle = "outlined" | "round" | "sharp" | "two-tone" | "symbols-outlined" | "symbols-round" | "symbols-sharp" | "";
 
 // 定义 Props 类型
 interface GoogleIconProps {
@@ -15,7 +16,7 @@ interface GoogleIconProps {
     content: string;
     /** 图标大小，同：font-size */
     size?: number;
-    /**  */
+    /** 字体类型 */
     fontStyle?: FontStyle;
     /** 字体颜色 */
     color?: string;
@@ -37,15 +38,21 @@ const props = withDefaults(defineProps<GoogleIconProps>(), {
     grade: 0,
     opticalSize: 24,
 });
+// 图标样式
+const styleObj = computed(()=> {
+    const obj: CSSProperties = {
+        "font-variation-settings": `"FILL" ${props.fill ? 1 : 0}, "wght" ${props.weight}, "GRAD" ${props.grade}, "opsz" ${props.opticalSize}`,
+    };
+    if(props.size) obj.fontSize = `${props.size}px`;
+    if(props.size) obj.width = `${props.size}px`;
+    if(props.color) obj.color = props.color;
+    return obj;
+});
 </script>
 
 <template>
     <span
-        :style='style({
-            fontSize: `${props.size}px`,
-            color: props.color,
-            "font-variation-settings": `"FILL" ${props.fill ? 1 : 0}, "wght" ${props.weight}, "GRAD" ${props.grade}, "opsz" ${props.opticalSize}`,
-        })'
+        :style='styleObj'
         :class="{
             'material-icons': true,
             'outlined': props.fontStyle === 'outlined',
@@ -125,6 +132,7 @@ const props = withDefaults(defineProps<GoogleIconProps>(), {
     font-style: normal;
     /* Preferred icon size */
     font-size: 16px;
+    width: 16px;
     display: inline-block;
     line-height: 1;
     text-transform: none;
@@ -140,6 +148,9 @@ const props = withDefaults(defineProps<GoogleIconProps>(), {
     -moz-osx-font-smoothing: grayscale;
     /* Support for IE. */
     font-feature-settings: 'liga';
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /*noinspection ALL*/

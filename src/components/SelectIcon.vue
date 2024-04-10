@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import type { Component } from "vue";
+import type { Component, CSSProperties } from "vue";
 import { computed, defineModel, markRaw, reactive, ref } from "vue";
 import { useResizeObserver, useVirtualList } from "@vueuse/core";
 import { Input, Loading, Modal, Notify, TabItem, Tabs } from "@opentiny/vue";
@@ -20,6 +20,12 @@ defineOptions({
 interface SelectTablerIconProps {
     /** 是否默认显示 */
     defShow?: boolean;
+    /** 不使用 fontawesome 图标 */
+    disableFontawesome?: boolean;
+    /** 不使用 googleIcon 图标 */
+    disableGoogleIcon?: boolean;
+    /** 不使用 tabler 图标  */
+    disableTabler?: boolean;
 }
 
 // 读取组件 props 属性
@@ -27,14 +33,28 @@ const props = withDefaults(defineProps<SelectTablerIconProps>(), {
     defShow: false,
 });
 
+enum IconInfoLib {
+    fontawesome = "fontawesome",
+    googleIcon = "googleIcon",
+    tabler = "tabler",
+}
+
 /** 图标信息 */
 interface IconInfo {
     /** 图标组件 */
     icon: Component;
-    /** 图标名 */
-    name: string;
     /** 显示名称 */
     displayName: string;
+    /** 图标风格分组 */
+    styleGroup: string;
+    /** 图标类别分组 */
+    categoryGroup?: string;
+    /** 图标vue组件名称 */
+    componentName: string;
+    /** 图标库名称 */
+    lib: IconInfoLib;
+
+    [name: string]: any;
 }
 
 // 定义 State 类型
@@ -45,16 +65,85 @@ interface SelectTablerIconState {
     searchKey?: string;
     /** 一行显示的数量 */
     batchSize: number;
-    /** tabler 所有的图标组件 */
+    /** 当前选中的图标 */
+    selectedIcon?: IconInfo;
+    /** 当前选中的叶签 */
+    activeTab: string;
+
+    /** fontawesome图标组件包装器 */
+    fontAwesomeComponent?: Component;
+    /** fontawesome所有的图标组件 */
+    fontAwesomeIcons: Array<IconInfo>;
+    /** fontawesome图标组件属性 */
+    fontAwesomeIconProps: {
+        // 显示的图标
+        // icon: string;
+        /** css样式 */
+        style?: CSSProperties;
+        /** 大小 */
+        size: "2xs" | "xs" | "sm" | "lg" | "xl" | "2xl" | "1x" | "2x" | "3x" | "4x" | "5x" | "6x" | "7x" | "8x" | "9x" | "10x" | string;
+        /** 固定宽度 */
+        fixedWidth?: boolean;
+        /** 旋转角度 */
+        rotation?: number;
+        /** 翻转/动画 */
+        flip?: "horizontally" | "vertically" | "both" | true;
+        /** 动画 */
+        beat?: boolean;
+        /** 动画 */
+        beatFade?: boolean;
+        /** 动画 */
+        bounce?: boolean;
+        /** 动画 */
+        fade?: boolean;
+        /** 动画 */
+        shake?: boolean;
+        /** 动画 */
+        spin?: boolean;
+        /** 动画 */
+        spinReverse?: boolean;
+        /** 动画 */
+        spinPulse?: boolean;
+        /** 边框 */
+        border?: boolean;
+        /** 浮动 */
+        pull?: "left" | "right";
+        /** 翻转颜色 */
+        inverse?: boolean;
+    };
+
+    /** googleIcon图标组件包装器 */
+    googleIconComponent?: Component;
+    /** googleIcon所有的图标组件 */
+    googleIcons: Array<IconInfo>;
+    /** googleIcon图标组件属性 */
+    googleIconProps: {
+        // /** 图标内容 */
+        // content: string;
+        /** 图标大小，同：font-size */
+        size?: number;
+        /** 字体类型 */
+        fontStyle?: "outlined" | "round" | "sharp" | "two-tone" | "symbols-outlined" | "symbols-round" | "symbols-sharp" | string;
+        /** 字体颜色 */
+        color?: string;
+        /** fill 选项，参考：https://fonts.google.com/ */
+        fill?: boolean;
+        /** weight 选项，参考：https://fonts.google.com/ */
+        weight?: number;
+        /** grade 选项，参考：https://fonts.google.com/ */
+        grade?: number;
+        /** Optical Size 选项，参考：https://fonts.google.com/ */
+        opticalSize?: number;
+    };
+
+    /** tabler所有的图标组件 */
     tablerIcons: Array<IconInfo>;
-    /** tabler 所有的图标组件属性 */
+    /** tabler图标组件属性 */
     tablerIconProps: {
         size: number;
         stroke: number;
         color: string;
     };
-    /** 当前选中的图标 */
-    selectedIcon?: IconInfo;
     /** 显示 TablerIconSetting 对话框 */
     showTablerSetting: boolean;
 }
@@ -64,30 +153,65 @@ const state = reactive<SelectTablerIconState>({
     loading: true,
     searchKey: undefined,
     batchSize: 1,
+    selectedIcon: undefined,
+    activeTab: "fontawesome",
+
+    fontAwesomeComponent: undefined,
+    fontAwesomeIcons: [],
+    fontAwesomeIconProps: {
+        size: "2x",
+        fixedWidth: true,
+        style: {
+            color: "#3B4549",
+        },
+    },
+
+    googleIconComponent: undefined,
+    googleIcons: [],
+    googleIconProps: {
+        size: 28,
+    },
+
     tablerIcons: [],
     tablerIconProps: {
         size: 28,
         stroke: 1.5,
         color: "#3B4549",
     },
-    selectedIcon: undefined,
     showTablerSetting: false,
 });
 // 内部数据
 const data = {
     iconHeight: 80,
     iconHeightCss: "80px",
+    officialWeb: {
+        fontawesome: "https://fontawesome.com/search",
+        googleIcon: "",
+        tabler: "https://tabler.io/icons",
+    },
 };
 // 双向绑定的 show 属性
 const show = defineModel<boolean>();
 show.value = props.defShow ?? false;
 // icons-content dom
 const contentRef = ref<HTMLDivElement | undefined>();
+// fontAwesome图标的虚拟滚动对象
+const fontAwesomeVirtualList = useVirtualList(
+    computed(() => toBatch(filterIcons(state.fontAwesomeIcons, state.searchKey), state.batchSize)),
+    { itemHeight: data.iconHeight },
+);
+// googleIcon图标的虚拟滚动对象
+const googleIconsVirtualList = useVirtualList(
+    computed(() => toBatch(filterIcons(state.googleIcons, state.searchKey), state.batchSize)),
+    { itemHeight: data.iconHeight },
+);
 // tabler图标的虚拟滚动对象
 const tablerIconsVirtualList = useVirtualList(
     computed(() => toBatch(filterIcons(state.tablerIcons, state.searchKey), state.batchSize)),
     { itemHeight: data.iconHeight },
 );
+// 图标库官网
+const officialWeb = computed(() => data.officialWeb[state.activeTab]);
 // 对话框大小变化后重算 batchSize
 useResizeObserver(contentRef, entries => {
     const rect = entries[0];
@@ -98,7 +222,55 @@ useResizeObserver(contentRef, entries => {
 function filterIcons(icons: Array<IconInfo>, searchKey?: string) {
     searchKey = lodash.trim(searchKey);
     if (!searchKey) return icons;
-    return icons.filter(iconInfo => iconInfo.name.toLowerCase().includes(searchKey.toLowerCase()));
+    return icons.filter(iconInfo => iconInfo.displayName.toLowerCase().includes(searchKey.toLowerCase()));
+}
+
+async function loadFontawesomeIcons() {
+    try {
+        const { FontAwesomeIcon } = await import("@fortawesome/vue-fontawesome");
+        const { fas } = await import("@fortawesome/free-solid-svg-icons");
+        const { far } = await import("@fortawesome/free-regular-svg-icons");
+        const { fab } = await import("@fortawesome/free-brands-svg-icons");
+        for (let iconPack of [fas, far, fab]) {
+            for (let name in iconPack) {
+                const icon = iconPack[name];
+                state.fontAwesomeIcons.push(markRaw({
+                    icon: markRaw(icon),
+                    displayName: icon.iconName,
+                    styleGroup: icon.prefix,
+                    componentName: "FontAwesomeIcon",
+                    lib: IconInfoLib.fontawesome,
+                }));
+            }
+        }
+        state.fontAwesomeComponent = markRaw(FontAwesomeIcon);
+    } catch (err: any) {
+        console.error("加载fontawesome图标失败", err);
+        Notify({ type: 'error', position: 'top-right', title: "加载fontawesome图标失败", message: `错误详情：${err}` });
+        show.value = false;
+    }
+}
+
+async function loadGoogleIcons() {
+    try {
+        const module = await import("@/components/GoogleIcon.vue");
+        const { allIcons } = await import("@/components/GoogleIconsAll");
+        for (let icon of allIcons) {
+            state.googleIcons.push(markRaw({
+                icon: icon.content,
+                displayName: `${icon.content}(${icon.name})`,
+                styleGroup: icon.defFontStyle,
+                componentName: "GoogleIcon",
+                lib: IconInfoLib.googleIcon,
+                fontStyle: icon.fontStyle,
+            }));
+        }
+        state.googleIconComponent = markRaw(module.default);
+    } catch (err: any) {
+        console.error("加载GoogleIcon图标失败", err);
+        Notify({ type: 'error', position: 'top-right', title: "加载GoogleIcon图标失败", message: `错误详情：${err}` });
+        show.value = false;
+    }
 }
 
 async function loadTablerIcons() {
@@ -109,14 +281,16 @@ async function loadTablerIcons() {
                 continue;
             }
             const icon = tablerIcons[name];
-            state.tablerIcons.push({
-                name: `Tabler${name}`,
+            state.tablerIcons.push(markRaw({
                 icon: markRaw(icon),
                 displayName: name.substring(4),
-            });
+                styleGroup: name.toLowerCase().endsWith("filled") ? "filled" : "outline",
+                componentName: `Tabler${name}`,
+                lib: IconInfoLib.tabler,
+            }));
         }
     } catch (err: any) {
-        console.error("加载图标失败", err);
+        console.error("加载tabler图标失败", err);
         Notify({ type: 'error', position: 'top-right', title: "加载tabler图标失败", message: `错误详情：${err}` });
         show.value = false;
     }
@@ -125,7 +299,9 @@ async function loadTablerIcons() {
 async function loadIcons() {
     state.loading = true;
     try {
-        await loadTablerIcons();
+        if (!props.disableFontawesome) await loadFontawesomeIcons();
+        if (!props.disableGoogleIcon) await loadGoogleIcons();
+        if (!props.disableTabler) await loadTablerIcons();
     } finally {
         state.loading = false;
     }
@@ -149,20 +325,72 @@ loadIcons().finally();
         title="选择图标"
     >
         <div ref="contentRef" class="icons-content flex-column-container">
-            <div class="flex-item-fixed icons-form">
-                <div>
-                    <Input placeholder="输入关键字查找" v-model="state.searchKey" style="width: 230px;">
-                        <template #prefix>
-                            <FontAwesomeIcon :icon="faMagnifyingGlass"/>
-                        </template>
-                    </Input>
+            <div class="flex-item-fixed flex-row-container icons-form" style="align-items: center;">
+                <Input placeholder="输入关键字查找" v-model="state.searchKey" style="width: 230px;">
+                    <template #prefix>
+                        <FontAwesomeIcon :icon="faMagnifyingGlass"/>
+                    </template>
+                </Input>
+                <div style="margin-left: 12px;">filled/outline</div>
+                <div style="margin-left: 12px;">Category Group</div>
+                <div v-if="officialWeb" style="margin-left: 12px;">
+                    <a :href="officialWeb" target="_blank">官网</a>
                 </div>
             </div>
-            <Tabs class="flex-item-fill" active-name="tabler">
-                <TabItem name="fontawesome" title="Fontawesome图标" :lazy="true">
-
+            <Tabs class="flex-item-fill" v-model="state.activeTab">
+                <TabItem v-if="!props.disableFontawesome" name="fontawesome" title="Fontawesome图标" :lazy="true">
+                    <div class="virtual-list-container" v-bind="fontAwesomeVirtualList.containerProps">
+                        <div v-bind="fontAwesomeVirtualList.wrapperProps.value">
+                            <div v-for="icons in fontAwesomeVirtualList.list.value" :key="icons.index" class="icons-row flex-row-container">
+                                <div v-for="iconInfo in icons.data" class="icons-item flex-column-container" :title="iconInfo.displayName">
+                                    <div class="flex-item-fill icons-item-icon">
+                                        <component :is="state.fontAwesomeComponent" v-bind="state.fontAwesomeIconProps" :icon="iconInfo.icon"/>
+                                    </div>
+                                    <div class="flex-item-fixed icons-item-name">{{ iconInfo.displayName }}</div>
+                                    <div class="flex-item-fixed icons-item-buttons">
+                                        <span class="icons-item-button">选择</span>
+                                        <span
+                                            class="icons-item-button"
+                                            @click="() => {
+                                                // state.showTablerSetting = true;
+                                                // state.selectedIcon = iconInfo;
+                                            }"
+                                        >
+                                            设置
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </TabItem>
-                <TabItem name="tabler" title="Tabler图标" :lazy="true">
+                <TabItem v-if="!props.disableGoogleIcon" name="googleIcon" title="GoogleIcon图标" :lazy="true">
+                    <div class="virtual-list-container" v-bind="googleIconsVirtualList.containerProps">
+                        <div v-bind="googleIconsVirtualList.wrapperProps.value">
+                            <div v-for="icons in googleIconsVirtualList.list.value" :key="icons.index" class="icons-row flex-row-container">
+                                <div v-for="iconInfo in icons.data" class="icons-item flex-column-container" :title="iconInfo.displayName">
+                                    <div class="flex-item-fill icons-item-icon">
+                                        <component :is="state.googleIconComponent" v-bind="state.googleIconProps" :content="iconInfo.icon" :fontStyle="iconInfo.styleGroup"/>
+                                    </div>
+                                    <div class="flex-item-fixed icons-item-name">{{ iconInfo.displayName }}</div>
+                                    <div class="flex-item-fixed icons-item-buttons">
+                                        <span class="icons-item-button">选择</span>
+                                        <span
+                                            class="icons-item-button"
+                                            @click="() => {
+                                                // state.showTablerSetting = true;
+                                                // state.selectedIcon = iconInfo;
+                                            }"
+                                        >
+                                            设置
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </TabItem>
+                <TabItem v-if="!props.disableTabler" name="tabler" title="Tabler图标" :lazy="true">
                     <div class="virtual-list-container" v-bind="tablerIconsVirtualList.containerProps">
                         <div v-bind="tablerIconsVirtualList.wrapperProps.value">
                             <div v-for="icons in tablerIconsVirtualList.list.value" :key="icons.index" class="icons-row flex-row-container">
@@ -207,7 +435,7 @@ loadIcons().finally();
     >
         <TablerIconSetting
             :icon="state.selectedIcon?.icon"
-            :name="state.selectedIcon?.name"
+            :component-name="state.selectedIcon?.componentName"
             style="margin: 8px 4px 16px 4px"
         />
     </Modal>

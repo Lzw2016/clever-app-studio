@@ -4,7 +4,7 @@ import SelectIcon from "@/components/SelectIcon.vue"
 
 <template>
     111
-    <SelectIcon :def-show="true"/>
+    <SelectIcon :def-show="true" :disable-tabler="false"/>
 </template>
 
 <style scoped>

@@ -24,7 +24,7 @@ interface SplitPaneProps {
     /** 显示第二个面板的折叠按钮 */
     twoCollapse?: boolean;
     /** 禁用拖拽 */
-    disabled?: boolean;
+    disable?: boolean;
     /** 分隔拖拽区大小 */
     gutterSize?: number;
     /** 默认折叠状态，one:第一个面板折叠 , two:第二个面板折叠 */

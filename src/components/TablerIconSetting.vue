@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from "vue";
-import { reactive, ref, watch } from "vue";
+import { defineExpose, reactive, ref, watch } from "vue";
 import { ColorPicker, Form, FormItem, Slider } from "@opentiny/vue";
 
 // 定义组件选项
@@ -12,8 +12,8 @@ defineOptions({
 interface TablerIconSettingIconProps {
     /** 图标组件 */
     icon: Component;
-    /** 显示名称 */
-    name: string;
+    /** 图标vue组件名称 */
+    componentName: string;
 }
 
 // 读取组件 props 属性
@@ -35,6 +35,11 @@ const state = reactive<TablerIconSettingState>({
 
 const stroke10x = ref(state.stroke * 10);
 watch(() => stroke10x.value, value => state.stroke = value / 10);
+
+// 定义组件公开内容
+defineExpose({
+
+});
 </script>
 
 <template>
@@ -43,12 +48,14 @@ watch(() => stroke10x.value, value => state.stroke = value / 10);
             <div class="flex-item-fill tabler-icon-preview">
                 <component :is="props.icon" v-bind="{...state}"/>
             </div>
-            <div class="flex-item-fixed tabler-icon-name">{{ props.name }}</div>
+            <div class="flex-item-fixed tabler-icon-name">
+                {{ props.componentName }}
+            </div>
         </div>
         <div class="flex-item-fixed">
             <Form label-position="left" label-width="50px" size="mini">
                 <FormItem label="大小" prop="size">
-                    <Slider v-model="state.size" :min="8" :max="100" :show-tip="false" :show-input="true">
+                    <Slider v-model="state.size" :min="8" :max="120" :show-tip="false" :show-input="true">
                         <template #default="{ slotScope }">
                             <div style="width: 35px;">{{ slotScope }}px</div>
                         </template>
@@ -57,7 +64,7 @@ watch(() => stroke10x.value, value => state.stroke = value / 10);
                 <FormItem label="粗细">
                     <Slider v-model="stroke10x" :min="1" :max="50" :show-tip="false" :show-input="true">
                         <template #default="{ slotScope }">
-                            <div style="width: 35px;">{{ slotScope / 10 }}</div>
+                            <div style="width: 35px;">{{ (slotScope / 10).toFixed(1) }}</div>
                         </template>
                     </Slider>
                 </FormItem>
@@ -66,27 +73,27 @@ watch(() => stroke10x.value, value => state.stroke = value / 10);
                         v-model="state.color"
                         :alpha="true"
                         :predefine="[
-                            '#5E7CE0',
-                            '#344899',
-                            '#526ECC',
-                            '#7693F5',
-                            '#181818',
-                            '#252B3A',
-                            '#575D6C',
-                            '#8A8E99',
-                            '#DFE1E6',
-                            '#A97AF8',
-                            '#F3689A',
-                            '#A6DD82',
-                            '#DE504E',
-                            '#FFBCBA',
-                            '#E37D29',
-                            '#FAC20A',
-                            '#FFD0A6',
-                            '#526ECC',
-                            '#BECCFA',
-                            '#3AC295',
-                            '#ACF2DC',
+                            '#5E7CE0FF',
+                            '#344899FF',
+                            '#526ECCFF',
+                            '#7693F5FF',
+                            '#181818FF',
+                            '#252B3AFF',
+                            '#575D6CFF',
+                            '#8A8E99FF',
+                            '#DFE1E6FF',
+                            '#A97AF8FF',
+                            '#F3689AFF',
+                            '#A6DD82FF',
+                            '#DE504EFF',
+                            '#FFBCBAFF',
+                            '#E37D29FF',
+                            '#FAC20AFF',
+                            '#FFD0A6FF',
+                            '#526ECCFF',
+                            '#BECCFAFF',
+                            '#3AC295FF',
+                            '#ACF2DCFF',
                         ]"
                         @confirm="hex => state.color=hex"
                         style="display: inline-block;"
@@ -131,6 +138,8 @@ watch(() => stroke10x.value, value => state.stroke = value / 10);
     text-align: center;
     color: #6C6C89;
     margin-bottom: 8px;
+    font-size: 12px;
+
 }
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
 

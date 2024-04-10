@@ -4,7 +4,7 @@ import { ComponentManage } from "@/draggable/types/ComponentManage";
  * 注册组件
  */
 function registerComponent(componentManage: ComponentManage) {
-    // 注册 fortawesome 图标
+    // 注册 fontawesome 图标
     componentManage.registerAsyncComponent("FontAwesomeIcon", async () => {
         const { FontAwesomeIcon } = await import("@fortawesome/vue-fontawesome");
         const { library } = await import("@fortawesome/fontawesome-svg-core");

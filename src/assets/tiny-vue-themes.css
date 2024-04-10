@@ -148,7 +148,11 @@ body .tiny-tabs {
     --ti-tabs-item-margin-right: calc(var(--ti-common-size-base) * 8);
 }
 
-body .tiny-tabs__nav.is-show-active-bar .tiny-tabs__item:last-child {
+body .tiny-tabs > .tiny-tabs__header {
+    user-select: none;
+}
+
+body .tiny-tabs .tiny-tabs__nav .tiny-tabs__item:last-child {
     margin-right: 0;
 }
 
