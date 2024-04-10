@@ -170,6 +170,7 @@ const state = reactive<SelectTablerIconState>({
     googleIcons: [],
     googleIconProps: {
         size: 28,
+        color: "#3B4549",
     },
 
     tablerIcons: [],
