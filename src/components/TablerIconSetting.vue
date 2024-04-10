@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from "vue";
-import { defineExpose, reactive, ref, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 import { ColorPicker, Form, FormItem, Slider } from "@opentiny/vue";
 
 // 定义组件选项
@@ -37,9 +37,7 @@ const stroke10x = ref(state.stroke * 10);
 watch(() => stroke10x.value, value => state.stroke = value / 10);
 
 // 定义组件公开内容
-defineExpose({
-
-});
+defineExpose({});
 </script>
 
 <template>
@@ -141,6 +139,7 @@ defineExpose({
     font-size: 12px;
 
 }
+
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
 
 .tabler-icon-setting :deep(.tiny-color-picker .tiny-color-select-panel) {

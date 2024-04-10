@@ -34,7 +34,7 @@ interface GoogleIconProps {
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<GoogleIconProps>(), {
-    fontUrlPrefix: "/public/font",
+    fontUrlPrefix: "font",
     size: 16,
     fill: false,
     weight: 400,
