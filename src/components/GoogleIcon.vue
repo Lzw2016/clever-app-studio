@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, CSSProperties } from "vue";
+import { computed, CSSProperties, reactive } from "vue";
+import { loadFont, LoadFontFaceInfo } from "@/draggable/utils/LoadFont";
 
 // 定义组件选项
 defineOptions({
@@ -11,6 +12,8 @@ type FontStyle = "outlined" | "round" | "sharp" | "two-tone" | "symbols-outlined
 
 // 定义 Props 类型
 interface GoogleIconProps {
+    /** 字体文件url前缀 */
+    fontUrlPrefix?: string;
     /** 图标内容 */
     content: string;
     /** 图标大小，同：font-size */
@@ -31,11 +34,17 @@ interface GoogleIconProps {
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<GoogleIconProps>(), {
+    fontUrlPrefix: "/public/font",
     size: 16,
     fill: false,
     weight: 400,
     grade: 0,
     opticalSize: 24,
+});
+// state 属性
+const state = reactive({
+    /** 字体是否加载完成 */
+    fontLoaded: false,
 });
 // 图标样式
 const styleObj = computed(() => {
@@ -47,6 +56,97 @@ const styleObj = computed(() => {
     if (props.color) obj.color = props.color;
     return obj;
 });
+
+async function dynamicLoadFont() {
+    let loadFontFaceInfo: LoadFontFaceInfo | undefined;
+    switch (props.fontStyle) {
+        case "outlined":
+            loadFontFaceInfo = await loadFont({
+                family: "Material Icons Outlined",
+                srcUrl: `${props.fontUrlPrefix ?? ''}/MaterialIcons-Outlined.woff2`,
+                descriptors: {
+                    weight: "400",
+                    style: "normal",
+                },
+            });
+            break;
+        case "round":
+            loadFontFaceInfo = await loadFont({
+                family: "Material Icons Round",
+                srcUrl: `${props.fontUrlPrefix ?? ''}/MaterialIcons-Round.woff2`,
+                descriptors: {
+                    weight: "400",
+                    style: "normal",
+                },
+            });
+            break;
+        case "sharp":
+            loadFontFaceInfo = await loadFont({
+                family: "Material Icons Sharp",
+                srcUrl: `${props.fontUrlPrefix ?? ''}/MaterialIcons-Sharp.woff2`,
+                descriptors: {
+                    weight: "400",
+                    style: "normal",
+                },
+            });
+            break;
+        case "two-tone":
+            loadFontFaceInfo = await loadFont({
+                family: "Material Icons TwoTone",
+                srcUrl: `${props.fontUrlPrefix ?? ''}/MaterialIcons-TwoTone.woff2`,
+                descriptors: {
+                    weight: "400",
+                    style: "normal",
+                },
+            });
+            break;
+        case "symbols-outlined":
+            loadFontFaceInfo = await loadFont({
+                family: "Material Symbols Outlined",
+                srcUrl: `${props.fontUrlPrefix ?? ''}/MaterialSymbols-Outlined.woff2`,
+                descriptors: {
+                    weight: "100 700",
+                    style: "normal",
+                },
+            });
+            break;
+        case "symbols-round":
+            loadFontFaceInfo = await loadFont({
+                family: "Material Symbols Rounded",
+                srcUrl: `${props.fontUrlPrefix ?? ''}/MaterialSymbols-Rounded.woff2`,
+                descriptors: {
+                    weight: "100 700",
+                    style: "normal",
+                },
+            });
+            break;
+        case "symbols-sharp":
+            loadFontFaceInfo = await loadFont({
+                family: "Material Symbols Sharp",
+                srcUrl: `${props.fontUrlPrefix ?? ''}/MaterialSymbols-Sharp.woff2`,
+                descriptors: {
+                    weight: "100 700",
+                    style: "normal",
+                },
+            });
+            break;
+        default:
+            loadFontFaceInfo = await loadFont({
+                family: "Material Icons",
+                srcUrl: `${props.fontUrlPrefix ?? ''}/MaterialIcons.woff2`,
+                descriptors: {
+                    weight: "400",
+                    style: "normal",
+                },
+            });
+            break;
+    }
+    if (loadFontFaceInfo?.load) {
+        await loadFontFaceInfo.load;
+    }
+}
+
+dynamicLoadFont().finally(() => state.fontLoaded = true);
 </script>
 
 <template>
@@ -63,11 +163,14 @@ const styleObj = computed(() => {
             'symbols-sharp': props.fontStyle === 'symbols-sharp',
         }"
     >
-        {{ props.content }}
+        <template v-if="state.fontLoaded">
+            {{ props.content }}
+        </template>
     </span>
 </template>
 
 <style>
+/*
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
@@ -123,6 +226,7 @@ const styleObj = computed(() => {
     font-weight: 100 700;
     src: url(../../public/font/MaterialSymbols-Sharp.woff2) format('woff2');
 }
+*/
 
 /*noinspection ALL*/
 .material-icons {
