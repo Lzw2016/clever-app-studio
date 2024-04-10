@@ -25,7 +25,7 @@
 [OK] 13.primevue 国际化(中文配置)
 [50] 14.ant-design-vue 国际化配置 
 [OK] 15.删除 opentiny?(暂时删除，因为打包体积太大)
-[  ] 16.把 DesignNode 的 props 属性直接平铺直接在最外层定义，类似extjs写法
+[  ] 16.把 DesignNode 的 props 属性直接平铺直接在最外层定义，类似extjs写法(优先级底)
 [  ] 17.给图标库图标名称定义类型
 [OK] 18.组件库面板
 [OK] 19.实现组件设计器拖拽逻辑
@@ -41,8 +41,8 @@
 [OK] 29.组件属性配置支持配置：“组件类型”、“函数类型”
 [  ] 30.重新实现 SetterForm 全动态渲染一气呵成
 [  ] 31.基于 RuntimeBlock 生成代码，基于 RuntimeBlock 对象逆向生成 DesignBlock 的源代码
-[  ] 32.
-[  ] 33.
+[  ] 32.集成扩展图标库 lucide、Emoji(优先级底)
+[  ] 33.完成 FontawesomeSetting.vue、GoogleIconSetting.vue 参考 TablerIconSetting.vue
 [  ] 34.
 [  ] 35.
 
