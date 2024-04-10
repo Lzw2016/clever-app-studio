@@ -186,7 +186,7 @@ const data = {
     iconHeightCss: "80px",
     officialWeb: {
         fontawesome: "https://fontawesome.com/search",
-        googleIcon: "",
+        googleIcon: "https://fonts.google.com/icons",
         tabler: "https://tabler.io/icons",
     },
 };
@@ -257,7 +257,7 @@ async function loadGoogleIcons() {
         const { allIcons } = await import("@/components/GoogleIconsAll");
         for (let icon of allIcons) {
             state.googleIcons.push(markRaw({
-                icon: icon.content,
+                icon: icon.content as any,
                 displayName: `${icon.content}(${icon.name})`,
                 styleGroup: icon.defFontStyle,
                 componentName: "GoogleIcon",

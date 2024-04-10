@@ -159,14 +159,14 @@ export default defineConfig(env => {
                         if (id.includes('/lodash/') || id.includes('/lodash-es/')) {
                             return 'lodash';
                         }
+                        if (id.includes('@fortawesome/')) {
+                            return 'font-awesome-icon';
+                        }
+                        if (id.includes('/GoogleIconsAll')) {
+                            return 'google-icon';
+                        }
                         if (id.includes('@tabler/icons')) {
                             return 'tabler-icons';
-                        }
-                        if (id.includes('@fortawesome/')) {
-                            return 'font-awesome-icon';
-                        }
-                        if (id.includes('@fortawesome/')) {
-                            return 'font-awesome-icon';
                         }
                         if (id.includes('@opentiny/')) {
                             return 'opentiny';

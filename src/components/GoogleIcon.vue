@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, CSSProperties } from "vue";
-import { style } from "@/utils/UseType";
 
 // 定义组件选项
 defineOptions({
@@ -39,13 +38,13 @@ const props = withDefaults(defineProps<GoogleIconProps>(), {
     opticalSize: 24,
 });
 // 图标样式
-const styleObj = computed(()=> {
+const styleObj = computed(() => {
     const obj: CSSProperties = {
         "font-variation-settings": `"FILL" ${props.fill ? 1 : 0}, "wght" ${props.weight}, "GRAD" ${props.grade}, "opsz" ${props.opticalSize}`,
     };
-    if(props.size) obj.fontSize = `${props.size}px`;
-    if(props.size) obj.width = `${props.size}px`;
-    if(props.color) obj.color = props.color;
+    if (props.size) obj.fontSize = `${props.size}px`;
+    if (props.size) obj.width = `${props.size}px`;
+    if (props.color) obj.color = props.color;
     return obj;
 });
 </script>
