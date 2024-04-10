@@ -143,6 +143,8 @@ loadIcons().finally();
         v-model="show"
         height="60%"
         width="60%"
+        min-height="350px"
+        min-width="500px"
         :esc-closable="true"
         title="选择图标"
     >
