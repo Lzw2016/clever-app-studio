@@ -524,6 +524,7 @@ loadIcons().finally();
 }
 
 .icons-item-button {
+    cursor: pointer;
     margin-right: 12px;
     color: #6C6C89;
 }
