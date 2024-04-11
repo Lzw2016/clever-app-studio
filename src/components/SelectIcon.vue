@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { toBatch } from "@/utils/Utils";
 import TablerIconSetting from "@/components/TablerIconSetting.vue";
+import FontawesomeSetting from "@/components/FontawesomeSetting.vue";
 
 const vLoading = Loading.directive;
 
@@ -87,7 +88,7 @@ interface SelectTablerIconState {
         /** 旋转角度 */
         rotation?: number;
         /** 翻转/动画 */
-        flip?: "horizontally" | "vertically" | "both" | true;
+        flip?: "horizontal" | "vertical" | "both" | true;
         /** 动画 */
         beat?: boolean;
         /** 动画 */
@@ -111,6 +112,8 @@ interface SelectTablerIconState {
         /** 翻转颜色 */
         inverse?: boolean;
     };
+    /** 显示 FontawesomeSetting 对话框 */
+    showFontAwesomeSetting: boolean;
 
     /** googleIcon图标组件包装器 */
     googleIconComponent?: Component;
@@ -162,7 +165,7 @@ const state = reactive<SelectTablerIconState>({
         size: "2x",
         fixedWidth: true,
         style: {
-            color: "#3B4549",
+            color: "#1E3064",
         },
     },
 
@@ -353,8 +356,8 @@ loadIcons().finally();
                                         <span
                                             class="icons-item-button"
                                             @click="() => {
-                                                // state.showTablerSetting = true;
-                                                // state.selectedIcon = iconInfo;
+                                                state.showFontAwesomeSetting = true;
+                                                state.selectedIcon = iconInfo;
                                             }"
                                         >
                                             设置
@@ -419,26 +422,44 @@ loadIcons().finally();
                 </TabItem>
             </Tabs>
         </div>
-    </Modal>
-
-    <Modal
-        v-if="state.selectedIcon && state.showTablerSetting"
-        v-model="state.showTablerSetting"
-        :esc-closable="true"
-        :mask-closable="true"
-        width="auto"
-        title="设置图标"
-        :show-footer="true"
-        :confirm-btn-props="{
+        <Modal
+            v-if="state.selectedIcon && state.showFontAwesomeSetting"
+            v-model="state.showFontAwesomeSetting"
+            :esc-closable="true"
+            :mask-closable="true"
+            width="auto"
+            title="设置图标"
+            :show-footer="true"
+            :confirm-btn-props="{
             autoFocus: true,
             text: '确定',
         }"
-    >
-        <TablerIconSetting
-            :icon="state.selectedIcon?.icon"
-            :component-name="state.selectedIcon?.componentName"
-            style="margin: 8px 4px 16px 4px"
-        />
+        >
+            <FontawesomeSetting
+                :icon="state.selectedIcon?.icon"
+                :component-name="state.selectedIcon?.componentName"
+                style="margin: 8px 4px 16px 4px"
+            />
+        </Modal>
+        <Modal
+            v-if="state.selectedIcon && state.showTablerSetting"
+            v-model="state.showTablerSetting"
+            :esc-closable="true"
+            :mask-closable="true"
+            width="auto"
+            title="设置图标"
+            :show-footer="true"
+            :confirm-btn-props="{
+            autoFocus: true,
+            text: '确定',
+        }"
+        >
+            <TablerIconSetting
+                :icon="state.selectedIcon?.icon"
+                :component-name="state.selectedIcon?.componentName"
+                style="margin: 8px 4px 16px 4px"
+            />
+        </Modal>
     </Modal>
 </template>
 
