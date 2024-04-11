@@ -129,8 +129,8 @@ const isSymbols = props.defFontStyle.includes("symbols");
                     />
                     <span style="margin-left: 16px;">{{ state.color }}</span>
                 </FormItem>
-                <FormItem label="fill" prop="fill" v-if="isSymbols">
-                    <Checkbox v-model="state.fill" text="fill风格"/>
+                <FormItem label="Fill" prop="fill" v-if="isSymbols">
+                    <Checkbox v-model="state.fill" text="Fill 风格"/>
                 </FormItem>
                 <FormItem label="字宽" prop="weight" v-if="isSymbols">
                     <Slider v-model="state.weight" :min="100" :max="700" :step="100" :show-tip="false" :show-input="true">
