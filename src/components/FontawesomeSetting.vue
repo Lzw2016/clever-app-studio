@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { Component } from "vue";
 import { CSSProperties, reactive, ref, watch } from "vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { ButtonGroup, Checkbox, ColorPicker, Form, FormItem, Select, Slider } from "@opentiny/vue";
 
@@ -11,8 +11,10 @@ defineOptions({
 
 // 定义 Props 类型
 interface FontawesomeSettingProps {
-    /** 图标组件 */
+    /** 图标信息 */
     icon: IconDefinition;
+    /** 图标组件 */
+    iconComponent: Component;
     /** 图标vue组件名称 */
     componentName: string;
 }
@@ -107,7 +109,7 @@ const rotation = ref<number | undefined>();
 const animation = ref<string | undefined>();
 
 watch(rotation, value => {
-    if (value <= 0 || value >= 360) {
+    if (!value || value <= 0 || value >= 360) {
         delete state.rotation;
     } else {
         state.rotation = value;
@@ -115,7 +117,7 @@ watch(rotation, value => {
 });
 watch(animation, value => animationChange(value));
 
-function animationChange(value: string) {
+function animationChange(value?: string) {
     for (let animation of data.animationList) {
         if (value === animation.value) {
             state[value] = true;
@@ -133,7 +135,7 @@ function animationChange(value: string) {
     <div class="flex-column-container fontawesome-icon-setting">
         <div class="flex-item-fill flex-column-container">
             <div class="flex-item-fill fontawesome-icon-preview">
-                <FontAwesomeIcon :icon="props.icon" v-bind="{...state}"/>
+                <component :is="props.iconComponent" :icon="props.icon" v-bind="{...state as any}"/>
             </div>
             <div class="flex-item-fixed fontawesome-icon-name">
                 {{ props.icon.prefix }} {{ props.icon.iconName }}
@@ -145,7 +147,7 @@ function animationChange(value: string) {
                     <Select v-model="state.size" placeholder="选择图标大小" :clearable="true" :options="data.sizeList"/>
                 </FormItem>
                 <FormItem label="大小" prop="style.fontSize">
-                    <Slider v-model="state.style.fontSize" :min="8" :max="120" :show-tip="false" :show-input="true">
+                    <Slider v-model="state.style.fontSize as number" :min="8" :max="120" :show-tip="false" :show-input="true">
                         <template #default="{ slotScope }">
                             <div style="width: 35px;">{{ slotScope }}px</div>
                         </template>
@@ -159,7 +161,7 @@ function animationChange(value: string) {
                     </Slider>
                 </FormItem>
                 <FormItem label="翻转" prop="flip">
-                    <ButtonGroup v-model="state.flip" :data="data.flipList"/>
+                    <ButtonGroup v-model="state.flip as string" :data="data.flipList"/>
                 </FormItem>
                 <FormItem label="动画" prop="animation">
                     <Select v-model="animation" placeholder="选择动画" :clearable="true" :options="data.animationList"/>

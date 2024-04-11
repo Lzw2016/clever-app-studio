@@ -171,6 +171,7 @@ const state = reactive<SelectTablerIconState>({
             color: "#1E3064",
         },
     },
+    showFontAwesomeSetting: false,
 
     googleIconComponent: undefined,
     googleIcons: [],
@@ -178,6 +179,7 @@ const state = reactive<SelectTablerIconState>({
         size: 28,
         color: "#3B4549",
     },
+    showGoogleIconSetting: false,
 
     tablerIcons: [],
     tablerIconProps: {
@@ -427,7 +429,7 @@ loadIcons().finally();
             </Tabs>
         </div>
         <Modal
-            v-if="state.selectedIcon && state.showFontAwesomeSetting"
+            v-if="state.selectedIcon && state.fontAwesomeComponent && state.showFontAwesomeSetting"
             v-model="state.showFontAwesomeSetting"
             :esc-closable="true"
             :mask-closable="true"
@@ -437,7 +439,8 @@ loadIcons().finally();
             :confirm-btn-props="{ autoFocus: true, text: '确定' }"
         >
             <FontawesomeSetting
-                :icon="state.selectedIcon.icon"
+                :icon="state.selectedIcon.icon as any"
+                :icon-component="state.fontAwesomeComponent"
                 :component-name="state.selectedIcon.componentName"
                 style="margin: 8px 4px 16px 4px"
             />
@@ -454,7 +457,7 @@ loadIcons().finally();
         >
             <GoogleIconSetting
                 :icon="state.googleIconComponent"
-                :content="state.selectedIcon.icon"
+                :content="state.selectedIcon.icon as any"
                 :component-name="state.selectedIcon.componentName"
                 :def-font-style="state.selectedIcon.defFontStyle"
                 :font-style="state.selectedIcon.fontStyle"

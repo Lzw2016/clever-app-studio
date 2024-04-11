@@ -32,7 +32,7 @@ interface GoogleIconSettingState {
     /** 图标大小，同：font-size */
     size?: number;
     /** 字体类型 */
-    fontStyle?: "outlined" | "round" | "sharp" | "two-tone" | "symbols-outlined" | "symbols-rounded" | "symbols-sharp" | "";
+    fontStyle?: string;
     /** 字体颜色 */
     color?: string;
     /** fill 选项，参考：https://fonts.google.com/ */
@@ -57,7 +57,7 @@ const state = reactive<GoogleIconSettingState>({
 });
 // 内部数据
 const data = {
-    fontStyleList: [],
+    fontStyleList: [] as Array<any>,
     gradeList: [
         { text: "低", value: -25 },
         { text: "默认", value: 0 },
@@ -140,10 +140,10 @@ const isSymbols = props.defFontStyle.includes("symbols");
                     </Slider>
                 </FormItem>
                 <FormItem label="等级" prop="grade" v-if="isSymbols">
-                    <ButtonGroup v-model="state.grade" :data="data.gradeList"/>
+                    <ButtonGroup v-model="state.grade" :data="data.gradeList as Array<any>"/>
                 </FormItem>
                 <FormItem label="尺寸" prop="opticalSize" v-if="isSymbols">
-                    <ButtonGroup v-model="state.opticalSize" :data="data.opticalSize"/>
+                    <ButtonGroup v-model="state.opticalSize" :data="data.opticalSize as Array<any>"/>
                 </FormItem>
             </Form>
         </div>
