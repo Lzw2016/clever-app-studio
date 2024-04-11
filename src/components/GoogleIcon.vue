@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, CSSProperties, reactive } from "vue";
+import { computed, CSSProperties, reactive, watch } from "vue";
 import { loadFont, LoadFontFaceInfo } from "@/draggable/utils/LoadFont";
 
 // 定义组件选项
@@ -8,7 +8,7 @@ defineOptions({
 });
 
 /** 字体类型 */
-type FontStyle = "outlined" | "round" | "sharp" | "two-tone" | "symbols-outlined" | "symbols-round" | "symbols-sharp" | "";
+type FontStyle = "outlined" | "round" | "sharp" | "two-tone" | "symbols-outlined" | "symbols-rounded" | "symbols-sharp" | "";
 
 // 定义 Props 类型
 interface GoogleIconProps {
@@ -56,6 +56,11 @@ const styleObj = computed(() => {
     if (props.color) obj.color = props.color;
     return obj;
 });
+
+watch(() => props.fontStyle, () => {
+    state.fontLoaded = false;
+    dynamicLoadFont().finally(() => state.fontLoaded = true);
+}, { immediate: true });
 
 async function dynamicLoadFont() {
     let loadFontFaceInfo: LoadFontFaceInfo | undefined;
@@ -110,7 +115,7 @@ async function dynamicLoadFont() {
                 },
             });
             break;
-        case "symbols-round":
+        case "symbols-rounded":
             loadFontFaceInfo = await loadFont({
                 family: "Material Symbols Rounded",
                 srcUrl: `${props.fontUrlPrefix ?? ''}/MaterialSymbols-Rounded.woff2`,
@@ -145,8 +150,6 @@ async function dynamicLoadFont() {
         await loadFontFaceInfo.load;
     }
 }
-
-dynamicLoadFont().finally(() => state.fontLoaded = true);
 </script>
 
 <template>
@@ -159,7 +162,7 @@ dynamicLoadFont().finally(() => state.fontLoaded = true);
             'sharp': props.fontStyle === 'sharp',
             'two-tone': props.fontStyle === 'two-tone',
             'symbols-outlined': props.fontStyle === 'symbols-outlined',
-            'symbols-round': props.fontStyle === 'symbols-round',
+            'symbols-rounded': props.fontStyle === 'symbols-rounded',
             'symbols-sharp': props.fontStyle === 'symbols-sharp',
         }"
     >
@@ -282,7 +285,7 @@ dynamicLoadFont().finally(() => state.fontLoaded = true);
 }
 
 /*noinspection ALL*/
-.material-icons.symbols-round {
+.material-icons.symbols-rounded {
     font-family: 'Material Symbols Rounded';
 }
 

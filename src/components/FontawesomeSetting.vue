@@ -2,7 +2,7 @@
 import { CSSProperties, reactive, ref, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import { ButtonGroup, ColorPicker, Form, FormItem, Select, Slider } from "@opentiny/vue";
+import { ButtonGroup, Checkbox, ColorPicker, Form, FormItem, Select, Slider } from "@opentiny/vue";
 
 // 定义组件选项
 defineOptions({
@@ -109,7 +109,6 @@ const animation = ref<string | undefined>();
 watch(rotation, value => {
     if (value <= 0 || value >= 360) {
         delete state.rotation;
-        // state.rotation = undefined;
     } else {
         state.rotation = value;
     }
@@ -122,7 +121,6 @@ function animationChange(value: string) {
             state[value] = true;
         } else {
             delete state[animation.value];
-            // state[animation.value] = undefined;
         }
     }
     if (value === "spinReverse") {
@@ -165,6 +163,9 @@ function animationChange(value: string) {
                 </FormItem>
                 <FormItem label="动画" prop="animation">
                     <Select v-model="animation" placeholder="选择动画" :clearable="true" :options="data.animationList"/>
+                </FormItem>
+                <FormItem label="风格" prop="inverse" v-if="false">
+                    <Checkbox v-model="state.inverse" text="翻转颜色"/>
                 </FormItem>
                 <FormItem label="颜色">
                     <ColorPicker
@@ -237,7 +238,6 @@ function animationChange(value: string) {
     color: #6C6C89;
     margin-bottom: 8px;
     font-size: 12px;
-
 }
 
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */

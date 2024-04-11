@@ -7,8 +7,9 @@ import { Input, Loading, Modal, Notify, TabItem, Tabs } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { toBatch } from "@/utils/Utils";
-import TablerIconSetting from "@/components/TablerIconSetting.vue";
 import FontawesomeSetting from "@/components/FontawesomeSetting.vue";
+import GoogleIconSetting from "@/components/GoogleIconSetting.vue";
+import TablerIconSetting from "@/components/TablerIconSetting.vue";
 
 const vLoading = Loading.directive;
 
@@ -126,7 +127,7 @@ interface SelectTablerIconState {
         /** 图标大小，同：font-size */
         size?: number;
         /** 字体类型 */
-        fontStyle?: "outlined" | "round" | "sharp" | "two-tone" | "symbols-outlined" | "symbols-round" | "symbols-sharp" | string;
+        fontStyle?: "outlined" | "round" | "sharp" | "two-tone" | "symbols-outlined" | "symbols-rounded" | "symbols-sharp" | string;
         /** 字体颜色 */
         color?: string;
         /** fill 选项，参考：https://fonts.google.com/ */
@@ -138,6 +139,8 @@ interface SelectTablerIconState {
         /** Optical Size 选项，参考：https://fonts.google.com/ */
         opticalSize?: number;
     };
+    /** 显示 GoogleIconSetting 对话框 */
+    showGoogleIconSetting: boolean;
 
     /** tabler所有的图标组件 */
     tablerIcons: Array<IconInfo>;
@@ -266,6 +269,7 @@ async function loadGoogleIcons() {
                 styleGroup: icon.defFontStyle,
                 componentName: "GoogleIcon",
                 lib: IconInfoLib.googleIcon,
+                defFontStyle: icon.defFontStyle,
                 fontStyle: icon.fontStyle,
             }));
         }
@@ -374,7 +378,7 @@ loadIcons().finally();
                             <div v-for="icons in googleIconsVirtualList.list.value" :key="icons.index" class="icons-row flex-row-container">
                                 <div v-for="iconInfo in icons.data" class="icons-item flex-column-container" :title="iconInfo.displayName">
                                     <div class="flex-item-fill icons-item-icon">
-                                        <component :is="state.googleIconComponent" v-bind="state.googleIconProps" :content="iconInfo.icon" :fontStyle="iconInfo.styleGroup"/>
+                                        <component :is="state.googleIconComponent" v-bind="state.googleIconProps" :content="iconInfo.icon" :fontStyle="iconInfo.defFontStyle"/>
                                     </div>
                                     <div class="flex-item-fixed icons-item-name">{{ iconInfo.displayName }}</div>
                                     <div class="flex-item-fixed icons-item-buttons">
@@ -382,8 +386,8 @@ loadIcons().finally();
                                         <span
                                             class="icons-item-button"
                                             @click="() => {
-                                                // state.showTablerSetting = true;
-                                                // state.selectedIcon = iconInfo;
+                                                state.showGoogleIconSetting = true;
+                                                state.selectedIcon = iconInfo;
                                             }"
                                         >
                                             设置
@@ -430,14 +434,30 @@ loadIcons().finally();
             width="auto"
             title="设置图标"
             :show-footer="true"
-            :confirm-btn-props="{
-            autoFocus: true,
-            text: '确定',
-        }"
+            :confirm-btn-props="{ autoFocus: true, text: '确定' }"
         >
             <FontawesomeSetting
-                :icon="state.selectedIcon?.icon"
-                :component-name="state.selectedIcon?.componentName"
+                :icon="state.selectedIcon.icon"
+                :component-name="state.selectedIcon.componentName"
+                style="margin: 8px 4px 16px 4px"
+            />
+        </Modal>
+        <Modal
+            v-if="state.selectedIcon && state.googleIconComponent && state.showGoogleIconSetting"
+            v-model="state.showGoogleIconSetting"
+            :esc-closable="true"
+            :mask-closable="true"
+            width="auto"
+            title="设置图标"
+            :show-footer="true"
+            :confirm-btn-props="{ autoFocus: true, text: '确定' }"
+        >
+            <GoogleIconSetting
+                :icon="state.googleIconComponent"
+                :content="state.selectedIcon.icon"
+                :component-name="state.selectedIcon.componentName"
+                :def-font-style="state.selectedIcon.defFontStyle"
+                :font-style="state.selectedIcon.fontStyle"
                 style="margin: 8px 4px 16px 4px"
             />
         </Modal>
@@ -449,14 +469,11 @@ loadIcons().finally();
             width="auto"
             title="设置图标"
             :show-footer="true"
-            :confirm-btn-props="{
-            autoFocus: true,
-            text: '确定',
-        }"
+            :confirm-btn-props="{ autoFocus: true, text: '确定' }"
         >
             <TablerIconSetting
-                :icon="state.selectedIcon?.icon"
-                :component-name="state.selectedIcon?.componentName"
+                :icon="state.selectedIcon.icon"
+                :component-name="state.selectedIcon.componentName"
                 style="margin: 8px 4px 16px 4px"
             />
         </Modal>
