@@ -223,8 +223,8 @@ const data = {
         opticalSize: 24,
     },
     defTablerIconProps: {
-        size: 16,
-        stroke: 1.5,
+        size: 18,
+        stroke: 2,
         color: "#3B4549",
     },
 };
