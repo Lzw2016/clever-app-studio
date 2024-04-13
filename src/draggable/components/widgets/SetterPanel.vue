@@ -158,16 +158,10 @@ window['a'] = getCurrentInstance();
                     <div class="flex-item-fill flex-row-container" style="align-items: center;">
                         <component v-if="!state.loading" :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
                     </div>
-                    <span
-                        class="flex-item-fixed flex-row-container flex-center"
-                        :class="{
-                            'setter-button': item.enableBind !== false,
-                            'setter-button-placeholder': item.enableBind === false,
-                        }"
-                        title="使用数据绑定"
-                    >
-                        <IconBraces v-if="item.enableBind !== false" :size="16" stroke-width="2"/>
+                    <span v-if="item.enableBind !== false" class="flex-item-fixed flex-row-container flex-center setter-button" title="使用数据绑定">
+                        <IconBraces :size="16" stroke-width="2"/>
                     </span>
+                    <span v-else class="setter-button-placeholder"/>
                 </div>
             </FormItem>
             <component v-else-if="!state.loading" :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
