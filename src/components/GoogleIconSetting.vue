@@ -108,6 +108,7 @@ const isSymbols = props.defFontStyle.includes("symbols");
                             '#7693F5FF',
                             '#181818FF',
                             '#252B3AFF',
+                            '#3B4549FF',
                             '#575D6CFF',
                             '#8A8E99FF',
                             '#DFE1E6FF',

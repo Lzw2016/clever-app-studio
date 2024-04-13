@@ -168,7 +168,7 @@ const state = reactive<SelectTablerIconState>({
         size: "2x",
         fixedWidth: true,
         style: {
-            color: "#1E3064",
+            color: "#3B4549",
         },
     },
     showFontAwesomeSetting: false,

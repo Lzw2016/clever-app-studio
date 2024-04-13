@@ -64,7 +64,7 @@ const state = reactive<FontawesomeSettingState>({
     fixedWidth: true,
     style: {
         fontSize: 32,
-        color: "#1E3064",
+        color: "#3B4549",
     },
 });
 // 内部数据
@@ -180,6 +180,7 @@ function animationChange(value?: string) {
                             '#7693F5FF',
                             '#181818FF',
                             '#252B3AFF',
+                            '#3B4549FF',
                             '#575D6CFF',
                             '#8A8E99FF',
                             '#DFE1E6FF',
