@@ -147,6 +147,7 @@ export default defineComponentMeta({
                             label: "头部图标",
                             labelTips: "输入框头部图标",
                             propsName: "prefix-icon",
+                            enableBind: false,
                         },
                         {
                             cmp: "IconSetter",
@@ -157,6 +158,7 @@ export default defineComponentMeta({
                             label: "尾部图标",
                             labelTips: "输入框尾部图标",
                             propsName: "suffix-icon",
+                            enableBind: false,
                         },
                     ],
                 },

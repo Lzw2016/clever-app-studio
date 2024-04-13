@@ -87,8 +87,9 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
 </script>
 
 <template>
-    <div>
+    <div style="width: 100%;">
         <Input
+            style="width: 100%;"
             :clearable="false"
             v-bind="inputProps"
             ref="setter"
