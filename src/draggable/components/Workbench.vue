@@ -67,7 +67,7 @@ const props = withDefaults(defineProps<StudioLayoutProps>(), {
     leftPanelMaxWidth: 350,
 
     rightPanelDefWidth: 280,
-    rightPanelMinWidth: 150,
+    rightPanelMinWidth: 220,
     rightPanelMaxWidth: 320,
 
     bottomPanelDefWidth: 180,

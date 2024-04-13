@@ -42,7 +42,9 @@ defineExpose<SetterExpose>({
 
 <template>
     <Numeric
+        class="number-setter"
         :clearable="true"
+        controlsPosition="right"
         v-bind="inputProps"
         ref="setter"
         @change="value => applyValue(props, state, setter, value)"
@@ -51,5 +53,7 @@ defineExpose<SetterExpose>({
 </template>
 
 <style scoped>
-
+.number-setter :deep(.tiny-numeric__input-inner) {
+    text-align: left;
+}
 </style>
