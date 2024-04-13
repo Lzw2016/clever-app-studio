@@ -3,7 +3,7 @@ import type { Component } from "vue";
 import { computed, defineExpose, isVNode, markRaw, reactive, ref } from "vue";
 import { Input } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { configRawValueName } from "@/draggable/Constant";
 import { ComponentParam } from "@/draggable/types/Base";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
@@ -89,7 +89,7 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
 <template>
     <div>
         <Input
-            :clearable="true"
+            :clearable="false"
             v-bind="inputProps"
             ref="setter"
             :modelValue="inputValue"
@@ -100,8 +100,17 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
         >
             <template #suffix>
                 <FontAwesomeIcon
+                    v-if="!inputValue"
                     :icon="faMagnifyingGlass"
                     @click="() => state.showSelectIcon = true"
+                />
+                <FontAwesomeIcon
+                    v-else
+                    :icon="faXmark"
+                    @click="() => {
+                        state.value = undefined;
+                        applyValue(props, state, setter, undefined);
+                    }"
                 />
             </template>
         </Input>

@@ -52,6 +52,7 @@ export default defineComponentMeta({
                             cmp: "IconSetter",
                             cmpProps: {
                                 placeholder: "选择图标",
+                                readonly: true,
                             },
                             label: "按钮图标",
                             propsName: "icon",
