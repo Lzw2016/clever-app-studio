@@ -44,11 +44,12 @@ defineExpose<SetterExpose>({
     <Numeric
         class="number-setter"
         :clearable="true"
+        :allowEmpty="true"
         controlsPosition="right"
         v-bind="inputProps"
         ref="setter"
-        @change="value => applyValue(props, state, setter, value)"
         v-model="state.value"
+        @change="value => applyValue(props, state, setter, value)"
     />
 </template>
 
