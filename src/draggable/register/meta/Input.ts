@@ -139,13 +139,21 @@ export default defineComponentMeta({
                             propsName: "size",
                         },
                         {
-                            cmp: "ComponentSetter",
+                            cmp: "IconSetter",
+                            cmpProps: {
+                                placeholder: "选择图标",
+                                readonly: true,
+                            },
                             label: "头部图标",
                             labelTips: "输入框头部图标",
                             propsName: "prefix-icon",
                         },
                         {
-                            cmp: "ComponentSetter",
+                            cmp: "IconSetter",
+                            cmpProps: {
+                                placeholder: "选择图标",
+                                readonly: true,
+                            },
                             label: "尾部图标",
                             labelTips: "输入框尾部图标",
                             propsName: "suffix-icon",
