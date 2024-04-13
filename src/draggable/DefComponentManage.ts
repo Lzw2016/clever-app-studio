@@ -28,7 +28,7 @@ class DefComponentManage implements ComponentManage {
     }
 
     async loadAsyncComponent(types: string[]): Promise<Record<string, VueComponent>> {
-        const needLoadTypes = types.filter(type => !this.components.has(type));
+        const needLoadTypes = types.filter(type => !isHtmlTag(type) && !this.components.has(type));
         const notExistTypes = needLoadTypes.filter(type => !this.asyncComponents.has(type));
         const registers: { [type: string]: BatchRegister } = {};
         this.batchRegister.forEach((register, regexp) => {
@@ -69,7 +69,7 @@ class DefComponentManage implements ComponentManage {
         }
         // 返回组件
         const components: Record<string, VueComponent> = {};
-        types.forEach(type => components[type] = this.components.get(type)!);
+        types.filter(type => !isHtmlTag(type)).forEach(type => components[type] = this.components.get(type)!);
         return components;
     }
 

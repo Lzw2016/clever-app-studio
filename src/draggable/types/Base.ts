@@ -155,6 +155,8 @@ interface ComponentParam {
     children?: Array<any>;
     /** 是否转换成函数形式 */
     isFunction?: boolean;
+
+    [name: string]: any;
 }
 
 /** 函数参数对象 */

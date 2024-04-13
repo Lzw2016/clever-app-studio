@@ -140,6 +140,12 @@
 =========================================================================== 基础变量说明 ===========================================================================
 */
 
+/** 按钮 */
+body .tiny-button {
+    --ti-button-size-normal-min-width: calc(var(--ti-common-size-base) * 15);
+    --ti-button-size-normal-padding-horizontal: calc(var(--ti-common-size-base) * 4);
+}
+
 /* tabs多页签 */
 body .tiny-tabs {
     --ti-tabs-content-margin-horizontal: var(--ti-common-size-0);

@@ -49,9 +49,13 @@ export default defineComponentMeta({
                             propsName: "type",
                         },
                         {
-                            cmp: "ComponentSetter",
+                            cmp: "IconSetter",
+                            cmpProps: {
+                                placeholder: "选择图标",
+                            },
                             label: "按钮图标",
                             propsName: "icon",
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "BoolSetter",

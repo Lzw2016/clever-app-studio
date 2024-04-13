@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import lodash from "lodash";
 import type { Component, CSSProperties } from "vue";
-import { computed, defineModel, markRaw, reactive, ref } from "vue";
+import { computed, defineModel, getCurrentInstance, markRaw, reactive, ref } from "vue";
 import { useResizeObserver, useVirtualList } from "@vueuse/core";
 import { Input, Loading, Modal, Notify, TabItem, Tabs } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -17,6 +17,14 @@ const vLoading = Loading.directive;
 defineOptions({
     name: 'SelectTablerIcon',
 });
+
+// 自定义事件类型
+const emit = defineEmits<{
+    selectedIcon: [component: Component, props: Record<string, any>, iconInfo: IconInfo];
+}>();
+
+// 当前组件对象
+const instance = getCurrentInstance();
 
 // 定义 Props 类型
 interface SelectTablerIconProps {
@@ -42,7 +50,7 @@ enum IconInfoLib {
 }
 
 /** 图标信息 */
-interface IconInfo {
+export interface IconInfo {
     /** 图标组件 */
     icon: Component;
     /** 显示名称 */
@@ -198,6 +206,27 @@ const data = {
         googleIcon: "https://fonts.google.com/icons",
         tabler: "https://tabler.io/icons",
     },
+    defFontAwesomeIconProps: {
+        size: "lg",
+        fixedWidth: true,
+        style: {
+            fontSize: 16,
+            color: "#3B4549",
+        },
+    },
+    defGoogleIconProps: {
+        size: 16,
+        color: "#3B4549",
+        fill: false,
+        weight: 400,
+        grade: 0,
+        opticalSize: 24,
+    },
+    defTablerIconProps: {
+        size: 16,
+        stroke: 1.5,
+        color: "#3B4549",
+    },
 };
 // 双向绑定的 show 属性
 const show = defineModel<boolean>();
@@ -317,6 +346,11 @@ async function loadIcons() {
     }
 }
 
+function selectedIcon(component: Component, props: Record<string, any>, iconInfo: IconInfo) {
+    show.value = false;
+    emit("selectedIcon", component, props, iconInfo);
+}
+
 loadIcons().finally();
 </script>
 
@@ -358,7 +392,7 @@ loadIcons().finally();
                                     </div>
                                     <div class="flex-item-fixed icons-item-name">{{ iconInfo.displayName }}</div>
                                     <div class="flex-item-fixed icons-item-buttons">
-                                        <span class="icons-item-button">选择</span>
+                                        <span class="icons-item-button" @click="selectedIcon(state.fontAwesomeComponent!, data.defFontAwesomeIconProps, iconInfo)">选择</span>
                                         <span
                                             class="icons-item-button"
                                             @click="() => {
@@ -384,7 +418,11 @@ loadIcons().finally();
                                     </div>
                                     <div class="flex-item-fixed icons-item-name">{{ iconInfo.displayName }}</div>
                                     <div class="flex-item-fixed icons-item-buttons">
-                                        <span class="icons-item-button">选择</span>
+                                        <span class="icons-item-button"
+                                              @click="selectedIcon(state.googleIconComponent!, {...data.defGoogleIconProps, content: iconInfo.icon, fontStyle: iconInfo.defFontStyle}, iconInfo)"
+                                        >
+                                            选择
+                                        </span>
                                         <span
                                             class="icons-item-button"
                                             @click="() => {
@@ -410,7 +448,7 @@ loadIcons().finally();
                                     </div>
                                     <div class="flex-item-fixed icons-item-name">{{ iconInfo.displayName }}</div>
                                     <div class="flex-item-fixed icons-item-buttons">
-                                        <span class="icons-item-button">选择</span>
+                                        <span class="icons-item-button" @click="selectedIcon(iconInfo.icon, data.defTablerIconProps, iconInfo)">选择</span>
                                         <span
                                             class="icons-item-button"
                                             @click="() => {
@@ -437,8 +475,13 @@ loadIcons().finally();
             title="设置图标"
             :show-footer="true"
             :confirm-btn-props="{ autoFocus: true, text: '确定' }"
+            @confirm="() => {
+                const fontawesomeSetting = instance?.refs.fontawesomeSetting as InstanceType<typeof FontawesomeSetting>;
+                selectedIcon(state.fontAwesomeComponent!, fontawesomeSetting.iconProps, state.selectedIcon!);
+            }"
         >
             <FontawesomeSetting
+                ref="fontawesomeSetting"
                 :icon="state.selectedIcon.icon as any"
                 :icon-component="state.fontAwesomeComponent"
                 :component-name="state.selectedIcon.componentName"
@@ -454,8 +497,13 @@ loadIcons().finally();
             title="设置图标"
             :show-footer="true"
             :confirm-btn-props="{ autoFocus: true, text: '确定' }"
+            @confirm="() => {
+                const googleIconSetting = instance?.refs.googleIconSetting as InstanceType<typeof GoogleIconSetting>;
+                selectedIcon(state.googleIconComponent!, googleIconSetting.iconProps, state.selectedIcon!);
+            }"
         >
             <GoogleIconSetting
+                ref="googleIconSetting"
                 :icon="state.googleIconComponent"
                 :content="state.selectedIcon.icon as any"
                 :component-name="state.selectedIcon.componentName"
@@ -473,8 +521,13 @@ loadIcons().finally();
             title="设置图标"
             :show-footer="true"
             :confirm-btn-props="{ autoFocus: true, text: '确定' }"
+            @confirm="() => {
+                const tablerIconSetting = instance?.refs.tablerIconSetting as InstanceType<typeof TablerIconSetting>;
+                selectedIcon(state.selectedIcon!.icon, tablerIconSetting.iconProps, state.selectedIcon!);
+            }"
         >
             <TablerIconSetting
+                ref="tablerIconSetting"
                 :icon="state.selectedIcon.icon"
                 :component-name="state.selectedIcon.componentName"
                 style="margin: 8px 4px 16px 4px"

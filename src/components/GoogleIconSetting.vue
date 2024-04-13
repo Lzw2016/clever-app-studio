@@ -75,6 +75,12 @@ for (let fontStyle of props.fontStyle) {
     data.fontStyleList.push({ label: fontStyle, value: fontStyle });
 }
 const isSymbols = props.defFontStyle.includes("symbols");
+
+// 定义组件公开内容
+defineExpose({
+    /** 图标 props 对象 */
+    iconProps: state,
+});
 </script>
 
 <template>

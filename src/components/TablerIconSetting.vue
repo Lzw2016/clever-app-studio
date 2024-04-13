@@ -37,7 +37,10 @@ const stroke10x = ref(state.stroke * 10);
 watch(() => stroke10x.value, value => state.stroke = value / 10);
 
 // 定义组件公开内容
-defineExpose({});
+defineExpose({
+    /** 图标 props 对象 */
+    iconProps: state,
+});
 </script>
 
 <template>

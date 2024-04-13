@@ -129,6 +129,12 @@ function animationChange(value?: string) {
         state.spin = true;
     }
 }
+
+// 定义组件公开内容
+defineExpose({
+    /** 图标 props 对象 */
+    iconProps: state,
+});
 </script>
 
 <template>

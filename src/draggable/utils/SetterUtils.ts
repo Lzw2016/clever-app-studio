@@ -1,5 +1,5 @@
 import lodash from "lodash";
-import { computed, useAttrs, watch } from "vue";
+import { computed, markRaw, useAttrs, watch } from "vue";
 import { isFunction, noValue } from "@/utils/Typeof";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 
@@ -8,6 +8,12 @@ const multipleValuesText = "存在多个不同值";
 
 /** setter值转换函数 */
 type ValueTransform<T = any> = (value: any) => T | undefined;
+
+/** setter值转换成object */
+const toObj: ValueTransform = value => {
+    if (noValue(value)) return;
+    return markRaw(value);
+};
 
 /** setter值转换成string */
 const toStr: ValueTransform<string> = value => {
@@ -143,6 +149,7 @@ function getInputProps(state: SetterState) {
     const attrs = useAttrs();
     return computed(() => {
         const obj: any = {
+            placeholder: "请输入",
             ...attrs,
         };
         if (state.multipleValues) {
@@ -191,6 +198,7 @@ function getSetterExpose<T = any>(props: SetterProps, state: SetterState, setter
 
 export {
     multipleValuesText,
+    toObj,
     toStr,
     toBool,
     toNumber,
