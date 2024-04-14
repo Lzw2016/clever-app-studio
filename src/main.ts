@@ -3,7 +3,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import { createPinia } from "pinia";
 import App from "@/App.vue";
 import { focus } from "@/directives";
-import { clearDraggableHtmlAttr, disableEvent } from "@/draggable/directives";
+import { clearDraggableHtmlAttr, deepTraverseEach, disableEvent } from "@/draggable/directives";
 import { initRouter } from "@/routers";
 import { initI18n } from "@/i18n";
 import { registerComponent } from "@/draggable/register/RegisterComponent";
@@ -28,6 +28,7 @@ window['APP_INFO'] = readonly(__APP_INFO__);
     app.directive("focus", focus);
     app.directive("disable-event", disableEvent);
     app.directive("clear-draggable-html-attr", clearDraggableHtmlAttr);
+    app.directive("deep-traverse-each", deepTraverseEach);
     // 配置组件库
     usePrimeVue(app);
     // 注册组件、组件元信息、组件设置器、

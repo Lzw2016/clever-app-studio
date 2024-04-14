@@ -1,3 +1,4 @@
+import { VNode } from "vue";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 
 export default defineComponentMeta({
@@ -15,6 +16,22 @@ export default defineComponentMeta({
     },
     designDirectives: {
         "disable-event": {},
+        "deep-traverse-each": {
+            value: {
+                maxDepth: 1,
+                eachVNode: function (rootVNode: VNode, htmlTag: boolean, current: VNode, parent?: VNode) {
+                    if (rootVNode !== current) return;
+                    if (rootVNode.type !== "button") return;
+                    const props = rootVNode.props;
+                    if (!props) return;
+                    if (props.disabled) {
+                        props.disabled = false;
+                        if (!props.style) props.style = {};
+                        props.style['pointer-events'] = 'all';
+                    }
+                },
+            },
+        },
     },
     events: {},
     slots: {},
@@ -56,6 +73,7 @@ export default defineComponentMeta({
                             },
                             label: "按钮图标",
                             propsName: "icon",
+                            enableBind: false,
                             recalcAuxToolPosition: true,
                         },
                         {
