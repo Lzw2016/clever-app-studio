@@ -90,7 +90,7 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
 </script>
 
 <template>
-    <div style="width: 100%;">
+    <div class="icon-setter" style="width: 100%;">
         <Input
             style="width: 100%;"
             :clearable="false"
@@ -104,14 +104,16 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
         >
             <template #suffix>
                 <FontAwesomeIcon
+                    class="icons-button"
                     :class="{
-                        'icons-button': inputValue,
+                        'icons-button-margin': inputValue,
                     }"
                     :icon="faMagnifyingGlass"
                     @click="() => state.showSelectIcon = true"
                 />
                 <FontAwesomeIcon
                     v-if="inputValue"
+                    class="icons-button"
                     :icon="faXmark"
                     @click="() => {
                         state.value = undefined;
@@ -131,7 +133,21 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
 </template>
 
 <style scoped>
-.icons-button {
+.icons-button-margin {
     margin-right: 8px;
+}
+
+.icons-button:hover {
+    color: #666;
+}
+
+.icons-button:active {
+    color: #2e3243;
+}
+
+/* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
+
+.icon-setter :deep(.tiny-input .tiny-input__suffix) {
+    background-color: #fff;
 }
 </style>
