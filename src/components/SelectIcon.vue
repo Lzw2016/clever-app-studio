@@ -215,7 +215,7 @@ const data = {
         },
     },
     defGoogleIconProps: {
-        size: 14,
+        size: 16,
         color: "#3B4549",
         fill: false,
         weight: 400,
@@ -272,6 +272,9 @@ async function loadFontawesomeIcons() {
         for (let iconPack of [fas, far, fab]) {
             for (let name in iconPack) {
                 const icon = iconPack[name];
+                if (state.fontAwesomeIcons.some(item => item.displayName === icon.iconName && item.styleGroup === icon.prefix)) {
+                    continue;
+                }
                 state.fontAwesomeIcons.push(markRaw({
                     icon: markRaw(icon),
                     displayName: icon.iconName,
@@ -499,7 +502,11 @@ loadIcons().finally();
             :confirm-btn-props="{ autoFocus: true, text: '确定' }"
             @confirm="() => {
                 const googleIconSetting = instance?.refs.googleIconSetting as InstanceType<typeof GoogleIconSetting>;
-                selectedIcon(state.googleIconComponent!, googleIconSetting.iconProps, state.selectedIcon!);
+                selectedIcon(
+                    state.googleIconComponent!,
+                    {...googleIconSetting.iconProps, content: state.selectedIcon!.icon },
+                    state.selectedIcon!
+                );
             }"
         >
             <GoogleIconSetting

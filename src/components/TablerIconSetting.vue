@@ -28,7 +28,7 @@ interface TablerIconSettingState {
 
 // state 属性
 const state = reactive<TablerIconSettingState>({
-    size: 24,
+    size: 16,
     stroke: 1.5,
     color: "#3B4549FF",
 });

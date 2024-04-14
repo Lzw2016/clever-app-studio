@@ -63,7 +63,7 @@ const state = reactive<FontawesomeSettingState>({
     size: "2x",
     fixedWidth: true,
     style: {
-        fontSize: 32,
+        fontSize: 14,
         color: "#3B4549",
     },
 });

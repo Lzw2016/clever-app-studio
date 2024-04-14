@@ -134,7 +134,7 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
 
 <style scoped>
 .icons-button-margin {
-    margin-right: 8px;
+    margin: 0 8px 0 4px;
 }
 
 .icons-button:hover {

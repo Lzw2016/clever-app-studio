@@ -43,7 +43,7 @@
 [  ] 31.基于 RuntimeBlock 生成代码，基于 RuntimeBlock 对象逆向生成 DesignBlock 的源代码
 [  ] 32.集成扩展图标库 lucide、Emoji(优先级底)
 [OK] 33.完成 FontawesomeSetting.vue、GoogleIconSetting.vue 参考 TablerIconSetting.vue
-[  ] 34.完成 IconSetter.vue 组件
+[OK] 34.完成 IconSetter.vue 组件
 [  ] 35.
 
 

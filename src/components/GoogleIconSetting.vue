@@ -47,7 +47,7 @@ interface GoogleIconSettingState {
 
 // state 属性
 const state = reactive<GoogleIconSettingState>({
-    size: 28,
+    size: 16,
     fontStyle: props.defFontStyle,
     color: "#3B4549",
     fill: false,
