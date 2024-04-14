@@ -210,12 +210,12 @@ const data = {
         size: "lg",
         fixedWidth: true,
         style: {
-            fontSize: 16,
+            fontSize: 14,
             color: "#3B4549",
         },
     },
     defGoogleIconProps: {
-        size: 16,
+        size: 14,
         color: "#3B4549",
         fill: false,
         weight: 400,
@@ -223,7 +223,7 @@ const data = {
         opticalSize: 24,
     },
     defTablerIconProps: {
-        size: 18,
+        size: 16,
         stroke: 2,
         color: "#3B4549",
     },

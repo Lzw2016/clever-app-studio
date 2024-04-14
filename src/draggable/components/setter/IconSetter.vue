@@ -76,6 +76,9 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
     if (iconInfo.componentName === "FontAwesomeIcon" && componentParam.props) {
         componentParam.props.icon = [iconInfo.icon['prefix'], iconInfo.icon['iconName']];
     }
+    if (!componentParam.props) componentParam.props = {};
+    if (!componentParam.props.style) componentParam.props.style = {};
+    componentParam.props.style['margin-right'] = '2px';
     const componentManage = props.designerState.designerEngine.componentManage;
     componentManage.loadAsyncComponent([componentParam.type]).finally(() => {
         const cmp = markRaw(createComponentParam(componentParam, componentManage));
@@ -101,12 +104,14 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
         >
             <template #suffix>
                 <FontAwesomeIcon
-                    v-if="!inputValue"
+                    :class="{
+                        'icons-button': inputValue,
+                    }"
                     :icon="faMagnifyingGlass"
                     @click="() => state.showSelectIcon = true"
                 />
                 <FontAwesomeIcon
-                    v-else
+                    v-if="inputValue"
                     :icon="faXmark"
                     @click="() => {
                         state.value = undefined;
@@ -126,5 +131,7 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
 </template>
 
 <style scoped>
-
+.icons-button {
+    margin-right: 8px;
+}
 </style>
