@@ -29,6 +29,8 @@ interface DirectivesOptions {
     argument?: string,
     /** 指令修饰符 */
     modifiers?: Record<string, boolean>;
+
+    [name: string]: any;
 }
 
 /** 组件基础指令 */

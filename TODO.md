@@ -21,9 +21,9 @@
 [OK]  9.v-model指令的实现
 [OK] 10.遇到异常是尽可能多的渲染出内容，需要处理 renderTpl、propsTransform、expTransform 函数的异常
 [NO] 11.模版或者表达式计算时使用代理对象，可以访问任何值?只针对模版处理，当访问不存在的属性时返回空字符串(无法实现，在with语句中Proxy的get不生效)
-[OK] 12.图标库 fortawesome、google-fonts-icons、tabler-icons，未整合 fluent-system-icons 因为图标已经够用了
+[OK] 12.图标库 fontawesome、google-fonts-icons、tabler-icons，未整合 fluent-system-icons 因为图标已经够用了
 [OK] 13.primevue 国际化(中文配置)
-[50] 14.ant-design-vue 国际化配置 
+[50] 14.ant-design-vue 国际化配置
 [OK] 15.删除 opentiny?(暂时删除，因为打包体积太大)
 [  ] 16.把 DesignNode 的 props 属性直接平铺直接在最外层定义，类似extjs写法(优先级底)
 [  ] 17.给图标库图标名称定义类型
@@ -44,7 +44,8 @@
 [  ] 32.集成扩展图标库 lucide、Emoji(优先级底)
 [OK] 33.完成 FontawesomeSetting.vue、GoogleIconSetting.vue 参考 TablerIconSetting.vue
 [OK] 34.完成 IconSetter.vue 组件
-[  ] 35.
+[  ] 35.在项目中只使用 fontawesome 图标库，需要替换 tabler-icons 图标库的使用
+[  ] 36.
 
 
 
@@ -56,6 +57,6 @@
 页面大纲树
 页面管理
 
-fortawesome 忽略系统设置，强制播放动画，重写如下css样式
+fontawesome 忽略系统设置，强制播放动画，重写如下css样式
 @media (prefers-reduced-motion: reduce) .fa-beat, .fa-bounce, .fa-fade, .fa-beat-fade, .fa-flip, .fa-pulse, .fa-shake, .fa-spin, .fa-spin-pulse {
 }

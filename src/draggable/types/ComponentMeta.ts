@@ -199,19 +199,37 @@ type DefDesignNode = Partial<Omit<DesignNode, 'type' | 'ref'>>;
 interface DesignDirectives extends BaseDirectives {
     /** 禁用组件内部事件 */
     'disable-event'?: {
-        /** 递归的最大深度 */
-        maxDepth?: number;
-        /** 禁用的事件名称，如果未设置就是用默认的事件集合(defEvents)，优先级: manualDisable > enableEvents > disableEvents */
-        disableEvents?: string | Array<string>;
-        /**启用的事件名称，优先级: manualDisable > enableEvents > disableEvents  */
-        enableEvents?: string | Array<string>;
-        /** 手动禁用事件，优先级: manualDisable > enableEvents > disableEvents */
-        manualDisable?: (vnode: VNode) => void;
+        /** 指令参数 */
+        value?: {
+            /** 递归的最大深度 */
+            maxDepth?: number;
+            /** 禁用的事件名称，如果未设置就是用默认的事件集合(defEvents)，优先级: manualDisable > enableEvents > disableEvents */
+            disableEvents?: string | Array<string>;
+            /**启用的事件名称，优先级: manualDisable > enableEvents > disableEvents  */
+            enableEvents?: string | Array<string>;
+            /** 手动禁用事件，优先级: manualDisable > enableEvents > disableEvents */
+            manualDisable?: (vnode: VNode) => void;
+        };
     };
     /** 禁用组件内部事件 */
     'clear-draggable-html-attr'?: {
-        /** 递归的最大深度 */
-        maxDepth?: number;
+        /** 指令参数 */
+        value?: {
+            /** 递归的最大深度 */
+            maxDepth?: number;
+        };
+    };
+    /** 深度递归遍历 VNode 和 Element */
+    'deep-traverse-each'?: {
+        /** 指令参数 */
+        value: {
+            /** 递归的最大深度 */
+            maxDepth?: number;
+            /** 遍历VNode */
+            eachVNode?: (rootVNode: VNode, htmlTag: boolean, current: VNode, parent?: VNode) => void;
+            /** 遍历Element */
+            eachElement?: (rootEl: Element, current: Element, parent?: Element) => void;
+        };
     };
 }
 
