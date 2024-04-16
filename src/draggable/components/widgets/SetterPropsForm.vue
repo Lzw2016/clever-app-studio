@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, markRaw, reactive } from "vue";
+import { computed, getCurrentInstance, markRaw, onBeforeMount, reactive, watch } from "vue";
 import { Collapse, CollapseItem, Form, FormItem, Loading, Tooltip } from "@opentiny/vue";
 import { isStr } from "@/utils/Typeof";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
@@ -49,6 +49,10 @@ const state = reactive<SetterPropsFormState>({
 // 当前活动的设计器状态数据
 const setterState = computed(() => props.designerEngine.activeDesignerState?.setterState);
 
+// 初始化设计器表单组件
+onBeforeMount(() => loadSetterComponent().finally());
+// 动态加载设计器表单组件
+watch(() => props.setterPanel, () => loadSetterComponent().finally());
 
 async function loadSetterComponent() {
     // 获取所有需要加载的组件类型
@@ -120,11 +124,9 @@ function getSetterProps(setter: Setter) {
     }
     // if (setter.watchProps) obj.watchProps = setter.watchProps;
     // if (setter.listeners) obj.listeners = setter.listeners;
-    // TODO ref、enableBind, watchProps, listeners
+    // TODO enableBind, watchProps, listeners
     return obj;
 }
-
-loadSetterComponent().finally();
 </script>
 
 <template>
@@ -164,8 +166,8 @@ loadSetterComponent().finally();
                                 <component v-if="!state.loading" :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
                             </div>
                             <span v-if="item.enableBind !== false" class="flex-item-fixed flex-row-container flex-center setter-button" title="使用数据绑定">
-                        <IconBraces :size="16" stroke-width="2"/>
-                    </span>
+                                <IconBraces :size="16" stroke-width="2"/>
+                            </span>
                             <span v-else class="setter-button-placeholder"/>
                         </div>
                     </FormItem>
