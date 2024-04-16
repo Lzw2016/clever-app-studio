@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
-import { Collapse, CollapseItem, TabItem, Tabs } from "@opentiny/vue";
+import { TabItem, Tabs } from "@opentiny/vue";
 import { IconX } from "@tabler/icons-vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
-import SetterPanel from "@/draggable/components/widgets/SetterPanel.vue";
+import SetterPropsForm from "@/draggable/components/widgets/SetterPropsForm.vue";
 
 // 定义组件选项
 defineOptions({
@@ -65,18 +65,18 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
         newMeta.setter.props.groups = meta.setter.props.groups.filter(group => group.items.length > 0);
         if (newMeta.setter.props.groups.length <= 0) delete newMeta.setter.props;
     }
-    if (meta.setter.events && newMeta.setter.events) {
-        newMeta.setter.events.groups = meta.setter.events.groups.filter(group => group.items.length > 0);
-        if (newMeta.setter.events.groups.length <= 0) delete newMeta.setter.events;
-    }
-    if (meta.setter.style && newMeta.setter.style) {
-        newMeta.setter.style.groups = meta.setter.style.groups.filter(group => group.items.length > 0);
-        if (newMeta.setter.style.groups.length <= 0) delete newMeta.setter.style;
-    }
-    if (meta.setter.advanced && newMeta.setter.advanced) {
-        newMeta.setter.advanced.groups = meta.setter.advanced.groups.filter(group => group.items.length > 0);
-        if (newMeta.setter.advanced.groups.length <= 0) delete newMeta.setter.advanced;
-    }
+    // if (meta.setter.events && newMeta.setter.events) {
+    //     newMeta.setter.events.groups = meta.setter.events.groups.filter(group => group.items.length > 0);
+    //     if (newMeta.setter.events.groups.length <= 0) delete newMeta.setter.events;
+    // }
+    // if (meta.setter.style && newMeta.setter.style) {
+    //     newMeta.setter.style.groups = meta.setter.style.groups.filter(group => group.items.length > 0);
+    //     if (newMeta.setter.style.groups.length <= 0) delete newMeta.setter.style;
+    // }
+    // if (meta.setter.advanced && newMeta.setter.advanced) {
+    //     newMeta.setter.advanced.groups = meta.setter.advanced.groups.filter(group => group.items.length > 0);
+    //     if (newMeta.setter.advanced.groups.length <= 0) delete newMeta.setter.advanced;
+    // }
     return newMeta;
 }
 
@@ -112,33 +112,54 @@ function existsSetter(meta?: ComponentMeta) {
             <div class="flex-item-fill settings-panel-empty">选中的节点未注册配置属性</div>
         </div>
         <Tabs
-            v-else-if="selectedComponentMeta && setterState && designerState"
+            v-else-if="selectedComponentMeta && selectedComponentMeta.setter && setterState && designerState"
             class="flex-item-fill settings-tabs flex-column-container"
             :active-name="setterState.activeTab"
             tab-style="button-card"
         >
             <TabItem
+                v-if="selectedComponentMeta.setter.props"
                 style="height: 100%;"
-                v-for="(setter, name) in selectedComponentMeta.setter"
-                :key="name"
+                key="props"
+                name="props"
                 :lazy="false"
-                :name="name"
-                :title="setter?.title || data.setterTabs[name] || name"
+                :title="selectedComponentMeta.setter.props?.title || data.setterTabs.props"
             >
-                <Collapse v-if="setter" class="settings-groups" v-model="setterState.expandGroups[name]">
-                    <CollapseItem
-                        class="settings-items"
-                        v-for="group in setter.groups"
-                        :name="group.title"
-                        :title="group.title"
-                    >
-                        <SetterPanel
-                            :component-manage="props.designerEngine.componentManage"
-                            :designer-state="designerState"
-                            :setter-group="group"
-                        />
-                    </CollapseItem>
-                </Collapse>
+                <SetterPropsForm
+                    :designer-engine="props.designerEngine"
+                    :designer-state="designerState"
+                    :setter-panel="selectedComponentMeta.setter.props"
+                />
+            </TabItem>
+            <TabItem
+                v-if="selectedComponentMeta.setter.events"
+                style="height: 100%;"
+                key="events"
+                name="events"
+                :lazy="false"
+                :title="selectedComponentMeta.setter.events?.title || data.setterTabs.events"
+            >
+                组件事件绑定
+            </TabItem>
+            <TabItem
+                v-if="selectedComponentMeta.setter.style"
+                style="height: 100%;"
+                key="style"
+                name="style"
+                :lazy="false"
+                :title="selectedComponentMeta.setter.style?.title || data.setterTabs.style"
+            >
+                样式设置
+            </TabItem>
+            <TabItem
+                v-if="selectedComponentMeta.setter.advanced"
+                style="height: 100%;"
+                key="advanced"
+                name="advanced"
+                :lazy="false"
+                :title="selectedComponentMeta.setter.advanced?.title || data.setterTabs.advanced"
+            >
+                vue指令设置
             </TabItem>
         </Tabs>
     </div>
@@ -234,41 +255,10 @@ function existsSetter(meta?: ComponentMeta) {
     margin: 0;
     flex-grow: 1;
     border-top: 1px solid #d9d9d9;
+    font-size: 12px;
 }
 
-.settings-groups {
-    height: 100%;
-    overflow: auto;
-    border-top: none;
-    border-bottom: none;
-}
-
-.settings-groups :deep(.tiny-collapse-item) {
-    margin-top: 0;
-    border: none;
-}
-
-.settings-items :deep(.tiny-collapse-item__header) {
-    background-color: #efefef;
-    border-radius: 0;
-    border: none;
-    border-bottom: 1px solid #d9d9d9;
-}
-
-.settings-items :deep(.tiny-collapse-item__content) {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    padding: 0;
-    border: none;
-    border-bottom: 1px solid #d9d9d9;
-}
-
-.settings-items:last-child :deep(.tiny-collapse-item__content) {
-    border-bottom: none;
-}
-
-.settings-item {
-    height: 32px;
+.settings-tabs :deep(.tiny-form-item .tiny-form-item__label) {
+    font-size: 12px;
 }
 </style>

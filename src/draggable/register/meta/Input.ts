@@ -26,12 +26,12 @@ export default defineComponentMeta({
     setter: {
         props: {
             title: "",
+            formProps: {
+                labelWidth: "75px",
+            },
             groups: [
                 {
                     title: "常用",
-                    formProps: {
-                        labelWidth: "75px",
-                    },
                     items: [
                         {
                             cmp: "SelectSetter",
@@ -220,9 +220,6 @@ export default defineComponentMeta({
                 },
                 {
                     title: "html原生属性",
-                    formProps: {
-                        labelWidth: "75px",
-                    },
                     items: [
                         {
                             cmp: "SelectSetter",

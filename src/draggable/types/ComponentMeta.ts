@@ -114,6 +114,16 @@ interface Setter<SetterProps extends BaseProps = BaseProps, TargetProps = any> {
     recalcAuxToolPosition?: boolean;
 }
 
+/** 设置器分组 */
+interface SetterGroup {
+    /** 分组标题 */
+    title: string;
+    /** 是否展开状态(默认为true) */
+    expand?: boolean;
+    /** 设置器集合 */
+    items: Array<Setter>;
+}
+
 /** 表单的配置 */
 interface FormProps {
     /** 行内布局模式 */
@@ -158,24 +168,14 @@ interface FormItemProps {
     [name: string]: any;
 }
 
-/** 设置器分组 */
-interface SetterGroup {
-    /** 分组标题 */
-    title: string;
-    /** 是否展开状态(默认为true) */
-    expand?: boolean;
-    /** 表单的配置 */
-    formProps?: FormProps;
-    /** 表单项的通用配置 */
-    formItemProps?: FormItemProps;
-    /** 设置器集合 */
-    items: Array<Setter>;
-}
-
 /** 设置器面板 */
 interface SetterPanel {
     /** 面板标题 */
     title?: string;
+    /** 表单的配置 */
+    formProps?: FormProps;
+    /** 表单项的通用配置 */
+    formItemProps?: FormItemProps;
     /** 设置器分组集合 */
     groups: Array<SetterGroup>;
 }
