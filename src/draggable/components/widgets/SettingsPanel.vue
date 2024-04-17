@@ -153,6 +153,7 @@ function existsSetter(meta?: ComponentMeta) {
                 <SetterStylePanel
                     :designer-engine="props.designerEngine"
                     :designer-state="designerState"
+                    :setter-state="setterState"
                 />
             </TabItem>
             <TabItem

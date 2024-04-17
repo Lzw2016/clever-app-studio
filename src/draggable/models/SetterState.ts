@@ -21,7 +21,7 @@ class SetterState {
     protected getAllExpandTitles(meta?: ComponentMeta): Record<string, Array<string>> {
         if (!meta) return {};
         const expandGroups: Record<string, Array<string>> = {
-            style: ["布局"],
+            style: ["布局", "间距", "尺寸", "定位", "文本", "背景", "边框", "效果"],
         };
         const getExpands = (groups: Array<SetterGroup>) => {
             const expands: Array<string> = [];

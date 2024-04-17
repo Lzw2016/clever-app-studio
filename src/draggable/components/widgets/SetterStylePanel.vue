@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, reactive } from "vue";
+import { reactive } from "vue";
 import { Collapse, CollapseItem } from "@opentiny/vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
+import { SetterState } from "@/draggable/models/SetterState";
 import LayoutStyle from "@/draggable/components/widgets/style/LayoutStyle.vue";
 
 // 定义组件选项
@@ -16,6 +17,8 @@ interface SetterStylePanelProps {
     designerEngine: DesignerEngine;
     /** 设计器状态数据 */
     designerState: DesignerState;
+    /** 设计器的组件配置面板状态 */
+    setterState: SetterState;
 }
 
 // 读取组件 props 属性
@@ -30,21 +33,36 @@ interface SetterStylePanelState {
 const state = reactive<SetterStylePanelState>({});
 // 内部数据
 // const data = {};
-// 当前活动的设计器状态数据
-const setterState = computed(() => props.designerEngine.activeDesignerState?.setterState);
-
 
 </script>
 
 <template>
-    <Collapse v-if="setterState" class="settings-groups" v-model="setterState.expandGroups['style']">
+    <Collapse class="settings-groups" v-model="props.setterState.expandGroups['style']">
         <CollapseItem class="settings-items" name="布局" title="布局">
             <LayoutStyle/>
         </CollapseItem>
-    </Collapse>
-    <div v-else>
+        <CollapseItem class="settings-items" name="间距" title="间距">
 
-    </div>
+        </CollapseItem>
+        <CollapseItem class="settings-items" name="尺寸" title="尺寸">
+
+        </CollapseItem>
+        <CollapseItem class="settings-items" name="定位" title="定位">
+
+        </CollapseItem>
+        <CollapseItem class="settings-items" name="文本" title="文本">
+
+        </CollapseItem>
+        <CollapseItem class="settings-items" name="背景" title="背景">
+
+        </CollapseItem>
+        <CollapseItem class="settings-items" name="边框" title="边框">
+
+        </CollapseItem>
+        <CollapseItem class="settings-items" name="效果" title="效果">
+
+        </CollapseItem>
+    </Collapse>
 </template>
 
 <style scoped>

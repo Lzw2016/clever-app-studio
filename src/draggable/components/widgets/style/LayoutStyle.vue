@@ -282,11 +282,12 @@ function setFlexWrap(val: string) {
 }
 
 .setter-row-input-radio:hover {
-    border: 1px solid #7693F5;
+    background: #DFE1E6;
 }
 
 .setter-row-input-radio.selected {
     fill: #4f77ff;
     color: #4f77ff;
+    border: 1px solid #7693F5;
 }
 </style>
