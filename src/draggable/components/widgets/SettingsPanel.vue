@@ -5,6 +5,7 @@ import { IconX } from "@tabler/icons-vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 import SetterPropsForm from "@/draggable/components/widgets/SetterPropsForm.vue";
+import SetterStylePanel from "@/draggable/components/widgets/SetterStylePanel.vue";
 
 // 定义组件选项
 defineOptions({
@@ -149,7 +150,10 @@ function existsSetter(meta?: ComponentMeta) {
                 :lazy="false"
                 :title="selectedComponentMeta.setter.style?.title || data.setterTabs.style"
             >
-                样式设置
+                <SetterStylePanel
+                    :designer-engine="props.designerEngine"
+                    :designer-state="designerState"
+                />
             </TabItem>
             <TabItem
                 v-if="selectedComponentMeta.setter.advanced"

@@ -39,13 +39,24 @@
 [OK] 27.设计时默认屏蔽所有组件的事件(dom事件或者组件事件)，支持在元数据配置启用的事件(dom事件或者组件事件)。使用 disable-event、clear-draggable-html-attr 指令实现。
 [OK] 28.生成代码时需要过滤属性：disable-event、clear-draggable-html-attr。需要在 BlockFactory.tsx 中自动处理 disable-event、clear-draggable-html-attr 指令。
 [OK] 29.组件属性配置支持配置：“组件类型”、“函数类型”
-[60] 30.重新实现 SetterForm 全动态渲染一气呵成
+[OK] 30.重新实现 SetterForm 全动态渲染一气呵成
 [  ] 31.基于 RuntimeBlock 生成代码，基于 RuntimeBlock 对象逆向生成 DesignBlock 的源代码
 [  ] 32.集成扩展图标库 lucide、Emoji(优先级底)
 [OK] 33.完成 FontawesomeSetting.vue、GoogleIconSetting.vue 参考 TablerIconSetting.vue
 [OK] 34.完成 IconSetter.vue 组件
-[  ] 35.在项目中只使用 fontawesome 图标库，需要替换 tabler-icons 图标库的使用
-[  ] 36.
+[  ] 35.在项目中只使用 fontawesome 图标库，需要替换 tabler-icons 图标库的使用(优先级底)
+[  ] 36.完成组件“样式”配置面板
+[  ] 37.完成组件“事件”配置面板
+[  ] 38.完成组件“高级”配置面板
+[  ] 39.注册 “@opentiny/vue” 的原子组件
+[  ] 40.封装业务表单组件 & 注册到系统中
+[  ] 41.
+[  ] 42.
+[  ] 41.
+[  ] 43.
+[  ] 44.
+[  ] 45.
+[  ] 46.
 
 
 

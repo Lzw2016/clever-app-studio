@@ -20,7 +20,9 @@ class SetterState {
     /** 获取所有展开的 group title */
     protected getAllExpandTitles(meta?: ComponentMeta): Record<string, Array<string>> {
         if (!meta) return {};
-        const expandGroups: Record<string, Array<string>> = {};
+        const expandGroups: Record<string, Array<string>> = {
+            style: ["布局"],
+        };
         const getExpands = (groups: Array<SetterGroup>) => {
             const expands: Array<string> = [];
             for (let group of groups) {
@@ -31,9 +33,9 @@ class SetterState {
             return expands;
         };
         if (meta.setter.props) expandGroups.props = getExpands(meta.setter.props.groups);
-        if (meta.setter.events) expandGroups.events = getExpands(meta.setter.events.groups);
-        if (meta.setter.style) expandGroups.style = getExpands(meta.setter.style.groups);
-        if (meta.setter.advanced) expandGroups.advanced = getExpands(meta.setter.advanced.groups);
+        // if (meta.setter.events) expandGroups.events = getExpands(meta.setter.events.groups);
+        // if (meta.setter.style) expandGroups.style = getExpands(meta.setter.style.groups);
+        // if (meta.setter.advanced) expandGroups.advanced = getExpands(meta.setter.advanced.groups);
         return expandGroups;
     }
 
