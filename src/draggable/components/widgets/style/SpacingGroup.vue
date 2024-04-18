@@ -18,18 +18,12 @@ defineOptions({
                             <path
                                 mode="delta"
                                 fill="currentColor"
-                                d="
-              m1,1
-              h223
-              l-36,24
-              h-151
-              l-36,-24z
-            "
+                                d="m1,1 h223 l-36,24 h-151 l-36,-24z"
                                 data-automation-id="margin-top-button"
                                 aria-label="Margin top button"
                                 class="tb-path-color"
                             ></path>
-<!--                                @click="clickMargin(SPACING_PROPERTY.MarginTop, $event)"-->
+                            <!--                                @click="clickMargin(SPACING_PROPERTY.MarginTop, $event)"-->
                         </g>
                     </g>
                     <g>
@@ -148,8 +142,8 @@ defineOptions({
           }
         ]"
                 >
-<!--                    @click="clickMargin(SPACING_PROPERTY.MarginTop, $event)"-->
-<!--                    {{ getPropertyText(SPACING_PROPERTY.MarginTop) }}-->
+                    <!--                    @click="clickMargin(SPACING_PROPERTY.MarginTop, $event)"-->
+                    <!--                    {{ getPropertyText(SPACING_PROPERTY.MarginTop) }}-->
                 </div>
                 <div
                     :class="[
@@ -161,8 +155,8 @@ defineOptions({
           }
         ]"
                 >
-<!--                    @click="clickMargin(SPACING_PROPERTY.MarginRight, $event)"-->
-<!--                    {{ getPropertyText(SPACING_PROPERTY.MarginRight) }}-->
+                    <!--                    @click="clickMargin(SPACING_PROPERTY.MarginRight, $event)"-->
+                    <!--                    {{ getPropertyText(SPACING_PROPERTY.MarginRight) }}-->
                 </div>
                 <div
                     :class="[
@@ -174,8 +168,8 @@ defineOptions({
           }
         ]"
                 >
-<!--                    @click="clickMargin(SPACING_PROPERTY.MarginBottom, $event)"-->
-<!--                    {{ getPropertyText(SPACING_PROPERTY.MarginBottom) }}-->
+                    <!--                    @click="clickMargin(SPACING_PROPERTY.MarginBottom, $event)"-->
+                    <!--                    {{ getPropertyText(SPACING_PROPERTY.MarginBottom) }}-->
                 </div>
                 <div
                     :class="[
@@ -187,8 +181,8 @@ defineOptions({
           }
         ]"
                 >
-<!--                    @click="clickMargin(SPACING_PROPERTY.MarginLeft, $event)"-->
-<!--                    {{ getPropertyText(SPACING_PROPERTY.MarginLeft) }}-->
+                    <!--                    @click="clickMargin(SPACING_PROPERTY.MarginLeft, $event)"-->
+                    <!--                    {{ getPropertyText(SPACING_PROPERTY.MarginLeft) }}-->
                 </div>
             </div>
             <div class="spacing-min-icon">
@@ -209,7 +203,7 @@ defineOptions({
                                 aria-label="Padding top button"
                                 class="tb-path-color"
                             ></path>
-<!--                                @click="clickPadding(SPACING_PROPERTY.PaddingTop, $event)"-->
+                            <!--                                @click="clickPadding(SPACING_PROPERTY.PaddingTop, $event)"-->
                         </g>
                     </g>
                     <g>
@@ -228,7 +222,7 @@ defineOptions({
                                 aria-label="Padding right button"
                                 class="lr-path-color"
                             ></path>
-<!--                                @click="clickPadding(SPACING_PROPERTY.PaddingRight, $event)"-->
+                            <!--                                @click="clickPadding(SPACING_PROPERTY.PaddingRight, $event)"-->
                         </g>
                     </g>
                     <g>
@@ -247,7 +241,7 @@ defineOptions({
                                 aria-label="Padding bottom button"
                                 class="tb-path-color"
                             ></path>
-<!--                                @click="clickPadding(SPACING_PROPERTY.PaddingBottom, $event)"-->
+                            <!--                                @click="clickPadding(SPACING_PROPERTY.PaddingBottom, $event)"-->
                         </g>
                     </g>
                     <g>
@@ -266,7 +260,7 @@ defineOptions({
                                 aria-label="Padding left button"
                                 class="lr-path-color"
                             ></path>
-<!--                                @click="clickPadding(SPACING_PROPERTY.PaddingLeft, $event)"-->
+                            <!--                                @click="clickPadding(SPACING_PROPERTY.PaddingLeft, $event)"-->
                         </g>
                     </g>
                     <clipPath id="padding-outer">
@@ -328,8 +322,8 @@ defineOptions({
           }
         ]"
                 >
-<!--                    @click="clickPadding(SPACING_PROPERTY.PaddingTop, $event)"-->
-<!--                    {{ getPropertyText(SPACING_PROPERTY.PaddingTop) }}-->
+                    <!--                    @click="clickPadding(SPACING_PROPERTY.PaddingTop, $event)"-->
+                    <!--                    {{ getPropertyText(SPACING_PROPERTY.PaddingTop) }}-->
                 </div>
                 <div
                     :class="[
@@ -341,8 +335,8 @@ defineOptions({
           }
         ]"
                 >
-<!--                    @click="clickPadding(SPACING_PROPERTY.PaddingRight, $event)"-->
-<!--                    {{ getPropertyText(SPACING_PROPERTY.PaddingRight) }}-->
+                    <!--                    @click="clickPadding(SPACING_PROPERTY.PaddingRight, $event)"-->
+                    <!--                    {{ getPropertyText(SPACING_PROPERTY.PaddingRight) }}-->
                 </div>
                 <div
                     :class="[
@@ -354,8 +348,8 @@ defineOptions({
           }
         ]"
                 >
-<!--                    @click="clickPadding(SPACING_PROPERTY.PaddingBottom, $event)"-->
-<!--                    {{ getPropertyText(SPACING_PROPERTY.PaddingBottom) }}-->
+                    <!--                    @click="clickPadding(SPACING_PROPERTY.PaddingBottom, $event)"-->
+                    <!--                    {{ getPropertyText(SPACING_PROPERTY.PaddingBottom) }}-->
                 </div>
                 <div
                     :class="[
@@ -367,8 +361,8 @@ defineOptions({
           }
         ]"
                 >
-<!--                    @click="clickPadding(SPACING_PROPERTY.PaddingLeft, $event)"-->
-<!--                    {{ getPropertyText(SPACING_PROPERTY.PaddingLeft) }}-->
+                    <!--                    @click="clickPadding(SPACING_PROPERTY.PaddingLeft, $event)"-->
+                    <!--                    {{ getPropertyText(SPACING_PROPERTY.PaddingLeft) }}-->
                 </div>
             </div>
             <svg
@@ -409,7 +403,7 @@ defineOptions({
     user-select: none;
 }
 
-.spacing-wrap > .spacing-max-icon {
+.spacing-wrap .spacing-max-icon {
     grid-area: 1 / 1 / -1 / -1;
     display: grid;
     grid-template-columns: 36px 1fr 36px;
@@ -419,7 +413,7 @@ defineOptions({
     height: 120px;
 }
 
-.spacing-wrap > .spacing-min-icon {
+.spacing-wrap .spacing-min-icon {
     grid-area: 3 / 3 / span 3 / span 3;
     display: grid;
     grid-template-columns: 36px 1fr 36px;
@@ -442,7 +436,7 @@ defineOptions({
     line-height: 10px;
     letter-spacing: -0.2px;
     display: flex;
-    color: #e5e5e5;
+    color: #191919;
     background: transparent;
     padding: 2px 4px;
     margin-left: -2px;
@@ -454,5 +448,52 @@ defineOptions({
     opacity: 1;
     align-items: center;
     justify-content: center;
+}
+
+.spacing-wrap .spacing-edit.is-setting {
+    background-color: rgba(76, 152, 241, 0.15);
+}
+
+.spacing-wrap .spacing-edit.is-show {
+    background-color: #6b6b6b;
+}
+
+.spacing-wrap .spacing-edit.margin-top, .spacing-wrap .spacing-edit.padding-top {
+    grid-area: 1 / 2 / 2 / 3;
+}
+
+.spacing-wrap .spacing-edit.margin-right, .spacing-wrap .spacing-edit.padding-right {
+    grid-area: 2 / 3 / 3 / 4;
+}
+
+.spacing-wrap .spacing-edit.margin-bottom, .spacing-wrap .spacing-edit.padding-bottom {
+    grid-area: 3 / 2 / 4 / 3;
+}
+
+.spacing-wrap .spacing-edit.margin-left,
+.spacing-wrap .spacing-edit.padding-left {
+    grid-area: 2 / 1 / 3 / 2;
+}
+
+.spacing-wrap .lr-path-color {
+    cursor: pointer;
+    color: #e5e5e5;
+}
+
+.spacing-wrap .lr-path-color:hover {
+    color: #dfdfdf;
+}
+
+.spacing-wrap .tb-path-color {
+    cursor: pointer;
+    color: #d1d1d1;
+}
+
+.spacing-wrap .tb-path-color:hover {
+    color: #bdbdbd;
+}
+
+.spacing-wrap .stroke {
+    stroke: #999;
 }
 </style>
