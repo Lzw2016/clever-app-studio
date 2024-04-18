@@ -600,22 +600,16 @@ function setGridAutoFlow(val: string) {
             </div>
             <div class="flex-row-container setter-row">
                 <div class="flex-item-fixed setter-row-label">
-                    <Tooltip effect="dark" placement="left" content="grid-column-gap 属性，设置列与列的间隔">
-                        <span class="setter-label-tips">列间隔</span>
+                    <Tooltip effect="dark" placement="left" content="grid-row-gap/grid-column-gap 属性，设置行列的间隔">
+                        <span class="setter-label-tips">行列间隔</span>
                     </Tooltip>
                 </div>
-                <div class="flex-item-fill setter-row-input flex-row-container">
-                    <Numeric v-model="state.gridColumnGap" unit="px" size="mini" :allow-empty="true" placeholder="请输入列间隔" style="width: 100%;"/>
-                </div>
-            </div>
-            <div class="flex-row-container setter-row">
-                <div class="flex-item-fixed setter-row-label">
-                    <Tooltip effect="dark" placement="left" content="grid-row-gap 属性，设置行与行的间隔">
-                        <span class="setter-label-tips">行间隔</span>
-                    </Tooltip>
-                </div>
-                <div class="flex-item-fill setter-row-input flex-row-container">
-                    <Numeric v-model="state.gridRowGap" unit="px" size="mini" :allow-empty="true" placeholder="请输入行间隔" style="width: 100%;"/>
+                <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
+                    <!-- <span class="flex-item-fixed" style="margin-right: 4px;">列</span> -->
+                    <Numeric class="flex-item-fill" style="min-width: 60px;" v-model="state.gridColumnGap" unit="px" size="mini" :allow-empty="true" placeholder="列间隔"/>
+                    <span style="margin-left: 12px;"/>
+                    <!-- <span class="flex-item-fixed" style="margin-right: 4px;">行</span> -->
+                    <Numeric class="flex-item-fill" style="min-width: 60px;" v-model="state.gridRowGap" unit="px" size="mini" :allow-empty="true" placeholder="行间隔"/>
                 </div>
             </div>
             <div class="flex-row-container setter-row">
