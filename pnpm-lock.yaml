@@ -95,6 +95,9 @@ dependencies:
   vue:
     specifier: ^3.4.21
     version: 3.4.21(typescript@5.4.5)
+  vue-draggable-plus:
+    specifier: ^0.4.0
+    version: 0.4.0(@types/sortablejs@1.15.8)
   vue-i18n:
     specifier: ^9.10.2
     version: 9.10.2(vue@3.4.21)
@@ -4561,7 +4564,6 @@ packages:
 
   /@types/sortablejs@1.15.8:
     resolution: {integrity: sha512-b79830lW+RZfwaztgs1aVPgbasJ8e7AXtZYHTELNXZPsERt4ymJdjV4OccDbHQAvHrCcFpbF78jkm0R6h/pZVg==}
-    dev: true
 
   /@types/tern@0.23.9:
     resolution: {integrity: sha512-ypzHFE/wBzh+BlH6rrBgS5I/Z7RD21pGhZ2rltb/+ZrVM1awdZwjx7hE5XfuYgHWk9uvV5HLZN3SloevCAp3Bw==}
@@ -7092,6 +7094,18 @@ packages:
         optional: true
     dependencies:
       vue: 3.4.21(typescript@5.4.5)
+    dev: false
+
+  /vue-draggable-plus@0.4.0(@types/sortablejs@1.15.8):
+    resolution: {integrity: sha512-CcvSopMmSZY9McCdQ56QsAydT5cZilx9LzLU0UIz6KDYe9ll6QnmNHN80t6wnxN402ZECSXc5X1dm/myiMFi+A==}
+    peerDependencies:
+      '@types/sortablejs': ^1.15.0
+      '@vue/composition-api': '*'
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+    dependencies:
+      '@types/sortablejs': 1.15.8
     dev: false
 
   /vue-i18n@9.10.2(vue@3.4.21):

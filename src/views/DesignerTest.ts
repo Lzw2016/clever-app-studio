@@ -167,6 +167,11 @@ const designerTest = defineDesignBlock({
         {
             type: "div",
             tpl: "div容器",
+            props: {
+                style: {
+                    // width: '300px',
+                },
+            },
         },
     ],
     methods: {

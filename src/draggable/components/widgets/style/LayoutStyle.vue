@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive } from "vue";
+import { defineModel, reactive, shallowReactive, watch } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faPlus, faUpDownLeftRight } from "@fortawesome/free-solid-svg-icons";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { Checkbox, Input, Numeric, Tooltip } from "@opentiny/vue";
+import { VueDraggable } from "vue-draggable-plus";
 import DisplayBlock from "@/assets/images/display-block.svg?component";
 import DisplayInlineBlock from "@/assets/images/display-inline-block.svg?component";
 import DisplayInline from "@/assets/images/display-inline.svg?component";
@@ -20,6 +25,28 @@ import FlexAlignItemsFlexEnd from "@/assets/images/flex-align-items-flex-end.svg
 import FlexAlignItemsCenter from "@/assets/images/flex-align-items-center.svg?component";
 import FlexAlignItemsBaseline from "@/assets/images/flex-align-items-baseline.svg?component";
 import FlexAlignItemsStretch from "@/assets/images/flex-align-items-stretch.svg?component";
+import GridJustifyContentStart from "@/assets/images/grid-justify-content-start.svg?component";
+import GridJustifyContentCenter from "@/assets/images/grid-justify-content-center.svg?component";
+import GridJustifyContentEnd from "@/assets/images/grid-justify-content-end.svg?component";
+import GridJustifyContentStretch from "@/assets/images/grid-justify-content-stretch.svg?component";
+import GridJustifyContentSpaceBetween from "@/assets/images/grid-justify-content-space-between.svg?component";
+import GridJustifyContentSpaceAround from "@/assets/images/grid-justify-content-space-around.svg?component";
+import GridAlignContentStart from "@/assets/images/grid-align-content-start.svg?component";
+import GridAlignContentCenter from "@/assets/images/grid-align-content-center.svg?component";
+import GridAlignContentEnd from "@/assets/images/grid-align-content-end.svg?component";
+import GridAlignContentStretch from "@/assets/images/grid-align-content-stretch.svg?component";
+import GridAlignContentSpaceBetween from "@/assets/images/grid-align-content-space-between.svg?component";
+import GridAlignContentSpaceRound from "@/assets/images/grid-align-content-space-around.svg?component";
+import GridJustifyItemsStart from "@/assets/images/grid-justify-items-start.svg?component";
+import GridJustifyItemsCenter from "@/assets/images/grid-justify-items-center.svg?component";
+import GridJustifyItemsEnd from "@/assets/images/grid-justify-items-end.svg?component";
+import GridJustifyItemsStretch from "@/assets/images/grid-justify-items-stretch.svg?component";
+import GridJustifyItemsBaseline from "@/assets/images/grid-justify-items-baseline.svg?component";
+import GridAlignItemsStart from "@/assets/images/grid-align-items-start.svg?component";
+import GridAlignItemsCenter from "@/assets/images/grid-align-items-center.svg?component";
+import GridAlignItemsEnd from "@/assets/images/grid-align-items-end.svg?component";
+import GridAlignItemsStretch from "@/assets/images/grid-align-items-stretch.svg?component";
+import GridAlignItemsBaseline from "@/assets/images/grid-align-items-baseline.svg?component";
 
 // 定义组件选项
 defineOptions({
@@ -33,12 +60,39 @@ interface LayoutStyleProps {
 // 读取组件 props 属性
 const props = withDefaults(defineProps<LayoutStyleProps>(), {});
 
+interface GridTemplateRowColumn {
+    /** 配置类型 */
+    type: "px" | "percentage" | "fr" | "minmax" | "auto" | "自定义",
+    px?: number;
+    percentage?: number;
+    fr?: number;
+    min?: number;
+    max?: number;
+}
+
 // 定义 State 类型
 interface LayoutStyleState {
+    /** grid-template-columns 配置("px" | "%" | "fr" | "minmax" | "auto") */
+    gridTemplateColumns: Array<string>;
+    /** grid-template-rows 配置("px" | "%" | "fr" | "minmax" | "auto") */
+    gridTemplateRows: Array<string>;
+    /** grid-column-gap 属性 */
+    gridColumnGap?: number;
+    /** grid-row-gap 属性 */
+    gridRowGap?: number;
+    /** grid-auto-flow 属性 */
+    gridAutoFlow?: string;
+    /** grid-auto-flow 属性 dense 选项 */
+    gridAutoFlowDense?: boolean;
 }
 
 // state 属性
-const state = reactive<LayoutStyleState>({});
+const state = reactive<LayoutStyleState>({
+    gridTemplateColumns: [],
+    gridTemplateRows: [],
+    gridColumnGap: undefined,
+    gridRowGap: undefined,
+});
 // 内部数据
 const data = {
     // display
@@ -50,6 +104,7 @@ const data = {
         { value: "grid", tip: "grid(网格布局)", icon: DisplayGrid },
         { value: "none", tip: "none(隐藏)", icon: DisplayNone },
     ],
+
     // flex-direction
     flexDirectionList: [
         { value: "row", tip: "row(水平方向，从左到右)", icon: FlexDirectionRow },
@@ -61,7 +116,7 @@ const data = {
     flexJustifyContentList: [
         { value: "flex-start", tip: "flex-start(左对齐)", icon: FlexJustifyContentFlexStart },
         { value: "flex-end", tip: "flex-end(右对齐)", icon: FlexJustifyContentFlexEnd },
-        { value: "center", tip: "center(水平居中)", icon: FlexJustifyContentCenter },
+        { value: "center", tip: "center(居中)", icon: FlexJustifyContentCenter },
         { value: "space-between", tip: "space-between(两端对齐)", icon: FlexJustifyContentSpaceBetween },
         { value: "space-around", tip: "space-around(横向平分)", icon: FlexJustifyContentSpaceAround },
     ],
@@ -69,15 +124,55 @@ const data = {
     flexAlignItemsList: [
         { value: "flex-start", tip: "flex-start(起点对齐)", icon: FlexAlignItemsFlexStart },
         { value: "flex-end", tip: "flex-end(终点对齐)", icon: FlexAlignItemsFlexEnd },
-        { value: "center", tip: "center(水平居中)", icon: FlexAlignItemsCenter },
-        { value: "baseline", tip: "baseline(项目第一行文字的基线对齐)", icon: FlexAlignItemsBaseline },
+        { value: "center", tip: "center(居中)", icon: FlexAlignItemsCenter },
         { value: "stretch", tip: "stretch(沾满整个容器的高度)", icon: FlexAlignItemsStretch },
+        { value: "baseline", tip: "baseline(项目第一行文字的基线对齐)", icon: FlexAlignItemsBaseline },
     ],
     // flex-wrap
     flexWrapList: [
         { value: "nowrap", tip: "nowrap(不换行)", icon: null, text: "不换行" },
         { value: "wrap", tip: "wrap(第一行在上方)", icon: null, text: "正换行" },
         { value: "wrap-reverse", tip: "wrap-reverse(第一行在下方)", icon: null, text: "逆换行" },
+    ],
+
+    // justify-content
+    gridJustifyContentList: [
+        { value: "start", tip: "start(对齐容器的起始边框)", icon: GridJustifyContentStart },
+        { value: "center", tip: "center(容器内部居中)", icon: GridJustifyContentCenter },
+        { value: "end", tip: "end(对齐容器的结束边框)", icon: GridJustifyContentEnd },
+        { value: "stretch", tip: "stretch(拉伸占据整个网格容器)", icon: GridJustifyContentStretch },
+        { value: "space-around", tip: "space-around(每个项目两侧的间隔相等)", icon: GridJustifyContentSpaceBetween },
+        { value: "space-between", tip: "space-between(项目与项目的间隔相等)", icon: GridJustifyContentSpaceAround },
+    ],
+    // align-content
+    gridAlignContentList: [
+        { value: "start", tip: "start(对齐容器的起始边框)", icon: GridAlignContentStart },
+        { value: "center", tip: "center(容器内部居中)", icon: GridAlignContentCenter },
+        { value: "end", tip: "end(对齐容器的结束边框)", icon: GridAlignContentEnd },
+        { value: "stretch", tip: "stretch(拉伸占据整个网格容器)", icon: GridAlignContentStretch },
+        { value: "space-around", tip: "space-around(每个项目两侧的间隔相等)", icon: GridAlignContentSpaceBetween },
+        { value: "space-between", tip: "space-between(项目与项目的间隔相等)", icon: GridAlignContentSpaceRound },
+    ],
+    // justify-items
+    gridJustifyItemsList: [
+        { value: "start", tip: "start(起点对齐)", icon: GridJustifyItemsStart },
+        { value: "center", tip: "center(居中)", icon: GridJustifyItemsCenter },
+        { value: "end", tip: "end(终点对齐)", icon: GridJustifyItemsEnd },
+        { value: "stretch", tip: "stretch(拉伸，占满单元格的整个宽度)", icon: GridJustifyItemsStretch },
+        { value: "baseline", tip: "baseline(项目第一行文字的基线对齐)", icon: GridJustifyItemsBaseline },
+    ],
+    // align-items
+    gridAlignItemsList: [
+        { value: "start", tip: "start(起点对齐)", icon: GridAlignItemsStart },
+        { value: "center", tip: "center(居中)", icon: GridAlignItemsCenter },
+        { value: "end", tip: "(终点对齐)", icon: GridAlignItemsEnd },
+        { value: "stretch", tip: "stretch(拉伸，占满单元格的整个宽度)", icon: GridAlignItemsStretch },
+        { value: "baseline", tip: "baseline(项目第一行文字的基线对齐)", icon: GridAlignItemsBaseline },
+    ],
+    // grid-auto-flow
+    gridAutoFlowList: [
+        { value: "row", tip: "row(容器子元素的放置顺序：先行后列)", icon: null, text: "先行后列" },
+        { value: "column", tip: "column(容器子元素的放置顺序：先列后行)", icon: null, text: "先列后行" },
     ],
 };
 
@@ -86,23 +181,32 @@ interface LayoutStyleModel {
     display?: string;
     /** flex-direction 值 */
     flexDirection?: string;
-    /** justify-content 值 */
-    justifyContent?: string;
-    /** align-items 值 */
-    alignItems?: string;
     /** flex-wrap 值 */
     flexWrap?: string;
+    /** justify-content 值 */
+    justifyContent?: string;
+    /** align-content 值 */
+    alignContent?: string;
+    /** justify-items 值 */
+    justifyItems?: string;
+    /** align-items 值 */
+    alignItems?: string;
 }
 
 // css display 值
 const model = defineModel<LayoutStyleModel | undefined>();
+
+watch(() => state.gridRowGap, gridRowGap => {
+    if (!model.value) return;
+
+});
 
 function setDisplay(val: string) {
     if (model.value?.display === val) {
         model.value = undefined;
         return;
     }
-    if (!model.value) model.value = shallowReactive<LayoutStyleModel>({});
+    model.value = shallowReactive<LayoutStyleModel>({});
     model.value.display = val;
 }
 
@@ -123,6 +227,14 @@ function setJustifyContent(val: string) {
     setDisplayConfig("justifyContent", val);
 }
 
+function setAlignContent(val: string) {
+    setDisplayConfig("alignContent", val);
+}
+
+function setJustifyItems(val: string) {
+    setDisplayConfig("justifyItems", val);
+}
+
 function setAlignItems(val: string) {
     setDisplayConfig("alignItems", val);
 }
@@ -130,12 +242,25 @@ function setAlignItems(val: string) {
 function setFlexWrap(val: string) {
     setDisplayConfig("flexWrap", val);
 }
+
+function setGridAutoFlow(val: string) {
+    if (state.gridAutoFlow === val) {
+        state.gridAutoFlow = undefined;
+        state.gridAutoFlowDense = undefined;
+        return;
+    }
+    state.gridAutoFlow = val;
+}
 </script>
 
 <template>
     <div>
         <div class="flex-row-container setter-row">
-            <div class="flex-item-fixed setter-row-label">排布</div>
+            <div class="flex-item-fixed setter-row-label">
+                <Tooltip effect="dark" placement="left" content="display 属性配置">
+                    <span class="setter-label-tips">排布</span>
+                </Tooltip>
+            </div>
             <div class="flex-item-fill setter-row-input flex-row-container">
                 <div
                     v-for="display in data.displayList"
@@ -154,7 +279,11 @@ function setFlexWrap(val: string) {
         </div>
         <template v-if="model?.display==='flex'">
             <div class="flex-row-container setter-row">
-                <div class="flex-item-fixed setter-row-label">主轴方向</div>
+                <div class="flex-item-fixed setter-row-label">
+                    <Tooltip effect="dark" placement="left" content="flex-direction 属性">
+                        <span class="setter-label-tips">主轴方向</span>
+                    </Tooltip>
+                </div>
                 <div class="flex-item-fill setter-row-input flex-row-container">
                     <div
                         v-for="flexDirection in data.flexDirectionList"
@@ -172,7 +301,11 @@ function setFlexWrap(val: string) {
                 </div>
             </div>
             <div class="flex-row-container setter-row">
-                <div class="flex-item-fixed setter-row-label">主轴对齐</div>
+                <div class="flex-item-fixed setter-row-label">
+                    <Tooltip effect="dark" placement="left" content="justify-content 属性">
+                        <span class="setter-label-tips">主轴对齐</span>
+                    </Tooltip>
+                </div>
                 <div class="flex-item-fill setter-row-input flex-row-container">
                     <div
                         v-for="justifyContent in data.flexJustifyContentList"
@@ -190,7 +323,11 @@ function setFlexWrap(val: string) {
                 </div>
             </div>
             <div class="flex-row-container setter-row">
-                <div class="flex-item-fixed setter-row-label">辅轴对齐</div>
+                <div class="flex-item-fixed setter-row-label">
+                    <Tooltip effect="dark" placement="left" content="align-items 属性">
+                        <span class="setter-label-tips">辅轴对齐</span>
+                    </Tooltip>
+                </div>
                 <div class="flex-item-fill setter-row-input flex-row-container">
                     <div
                         v-for="alignItems in data.flexAlignItemsList"
@@ -208,7 +345,11 @@ function setFlexWrap(val: string) {
                 </div>
             </div>
             <div class="flex-row-container setter-row">
-                <div class="flex-item-fixed setter-row-label">换行模式</div>
+                <div class="flex-item-fixed setter-row-label">
+                    <Tooltip effect="dark" placement="left" content="flex-wrap 属性">
+                        <span class="setter-label-tips">换行模式</span>
+                    </Tooltip>
+                </div>
                 <div class="flex-item-fill setter-row-input flex-row-container">
                     <div
                         v-for="flexWrap in data.flexWrapList"
@@ -223,6 +364,238 @@ function setFlexWrap(val: string) {
                     </div>
                 </div>
             </div>
+        </template>
+        <template v-if="model?.display==='grid'">
+            <div class="flex-row-container setter-row">
+                <div class="flex-item-fixed setter-row-label">
+                    <Tooltip effect="dark" placement="left" content="justify-content 属性，整个内容区域在容器里面的水平位置">
+                        <span class="setter-label-tips">水平位置</span>
+                    </Tooltip>
+                </div>
+                <div class="flex-item-fill setter-row-input flex-row-container">
+                    <div
+                        v-for="justifyContent in data.gridJustifyContentList"
+                        :class="{
+                                'setter-row-input-radio': true,
+                                'selected': justifyContent.value===model.justifyContent,
+                                'flex-row-container': true,
+                                'flex-center': true,
+                            }"
+                        @click="setJustifyContent(justifyContent.value)"
+                        :title="justifyContent.tip"
+                    >
+                        <component :is="justifyContent.icon" style="width: 16px; height: 16px;"/>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-row-container setter-row">
+                <div class="flex-item-fixed setter-row-label">
+                    <Tooltip effect="dark" placement="left" content="align-content 属性，整个内容区域在容器里面的垂直位置">
+                        <span class="setter-label-tips">垂直位置</span>
+                    </Tooltip>
+                </div>
+                <div class="flex-item-fill setter-row-input flex-row-container">
+                    <div
+                        v-for="alignContent in data.gridAlignContentList"
+                        :class="{
+                                'setter-row-input-radio': true,
+                                'selected': alignContent.value===model.alignContent,
+                                'flex-row-container': true,
+                                'flex-center': true,
+                            }"
+                        @click="setAlignContent(alignContent.value)"
+                        :title="alignContent.tip"
+                    >
+                        <component :is="alignContent.icon" style="width: 16px; height: 16px;"/>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-row-container setter-row">
+                <div class="flex-item-fixed setter-row-label">
+                    <Tooltip effect="dark" placement="left" content="justify-items 属性，设置单元格内容的水平位置">
+                        <span class="setter-label-tips">水平对齐</span>
+                    </Tooltip>
+                </div>
+                <div class="flex-item-fill setter-row-input flex-row-container">
+                    <div
+                        v-for="justifyItems in data.gridJustifyItemsList"
+                        :class="{
+                                'setter-row-input-radio': true,
+                                'selected': justifyItems.value===model.justifyItems,
+                                'flex-row-container': true,
+                                'flex-center': true,
+                            }"
+                        @click="setJustifyItems(justifyItems.value)"
+                        :title="justifyItems.tip"
+                    >
+                        <component :is="justifyItems.icon" style="width: 16px; height: 16px;"/>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-row-container setter-row">
+                <div class="flex-item-fixed setter-row-label">
+                    <Tooltip effect="dark" placement="left" content="align-items 属性，设置单元格内容的垂直位置">
+                        <span class="setter-label-tips">垂直对齐</span>
+                    </Tooltip>
+                </div>
+                <div class="flex-item-fill setter-row-input flex-row-container">
+                    <div
+                        v-for="alignItems in data.gridAlignItemsList"
+                        :class="{
+                                'setter-row-input-radio': true,
+                                'selected': alignItems.value===model.alignItems,
+                                'flex-row-container': true,
+                                'flex-center': true,
+                            }"
+                        @click="setAlignItems(alignItems.value)"
+                        :title="alignItems.tip"
+                    >
+                        <component :is="alignItems.icon" style="width: 16px; height: 16px;"/>
+                    </div>
+                </div>
+            </div>
+            <div class="setter-row" style="height: auto;">
+                <div class="flex-row-container" style="align-items: center;">
+                    <div class="flex-item-fixed setter-row-label">
+                        <Tooltip effect="dark" placement="left" content="grid-template-columns 属性，定义每一列的列宽">
+                            <span class="setter-label-tips">列配置</span>
+                        </Tooltip>
+                    </div>
+                    <div class="flex-item-fixed">{{ state.gridTemplateColumns.length }} 列</div>
+                    <div class="flex-item-fill setter-row-input flex-row-container" style="justify-content: right;">
+                        <div class="setter-row-input-button" title="新增列配置" @click="state.gridTemplateColumns.push('auto')">
+                            <FontAwesomeIcon :icon="faPlus"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-row-container" style="align-items: center;">
+                    <VueDraggable
+                        class="flex-item-fill setter-row-input"
+                        v-model="state.gridTemplateColumns"
+                        handle=".setter-row-list-handle"
+                    >
+                        <div v-for="(col, idx) in state.gridTemplateColumns" class="flex-row-container setter-row-list">
+                            <div class="flex-item-fixed flex-row-container flex-center setter-row-list-handle">
+                                <FontAwesomeIcon :icon="faUpDownLeftRight"/>
+                            </div>
+                            <div class="flex-item-fixed flex-row-container flex-center setter-row-list-number">{{ idx+1 }}.</div>
+                            <div class="flex-item-fill">
+                                <Tooltip effect="dark" placement="left" content="列宽配置，支持：px、%、fr、auto、minmax(min, max)">
+                                    <Input
+                                        v-model="state.gridTemplateColumns[idx]"
+                                        size="mini"
+                                        placeholder="支持：px、%、fr、auto、minmax(min, max)"
+                                        :clearable="true"
+                                    />
+                                </Tooltip>
+                            </div>
+                            <div
+                                class="flex-item-fixed flex-row-container flex-center setter-row-list-button"
+                                @click="state.gridTemplateColumns.splice(idx, 1);"
+                            >
+                                <FontAwesomeIcon :icon="faTrashCan"/>
+                            </div>
+                        </div>
+                    </VueDraggable>
+                </div>
+            </div>
+            <div class="setter-row" style="height: auto;">
+                <div class="flex-row-container" style="align-items: center;">
+                    <div class="flex-item-fixed setter-row-label">
+                        <Tooltip effect="dark" placement="left" content="grid-template-rows 属性，定义每一行的行高">
+                            <span class="setter-label-tips">行配置</span>
+                        </Tooltip>
+                    </div>
+                    <div class="flex-item-fixed">{{ state.gridTemplateRows.length }} 行</div>
+                    <div class="flex-item-fill setter-row-input">
+                        <div class="flex-row-container" style="justify-content: right;">
+                            <div class="setter-row-input-button" title="新增行配置" @click="state.gridTemplateRows.push('auto')">
+                                <FontAwesomeIcon :icon="faPlus"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-row-container" style="align-items: center;">
+                    <VueDraggable
+                        class="flex-item-fill setter-row-input"
+                        v-model="state.gridTemplateRows"
+                        handle=".setter-row-list-handle"
+                    >
+                        <div v-for="(col, idx) in state.gridTemplateRows" class="flex-row-container setter-row-list">
+                            <div class="flex-item-fixed flex-row-container flex-center setter-row-list-handle">
+                                <FontAwesomeIcon :icon="faUpDownLeftRight"/>
+                            </div>
+                            <div class="flex-item-fixed flex-row-container flex-center setter-row-list-number">{{ idx+1 }}.</div>
+                            <div class="flex-item-fill">
+                                <Tooltip effect="dark" placement="left" content="行高配置，支持：px、%、fr、auto、minmax(min, max)">
+                                    <Input
+                                        v-model="state.gridTemplateRows[idx]"
+                                        size="mini"
+                                        placeholder="支持：px、%、fr、auto、minmax(min, max)"
+                                        :clearable="true"
+                                    />
+                                </Tooltip>
+                            </div>
+                            <div
+                                class="flex-item-fixed flex-row-container flex-center setter-row-list-button"
+                                @click="state.gridTemplateRows.splice(idx, 1);"
+                            >
+                                <FontAwesomeIcon :icon="faTrashCan"/>
+                            </div>
+                        </div>
+                    </VueDraggable>
+                </div>
+            </div>
+            <div class="flex-row-container setter-row">
+                <div class="flex-item-fixed setter-row-label">
+                    <Tooltip effect="dark" placement="left" content="grid-column-gap 属性，设置列与列的间隔">
+                        <span class="setter-label-tips">列间隔</span>
+                    </Tooltip>
+                </div>
+                <div class="flex-item-fill setter-row-input flex-row-container">
+                    <Numeric v-model="state.gridColumnGap" unit="px" size="mini" :allow-empty="true" placeholder="请输入列间隔" style="width: 100%;"/>
+                </div>
+            </div>
+            <div class="flex-row-container setter-row">
+                <div class="flex-item-fixed setter-row-label">
+                    <Tooltip effect="dark" placement="left" content="grid-row-gap 属性，设置行与行的间隔">
+                        <span class="setter-label-tips">行间隔</span>
+                    </Tooltip>
+                </div>
+                <div class="flex-item-fill setter-row-input flex-row-container">
+                    <Numeric v-model="state.gridRowGap" unit="px" size="mini" :allow-empty="true" placeholder="请输入行间隔" style="width: 100%;"/>
+                </div>
+            </div>
+            <div class="flex-row-container setter-row">
+                <div class="flex-item-fixed setter-row-label">
+                    <Tooltip effect="dark" placement="left" content="grid-auto-flow 属性，容器子元素的放置顺序">
+                        <span class="setter-label-tips">放置顺序</span>
+                    </Tooltip>
+                </div>
+                <div class="flex-item-fill setter-row-input flex-row-container">
+                    <div
+                        v-for="autoFlow in data.gridAutoFlowList"
+                        :class="{
+                                'setter-row-input-radio': true,
+                                'selected': autoFlow.value===state.gridAutoFlow,
+                            }"
+                        @click="setGridAutoFlow(autoFlow.value)"
+                        :title="autoFlow.tip"
+                    >
+                        <span style="font-size: 11px;">{{ autoFlow.text }}</span>
+                    </div>
+                    <Checkbox
+                        v-if="state.gridAutoFlow"
+                        class="setter-row-input-checkbox"
+                        v-model="state.gridAutoFlowDense"
+                        size="mini"
+                        title="并且尽可能紧密填满，尽量不出现空格"
+                    >
+                        dense
+                    </Checkbox>
+                </div>
+            </div>
+
         </template>
     </div>
 </template>
@@ -248,6 +621,12 @@ function setFlexWrap(val: string) {
     justify-content: center;
 }
 
+.setter-label-tips {
+    cursor: help;
+    text-decoration-line: underline;
+    text-decoration-style: dashed;
+}
+
 .setter-row {
     height: 24px;
     margin-bottom: 12px;
@@ -271,6 +650,7 @@ function setFlexWrap(val: string) {
     margin: 2px 2px;
     cursor: pointer;
     border: 1px solid #c4c6cf;
+    box-sizing: border-box;
 }
 
 .setter-row-input-radio:first-child {
@@ -289,5 +669,64 @@ function setFlexWrap(val: string) {
     fill: #4f77ff;
     color: #4f77ff;
     border: 1px solid #7693F5;
+}
+
+.setter-row-input-checkbox {
+    margin-left: 4px;
+}
+
+.setter-row-input-button {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #c4c6cf;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.setter-row-input-button:hover {
+    background: #DFE1E6;
+    color: #4f77ff;
+}
+
+.setter-row-list {
+    align-items: center;
+    margin: 6px 0;
+}
+
+.setter-row-list:last-child {
+    margin-bottom: 0;
+}
+
+.setter-row-list-handle {
+    width: 18px;
+    height: 18px;
+    cursor: move;
+    margin-right: 4px;
+}
+
+.setter-row-list-number {
+    min-width: 16px;
+    margin-right: 4px;
+    text-align: right;
+}
+
+.setter-row-list-button {
+    margin-left: 4px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
+
+.setter-row-input-checkbox :deep(.tiny-checkbox__label) {
+    padding-left: 2px;
+}
+
+.setter-row-input :deep(.tiny-numeric__unit) {
+    width: 28px;
 }
 </style>
