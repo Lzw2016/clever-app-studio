@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive } from "vue";
-import { Collapse, CollapseItem } from "@opentiny/vue";
+import { Button, Collapse, CollapseItem } from "@opentiny/vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { SetterState } from "@/draggable/models/SetterState";
@@ -37,36 +37,73 @@ const state = reactive<SetterStylePanelState>({});
 </script>
 
 <template>
-    <Collapse class="settings-groups" v-model="props.setterState.expandGroups['style']">
-        <CollapseItem class="settings-items" name="布局" title="布局">
-            <LayoutStyle/>
-        </CollapseItem>
-        <CollapseItem class="settings-items" name="间距" title="间距">
+    <div class="settings-groups flex-column-container">
+        <div class="flex-item-fixed flex-row-container flex-center settings-top-buttons">
+            <Button :round="true" size="mini">编辑页面样式</Button>
+            <Button :round="true" size="mini">编辑内联样式</Button>
+        </div>
+        <Collapse class="flex-item-fill settings-content" v-model="props.setterState.expandGroups['style']">
+            <CollapseItem class="settings-items" name="布局" title="布局">
+                <LayoutStyle/>
+            </CollapseItem>
+            <CollapseItem class="settings-items" name="间距" title="间距">
 
-        </CollapseItem>
-        <CollapseItem class="settings-items" name="尺寸" title="尺寸">
+            </CollapseItem>
+            <CollapseItem class="settings-items" name="尺寸" title="尺寸">
 
-        </CollapseItem>
-        <CollapseItem class="settings-items" name="定位" title="定位">
+            </CollapseItem>
+            <CollapseItem class="settings-items" name="定位" title="定位">
 
-        </CollapseItem>
-        <CollapseItem class="settings-items" name="文本" title="文本">
+            </CollapseItem>
+            <CollapseItem class="settings-items" name="文本" title="文本">
 
-        </CollapseItem>
-        <CollapseItem class="settings-items" name="背景" title="背景">
+            </CollapseItem>
+            <CollapseItem class="settings-items" name="背景" title="背景">
 
-        </CollapseItem>
-        <CollapseItem class="settings-items" name="边框" title="边框">
+            </CollapseItem>
+            <CollapseItem class="settings-items" name="边框" title="边框">
 
-        </CollapseItem>
-        <CollapseItem class="settings-items" name="效果" title="效果">
+            </CollapseItem>
+            <CollapseItem class="settings-items" name="效果" title="效果">
 
-        </CollapseItem>
-    </Collapse>
+            </CollapseItem>
+        </Collapse>
+    </div>
 </template>
 
 <style scoped>
 .settings-groups {
+    height: 100%;
+    overflow: hidden;
+}
+
+.flex-row-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.flex-column-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.flex-item-fill {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.flex-item-fixed {
+    flex-shrink: 0;
+}
+
+.flex-center {
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-content {
     height: 100%;
     overflow: auto;
     border-top: none;
@@ -74,9 +111,14 @@ const state = reactive<SetterStylePanelState>({});
     min-height: 80px;
 }
 
+.settings-top-buttons {
+    padding: 12px 4px 10px 4px;
+    border-bottom: 1px solid #d9d9d9;
+}
+
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
 
-.settings-groups :deep(.tiny-collapse-item) {
+.settings-content :deep(.tiny-collapse-item) {
     margin-top: 0;
     border: none;
 }

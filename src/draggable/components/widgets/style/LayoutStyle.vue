@@ -92,6 +92,8 @@ const state = reactive<LayoutStyleState>({
     gridTemplateRows: [],
     gridColumnGap: undefined,
     gridRowGap: undefined,
+    gridAutoFlow: undefined,
+    gridAutoFlowDense: undefined,
 });
 // 内部数据
 const data = {
@@ -196,15 +198,24 @@ interface LayoutStyleModel {
     /** grid-template-rows 配置("px" | "%" | "fr" | "minmax" | "auto") */
     gridTemplateRows?: string;
     /** grid-column-gap 属性 */
-    gridColumnGap?: number;
+    gridColumnGap?: string;
     /** grid-row-gap 属性 */
-    gridRowGap?: number;
+    gridRowGap?: string;
     /** grid-auto-flow 属性 */
     gridAutoFlow?: string;
 }
 
 // css display 值
 const model = defineModel<LayoutStyleModel | undefined>();
+
+// 初始化
+if (model.value) {
+    // TODO gridTemplateColumns gridTemplateRows gridAutoFlowDense
+    // state.gridColumnGap = model.value.gridColumnGap;
+    // state.gridRowGap = model.value.gridRowGap;
+    state.gridAutoFlow = model.value.gridAutoFlow;
+    // state.gridAutoFlowDense = model.value.gridAutoFlowDense;
+}
 
 watch(() => state.gridTemplateColumns, gridTemplateColumns => {
     if (!model.value) return;
@@ -242,7 +253,7 @@ watch(() => state.gridRowGap, gridRowGap => {
     model.value.gridRowGap = `${gridRowGap}px`;
 });
 
-watch(() => (state.gridAutoFlow + state.gridAutoFlowDense), () => {
+watch(() => [state.gridAutoFlow, state.gridAutoFlowDense], () => {
     if (!model.value) return;
     if (!state.gridAutoFlow) {
         delete model.value.gridAutoFlow;
