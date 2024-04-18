@@ -31,13 +31,7 @@ defineOptions({
                             <path
                                 mode="delta"
                                 fill="currentColor"
-                                d="
-              m223,1
-              v119
-              l-36,-24
-              v-71
-              l36,-24z
-            "
+                                d="m223,1 v119 l-36,-24 v-71 l36,-24z"
                                 data-automation-id="margin-right-button"
                                 aria-label="Margin right button"
                                 class="lr-path-color"
@@ -50,13 +44,7 @@ defineOptions({
                             <path
                                 mode="delta"
                                 fill="currentColor"
-                                d="
-              m1,119
-              h223
-              l-36,-24
-              h-151
-              l-36,24z
-            "
+                                d="m1,119 h223 l-36,-24 h-151 l-36,24z"
                                 data-automation-id="margin-bottom-button"
                                 aria-label="Margin bottom button"
                                 class="tb-path-color"
@@ -69,13 +57,7 @@ defineOptions({
                             <path
                                 mode="delta"
                                 fill="currentColor"
-                                d="
-              m1,1
-              v119
-              l36,-24
-              v-71
-              l-36,-24z
-            "
+                                d="m1,1 v119 l36,-24 v-71 l-36,-24z"
                                 data-automation-id="margin-left-button"
                                 aria-label="Margin left button"
                                 class="lr-path-color"
@@ -192,13 +174,7 @@ defineOptions({
                             <path
                                 mode="delta"
                                 fill="currentColor"
-                                d="
-              m1,1
-              h143
-              l-36,24
-              h-71
-              l-36,-24z
-            "
+                                d="m1,1 h143 l-36,24 h-71 l-36,-24z"
                                 data-automation-id="padding-top-button"
                                 aria-label="Padding top button"
                                 class="tb-path-color"
@@ -211,13 +187,7 @@ defineOptions({
                             <path
                                 mode="delta"
                                 fill="currentColor"
-                                d="
-              m143,1
-              v63
-              l-36,-24
-              v-15
-              l36,-24z
-            "
+                                d="m143,1 v63 l-36,-24 v-15 l36,-24z"
                                 data-automation-id="padding-right-button"
                                 aria-label="Padding right button"
                                 class="lr-path-color"
@@ -230,13 +200,7 @@ defineOptions({
                             <path
                                 mode="delta"
                                 fill="currentColor"
-                                d="
-              m1,63
-              h143
-              l-36,-24
-              h-71
-              l-36,24z
-            "
+                                d="m1,63 h143 l-36,-24 h-71 l-36,24z"
                                 data-automation-id="padding-bottom-button"
                                 aria-label="Padding bottom button"
                                 class="tb-path-color"
@@ -249,13 +213,7 @@ defineOptions({
                             <path
                                 mode="delta"
                                 fill="currentColor"
-                                d="
-              m1,1
-              v63
-              l36,-24
-              v-15
-              l-36,-24z
-            "
+                                d="m1,1 v63 l36,-24 v-15 l-36,-24z"
                                 data-automation-id="padding-left-button"
                                 aria-label="Padding left button"
                                 class="lr-path-color"
