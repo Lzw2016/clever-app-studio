@@ -191,14 +191,64 @@ interface LayoutStyleModel {
     justifyItems?: string;
     /** align-items 值 */
     alignItems?: string;
+    /** grid-template-columns 配置("px" | "%" | "fr" | "minmax" | "auto") */
+    gridTemplateColumns?: string;
+    /** grid-template-rows 配置("px" | "%" | "fr" | "minmax" | "auto") */
+    gridTemplateRows?: string;
+    /** grid-column-gap 属性 */
+    gridColumnGap?: number;
+    /** grid-row-gap 属性 */
+    gridRowGap?: number;
+    /** grid-auto-flow 属性 */
+    gridAutoFlow?: string;
 }
 
 // css display 值
 const model = defineModel<LayoutStyleModel | undefined>();
 
+watch(() => state.gridTemplateColumns, gridTemplateColumns => {
+    if (!model.value) return;
+    if (gridTemplateColumns.length <= 0) {
+        delete model.value.gridTemplateColumns;
+        return;
+    }
+    model.value.gridTemplateColumns = gridTemplateColumns.map(col => col || 'auto').join(" ");
+});
+
+watch(() => state.gridTemplateRows, gridTemplateRows => {
+    if (!model.value) return;
+    if (gridTemplateRows.length <= 0) {
+        delete model.value.gridTemplateRows;
+        return;
+    }
+    model.value.gridTemplateRows = gridTemplateRows.map(col => col || 'auto').join(" ");
+});
+
+watch(() => state.gridColumnGap, gridColumnGap => {
+    if (!model.value) return;
+    if (!gridColumnGap) {
+        delete model.value.gridColumnGap;
+        return;
+    }
+    model.value.gridColumnGap = `${gridColumnGap}px`;
+});
+
 watch(() => state.gridRowGap, gridRowGap => {
     if (!model.value) return;
+    if (!gridRowGap) {
+        delete model.value.gridRowGap;
+        return;
+    }
+    model.value.gridRowGap = `${gridRowGap}px`;
+});
 
+watch(() => (state.gridAutoFlow + state.gridAutoFlowDense), () => {
+    if (!model.value) return;
+    if (!state.gridAutoFlow) {
+        delete model.value.gridAutoFlow;
+        return;
+    }
+    model.value.gridAutoFlow = `${state.gridAutoFlow}${state.gridAutoFlowDense ? ' dense' : ''}`;
 });
 
 function setDisplay(val: string) {
@@ -469,6 +519,7 @@ function setGridAutoFlow(val: string) {
                     </div>
                 </div>
                 <div class="flex-row-container" style="align-items: center;">
+                    <div class="flex-item-fixed setter-row-label"/>
                     <VueDraggable
                         class="flex-item-fill setter-row-input"
                         v-model="state.gridTemplateColumns"
@@ -478,7 +529,7 @@ function setGridAutoFlow(val: string) {
                             <div class="flex-item-fixed flex-row-container flex-center setter-row-list-handle">
                                 <FontAwesomeIcon :icon="faUpDownLeftRight"/>
                             </div>
-                            <div class="flex-item-fixed flex-row-container flex-center setter-row-list-number">{{ idx+1 }}.</div>
+                            <div class="flex-item-fixed flex-row-container flex-center setter-row-list-number">{{ idx + 1 }}.</div>
                             <div class="flex-item-fill">
                                 <Tooltip effect="dark" placement="left" content="列宽配置，支持：px、%、fr、auto、minmax(min, max)">
                                     <Input
@@ -516,6 +567,7 @@ function setGridAutoFlow(val: string) {
                     </div>
                 </div>
                 <div class="flex-row-container" style="align-items: center;">
+                    <div class="flex-item-fixed setter-row-label"/>
                     <VueDraggable
                         class="flex-item-fill setter-row-input"
                         v-model="state.gridTemplateRows"
@@ -525,7 +577,7 @@ function setGridAutoFlow(val: string) {
                             <div class="flex-item-fixed flex-row-container flex-center setter-row-list-handle">
                                 <FontAwesomeIcon :icon="faUpDownLeftRight"/>
                             </div>
-                            <div class="flex-item-fixed flex-row-container flex-center setter-row-list-number">{{ idx+1 }}.</div>
+                            <div class="flex-item-fixed flex-row-container flex-center setter-row-list-number">{{ idx + 1 }}.</div>
                             <div class="flex-item-fill">
                                 <Tooltip effect="dark" placement="left" content="行高配置，支持：px、%、fr、auto、minmax(min, max)">
                                     <Input
