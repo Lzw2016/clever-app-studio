@@ -421,7 +421,7 @@ function setGridAutoFlow(val: string) {
                         @click="setFlexWrap(flexWrap.value)"
                         :title="flexWrap.tip"
                     >
-                        <span style="font-size: 11px;">{{ flexWrap.text }}</span>
+                        <span style="font-size: 11px; white-space: nowrap;">{{ flexWrap.text }}</span>
                     </div>
                 </div>
             </div>
@@ -639,7 +639,7 @@ function setGridAutoFlow(val: string) {
                         @click="setGridAutoFlow(autoFlow.value)"
                         :title="autoFlow.tip"
                     >
-                        <span style="font-size: 11px;">{{ autoFlow.text }}</span>
+                        <span style="font-size: 11px; white-space: nowrap;">{{ autoFlow.text }}</span>
                     </div>
                     <Checkbox
                         v-if="state.gridAutoFlow"

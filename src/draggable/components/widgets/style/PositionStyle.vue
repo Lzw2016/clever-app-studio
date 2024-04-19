@@ -122,7 +122,7 @@ function validateSpacingValue(event: Event, name: string, useAuto: boolean = tru
                     @click="setPosition(position.value)"
                     :title="position.tip"
                 >
-                    <span style="font-size: 11px;">{{ position.text }}</span>
+                    <span style="font-size: 11px; white-space: nowrap;">{{ position.text }}</span>
                 </div>
             </div>
         </div>

@@ -172,7 +172,7 @@ function setObjectFit(val: string) {
                     @click="setObjectFit(objectFit.value)"
                     :title="objectFit.tip"
                 >
-                    <span style="font-size: 11px;">{{ objectFit.text }}</span>
+                    <span style="font-size: 11px; white-space: nowrap;">{{ objectFit.text }}</span>
                 </div>
             </div>
         </div>
