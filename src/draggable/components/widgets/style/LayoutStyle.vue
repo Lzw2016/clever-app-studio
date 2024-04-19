@@ -319,7 +319,7 @@ function setGridAutoFlow(val: string) {
         <div class="flex-row-container setter-row">
             <div class="flex-item-fixed setter-row-label">
                 <Tooltip effect="dark" placement="left" content="display 属性配置">
-                    <span class="setter-label-tips">排布</span>
+                    <span class="setter-label-tips">排布方式</span>
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container">

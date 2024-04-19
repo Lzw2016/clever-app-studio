@@ -137,7 +137,7 @@ function setObjectFit(val: string) {
         <div class="flex-row-container setter-row">
             <div class="flex-item-fixed setter-row-label">
                 <Tooltip effect="dark" placement="left" content="overflow 属性配置">
-                    <span class="setter-label-tips">溢出</span>
+                    <span class="setter-label-tips">溢出行为</span>
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container">
@@ -260,54 +260,5 @@ function setObjectFit(val: string) {
     fill: #4f77ff;
     color: #4f77ff;
     border: 1px solid #7693F5;
-}
-
-.setter-row-input-checkbox {
-    margin-left: 4px;
-}
-
-.setter-row-input-button {
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #c4c6cf;
-    box-sizing: border-box;
-    cursor: pointer;
-}
-
-.setter-row-input-button:hover {
-    background: #DFE1E6;
-    color: #4f77ff;
-}
-
-.setter-row-list {
-    align-items: center;
-    margin: 6px 0;
-}
-
-.setter-row-list:last-child {
-    margin-bottom: 0;
-}
-
-.setter-row-list-handle {
-    width: 18px;
-    height: 18px;
-    cursor: move;
-    margin-right: 4px;
-}
-
-.setter-row-list-number {
-    min-width: 16px;
-    margin-right: 4px;
-    text-align: right;
-}
-
-.setter-row-list-button {
-    margin-left: 4px;
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
 }
 </style>
