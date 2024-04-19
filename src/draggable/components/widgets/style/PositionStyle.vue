@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive } from "vue";
-import { Tooltip } from "@opentiny/vue";
 import lodash from "lodash";
+import { defineModel, reactive, shallowReactive } from "vue";
+import { Numeric, Tooltip } from "@opentiny/vue";
 
 // 定义组件选项
 defineOptions({
@@ -30,6 +30,21 @@ const data = {
         { value: "absolute", tip: "absolute(绝对定位)", icon: null, text: "绝对" },
         { value: "fixed", tip: "fixed(固定定位)", icon: null, text: "固定" },
         { value: "sticky", tip: "sticky(粘性定位)", icon: null, text: "粘性" },
+    ],
+    floatList: [
+        { value: "none", tip: "none(不浮动)", icon: null, text: "不浮动" },
+        { value: "left", tip: "left(浮动在其所在的容器左侧)", icon: null, text: "左" },
+        { value: "right", tip: "right(浮动在其所在的容器右侧)", icon: null, text: "右" },
+        { value: "inline-start", tip: "inline-start(浮动在其所在块容器的开始一侧)", icon: null, text: "起始" },
+        { value: "inline-end", tip: "inline-end(浮动在其所在块容器的结束一侧)", icon: null, text: "结束" },
+    ],
+    clearList: [
+        { value: "none", tip: "none(不清除浮动)", icon: null, text: "不清除" },
+        { value: "left", tip: "left(清除左浮动)", icon: null, text: "左" },
+        { value: "right", tip: "right(清除右浮动)", icon: null, text: "右" },
+        { value: "both", tip: "both(清除左右浮动)", icon: null, text: "左右" },
+        { value: "inline-start", tip: "inline-start(清除起始侧浮动)", icon: null, text: "起始" },
+        { value: "inline-end", tip: "inline-end(清除结束侧浮动)", icon: null, text: "结束" },
     ],
 };
 
@@ -61,6 +76,22 @@ function setPosition(val: string) {
         return;
     }
     model.value.position = val;
+}
+
+function setPositionConfig(name: string, val: string) {
+    if (model.value[name] === val) {
+        delete model.value[name];
+        return;
+    }
+    model.value[name] = val;
+}
+
+function setFloat(val: string) {
+    setPositionConfig("float", val);
+}
+
+function setClear(val: string) {
+    setPositionConfig("clear", val);
 }
 
 function validateSpacingValue(event: Event, name: string, useAuto: boolean = true) {
@@ -126,7 +157,7 @@ function validateSpacingValue(event: Event, name: string, useAuto: boolean = tru
                 </div>
             </div>
         </div>
-        <div v-if="model.position==='relative'" class="setter-row" style="height: auto;">
+        <div v-if="['relative', 'absolute', 'fixed', 'sticky'].includes(model.position)" class="setter-row" style="height: auto;">
             <div class="flex-item-fixed setter-row-label"/>
             <div class="flex-item-fill setter-row-input">
                 <div class="setting-wrap">
@@ -214,6 +245,56 @@ function validateSpacingValue(event: Event, name: string, useAuto: boolean = tru
                         <input v-else class="direction left" v-focus :value="model.left" @input="validateSpacingValue($event, 'left')" placeholder="0" @blur="state.edit=undefined"/>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="flex-row-container setter-row">
+            <div class="flex-item-fixed setter-row-label">
+                <Tooltip effect="dark" placement="left" content="float 属性配置">
+                    <span class="setter-label-tips">元素浮动</span>
+                </Tooltip>
+            </div>
+            <div class="flex-item-fill setter-row-input flex-row-container">
+                <div
+                    v-for="float in data.floatList"
+                    :class="{
+                        'setter-row-input-radio': true,
+                        'selected': float.value===model.float,
+                    }"
+                    @click="setFloat(float.value)"
+                    :title="float.tip"
+                >
+                    <span style="font-size: 11px; white-space: nowrap;">{{ float.text }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex-row-container setter-row">
+            <div class="flex-item-fixed setter-row-label">
+                <Tooltip effect="dark" placement="left" content="clear 属性配置">
+                    <span class="setter-label-tips">清除浮动</span>
+                </Tooltip>
+            </div>
+            <div class="flex-item-fill setter-row-input flex-row-container">
+                <div
+                    v-for="clear in data.clearList"
+                    :class="{
+                        'setter-row-input-radio': true,
+                        'selected': clear.value===model.clear,
+                    }"
+                    @click="setClear(clear.value)"
+                    :title="clear.tip"
+                >
+                    <span style="font-size: 11px; white-space: nowrap;">{{ clear.text }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex-row-container setter-row">
+            <div class="flex-item-fixed setter-row-label">
+                <Tooltip effect="dark" placement="left" content="z-index 属性配置">
+                    <span class="setter-label-tips">重叠位置</span>
+                </Tooltip>
+            </div>
+            <div class="flex-item-fill setter-row-input flex-row-container">
+                <Numeric style="width: 100%;" v-model="model.zIndex" size="mini" :allow-empty="true" :clearable="true" controlsPosition="right" placeholder="z-index"/>
             </div>
         </div>
     </div>
@@ -390,5 +471,11 @@ function validateSpacingValue(event: Event, name: string, useAuto: boolean = tru
 
 .setting-wrap .stroke {
     stroke: #999;
+}
+
+/* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
+
+.setter-row-input :deep(.tiny-numeric__input-inner) {
+    text-align: left;
 }
 </style>
