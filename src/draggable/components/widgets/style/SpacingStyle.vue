@@ -362,7 +362,7 @@ function validateSpacingValue(event: Event, name: string, useAuto: boolean = tru
 .spacing-wrap input.spacing-edit.padding-top:focus-visible,
 .spacing-wrap input.spacing-edit.padding-right:focus-visible,
 .spacing-wrap input.spacing-edit.padding-bottom:focus-visible,
-.spacing-wrap input.spacing-edit.padding-left:focus-visible{
+.spacing-wrap input.spacing-edit.padding-left:focus-visible {
     outline: none;
 }
 
