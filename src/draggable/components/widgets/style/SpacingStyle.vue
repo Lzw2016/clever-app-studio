@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { defineModel, reactive } from "vue";
+import { defineModel, reactive, shallowReactive } from "vue";
 
 // 定义组件选项
 defineOptions({
@@ -37,10 +37,10 @@ interface SpacingStyleModel {
 
 // css margin padding 值
 const model = defineModel<SpacingStyleModel>({
-    default: reactive<SpacingStyleModel>({}),
+    default: shallowReactive<SpacingStyleModel>({}),
 });
 
-function validateSpacingValue(event: InputEvent, name: string, useAuto: boolean = true) {
+function validateSpacingValue(event: Event, name: string, useAuto: boolean = true) {
     if (!event.target) return;
     let value: string = event.target["value"] ?? "";
     let spacingValue: any;

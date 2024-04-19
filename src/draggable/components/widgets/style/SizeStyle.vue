@@ -83,7 +83,7 @@ function setModel(name: string, val: string) {
         delete model.value[name];
         return;
     }
-    if (!model.value) model.value = shallowReactive<LayoutStyleModel>({});
+    if (!model.value) model.value = shallowReactive<SizeStyleModel>({});
     model.value[name] = val;
 }
 
