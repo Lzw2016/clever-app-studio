@@ -4,27 +4,27 @@ import { defineModel, reactive } from "vue";
 
 // 定义组件选项
 defineOptions({
-    name: 'SpacingGroup',
+    name: 'SpacingStyle',
 });
 
 // 定义 Props 类型
-interface SpacingGroupProps {
+interface SpacingStyleProps {
 }
 
 // 读取组件 props 属性
-const props = withDefaults(defineProps<SpacingGroupProps>(), {});
+const props = withDefaults(defineProps<SpacingStyleProps>(), {});
 
 // 定义 State 类型
-interface SpacingGroupState {
+interface SpacingStyleState {
     edit?: "marginTop" | "marginRight" | "marginBottom" | "marginLeft" | "paddingTop" | "paddingRight" | "paddingBottom" | "paddingLeft";
 }
 
 // state 属性
-const state = reactive<SpacingGroupState>({
+const state = reactive<SpacingStyleState>({
     edit: undefined,
 });
 
-interface SpacingGroupModel {
+interface SpacingStyleModel {
     marginTop?: string;
     marginRight?: string;
     marginBottom?: string;
@@ -36,8 +36,8 @@ interface SpacingGroupModel {
 }
 
 // css margin padding 值
-const model = defineModel<SpacingGroupModel>({
-    default: reactive<SpacingGroupModel>({}),
+const model = defineModel<SpacingStyleModel>({
+    default: reactive<SpacingStyleModel>({}),
 });
 
 function validateSpacingValue(event: InputEvent, name: string, useAuto: boolean = true) {

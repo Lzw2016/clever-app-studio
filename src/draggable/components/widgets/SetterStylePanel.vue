@@ -5,7 +5,8 @@ import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { SetterState } from "@/draggable/models/SetterState";
 import LayoutStyle from "@/draggable/components/widgets/style/LayoutStyle.vue";
-import SpacingGroup from "@/draggable/components/widgets/style/SpacingGroup.vue";
+import SpacingStyle from "@/draggable/components/widgets/style/SpacingStyle.vue";
+import SizeStyle from "@/draggable/components/widgets/style/SizeStyle.vue";
 
 // 定义组件选项
 defineOptions({
@@ -48,10 +49,10 @@ const state = reactive<SetterStylePanelState>({});
                 <LayoutStyle/>
             </CollapseItem>
             <CollapseItem class="settings-items" name="间距" title="间距">
-                <SpacingGroup/>
+                <SpacingStyle/>
             </CollapseItem>
             <CollapseItem class="settings-items" name="尺寸" title="尺寸">
-
+                <SizeStyle/>
             </CollapseItem>
             <CollapseItem class="settings-items" name="定位" title="定位">
 
