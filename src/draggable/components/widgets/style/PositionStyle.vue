@@ -2,6 +2,15 @@
 import lodash from "lodash";
 import { defineModel, reactive, shallowReactive } from "vue";
 import { Numeric, Tooltip } from "@opentiny/vue";
+import PositionAll from "@/assets/images/position-all.svg?component";
+import PositionBottom from "@/assets/images/position-bottom.svg?component";
+import PositionBottomLeft from "@/assets/images/position-bottom-left.svg?component";
+import PositionBottomRight from "@/assets/images/position-bottom-right.svg?component";
+import PositionLeft from "@/assets/images/position-left.svg?component";
+import PositionRight from "@/assets/images/position-right.svg?component";
+import PositionTop from "@/assets/images/position-top.svg?component";
+import PositionTopLeft from "@/assets/images/position-top-left.svg?component";
+import PositionTopRight from "@/assets/images/position-top-right.svg?component";
 
 // 定义组件选项
 defineOptions({
@@ -18,6 +27,8 @@ const props = withDefaults(defineProps<PositionStyleProps>(), {});
 // 定义 State 类型
 interface PositionStyleState {
     edit?: "top" | "right" | "bottom" | "left";
+    //
+    positionOption?: string;
 }
 
 // state 属性
@@ -45,6 +56,17 @@ const data = {
         { value: "both", tip: "both(清除左右浮动)", icon: null, text: "左右" },
         { value: "inline-start", tip: "inline-start(清除起始侧浮动)", icon: null, text: "起始" },
         { value: "inline-end", tip: "inline-end(清除结束侧浮动)", icon: null, text: "结束" },
+    ],
+    positionOptionList: [
+        { value: "0% auto auto 0%", tip: "Top left", icon: PositionTopLeft },
+        { value: "0% 0% auto auto", tip: "Top right", icon: PositionTopRight },
+        { value: "auto auto 0% 0%", tip: "Bottom left", icon: PositionBottomLeft },
+        { value: "auto 0% 0% auto", tip: "Bottom right", icon: PositionBottomRight },
+        { value: "0% auto 0% 0%", tip: "Left", icon: PositionLeft },
+        { value: "0% 0% 0% auto", tip: "Right", icon: PositionRight },
+        { value: "auto 0% 0% 0%", tip: "Bottom", icon: PositionBottom },
+        { value: "0% 0% auto 0%", tip: "Top", icon: PositionTop },
+        { value: "0%", tip: "Full", icon: PositionAll },
     ],
 };
 
@@ -154,6 +176,23 @@ function validateSpacingValue(event: Event, name: string, useAuto: boolean = tru
                     :title="position.tip"
                 >
                     <span style="font-size: 11px; white-space: nowrap;">{{ position.text }}</span>
+                </div>
+            </div>
+        </div>
+        <div v-if="['absolute', 'fixed'].includes(model.position)" class="setter-row" style="height: auto;">
+            <div class="flex-item-fill setter-row-input flex-row-container">
+                <div
+                    v-for="positionOption in data.positionOptionList"
+                    :class="{
+                                'setter-row-input-radio': true,
+                                'selected': positionOption.value===state.positionOption,
+                                'flex-row-container': true,
+                                'flex-center': true,
+                            }"
+                    @click="state.positionOption=positionOption.value"
+                    :title="positionOption.tip"
+                >
+                    <component :is="positionOption.icon" style="width: 16px; height: 16px;"/>
                 </div>
             </div>
         </div>
