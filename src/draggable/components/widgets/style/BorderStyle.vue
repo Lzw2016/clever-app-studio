@@ -9,6 +9,10 @@ import BorderRadiusBottomLeft from "@/assets/images/border-radius-bottomleft.svg
 import BorderRadiusBottomRight from "@/assets/images/border-radius-bottomright.svg?component";
 import BorderAll from "@/assets/images/border-all.svg?component";
 import BorderMultiple from "@/assets/images/border-multiple.svg?component";
+import BorderTop from "@/assets/images/border-top.svg?component";
+import BorderRight from "@/assets/images/border-right.svg?component";
+import BorderBottom from "@/assets/images/border-bottom.svg?component";
+import BorderLeft from "@/assets/images/border-left.svg?component";
 
 // 定义组件选项
 defineOptions({
