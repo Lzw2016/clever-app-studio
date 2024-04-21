@@ -8,6 +8,7 @@ import LayoutStyle from "@/draggable/components/widgets/style/LayoutStyle.vue";
 import SpacingStyle from "@/draggable/components/widgets/style/SpacingStyle.vue";
 import SizeStyle from "@/draggable/components/widgets/style/SizeStyle.vue";
 import PositionStyle from "@/draggable/components/widgets/style/PositionStyle.vue";
+import FontStyle from "@/draggable/components/widgets/style/FontStyle.vue";
 
 // 定义组件选项
 defineOptions({
@@ -59,7 +60,7 @@ const state = reactive<SetterStylePanelState>({});
                 <PositionStyle/>
             </CollapseItem>
             <CollapseItem class="settings-items" name="文本" title="文本">
-
+                <FontStyle/>
             </CollapseItem>
             <CollapseItem class="settings-items" name="背景" title="背景">
 
