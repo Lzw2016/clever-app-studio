@@ -86,11 +86,11 @@ if (model.value) {
                 <div
                     v-for="borderRadiusSingle in data.borderRadiusSingleList"
                     :class="{
-                            'setter-row-input-radio': true,
-                            'selected': borderRadiusSingle.value===state.borderRadiusSingle,
-                            'flex-row-container': true,
-                            'flex-center': true,
-                        }"
+                        'setter-row-input-radio': true,
+                        'selected': borderRadiusSingle.value===state.borderRadiusSingle,
+                        'flex-row-container': true,
+                        'flex-center': true,
+                    }"
                     @click="state.borderRadiusSingle=borderRadiusSingle.value"
                     :title="borderRadiusSingle.tip"
                 >
