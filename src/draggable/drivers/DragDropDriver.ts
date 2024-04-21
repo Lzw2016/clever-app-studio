@@ -100,10 +100,14 @@ class DragDropDriver extends DesignerDriver {
         this.dragState.dragging = false;
         this.dragState.startDragTime = Date.now();
         // 主要依靠鼠标事件实现拖拽效果 | mouseup-鼠标弹起(停止拖拽处理) | mousemove-鼠标移动(开始拖拽处理)
+        this.removeEventListener('mouseup', this.onMouseUp);
         this.addEventListener('mouseup', this.onMouseUp);
+        this.removeEventListener('mousemove', this.onDistanceChange);
         this.addEventListener('mousemove', this.onDistanceChange);
         // 为了兼容html原生的拖拽事件 | dragend-拖放操作结束(停止拖拽处理) | dragstart-开始拖动(开始拖拽处理)
+        this.removeEventListener('dragend', this.onMouseUp);
         this.addEventListener('dragend', this.onMouseUp);
+        this.removeEventListener('dragstart', this.onStartDrag);
         this.addEventListener('dragstart', this.onStartDrag);
     }
 
@@ -118,10 +122,11 @@ class DragDropDriver extends DesignerDriver {
         }
         // 取消事件监听
         this.removeEventListener('mouseup', this.onMouseUp);
-        this.removeEventListener('mousedown', this.onMouseDown);
         this.removeEventListener('mousemove', this.onMouseMove);
         this.removeEventListener('mousemove', this.onDistanceChange);
         this.removeEventListener('dragover', this.onMouseMove);
+        this.removeEventListener('dragend', this.onMouseUp);
+        this.removeEventListener('dragstart', this.onStartDrag);
         this.removeEventListener('contextmenu', this.preventDefault, true);
         // 设置停止拖拽
         this.dragState.dragging = false
@@ -156,10 +161,13 @@ class DragDropDriver extends DesignerDriver {
         // 设置开始拖拽事件
         this.dragState.startEvent = this.dragState.startEvent || event;
         // 阻止用户打开右键菜单
+        this.removeEventListener('contextmenu', this.preventDefault, true);
         this.addEventListener('contextmenu', this.preventDefault, true);
         // 主要依靠鼠标事件实现拖拽效果 | mousemove-鼠标移动时(分发拖拽中事件)
+        this.removeEventListener('mousemove', this.onMouseMove);
         this.addEventListener('mousemove', this.onMouseMove);
         // 为了兼容html原生的拖拽事件 | dragover-被拖进一个有效的放置目标时(分发拖拽中事件)
+        this.removeEventListener('dragover', this.onMouseMove);
         this.addEventListener('dragover', this.onMouseMove);
         // 分发开始拖拽事件
         const dragStartEvent = new DragStartEvent(this.dragState.startEvent);
