@@ -27,8 +27,6 @@ const props = withDefaults(defineProps<PositionStyleProps>(), {});
 // 定义 State 类型
 interface PositionStyleState {
     edit?: "top" | "right" | "bottom" | "left";
-    //
-    positionOption?: string;
 }
 
 // state 属性
@@ -58,21 +56,20 @@ const data = {
         { value: "inline-end", tip: "inline-end(清除结束侧浮动)", icon: null, text: "结束" },
     ],
     positionOptionList: [
-        { value: "0% auto auto 0%", tip: "Top left", icon: PositionTopLeft },
-        { value: "0% 0% auto auto", tip: "Top right", icon: PositionTopRight },
-        { value: "auto auto 0% 0%", tip: "Bottom left", icon: PositionBottomLeft },
-        { value: "auto 0% 0% auto", tip: "Bottom right", icon: PositionBottomRight },
-        { value: "0% auto 0% 0%", tip: "Left", icon: PositionLeft },
-        { value: "0% 0% 0% auto", tip: "Right", icon: PositionRight },
-        { value: "auto 0% 0% 0%", tip: "Bottom", icon: PositionBottom },
-        { value: "0% 0% auto 0%", tip: "Top", icon: PositionTop },
-        { value: "0%", tip: "Full", icon: PositionAll },
+        { value: { top: "0", right: "auto", bottom: "auto", left: "0" }, tip: "左上", icon: PositionTopLeft },
+        { value: { top: "0", right: "0", bottom: "auto", left: "auto" }, tip: "右上", icon: PositionTopRight },
+        { value: { top: "auto", right: "auto", bottom: "0", left: "0" }, tip: "左下", icon: PositionBottomLeft },
+        { value: { top: "auto", right: "0", bottom: "0", left: "auto" }, tip: "右下", icon: PositionBottomRight },
+        { value: { top: "0", right: "auto", bottom: "0", left: "0" }, tip: "左边", icon: PositionLeft },
+        { value: { top: "0", right: "0", bottom: "0", left: "auto" }, tip: "又边", icon: PositionRight },
+        { value: { top: "0", right: "0", bottom: "auto", left: "0" }, tip: "上边", icon: PositionTop },
+        { value: { top: "auto", right: "0", bottom: "0", left: "0" }, tip: "下边", icon: PositionBottom },
+        { value: { top: "0", right: "0", bottom: "0", left: "0" }, tip: "铺满", icon: PositionAll },
     ],
 };
 
 interface PositionStyleModel {
     position?: string;
-    inset?: string;
     top?: string;
     right?: string;
     bottom?: string;
@@ -116,9 +113,33 @@ function setClear(val: string) {
     setPositionConfig("clear", val);
 }
 
-function validateSpacingValue(event: Event, name: string, useAuto: boolean = true) {
+function equalPosition(val: { top: string, right: string, bottom: string, left: string }) {
+    return model.value.top === val.top
+        && model.value.right === val.right
+        && model.value.bottom === val.bottom
+        && model.value.left === val.left;
+}
+
+function setFastPosition(val: { top: string, right: string, bottom: string, left: string }) {
+    if (equalPosition(val)) {
+        delete model.value.top;
+        delete model.value.right;
+        delete model.value.bottom;
+        delete model.value.left;
+    } else {
+        lodash.assign(model.value, val);
+    }
+}
+
+function validateSpacingValue(event: Event, name: string, useAuto: boolean = true, usePercentage: boolean = true) {
     if (!event.target) return;
     let value: string = event.target["value"] ?? "";
+    // 百分值(%)处理
+    let percentage = "";
+    if (usePercentage && value.endsWith("%")) {
+        value = value.substring(0, value.length - 1);
+        percentage = "%";
+    }
     let spacingValue: any;
     if (value.length <= 0) {
         spacingValue = "";
@@ -151,6 +172,10 @@ function validateSpacingValue(event: Event, name: string, useAuto: boolean = tru
     if (["0", ""].includes(spacingValue)) {
         spacingValue = undefined;
     }
+    // 百分值(%)处理
+    if (usePercentage && spacingValue) {
+        spacingValue = spacingValue + percentage;
+    }
     // 更新数据
     model.value[name] = spacingValue;
     event.target["value"] = spacingValue ?? "";
@@ -179,24 +204,30 @@ function validateSpacingValue(event: Event, name: string, useAuto: boolean = tru
                 </div>
             </div>
         </div>
-        <div v-if="['absolute', 'fixed'].includes(model.position)" class="setter-row" style="height: auto;">
+        <div v-if="model.position && ['absolute', 'fixed'].includes(model.position)" class="flex-row-container setter-row" style="height: auto;">
+            <div class="flex-item-fixed setter-row-label">
+                <Tooltip effect="dark" placement="left" content="快速设置 top、bottom、left、right 值">
+                    <span class="setter-label-tips">快速选择</span>
+                </Tooltip>
+            </div>
             <div class="flex-item-fill setter-row-input flex-row-container">
                 <div
                     v-for="positionOption in data.positionOptionList"
                     :class="{
-                                'setter-row-input-radio': true,
-                                'selected': positionOption.value===state.positionOption,
-                                'flex-row-container': true,
-                                'flex-center': true,
-                            }"
-                    @click="state.positionOption=positionOption.value"
+                        'setter-row-input-radio': true,
+                        'selected2': equalPosition(positionOption.value),
+                        'flex-row-container': true,
+                        'flex-center': true,
+                    }"
+                    style="padding: 2px; margin: 1px; border: none;"
+                    @click="setFastPosition(positionOption.value)"
                     :title="positionOption.tip"
                 >
                     <component :is="positionOption.icon" style="width: 16px; height: 16px;"/>
                 </div>
             </div>
         </div>
-        <div v-if="['relative', 'absolute', 'fixed', 'sticky'].includes(model.position)" class="setter-row" style="height: auto;">
+        <div v-if="model.position && ['relative', 'absolute', 'fixed', 'sticky'].includes(model.position)" class="setter-row" style="height: auto;">
             <div class="flex-item-fixed setter-row-label"/>
             <div class="flex-item-fill setter-row-input">
                 <div class="setting-wrap">
@@ -263,22 +294,22 @@ function validateSpacingValue(event: Event, name: string, useAuto: boolean = tru
                             </clipPath>
                             <rect clip-path="url(#position-inner)" x="36" y="24" width="100" height="16" fill="transparent" rx="2" ry="2" class="stroke" style="pointer-events: none; stroke-width: 2px"></rect>
                         </svg>
-                        <div v-if="state.edit!=='top'" class="direction top" :class="{'is-setting': model.top}" @click="state.edit='top'">
+                        <div v-if="state.edit!=='top'" class="direction top" :class="{'is-setting': model.top}" @click="state.edit='top'" title="设置top">
                             {{ model.top ?? 0 }}
                         </div>
                         <input v-else class="direction top" v-focus :value="model.top" @input="validateSpacingValue($event, 'top')" placeholder="0" @blur="state.edit=undefined"/>
 
-                        <div v-if="state.edit!=='right'" class="direction right" :class="{'is-setting': model.right}" @click="state.edit='right'">
+                        <div v-if="state.edit!=='right'" class="direction right" :class="{'is-setting': model.right}" @click="state.edit='right'" title="设置right">
                             {{ model.right ?? 0 }}
                         </div>
                         <input v-else class="direction right" v-focus :value="model.right" @input="validateSpacingValue($event, 'right')" placeholder="0" @blur="state.edit=undefined"/>
 
-                        <div v-if="state.edit!=='bottom'" class="direction bottom" :class="{'is-setting': model.bottom}" @click="state.edit='bottom'">
+                        <div v-if="state.edit!=='bottom'" class="direction bottom" :class="{'is-setting': model.bottom}" @click="state.edit='bottom'" title="设置bottom">
                             {{ model.bottom ?? 0 }}
                         </div>
                         <input v-else class="direction bottom" v-focus :value="model.bottom" @input="validateSpacingValue($event, 'bottom')" placeholder="0" @blur="state.edit=undefined"/>
 
-                        <div v-if="state.edit!=='left'" class="direction left" :class="{'is-setting': model.left}" @click="state.edit='left'">
+                        <div v-if="state.edit!=='left'" class="direction left" :class="{'is-setting': model.left}" @click="state.edit='left'" title="设置left">
                             {{ model.left ?? 0 }}
                         </div>
                         <input v-else class="direction left" v-focus :value="model.left" @input="validateSpacingValue($event, 'left')" placeholder="0" @blur="state.edit=undefined"/>
@@ -408,6 +439,13 @@ function validateSpacingValue(event: Event, name: string, useAuto: boolean = tru
     fill: #4f77ff;
     color: #4f77ff;
     border: 1px solid #7693F5;
+}
+
+.setter-row-input-radio.selected2 {
+    fill: #4f77ff;
+    color: #4f77ff;
+    border: 1px solid #7693F5;
+    background: #b5b5b5;
 }
 
 .setting-wrap {
