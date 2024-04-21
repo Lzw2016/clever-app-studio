@@ -7,6 +7,8 @@ import BorderRadiusTopLeft from "@/assets/images/border-radius-topleft.svg?compo
 import BorderRadiusTopRight from "@/assets/images/border-radius-topright.svg?component";
 import BorderRadiusBottomLeft from "@/assets/images/border-radius-bottomleft.svg?component";
 import BorderRadiusBottomRight from "@/assets/images/border-radius-bottomright.svg?component";
+import BorderAll from "@/assets/images/border-all.svg?component";
+import BorderMultiple from "@/assets/images/border-multiple.svg?component";
 
 // 定义组件选项
 defineOptions({
@@ -40,6 +42,10 @@ const data = {
     borderRadiusSingleList: [
         { value: true, tip: "统一定义", icon: BorderRadiusSingle },
         { value: false, tip: "分别定义", icon: BorderRadiusMultiple },
+    ],
+    borderStyleSingleList: [
+        { value: true, tip: "统一定义", icon: BorderAll },
+        { value: false, tip: "分别定义", icon: BorderMultiple },
     ],
 };
 
@@ -137,6 +143,29 @@ if (model.value) {
                 </div>
             </div>
         </template>
+        <div class="flex-row-container setter-row">
+            <div class="flex-item-fixed setter-row-label">
+                <Tooltip effect="dark" placement="left" content="border-style、border-width、border-color 属性配置，需手动设置单位：px、em等">
+                    <span class="setter-label-tips">边框</span>
+                </Tooltip>
+            </div>
+            <div class="flex-item-fill setter-row-input flex-row-container">
+                <div
+                    v-for="borderStyleSingle in data.borderStyleSingleList"
+                    :class="{
+                        'setter-row-input-radio': true,
+                        'selected': borderStyleSingle.value===state.borderStyleSingle,
+                        'flex-row-container': true,
+                        'flex-center': true,
+                    }"
+                    @click="state.borderStyleSingle=borderStyleSingle.value"
+                    :title="borderStyleSingle.tip"
+                >
+                    <component :is="borderStyleSingle.icon" style="width: 16px; height: 16px;"/>
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 
