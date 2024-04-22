@@ -179,6 +179,9 @@ export default defineConfig(env => {
                         if (id.includes('/vue-draggable-plus/')) {
                             return 'vue-draggable-plus';
                         }
+                        if (id.includes('/style-to-object/')) {
+                            return 'style-to-object';
+                        }
                         if (id.includes('/codemirror/') || id.includes('/codemirror-editor-vue3/')) {
                             return 'codemirror';
                         }

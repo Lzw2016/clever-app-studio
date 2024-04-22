@@ -64,9 +64,8 @@ const state = reactive<SetterStylePanelState>({});
             <CollapseItem class="settings-items" name="文本" title="文本">
                 <FontStyle/>
             </CollapseItem>
-            <CollapseItem class="settings-items" name="背景" title="背景">
-
-            </CollapseItem>
+            <!-- <CollapseItem class="settings-items" name="背景" title="背景"> -->
+            <!-- </CollapseItem> -->
             <CollapseItem class="settings-items" name="边框" title="边框">
                 <BorderStyle/>
             </CollapseItem>

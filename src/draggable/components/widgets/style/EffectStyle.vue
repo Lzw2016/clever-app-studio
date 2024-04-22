@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { defineModel, reactive, shallowReactive } from "vue";
 import { Numeric, Select, Tooltip } from "@opentiny/vue";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 // 定义组件选项
 defineOptions({
@@ -38,8 +40,9 @@ const data = {
 };
 
 interface EffectStyleModel {
-    opacity?: number;
     cursor?: string;
+    backgroundColor?: string;
+    opacity?: number;
 }
 
 // css display 值
@@ -55,16 +58,6 @@ if (model.value) {
 
 <template>
     <div>
-        <div class="flex-row-container setter-row">
-            <div class="flex-item-fixed setter-row-label">
-                <Tooltip effect="dark" placement="left" content="opacity 属性配置">
-                    <span class="setter-label-tips">不透明度</span>
-                </Tooltip>
-            </div>
-            <div class="flex-item-fill setter-row-input">
-                <Numeric style="width: 100%;" v-model="model.opacity" unit="%" size="mini" :min="0" :max="100" :allow-empty="true" placeholder="不透明度"/>
-            </div>
-        </div>
         <div class="flex-row-container setter-row">
             <div class="flex-item-fixed setter-row-label">
                 <Tooltip effect="dark" placement="left" content="cursor 属性配置">
@@ -83,6 +76,28 @@ if (model.value) {
                     :clearable="true"
                     placeholder="光标样式"
                 />
+            </div>
+        </div>
+        <div class="flex-row-container setter-row">
+            <div class="flex-item-fixed setter-row-label">
+                <Tooltip effect="dark" placement="left" content="background-color 属性配置">
+                    <span class="setter-label-tips">背景颜色</span>
+                </Tooltip>
+            </div>
+            <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
+                <input :value="model.backgroundColor ?? '#000000'" @input="e => model.backgroundColor= e.target?.['value']" type="color"/>
+                <span style="margin-left: 8px;">{{ model.backgroundColor }}</span>
+                <FontAwesomeIcon v-show="model.backgroundColor" class="button-clear" :icon="faXmark" title="清除背景颜色" @click="delete model.backgroundColor"/>
+            </div>
+        </div>
+        <div class="flex-row-container setter-row">
+            <div class="flex-item-fixed setter-row-label">
+                <Tooltip effect="dark" placement="left" content="opacity 属性配置">
+                    <span class="setter-label-tips">不透明度</span>
+                </Tooltip>
+            </div>
+            <div class="flex-item-fill setter-row-input">
+                <Numeric style="width: 100%;" v-model="model.opacity" unit="%" size="mini" :min="0" :max="100" :allow-empty="true" placeholder="不透明度"/>
             </div>
         </div>
     </div>
@@ -126,6 +141,27 @@ if (model.value) {
 
 .setter-row-input {
     overflow: hidden;
+}
+
+.setter-row-input > input[type=color] {
+    width: 22px;
+    height: 24px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    border-radius: 4px;
+}
+
+.button-clear {
+    margin-left: 4px;
+    padding: 2px 4px;
+    color: #252b3a;
+    cursor: pointer;
+}
+
+.button-clear:hover {
+    background: #DFE1E6;
+    color: #4f77ff;
 }
 
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */

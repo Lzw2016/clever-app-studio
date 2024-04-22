@@ -188,7 +188,7 @@ function setTextDecorationLine(val: string) {
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
                 <input :value="model.color ?? '#000000'" @input="e => model.color= e.target?.['value']" type="color"/>
                 <span style="margin-left: 8px;">{{ model.color }}</span>
-                <FontAwesomeIcon v-show="model.color" class="button-clear" :icon="faXmark" title="清除" @click="delete model.color"/>
+                <FontAwesomeIcon v-show="model.color" class="button-clear" :icon="faXmark" title="清除文本颜色" @click="delete model.color"/>
             </div>
         </div>
         <div class="flex-row-container setter-row">
