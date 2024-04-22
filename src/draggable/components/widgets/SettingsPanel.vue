@@ -116,6 +116,7 @@ function existsSetter(meta?: ComponentMeta) {
             v-else-if="selectedComponentMeta && selectedComponentMeta.setter && setterState && designerState"
             class="flex-item-fill settings-tabs flex-column-container"
             :active-name="setterState.activeTab"
+            v-model="setterState.activeTab"
             tab-style="button-card"
         >
             <TabItem
