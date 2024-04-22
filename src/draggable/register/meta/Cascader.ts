@@ -218,8 +218,6 @@ export default defineComponentMeta({
             groups: [],
         },
         style: {
-            title: "",
-            groups: [],
         },
         advanced: {
             title: "",

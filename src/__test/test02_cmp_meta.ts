@@ -142,12 +142,10 @@ const componentMeta = defineComponentMeta({
         style: {
             title: "样式",
             // 参考 https://lowcode-engine.cn/demo/demo-basic-antd/index.html
-            groups: [
-                // 布局
-                // 文字
-                // 背景
-                // 位置
-                // 边框
+            disableSize: true,
+            componentStyles: [
+                { name: "紧凑", class: "customize compact" },
+                { name: "绚丽", class: "gorgeous" },
             ],
         },
         // vue指令设置(内置的固定设置)

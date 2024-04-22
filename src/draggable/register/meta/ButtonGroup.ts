@@ -30,7 +30,12 @@ export default defineComponentMeta({
         },
         style: {
             title: "",
-            groups: [],
+            disableFont: true,
+            disableBorder: true,
+            componentStyles: [
+                { name: "测试1", class: "test_1 compact" },
+                { name: "测试2", class: "test_3 gorgeous" },
+            ],
         },
         advanced: {
             title: "",

@@ -4,6 +4,7 @@ import { Button, Collapse, CollapseItem } from "@opentiny/vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { SetterState } from "@/draggable/models/SetterState";
+import { StylePanel } from "@/draggable/types/ComponentMeta";
 import LayoutStyle from "@/draggable/components/widgets/style/LayoutStyle.vue";
 import SpacingStyle from "@/draggable/components/widgets/style/SpacingStyle.vue";
 import SizeStyle from "@/draggable/components/widgets/style/SizeStyle.vue";
@@ -25,6 +26,8 @@ interface SetterStylePanelProps {
     designerState: DesignerState;
     /** 设计器的组件配置面板状态 */
     setterState: SetterState;
+    /** 样式设置器面板 */
+    stylePanel: StylePanel;
 }
 
 // 读取组件 props 属性
@@ -39,6 +42,9 @@ interface SetterStylePanelState {
 const state = reactive<SetterStylePanelState>({});
 // 内部数据
 // const data = {};
+
+// nodes
+
 
 </script>
 

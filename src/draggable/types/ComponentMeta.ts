@@ -168,7 +168,7 @@ interface FormItemProps {
     [name: string]: any;
 }
 
-/** 设置器面板 */
+/** 属性设置器面板 */
 interface SetterPanel {
     /** 面板标题 */
     title?: string;
@@ -180,6 +180,38 @@ interface SetterPanel {
     groups: Array<SetterGroup>;
 }
 
+/**
+ * 组件内置样式(主题)
+ */
+interface ComponentStyle {
+    /** 样式名称 */
+    name: string;
+    /** 全局样式表名称 */
+    class: string;
+}
+
+/** 样式设置器面板 */
+interface StylePanel {
+    /** 面板标题 */
+    title?: string;
+    /** 禁用布局设置 */
+    disableLayout?: boolean;
+    /** 禁用间距设置 */
+    disableSpacing?: boolean;
+    /** 禁用尺寸设置 */
+    disableSize?: boolean;
+    /** 禁用定位设置 */
+    disablePosition?: boolean;
+    /** 禁用文本设置 */
+    disableFont?: boolean;
+    /** 禁用边框设置 */
+    disableBorder?: boolean;
+    /** 禁用效果设置 */
+    disableEffect?: boolean;
+    /** 组件内置的样式 */
+    componentStyles?: Array<ComponentStyle>;
+}
+
 /** 组件元信息 setter */
 interface ComponentSetter {
     /** 组件属性设置 */
@@ -187,7 +219,7 @@ interface ComponentSetter {
     /** 组件事件绑定 */
     events?: SetterPanel;
     /** 样式设置(内置的固定设置) */
-    style?: SetterPanel;
+    style?: StylePanel;
     /** vue指令设置(内置的固定设置) */
     advanced?: SetterPanel;
 }
@@ -307,6 +339,7 @@ export type {
     FormItemProps,
     SetterGroup,
     SetterPanel,
+    StylePanel,
     ComponentSetter,
     DefDesignNode,
     ComponentMeta,
