@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive } from "vue";
+import { defineModel, reactive, shallowReactive, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Input, Select, Tooltip } from "@opentiny/vue";
@@ -12,6 +12,7 @@ import FontStyleItalic from "@/assets/images/font-style-italic.svg?component";
 import TextDecorationStrike from "@/assets/images/text-decoration-strike.svg?component";
 import TextDecorationUnderline from "@/assets/images/text-decoration-underline.svg?component";
 import TextDecorationOverline from "@/assets/images/text-decoration-overline.svg?component";
+import { autoUseStyleUnit } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -27,6 +28,8 @@ const props = withDefaults(defineProps<FontStyleProps>(), {});
 
 // 定义 State 类型
 interface FontStyleState {
+    fontSize?: string;
+    lineHeight?: string;
 }
 
 // state 属性
@@ -106,6 +109,9 @@ if (model.value) {
     // TODO model -> state
 }
 
+watch(() => state.fontSize, value => autoUseStyleUnit(model.value, "fontSize", value));
+watch(() => state.lineHeight, value => autoUseStyleUnit(model.value, "lineHeight", value));
+
 function setStyleConfig(name: string, val: string) {
     if (model.value?.[name] === val) {
         delete model.value[name];
@@ -136,9 +142,9 @@ function setTextDecorationLine(val: string) {
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.fontSize" size="mini" :clearable="true" placeholder="字号"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.fontSize" size="mini" :clearable="true" placeholder="字号"/>
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.lineHeight" size="mini" :clearable="true" placeholder="行高"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.lineHeight" size="mini" :clearable="true" placeholder="行高"/>
             </div>
         </div>
         <div class="flex-row-container setter-row">

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { defineModel, reactive, shallowReactive } from "vue";
+import { defineModel, reactive, shallowReactive, watch } from "vue";
 import { Numeric, Tooltip } from "@opentiny/vue";
 import PositionAll from "@/assets/images/position-all.svg?component";
 import PositionBottom from "@/assets/images/position-bottom.svg?component";
@@ -11,6 +11,7 @@ import PositionRight from "@/assets/images/position-right.svg?component";
 import PositionTop from "@/assets/images/position-top.svg?component";
 import PositionTopLeft from "@/assets/images/position-top-left.svg?component";
 import PositionTopRight from "@/assets/images/position-top-right.svg?component";
+import { autoUseStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -27,6 +28,10 @@ const props = withDefaults(defineProps<PositionStyleProps>(), {});
 // 定义 State 类型
 interface PositionStyleState {
     edit?: "top" | "right" | "bottom" | "left";
+    top?: string;
+    right?: string;
+    bottom?: string;
+    left?: string;
 }
 
 // state 属性
@@ -89,13 +94,10 @@ if (model.value) {
     // TODO model -> state
 }
 
-function setPosition(val: string) {
-    if (model.value.position === val) {
-        delete model.value.position;
-        return;
-    }
-    model.value.position = val;
-}
+watch(() => state.top, value => autoUseStyleUnit(model.value, "top", value));
+watch(() => state.right, value => autoUseStyleUnit(model.value, "right", value));
+watch(() => state.bottom, value => autoUseStyleUnit(model.value, "bottom", value));
+watch(() => state.left, value => autoUseStyleUnit(model.value, "left", value));
 
 function setPositionConfig(name: string, val: string) {
     if (model.value[name] === val) {
@@ -103,6 +105,10 @@ function setPositionConfig(name: string, val: string) {
         return;
     }
     model.value[name] = val;
+}
+
+function setPosition(val: string) {
+    setPositionConfig("position", val);
 }
 
 function setFloat(val: string) {
@@ -114,71 +120,21 @@ function setClear(val: string) {
 }
 
 function equalPosition(val: { top: string, right: string, bottom: string, left: string }) {
-    return model.value.top === val.top
-        && model.value.right === val.right
-        && model.value.bottom === val.bottom
-        && model.value.left === val.left;
+    return state.top === val.top
+        && state.right === val.right
+        && state.bottom === val.bottom
+        && state.left === val.left;
 }
 
 function setFastPosition(val: { top: string, right: string, bottom: string, left: string }) {
     if (equalPosition(val)) {
-        delete model.value.top;
-        delete model.value.right;
-        delete model.value.bottom;
-        delete model.value.left;
+        delete state.top;
+        delete state.right;
+        delete state.bottom;
+        delete state.left;
     } else {
-        lodash.assign(model.value, val);
+        lodash.assign(state, val);
     }
-}
-
-function validateSpacingValue(event: Event, name: string, useAuto: boolean = true, usePercentage: boolean = true) {
-    if (!event.target) return;
-    let value: string = event.target["value"] ?? "";
-    // 百分值(%)处理
-    let percentage = "";
-    if (usePercentage && value.endsWith("%")) {
-        value = value.substring(0, value.length - 1);
-        percentage = "%";
-    }
-    let spacingValue: any;
-    if (value.length <= 0) {
-        spacingValue = "";
-    } else if (useAuto && value.toLowerCase() === "a") {
-        // 输入 a 表示 auto
-        spacingValue = "auto";
-    } else if (useAuto && value === "aut") {
-        // 删除 auto
-        spacingValue = undefined;
-    } else if (useAuto && value.startsWith("auto") && value.length > 4) {
-        // auto后面接着输入
-        value = value.substring(4);
-        const num = lodash.toNumber(value);
-        spacingValue = lodash.isFinite(num) ? value : "auto";
-    } else {
-        // 输入的是
-        spacingValue = value;
-    }
-    spacingValue = lodash.trim(spacingValue);
-    // 保证输入“数字”或者“auto”
-    if (![undefined, "", "auto"].includes(spacingValue) && !lodash.isFinite(lodash.toNumber(spacingValue))) {
-        const match = value.match(/\d+(\.\d+)?/);
-        if (match && match[0]) {
-            spacingValue = match[0];
-        } else {
-            spacingValue = undefined;
-        }
-    }
-    // 空值处理
-    if (["0", ""].includes(spacingValue)) {
-        spacingValue = undefined;
-    }
-    // 百分值(%)处理
-    if (usePercentage && spacingValue) {
-        spacingValue = spacingValue + percentage;
-    }
-    // 更新数据
-    model.value[name] = spacingValue;
-    event.target["value"] = spacingValue ?? "";
 }
 </script>
 
@@ -294,25 +250,81 @@ function validateSpacingValue(event: Event, name: string, useAuto: boolean = tru
                             </clipPath>
                             <rect clip-path="url(#position-inner)" x="36" y="24" width="100" height="16" fill="transparent" rx="2" ry="2" class="stroke" style="pointer-events: none; stroke-width: 2px"></rect>
                         </svg>
-                        <div v-if="state.edit!=='top'" class="direction top" :class="{'is-setting': model.top}" @click="state.edit='top'" title="设置top">
-                            {{ model.top ?? 0 }}
+                        <div
+                            v-if="state.edit!=='top'"
+                            class="direction top"
+                            :class="{'is-setting': state.top}"
+                            @click="state.edit='top'"
+                            title="设置top"
+                        >
+                            {{ state.top ?? 0 }}
                         </div>
-                        <input v-else class="direction top" v-focus :value="model.top" @input="validateSpacingValue($event, 'top')" placeholder="0" @blur="state.edit=undefined"/>
+                        <input
+                            v-else
+                            class="direction top"
+                            v-focus
+                            :value="state.top"
+                            placeholder="0"
+                            @input="validateInputStyleValue(state, 'top',$event, true, true)"
+                            @blur="state.edit=undefined"
+                        />
 
-                        <div v-if="state.edit!=='right'" class="direction right" :class="{'is-setting': model.right}" @click="state.edit='right'" title="设置right">
-                            {{ model.right ?? 0 }}
+                        <div
+                            v-if="state.edit!=='right'"
+                            class="direction right"
+                            :class="{'is-setting': state.right}"
+                            @click="state.edit='right'"
+                            title="设置right"
+                        >
+                            {{ state.right ?? 0 }}
                         </div>
-                        <input v-else class="direction right" v-focus :value="model.right" @input="validateSpacingValue($event, 'right')" placeholder="0" @blur="state.edit=undefined"/>
+                        <input
+                            v-else
+                            class="direction right"
+                            v-focus
+                            :value="state.right"
+                            placeholder="0"
+                            @input="validateInputStyleValue(state, 'right',$event, true, true)"
+                            @blur="state.edit=undefined"
+                        />
 
-                        <div v-if="state.edit!=='bottom'" class="direction bottom" :class="{'is-setting': model.bottom}" @click="state.edit='bottom'" title="设置bottom">
-                            {{ model.bottom ?? 0 }}
+                        <div
+                            v-if="state.edit!=='bottom'"
+                            class="direction bottom"
+                            :class="{'is-setting': state.bottom}"
+                            @click="state.edit='bottom'"
+                            title="设置bottom"
+                        >
+                            {{ state.bottom ?? 0 }}
                         </div>
-                        <input v-else class="direction bottom" v-focus :value="model.bottom" @input="validateSpacingValue($event, 'bottom')" placeholder="0" @blur="state.edit=undefined"/>
+                        <input
+                            v-else
+                            class="direction bottom"
+                            v-focus
+                            :value="state.bottom"
+                            placeholder="0"
+                            @input="validateInputStyleValue(state, 'bottom',$event, true, true)"
+                            @blur="state.edit=undefined"
+                        />
 
-                        <div v-if="state.edit!=='left'" class="direction left" :class="{'is-setting': model.left}" @click="state.edit='left'" title="设置left">
-                            {{ model.left ?? 0 }}
+                        <div
+                            v-if="state.edit!=='left'"
+                            class="direction left"
+                            :class="{'is-setting': state.left}"
+                            @click="state.edit='left'"
+                            title="设置left"
+                        >
+                            {{ state.left ?? 0 }}
                         </div>
-                        <input v-else class="direction left" v-focus :value="model.left" @input="validateSpacingValue($event, 'left')" placeholder="0" @blur="state.edit=undefined"/>
+                        <input
+                            v-else
+                            class="direction left"
+                            v-focus
+                            :value="state.left"
+                            placeholder="0"
+                            @input="validateInputStyleValue(state, 'left',$event, true, true)"
+                            @blur="state.edit=undefined"
+                        />
                     </div>
                 </div>
             </div>

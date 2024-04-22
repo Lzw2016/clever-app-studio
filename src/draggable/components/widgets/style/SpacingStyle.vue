@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import lodash from "lodash";
-import { defineModel, reactive, shallowReactive } from "vue";
+import { defineModel, reactive, shallowReactive, watch } from "vue";
+import { autoUseStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -17,6 +17,14 @@ const props = withDefaults(defineProps<SpacingStyleProps>(), {});
 // 定义 State 类型
 interface SpacingStyleState {
     edit?: "marginTop" | "marginRight" | "marginBottom" | "marginLeft" | "paddingTop" | "paddingRight" | "paddingBottom" | "paddingLeft";
+    marginTop?: string;
+    marginRight?: string;
+    marginBottom?: string;
+    marginLeft?: string;
+    paddingTop?: string;
+    paddingRight?: string;
+    paddingBottom?: string;
+    paddingLeft?: string;
 }
 
 // state 属性
@@ -40,45 +48,14 @@ const model = defineModel<SpacingStyleModel>({
     default: shallowReactive<SpacingStyleModel>({}),
 });
 
-function validateSpacingValue(event: Event, name: string, useAuto: boolean = true) {
-    if (!event.target) return;
-    let value: string = event.target["value"] ?? "";
-    let spacingValue: any;
-    if (value.length <= 0) {
-        spacingValue = "";
-    } else if (useAuto && value.toLowerCase() === "a") {
-        // 输入 a 表示 auto
-        spacingValue = "auto";
-    } else if (useAuto && value === "aut") {
-        // 删除 auto
-        spacingValue = undefined;
-    } else if (useAuto && value.startsWith("auto") && value.length > 4) {
-        // auto后面接着输入
-        value = value.substring(4);
-        const num = lodash.toNumber(value);
-        spacingValue = lodash.isFinite(num) ? value : "auto";
-    } else {
-        // 输入的是
-        spacingValue = value;
-    }
-    spacingValue = lodash.trim(spacingValue);
-    // 保证输入“数字”或者“auto”
-    if (![undefined, "", "auto"].includes(spacingValue) && !lodash.isFinite(lodash.toNumber(spacingValue))) {
-        const match = value.match(/\d+(\.\d+)?/);
-        if (match && match[0]) {
-            spacingValue = match[0];
-        } else {
-            spacingValue = undefined;
-        }
-    }
-    // 空值处理
-    if (["0", ""].includes(spacingValue)) {
-        spacingValue = undefined;
-    }
-    // 更新数据
-    model.value[name] = spacingValue;
-    event.target["value"] = spacingValue ?? "";
-}
+watch(() => state.marginTop, value => autoUseStyleUnit(model.value, "marginTop", value));
+watch(() => state.marginRight, value => autoUseStyleUnit(model.value, "marginRight", value));
+watch(() => state.marginBottom, value => autoUseStyleUnit(model.value, "marginBottom", value));
+watch(() => state.marginLeft, value => autoUseStyleUnit(model.value, "marginLeft", value));
+watch(() => state.paddingTop, value => autoUseStyleUnit(model.value, "paddingTop", value));
+watch(() => state.paddingRight, value => autoUseStyleUnit(model.value, "paddingRight", value));
+watch(() => state.paddingBottom, value => autoUseStyleUnit(model.value, "paddingBottom", value));
+watch(() => state.paddingLeft, value => autoUseStyleUnit(model.value, "paddingLeft", value));
 </script>
 
 <template>
@@ -146,25 +123,80 @@ function validateSpacingValue(event: Event, name: string, useAuto: boolean = tru
                     </clipPath>
                     <rect class="stroke" clip-path="url(#margin-inner)" x="36" y="24" width="152" height="72" fill="transparent" rx="2" ry="2" style="pointer-events: none; stroke-width: 2px"></rect>
                 </svg>
-                <div v-if="state.edit!=='marginTop'" class="spacing-edit margin-top" :class="{'is-setting': model.marginTop}" @click="state.edit='marginTop'" title="设置margin-top">
-                    {{ model.marginTop ?? 0 }}
+                <div
+                    v-if="state.edit!=='marginTop'"
+                    class="spacing-edit margin-top"
+                    :class="{'is-setting': state.marginTop}"
+                    @click="state.edit='marginTop'"
+                    title="设置margin-top"
+                >
+                    {{ state.marginTop ?? 0 }}
                 </div>
-                <input v-else class="spacing-edit margin-top" v-focus :value="model.marginTop" @input="validateSpacingValue($event, 'marginTop')" placeholder="0" @blur="state.edit=undefined"/>
+                <input
+                    v-else
+                    class="spacing-edit margin-top"
+                    v-focus
+                    :value="state.marginTop"
+                    placeholder="0"
+                    @input="validateInputStyleValue(state,'marginTop' ,$event, true, false)"
+                    @blur="state.edit=undefined"
+                />
 
-                <div v-if="state.edit!=='marginRight'" class="spacing-edit margin-right" :class="{'is-setting': model.marginRight}" @click="state.edit='marginRight'" title="设置margin-right">
-                    {{ model.marginRight ?? 0 }}
+                <div
+                    v-if="state.edit!=='marginRight'"
+                    class="spacing-edit margin-right"
+                    :class="{'is-setting': state.marginRight}"
+                    @click="state.edit='marginRight'"
+                    title="设置margin-right"
+                >
+                    {{ state.marginRight ?? 0 }}
                 </div>
-                <input v-else class="spacing-edit margin-right" v-focus :value="model.marginRight" @input="validateSpacingValue($event, 'marginRight')" placeholder="0" @blur="state.edit=undefined"/>
+                <input
+                    v-else
+                    class="spacing-edit margin-right"
+                    v-focus
+                    placeholder="0"
+                    :value="state.marginRight"
+                    @input="validateInputStyleValue(state,'marginRight' ,$event, true, false)"
+                    @blur="state.edit=undefined"
+                />
 
-                <div v-if="state.edit!=='marginBottom'" class="spacing-edit margin-bottom" :class="{'is-setting': model.marginBottom}" @click="state.edit='marginBottom'" title="设置margin-bottom">
-                    {{ model.marginBottom ?? 0 }}
+                <div
+                    v-if="state.edit!=='marginBottom'"
+                    class="spacing-edit margin-bottom"
+                    :class="{'is-setting': state.marginBottom}"
+                    @click="state.edit='marginBottom'"
+                    title="设置margin-bottom"
+                >
+                    {{ state.marginBottom ?? 0 }}
                 </div>
-                <input v-else class="spacing-edit margin-bottom" v-focus :value="model.marginBottom" @input="validateSpacingValue($event, 'marginBottom')" placeholder="0" @blur="state.edit=undefined"/>
+                <input
+                    v-else
+                    class="spacing-edit margin-bottom"
+                    v-focus
+                    :value="state.marginBottom"
+                    placeholder="0"
+                    @input="validateInputStyleValue(state,'marginBottom' ,$event, true, false)"
+                    @blur="state.edit=undefined"
+                />
 
-                <div v-if="state.edit!=='marginLeft'" class="spacing-edit margin-left" :class="{'is-setting': model.marginLeft}" @click="state.edit='marginLeft'" title="设置margin-left">
-                    {{ model.marginLeft ?? 0 }}
+                <div
+                    v-if="state.edit!=='marginLeft'"
+                    class="spacing-edit margin-left"
+                    :class="{'is-setting': state.marginLeft}"
+                    @click="state.edit='marginLeft'"
+                    title="设置margin-left"
+                >
+                    {{ state.marginLeft ?? 0 }}
                 </div>
-                <input v-else class="spacing-edit margin-left" v-focus :value="model.marginLeft" @input="validateSpacingValue($event, 'marginLeft')" placeholder="0" @blur="state.edit=undefined"/>
+                <input
+                    v-else class="spacing-edit margin-left"
+                    v-focus
+                    :value="state.marginLeft"
+                    placeholder="0"
+                    @input="validateInputStyleValue(state,'marginLeft' ,$event, true, false)"
+                    @blur="state.edit=undefined"
+                />
             </div>
             <div class="spacing-min-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="144" height="64" style="grid-area: 1 / 1 / -1 / -1">
@@ -229,25 +261,80 @@ function validateSpacingValue(event: Event, name: string, useAuto: boolean = tru
                     </clipPath>
                     <rect class="stroke" clip-path="url(#padding-inner)" x="36" y="24" width="72" height="16" fill="transparent" rx="2" ry="2" style="pointer-events: none; stroke-width: 2px"></rect>
                 </svg>
-                <div v-if="state.edit!=='paddingTop'" class="spacing-edit padding-top" :class="{'is-setting': model.paddingTop}" @click="state.edit='paddingTop'" title="设置padding-top">
-                    {{ model.paddingTop ?? 0 }}
+                <div
+                    v-if="state.edit!=='paddingTop'"
+                    class="spacing-edit padding-top"
+                    :class="{'is-setting': state.paddingTop}"
+                    @click="state.edit='paddingTop'"
+                    title="设置padding-top"
+                >
+                    {{ state.paddingTop ?? 0 }}
                 </div>
-                <input v-else class="spacing-edit padding-top" v-focus :value="model.paddingTop" @input="validateSpacingValue($event, 'paddingTop', false)" placeholder="0" @blur="state.edit=undefined"/>
+                <input
+                    v-else
+                    class="spacing-edit padding-top"
+                    v-focus
+                    :value="state.paddingTop"
+                    placeholder="0"
+                    @input="validateInputStyleValue(state,'paddingTop' ,$event, false, false)"
+                    @blur="state.edit=undefined"
+                />
 
-                <div v-if="state.edit!=='paddingRight'" class="spacing-edit padding-right" :class="{'is-setting': model.paddingRight}" @click="state.edit='paddingRight'" title="设置padding-right">
-                    {{ model.paddingRight ?? 0 }}
+                <div
+                    v-if="state.edit!=='paddingRight'"
+                    class="spacing-edit padding-right"
+                    :class="{'is-setting': state.paddingRight}"
+                    @click="state.edit='paddingRight'"
+                    title="设置padding-right"
+                >
+                    {{ state.paddingRight ?? 0 }}
                 </div>
-                <input v-else class="spacing-edit padding-right" v-focus :value="model.paddingRight" @input="validateSpacingValue($event, 'paddingRight', false)" placeholder="0" @blur="state.edit=undefined"/>
+                <input
+                    v-else class="spacing-edit padding-right"
+                    v-focus
+                    :value="state.paddingRight"
+                    placeholder="0"
+                    @input="validateInputStyleValue(state,'paddingRight' ,$event, false, false)"
+                    @blur="state.edit=undefined"
+                />
 
-                <div v-if="state.edit!=='paddingBottom'" class="spacing-edit padding-bottom" :class="{'is-setting': model.paddingBottom}" @click="state.edit='paddingBottom'" title="设置padding-bottom">
-                    {{ model.paddingBottom ?? 0 }}
+                <div
+                    v-if="state.edit!=='paddingBottom'"
+                    class="spacing-edit padding-bottom"
+                    :class="{'is-setting': state.paddingBottom}"
+                    @click="state.edit='paddingBottom'"
+                    title="设置padding-bottom"
+                >
+                    {{ state.paddingBottom ?? 0 }}
                 </div>
-                <input v-else class="spacing-edit padding-bottom" v-focus :value="model.paddingBottom" @input="validateSpacingValue($event, 'paddingBottom', false)" placeholder="0" @blur="state.edit=undefined"/>
+                <input
+                    v-else
+                    class="spacing-edit padding-bottom"
+                    v-focus
+                    :value="state.paddingBottom"
+                    placeholder="0"
+                    @input="validateInputStyleValue(state,'paddingBottom' ,$event, false, false)"
+                    @blur="state.edit=undefined"
+                />
 
-                <div v-if="state.edit!=='paddingLeft'" class="spacing-edit padding-left" :class="{'is-setting': model.paddingLeft}" @click="state.edit='paddingLeft'" title="设置padding-left">
-                    {{ model.paddingLeft ?? 0 }}
+                <div
+                    v-if="state.edit!=='paddingLeft'"
+                    class="spacing-edit padding-left"
+                    :class="{'is-setting': state.paddingLeft}"
+                    @click="state.edit='paddingLeft'"
+                    title="设置padding-left"
+                >
+                    {{ state.paddingLeft ?? 0 }}
                 </div>
-                <input v-else class="spacing-edit padding-left" v-focus :value="model.paddingLeft" @input="validateSpacingValue($event, 'paddingLeft', false)" placeholder="0" @blur="state.edit=undefined"/>
+                <input
+                    v-else
+                    class="spacing-edit padding-left"
+                    v-focus
+                    :value="state.paddingLeft"
+                    placeholder="0"
+                    @input="validateInputStyleValue(state,'paddingLeft' ,$event, false, false)"
+                    @blur="state.edit=undefined"
+                />
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" style="grid-area: 3 / 3 / span 3 / span 3; pointer-events: none">
                 <text x="6" y="4" fill="#a6a6a6" font-style="italic" font-weight="bold" font-size="8" dominant-baseline="hanging">

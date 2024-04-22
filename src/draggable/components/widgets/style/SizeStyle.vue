@@ -6,6 +6,7 @@ import OverflowAuto from "@/assets/images/overflow-auto.svg?component";
 import OverflowVisible from "@/assets/images/overflow-visible.svg?component";
 import OverflowHidden from "@/assets/images/overflow-hidden.svg?component";
 import OverflowScroll from "@/assets/images/overflow-scroll.svg?component";
+import { autoUseStyleUnit, toStyleUnit } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -21,6 +22,12 @@ const props = withDefaults(defineProps<SizeStyleProps>(), {});
 
 // 定义 State 类型
 interface SizeStyleState {
+    width?: string;
+    height?: string;
+    minWidth?: string;
+    minHeight?: string;
+    maxWidth?: string;
+    maxHeight?: string;
     objectPosition1?: string;
     objectPosition2?: string;
 }
@@ -67,9 +74,15 @@ if (model.value) {
     // TODO model -> state
 }
 
+watch(() => state.width, value => autoUseStyleUnit(model.value, "width", value));
+watch(() => state.height, value => autoUseStyleUnit(model.value, "height", value));
+watch(() => state.minWidth, value => autoUseStyleUnit(model.value, "minWidth", value));
+watch(() => state.minHeight, value => autoUseStyleUnit(model.value, "minHeight", value));
+watch(() => state.maxWidth, value => autoUseStyleUnit(model.value, "maxWidth", value));
+watch(() => state.maxHeight, value => autoUseStyleUnit(model.value, "maxHeight", value));
 watch(() => [state.objectPosition1, state.objectPosition2], () => {
     if (!model.value) return;
-    let val = [state.objectPosition1, state.objectPosition2].map(item => item ?? "").join("");
+    let val = [toStyleUnit(state.objectPosition1), toStyleUnit(state.objectPosition2)].map(item => item ?? "").join("");
     val = lodash.trim(val);
     if (val.length <= 0) {
         delete model.value.objectPosition;
@@ -105,9 +118,9 @@ function setObjectFit(val: string) {
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.width" size="mini" :allow-empty="true" placeholder="宽(W)"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.width" size="mini" :allow-empty="true" placeholder="宽(W)"/>
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.height" size="mini" :allow-empty="true" placeholder="高(H)"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.height" size="mini" :allow-empty="true" placeholder="高(H)"/>
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -117,9 +130,9 @@ function setObjectFit(val: string) {
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.minWidth" size="mini" :allow-empty="true" placeholder="最小宽"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.minWidth" size="mini" :allow-empty="true" placeholder="最小宽"/>
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.minHeight" size="mini" :allow-empty="true" placeholder="最小高"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.minHeight" size="mini" :allow-empty="true" placeholder="最小高"/>
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -129,9 +142,9 @@ function setObjectFit(val: string) {
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.maxWidth" size="mini" :allow-empty="true" placeholder="最大宽"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.maxWidth" size="mini" :allow-empty="true" placeholder="最大宽"/>
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.maxHeight" size="mini" :allow-empty="true" placeholder="最大高"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.maxHeight" size="mini" :allow-empty="true" placeholder="最大高"/>
             </div>
         </div>
         <div class="flex-row-container setter-row">
