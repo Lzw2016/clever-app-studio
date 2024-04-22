@@ -2,7 +2,7 @@
 import { defineModel, reactive, shallowReactive, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { Input, Select, Tooltip } from "@opentiny/vue";
+import { Input as TinyInput, Select, Tooltip } from "@opentiny/vue";
 import TextAlignLeft from "@/assets/images/text-align-left.svg?component";
 import TextAlignCenter from "@/assets/images/text-align-center.svg?component";
 import TextAlignRight from "@/assets/images/text-align-right.svg?component";
@@ -142,9 +142,9 @@ function setTextDecorationLine(val: string) {
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.fontSize" size="mini" :clearable="true" placeholder="字号"/>
+                <TinyInput class="flex-item-fill" style="min-width: 60px;" v-model="state.fontSize" size="mini" :clearable="true" placeholder="字号"/>
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.lineHeight" size="mini" :clearable="true" placeholder="行高"/>
+                <TinyInput class="flex-item-fill" style="min-width: 60px;" v-model="state.lineHeight" size="mini" :clearable="true" placeholder="行高"/>
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -186,9 +186,9 @@ function setTextDecorationLine(val: string) {
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <input v-model="model.color" type="color"/>
+                <input :value="model.color ?? '#000000'" @input="e => model.color= e.target?.['value']" type="color"/>
                 <span style="margin-left: 8px;">{{ model.color }}</span>
-                <FontAwesomeIcon v-if="model.color" class="button-clear" :icon="faXmark" title="清除" @click="delete model.color"/>
+                <FontAwesomeIcon v-show="model.color" class="button-clear" :icon="faXmark" title="清除" @click="delete model.color"/>
             </div>
         </div>
         <div class="flex-row-container setter-row">
