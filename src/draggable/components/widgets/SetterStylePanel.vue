@@ -10,6 +10,7 @@ import SizeStyle from "@/draggable/components/widgets/style/SizeStyle.vue";
 import PositionStyle from "@/draggable/components/widgets/style/PositionStyle.vue";
 import FontStyle from "@/draggable/components/widgets/style/FontStyle.vue";
 import BorderStyle from "@/draggable/components/widgets/style/BorderStyle.vue";
+import EffectStyle from "@/draggable/components/widgets/style/EffectStyle.vue";
 
 // 定义组件选项
 defineOptions({
@@ -70,7 +71,7 @@ const state = reactive<SetterStylePanelState>({});
                 <BorderStyle/>
             </CollapseItem>
             <CollapseItem class="settings-items" name="效果" title="效果">
-
+                <EffectStyle/>
             </CollapseItem>
         </Collapse>
     </div>
