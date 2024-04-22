@@ -113,6 +113,9 @@ function validateInputStyleValue(style: any, property: string, event: Event, use
     event.target["value"] = styleValue ?? "";
 }
 
+// TODO 内联样式转 style-object 使用 style-to-object 库
+// TODO style-object 转内联样式
+
 export {
     toStyleUnit,
     autoUseStyleUnit,

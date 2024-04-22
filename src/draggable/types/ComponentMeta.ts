@@ -339,6 +339,7 @@ export type {
     FormItemProps,
     SetterGroup,
     SetterPanel,
+    ComponentStyle,
     StylePanel,
     ComponentSetter,
     DefDesignNode,

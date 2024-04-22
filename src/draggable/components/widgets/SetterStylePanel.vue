@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { reactive } from "vue";
-import { Button, Collapse, CollapseItem } from "@opentiny/vue";
+import { Collapse, CollapseItem } from "@opentiny/vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { SetterState } from "@/draggable/models/SetterState";
 import { StylePanel } from "@/draggable/types/ComponentMeta";
+import ComponentStyles from "@/draggable/components/widgets/style/ComponentStyles.vue";
 import LayoutStyle from "@/draggable/components/widgets/style/LayoutStyle.vue";
 import SpacingStyle from "@/draggable/components/widgets/style/SpacingStyle.vue";
 import SizeStyle from "@/draggable/components/widgets/style/SizeStyle.vue";
@@ -45,37 +46,35 @@ const state = reactive<SetterStylePanelState>({});
 
 // nodes
 
-
 </script>
 
 <template>
     <div class="settings-groups flex-column-container">
-        <div class="flex-item-fixed flex-row-container flex-center settings-top-buttons">
-            <Button :round="true" size="mini">编辑页面样式</Button>
-            <Button :round="true" size="mini">编辑内联样式</Button>
-        </div>
         <Collapse class="flex-item-fill settings-content" v-model="props.setterState.expandGroups['style']">
-            <CollapseItem class="settings-items" name="布局" title="布局">
+            <CollapseItem class="settings-items" name="渲染节点" title="渲染节点">
+                <ComponentStyles :component-styles="props.stylePanel.componentStyles"/>
+            </CollapseItem>
+            <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局" title="布局">
                 <LayoutStyle/>
             </CollapseItem>
-            <CollapseItem class="settings-items" name="间距" title="间距">
+            <CollapseItem v-if="props.stylePanel.disableSpacing!==true" class="settings-items" name="间距" title="间距">
                 <SpacingStyle/>
             </CollapseItem>
-            <CollapseItem class="settings-items" name="尺寸" title="尺寸">
+            <CollapseItem v-if="props.stylePanel.disableSize!==true" class="settings-items" name="尺寸" title="尺寸">
                 <SizeStyle/>
             </CollapseItem>
-            <CollapseItem class="settings-items" name="定位" title="定位">
+            <CollapseItem v-if="props.stylePanel.disablePosition!==true" class="settings-items" name="定位" title="定位">
                 <PositionStyle/>
             </CollapseItem>
-            <CollapseItem class="settings-items" name="文本" title="文本">
+            <CollapseItem v-if="props.stylePanel.disableFont!==true" class="settings-items" name="文本" title="文本">
                 <FontStyle/>
             </CollapseItem>
             <!-- <CollapseItem class="settings-items" name="背景" title="背景"> -->
             <!-- </CollapseItem> -->
-            <CollapseItem class="settings-items" name="边框" title="边框">
+            <CollapseItem v-if="props.stylePanel.disableBorder!==true" class="settings-items" name="边框" title="边框">
                 <BorderStyle/>
             </CollapseItem>
-            <CollapseItem class="settings-items" name="效果" title="效果">
+            <CollapseItem v-if="props.stylePanel.disableEffect!==true" class="settings-items" name="效果" title="效果">
                 <EffectStyle/>
             </CollapseItem>
         </Collapse>
@@ -86,12 +85,6 @@ const state = reactive<SetterStylePanelState>({});
 .settings-groups {
     height: 100%;
     overflow: hidden;
-}
-
-.flex-row-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
 }
 
 .flex-column-container {
@@ -105,26 +98,12 @@ const state = reactive<SetterStylePanelState>({});
     overflow: hidden;
 }
 
-.flex-item-fixed {
-    flex-shrink: 0;
-}
-
-.flex-center {
-    align-items: center;
-    justify-content: center;
-}
-
 .settings-content {
     height: 100%;
     overflow: auto;
     border-top: none;
     border-bottom: none;
     min-height: 80px;
-}
-
-.settings-top-buttons {
-    padding: 12px 4px 10px 4px;
-    border-bottom: 1px solid #d9d9d9;
 }
 
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
