@@ -3,6 +3,14 @@ import hotkeys, { HotkeysEvent } from "hotkeys-js";
 import lodash from "lodash";
 import { ShortcutKeyEvent } from "@/draggable/events/keyboard/ShortcutKeyEvent";
 
+const rawFilter = hotkeys.filter;
+hotkeys.filter = function (event) {
+    if (['Control', 'Shift', 'Alt', 'Meta'].includes(event.key)) {
+        return true;
+    }
+    return rawFilter(event);
+}
+
 /**
  * 封装键盘事件，产生的业务事件：ShortcutKeyEvent
  */
@@ -16,8 +24,8 @@ class KeyboardDriver extends DesignerDriver {
     /** 启动当前 EventDriver 的监听 */
     attach(): void {
         hotkeys.setScope(this.scope);
-        hotkeys(this.shortcutKeys.allKey, { scope: this.scope, keyup: true, keydown: true }, this.keepPressedKey);
-        hotkeys(this.shortcutKeys.save, this.scope, this.onSave);
+        hotkeys(this.shortcutKeys.allKey, { scope: this.scope, keyup: true, keydown: true, capture: true }, this.keepPressedKey);
+        hotkeys(this.shortcutKeys.save, { scope: this.scope, capture: true }, this.onSave);
     }
 
     /** 停止当前 EventDriver 的监听 */

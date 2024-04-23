@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, markRaw, onBeforeMount, reactive, watch } from "vue";
+import { computed, getCurrentInstance, onBeforeMount, reactive, watch } from "vue";
 import { Collapse, CollapseItem, Form, FormItem, Loading, Tooltip } from "@opentiny/vue";
 import { isStr } from "@/utils/Typeof";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
@@ -111,17 +111,10 @@ function getSetterProps(setter: Setter) {
     const obj: any = {
         designerState: designerState,
         blockInstance: designerState.blockInstance,
-        nodes: [],
+        nodes: designerState.selectNodes.value,
         ...cmpProps,
         ...otherCmpProps,
     };
-    if (designerState.blockInstance) {
-        for (let selection of designerState.selections) {
-            if (!selection.nodeId) continue;
-            const node = designerState.blockInstance.globalContext.allNode[selection.nodeId];
-            obj.nodes.push(markRaw(node));
-        }
-    }
     // if (setter.watchProps) obj.watchProps = setter.watchProps;
     // if (setter.listeners) obj.listeners = setter.listeners;
     // TODO enableBind, watchProps, listeners

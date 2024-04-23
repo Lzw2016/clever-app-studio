@@ -112,7 +112,9 @@ onUnmounted(() => {
             <div class="flex-item-fixed box-border-r" style="width: 128px;">Logo</div>
             <div class="flex-item-fixed box-border-r" style="width: 48px;">功能</div>
             <div class="flex-item-fixed box-border-r" style="width: 48px;">功能</div>
-            <div class="flex-item-fill"></div>
+            <div class="flex-item-fill">
+                Ctrl={{ designerEngine.onlyPressedCtrl }}
+            </div>
             <div class="flex-item-fixed box-border-l" style="width: 48px;">用户</div>
             <div class="flex-item-fixed box-border-l" style="width: 48px;">设置</div>
             <div class="flex-item-fixed box-border-l" style="width: 48px;">文档</div>

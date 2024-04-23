@@ -37,6 +37,39 @@ function isHtmlTag(htmlTag: string): boolean {
 }
 
 /**
+ * addEventListener参数事件名“xxx”转换成vue组件属性事件名“onXxx”
+ * @param name addEventListener参数事件名
+ */
+function toPropsEventName(name: string) {
+    if (noValue(name)) name = "";
+    name = name.trim();
+    if (!name.startsWith("on")) {
+        if (name.length > 1) {
+            name = `on${name[0].toUpperCase()}${name.substring(1)}`;
+        } else {
+            name = `on${name[0].toUpperCase()}`;
+        }
+    }
+    return name;
+}
+
+/**
+ * vue组件属性事件名“onXxx”转换成addEventListener参数事件名“xxx”
+ * @param name vue组件属性事件名
+ */
+function toElementEventName(name: string) {
+    if (noValue(name)) name = "";
+    name = name.trim();
+    if (name.startsWith("on")) {
+        name = name.substring(2);
+        if (name.length > 1) {
+            name = `${name[0].toLowerCase()}${name.substring(1)}`;
+        }
+    }
+    return name;
+}
+
+/**
  * HTML 标签匹配
  * 1. /^....$/
  *      从开头到结尾匹配整个字符串，这里表示字符串必须以"<"开头而且必须以">"结尾
@@ -153,6 +186,8 @@ function deepTraverseElement(element: Element, callback: TraverseVNode, maxDepth
 
 export {
     isHtmlTag,
+    toPropsEventName,
+    toElementEventName,
     parseHtml,
     isHtmlNode,
     deepTraverseElement,

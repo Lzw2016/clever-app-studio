@@ -235,12 +235,16 @@ interface DesignDirectives extends BaseDirectives {
         value?: {
             /** 递归的最大深度 */
             maxDepth?: number;
-            /** 禁用的事件名称，如果未设置就是用默认的事件集合(defEvents)，优先级: manualDisable > enableEvents > disableEvents */
+            /** 禁用的事件名称，如果未设置就是用默认的事件集合(defDisableEvents)，优先级: manualDisable > enableEvents > disableEvents */
             disableEvents?: string | Array<string>;
             /**启用的事件名称，优先级: manualDisable > enableEvents > disableEvents  */
             enableEvents?: string | Array<string>;
-            /** 手动禁用事件，优先级: manualDisable > enableEvents > disableEvents */
-            manualDisable?: (vnode: VNode) => void;
+            /** 阻止默认行为的事件集合 */
+            preventDefaultEvents?: Array<string>;
+            /** 阻止事件冒泡的事件集合 */
+            stopPropagationEvents?: Array<string>;
+            /** 自定义禁用事件的实现 Record<事件名, 事件函数> */
+            manualEvents?: Record<string, Function>;
         };
     };
     /** 禁用组件内部事件 */

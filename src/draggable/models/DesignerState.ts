@@ -1,6 +1,6 @@
-import { computed, ComputedRef, Ref, ref, ShallowReactive, shallowReactive } from "vue";
+import { computed, ComputedRef, markRaw, Ref, ref, ShallowReactive, shallowReactive } from "vue";
 import { runtimeNodeToDesignNode } from "@/draggable/utils/BlockPropsTransform";
-import { BlockInstance } from "@/draggable/types/RuntimeBlock";
+import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { HoverDashed } from "@/draggable/models/HoverDashed";
 import { Selection } from "@/draggable/models/Selection";
@@ -28,6 +28,20 @@ class DesignerState {
     readonly existsSelection: ComputedRef<boolean> = computed<boolean>(() => this.selections.length > 0);
     /** selections 中只有一个选择项 */
     readonly singleSelection: ComputedRef<boolean> = computed<boolean>(() => this.selections.length === 1);
+    /** 设计器选择节点集合 */
+    readonly selectNodes: ComputedRef<Array<RuntimeNode>> = computed<Array<RuntimeNode>>(() => {
+        const nodes: Array<RuntimeNode> = [];
+        const blockInstance = this.blockInstance;
+        if (blockInstance) {
+            for (let selection of this.selections) {
+                const nodeId = selection.nodeId;
+                if (!nodeId) continue;
+                const node = blockInstance.globalContext.allNode[nodeId];
+                nodes.push(markRaw(node));
+            }
+        }
+        return nodes;
+    });
     /** 当前选中的 ComponentMeta */
     protected readonly _selectedComponentMeta: ComputedRef<ComponentMeta | undefined> = computed<ComponentMeta | undefined>(() => this.getCurrentComponentMeta());
     /** 设计器的组件配置面板状态 */
