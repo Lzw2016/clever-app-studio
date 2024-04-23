@@ -146,6 +146,9 @@ body .tiny-button {
     --ti-button-size-normal-padding-horizontal: calc(var(--ti-common-size-base) * 4);
 }
 
+body .tiny-button.is-loading .tiny-svg {
+    fill: var(--ti-button-text-svg-fill-color);
+}
 
 /** tooltip文字提示 */
 body .tiny-tooltip {

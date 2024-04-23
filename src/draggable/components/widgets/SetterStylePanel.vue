@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import lodash from "lodash";
+import { mergeProps, reactive, watch } from "vue";
 import { Collapse, CollapseItem } from "@opentiny/vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
@@ -13,6 +14,7 @@ import PositionStyle from "@/draggable/components/widgets/style/PositionStyle.vu
 import FontStyle from "@/draggable/components/widgets/style/FontStyle.vue";
 import BorderStyle from "@/draggable/components/widgets/style/BorderStyle.vue";
 import EffectStyle from "@/draggable/components/widgets/style/EffectStyle.vue";
+import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 
 // 定义组件选项
 defineOptions({
@@ -36,16 +38,50 @@ const props = withDefaults(defineProps<SetterStylePanelProps>(), {});
 
 // 定义 State 类型
 interface SetterStylePanelState {
+    // componentStyles: Record<string, any>;
+    // layoutStyle: Record<string, any>;
 
+    sizeStyle: Record<string, any>;
 }
 
 // state 属性
-const state = reactive<SetterStylePanelState>({});
+const state = reactive<SetterStylePanelState>({
+    // componentStyles: {},
+    // layoutStyle: {},
+
+    sizeStyle: {
+        width: '99px',
+    },
+});
 // 内部数据
 // const data = {};
 
 // nodes
 
+watch(state.sizeStyle, lodash.debounce(style => {
+    // console.log("style", style);
+    applyStyle(props.designerState.selectNodes.value, style);
+}, 300));
+
+function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
+    const designerState = props.designerState;
+    const blockInstance = props.designerState.blockInstance;
+    let res = false;
+    if (!nodes || !designerState || !blockInstance) return res;
+    for (let node of nodes) {
+        if (!node.__raw_props_style) node.__raw_props_style = node.props.style ?? {};
+        node.props.style = mergeProps({ style: node.__raw_props_style }, { style: newStyle }).style;
+        res = true;
+    }
+    if (res) {
+        blockInstance.$forceUpdate();
+        blockInstance.$nextTick(() => {
+            for (let selection of designerState.selections) {
+                selection.recalcAuxToolPosition();
+            }
+        }).finally();
+    }
+}
 </script>
 
 <template>
@@ -61,7 +97,7 @@ const state = reactive<SetterStylePanelState>({});
                 <SpacingStyle/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableSize!==true" class="settings-items" name="尺寸" title="尺寸">
-                <SizeStyle/>
+                <SizeStyle v-model="state.sizeStyle"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disablePosition!==true" class="settings-items" name="定位" title="定位">
                 <PositionStyle/>

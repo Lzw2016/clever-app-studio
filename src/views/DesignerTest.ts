@@ -138,17 +138,17 @@ const designerTest = defineDesignBlock({
             items: [
                 createSpan(),
                 createSpan(),
-                // {
-                //     type: "Button",
-                //     props: {
-                //         text: "按钮",
-                //         icon: {
-                //             __component_param: true,
-                //             type: "TablerIconTrash",
-                //             props: { size: 16, stroke: 1.2 },
-                //         },
-                //     },
-                // },
+                {
+                    type: "Button",
+                    props: {
+                        text: "按钮",
+                        icon: {
+                            __component_param: true,
+                            type: "TablerIconTrash",
+                            props: { size: 16, stroke: 1.2 },
+                        },
+                    },
+                },
                 {
                     type: "Input",
                     props: {
