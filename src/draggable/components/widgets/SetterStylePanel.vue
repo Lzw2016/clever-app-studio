@@ -39,7 +39,7 @@ const props = withDefaults(defineProps<SetterStylePanelProps>(), {});
 // 定义 State 类型
 interface SetterStylePanelState {
     // componentStyles: Record<string, any>;
-    // layoutStyle: Record<string, any>;
+    layoutStyle: Record<string, any>;
 
     sizeStyle: Record<string, any>;
 }
@@ -47,8 +47,7 @@ interface SetterStylePanelState {
 // state 属性
 const state = reactive<SetterStylePanelState>({
     // componentStyles: {},
-    // layoutStyle: {},
-
+    layoutStyle: {},
     sizeStyle: {
         width: '99px',
     },
@@ -58,10 +57,13 @@ const state = reactive<SetterStylePanelState>({
 
 // nodes
 
-watch(state.sizeStyle, lodash.debounce(style => {
-    // console.log("style", style);
-    applyStyle(props.designerState.selectNodes.value, style);
-}, 300));
+
+const applyStyleDebounce = lodash.debounce(style => applyStyle(props.designerState.selectNodes.value, style), 300);
+// watch(state.layoutStyle, style => {
+//     console.log("style", style);
+// });
+watch(state.layoutStyle, applyStyleDebounce);
+watch(state.sizeStyle, applyStyleDebounce);
 
 function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
     const designerState = props.designerState;
@@ -91,7 +93,7 @@ function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
                 <ComponentStyles :component-styles="props.stylePanel.componentStyles"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局" title="布局">
-                <LayoutStyle/>
+                <LayoutStyle v-model="state.layoutStyle"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableSpacing!==true" class="settings-items" name="间距" title="间距">
                 <SpacingStyle/>

@@ -5,6 +5,7 @@ import { faPlus, faUpDownLeftRight } from "@fortawesome/free-solid-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { Checkbox, Input, Numeric, Tooltip } from "@opentiny/vue";
 import { VueDraggable } from "vue-draggable-plus";
+import { toStyleUnit } from "@/draggable/utils/StyleUtils";
 import DisplayBlock from "@/assets/images/display-block.svg?component";
 import DisplayInlineBlock from "@/assets/images/display-inline-block.svg?component";
 import DisplayInline from "@/assets/images/display-inline.svg?component";
@@ -206,7 +207,9 @@ interface LayoutStyleModel {
 }
 
 // css display 值
-const model = defineModel<LayoutStyleModel | undefined>();
+const model = defineModel<LayoutStyleModel>({
+    default: shallowReactive<LayoutStyleModel>({}),
+});
 
 // 初始化
 if (model.value) {
@@ -217,22 +220,22 @@ if (model.value) {
     // state.gridAutoFlowDense = model.value.gridAutoFlowDense;
 }
 
-watch(() => state.gridTemplateColumns, gridTemplateColumns => {
+watch(state.gridTemplateColumns, gridTemplateColumns => {
     if (!model.value) return;
     if (gridTemplateColumns.length <= 0) {
         delete model.value.gridTemplateColumns;
         return;
     }
-    model.value.gridTemplateColumns = gridTemplateColumns.map(col => col || 'auto').join(" ");
+    model.value.gridTemplateColumns = gridTemplateColumns.map(col => toStyleUnit(col) || 'auto').join(" ");
 });
 
-watch(() => state.gridTemplateRows, gridTemplateRows => {
+watch(state.gridTemplateRows, gridTemplateRows => {
     if (!model.value) return;
     if (gridTemplateRows.length <= 0) {
         delete model.value.gridTemplateRows;
         return;
     }
-    model.value.gridTemplateRows = gridTemplateRows.map(col => col || 'auto').join(" ");
+    model.value.gridTemplateRows = gridTemplateRows.map(col => toStyleUnit(col) || 'auto').join(" ");
 });
 
 watch(() => state.gridColumnGap, gridColumnGap => {
@@ -264,10 +267,20 @@ watch(() => [state.gridAutoFlow, state.gridAutoFlowDense], () => {
 
 function setDisplay(val: string) {
     if (model.value?.display === val) {
-        model.value = undefined;
+        delete model.value.display;
+        delete model.value.flexDirection;
+        delete model.value.flexWrap;
+        delete model.value.justifyContent;
+        delete model.value.alignContent;
+        delete model.value.justifyItems;
+        delete model.value.alignItems;
+        delete model.value.gridTemplateColumns;
+        delete model.value.gridTemplateRows;
+        delete model.value.gridColumnGap;
+        delete model.value.gridRowGap;
+        delete model.value.gridAutoFlow;
         return;
     }
-    model.value = shallowReactive<LayoutStyleModel>({});
     model.value.display = val;
 }
 
@@ -279,6 +292,10 @@ function setDisplayConfig(name: string, val: string) {
     if (!model.value) model.value = shallowReactive<LayoutStyleModel>({});
     model.value[name] = val;
 }
+
+// function setDisplay(val: string) {
+//     setDisplayConfig("display", val);
+// }
 
 function setFlexDirection(val: string) {
     setDisplayConfig("flexDirection", val);
