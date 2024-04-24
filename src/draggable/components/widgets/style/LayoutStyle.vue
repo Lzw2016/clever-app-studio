@@ -293,10 +293,6 @@ function setDisplayConfig(name: string, val: string) {
     model.value[name] = val;
 }
 
-// function setDisplay(val: string) {
-//     setDisplayConfig("display", val);
-// }
-
 function setFlexDirection(val: string) {
     setDisplayConfig("flexDirection", val);
 }

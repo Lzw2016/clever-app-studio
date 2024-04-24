@@ -115,7 +115,6 @@ function modelToState(modelValue: SizeStyleModel) {
         state.objectPosition1 = objectPosition1;
         state.objectPosition2 = objectPosition2;
     }
-    console.log("modelToState", state)
 }
 
 defineExpose({

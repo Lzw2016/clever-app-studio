@@ -136,7 +136,7 @@ function toObjectStyle(inlineStyle: string | Record<string, any>): Record<string
         try {
             style = parseStringStyle(inlineStyle);
         } catch (err) {
-            console.error(`无效的样式字符串: "${inlineStyle}"`);
+            console.error(`无效的style字符串: "${inlineStyle}"`);
             console.error(err);
         }
     } else if (isObj(inlineStyle) && !isArray(inlineStyle)) {

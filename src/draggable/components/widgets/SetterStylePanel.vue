@@ -39,17 +39,14 @@ const props = withDefaults(defineProps<SetterStylePanelProps>(), {});
 
 // 定义 State 类型
 interface SetterStylePanelState {
-    // componentStyles: Record<string, any>;
-    layoutStyle: Record<string, any>;
-
-    sizeStyle: Record<string, any>;
+    componentStyles: Record<string, any>;
+    style: Record<string, any>;
 }
 
 // state 属性
 const state = reactive<SetterStylePanelState>({
-    // componentStyles: {},
-    layoutStyle: {},
-    sizeStyle: {},
+    componentStyles: {},
+    style: {},
 });
 // 内部数据
 // const data = {};
@@ -64,32 +61,36 @@ const propsStyle = computed(() => {
     return nodes[0].props.style;
 });
 
-const sizeStyleRef = ref<InstanceType<typeof SizeStyle> | undefined>()
+const layoutStyleRef = ref<InstanceType<typeof LayoutStyle> | undefined>();
+const spacingStyleRef = ref<InstanceType<typeof SpacingStyle> | undefined>();
+const sizeStyleRef = ref<InstanceType<typeof SizeStyle> | undefined>();
+const positionStyleRef = ref<InstanceType<typeof PositionStyle> | undefined>();
+const fontStyleRef = ref<InstanceType<typeof FontStyle> | undefined>();
+const borderStyleRef = ref<InstanceType<typeof BorderStyle> | undefined>();
+const effectStyleRef = ref<InstanceType<typeof EffectStyle> | undefined>();
 watch(() => propsStyle.value, style => {
-    console.log("state.sizeStyle", style);
     style = toObjectStyle(style);
-    state.sizeStyle.width = style.width;
-    state.sizeStyle.height = style.height;
-    state.sizeStyle.minWidth = style.minWidth;
-    state.sizeStyle.minHeight = style.minHeight;
-    state.sizeStyle.maxWidth = style.maxWidth;
-    state.sizeStyle.maxHeight = style.maxHeight;
-    state.sizeStyle.overflow = style.overflow;
-    state.sizeStyle.objectFit = style.objectFit;
-    state.sizeStyle.objectPosition = style.objectPosition;
+    state.style.width /*            */ = style.width;
+    state.style.height /*           */ = style.height;
+    state.style.minWidth /*         */ = style.minWidth;
+    state.style.minHeight /*        */ = style.minHeight;
+    state.style.maxWidth /*         */ = style.maxWidth;
+    state.style.maxHeight /*        */ = style.maxHeight;
+    state.style.overflow /*         */ = style.overflow;
+    state.style.objectFit /*        */ = style.objectFit;
+    state.style.objectPosition /*   */ = style.objectPosition;
     sizeStyleRef.value?.modelToState();
-    console.log("state.sizeStyle", state.sizeStyle);
+
+
 }, { immediate: true });
 
 const applyStyleDebounce = lodash.debounce((nodes: Array<RuntimeNode>, newStyle: object) => applyStyle(nodes, newStyle), 300);
-// watch(state.layoutStyle, style => {
+// watch(state.style, style => {
 //     console.log("style", style);
 // });
-// watch(state.layoutStyle, applyStyleDebounce);
-watch(state.sizeStyle, style => applyStyleDebounce([...props.designerState.selectNodes.value], style));
+watch(state.style, style => applyStyleDebounce([...props.designerState.selectNodes.value], style));
 
 function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
-    console.log("newStyle", newStyle);
     const designerState = props.designerState;
     const blockInstance = props.designerState.blockInstance;
     let res = false;
@@ -114,30 +115,30 @@ function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
     <div class="settings-groups flex-column-container">
         <Collapse class="flex-item-fill settings-content" v-model="props.setterState.expandGroups['style']">
             <CollapseItem class="settings-items" name="渲染节点" title="渲染节点">
-                <ComponentStyles :component-styles="props.stylePanel.componentStyles"/>
+                <ComponentStyles :component-styles="props.stylePanel.componentStyles" v-model="state.componentStyles"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局" title="布局">
-                <LayoutStyle v-model="state.layoutStyle"/>
+                <LayoutStyle ref="layoutStyleRef" v-model="state.style"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableSpacing!==true" class="settings-items" name="间距" title="间距">
-                <SpacingStyle/>
+                <SpacingStyle ref="spacingStyleRef"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableSize!==true" class="settings-items" name="尺寸" title="尺寸">
-                <SizeStyle ref="sizeStyleRef" v-model="state.sizeStyle"/>
+                <SizeStyle ref="sizeStyleRef" v-model="state.style"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disablePosition!==true" class="settings-items" name="定位" title="定位">
-                <PositionStyle/>
+                <PositionStyle ref="positionStyleRef"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableFont!==true" class="settings-items" name="文本" title="文本">
-                <FontStyle/>
+                <FontStyle ref="fontStyleRef"/>
             </CollapseItem>
             <!-- <CollapseItem class="settings-items" name="背景" title="背景"> -->
             <!-- </CollapseItem> -->
             <CollapseItem v-if="props.stylePanel.disableBorder!==true" class="settings-items" name="边框" title="边框">
-                <BorderStyle/>
+                <BorderStyle ref="borderStyleRef" v-model="state.style"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableEffect!==true" class="settings-items" name="效果" title="效果">
-                <EffectStyle/>
+                <EffectStyle ref="effectStyleRef"/>
             </CollapseItem>
         </Collapse>
     </div>
