@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { defineModel, reactive, shallowReactive, watch } from "vue";
+import { defineExpose, defineModel, reactive, shallowReactive, watch } from "vue";
 import { Input, Tooltip } from "@opentiny/vue";
 import OverflowAuto from "@/assets/images/overflow-auto.svg?component";
 import OverflowVisible from "@/assets/images/overflow-visible.svg?component";
 import OverflowHidden from "@/assets/images/overflow-hidden.svg?component";
 import OverflowScroll from "@/assets/images/overflow-scroll.svg?component";
-import { autoUseStyleUnit, toStyleUnit } from "@/draggable/utils/StyleUtils";
+import { autoUseStyleUnit, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -69,11 +69,6 @@ const model = defineModel<SizeStyleModel>({
     default: shallowReactive<SizeStyleModel>({}),
 });
 
-// 初始化
-if (model.value) {
-    // TODO model -> state
-}
-
 watch(() => state.width, value => autoUseStyleUnit(model.value, "width", value));
 watch(() => state.height, value => autoUseStyleUnit(model.value, "height", value));
 watch(() => state.minWidth, value => autoUseStyleUnit(model.value, "minWidth", value));
@@ -82,7 +77,7 @@ watch(() => state.maxWidth, value => autoUseStyleUnit(model.value, "maxWidth", v
 watch(() => state.maxHeight, value => autoUseStyleUnit(model.value, "maxHeight", value));
 watch(() => [state.objectPosition1, state.objectPosition2], () => {
     if (!model.value) return;
-    let val = [toStyleUnit(state.objectPosition1), toStyleUnit(state.objectPosition2)].map(item => item ?? "").join("");
+    let val = [toStyleUnit(state.objectPosition1), toStyleUnit(state.objectPosition2)].map(item => item ?? "").join(" ");
     val = lodash.trim(val);
     if (val.length <= 0) {
         delete model.value.objectPosition;
@@ -107,6 +102,25 @@ function setOverflow(val: string) {
 function setObjectFit(val: string) {
     setModel("objectFit", val);
 }
+
+function modelToState(modelValue: SizeStyleModel) {
+    state.width = unStyleUnit(modelValue.width);
+    state.height = unStyleUnit(modelValue.height);
+    state.minWidth = unStyleUnit(modelValue.minWidth);
+    state.minHeight = unStyleUnit(modelValue.minHeight);
+    state.maxWidth = unStyleUnit(modelValue.maxWidth);
+    state.maxHeight = unStyleUnit(modelValue.maxHeight);
+    if (modelValue.objectPosition) {
+        const [objectPosition1, objectPosition2] = modelValue.objectPosition.split(" ");
+        state.objectPosition1 = objectPosition1;
+        state.objectPosition2 = objectPosition2;
+    }
+    console.log("modelToState", state)
+}
+
+defineExpose({
+    modelToState: () => modelToState(model.value),
+});
 </script>
 
 <template>

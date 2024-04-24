@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { mergeProps, reactive, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { Collapse, CollapseItem } from "@opentiny/vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
@@ -15,6 +15,7 @@ import FontStyle from "@/draggable/components/widgets/style/FontStyle.vue";
 import BorderStyle from "@/draggable/components/widgets/style/BorderStyle.vue";
 import EffectStyle from "@/draggable/components/widgets/style/EffectStyle.vue";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { toObjectStyle } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -48,31 +49,54 @@ interface SetterStylePanelState {
 const state = reactive<SetterStylePanelState>({
     // componentStyles: {},
     layoutStyle: {},
-    sizeStyle: {
-        width: '99px',
-    },
+    sizeStyle: {},
 });
 // 内部数据
 // const data = {};
 
-// nodes
+const propsStyle = computed(() => {
+    const nodes = props.designerState.selectNodes.value;
+    const types = new Set<any>();
+    for (let node of nodes) {
+        types.add(node.type);
+    }
+    if (types.size !== 1) return;
+    return nodes[0].props.style;
+});
 
+const sizeStyleRef = ref<InstanceType<typeof SizeStyle> | undefined>()
+watch(() => propsStyle.value, style => {
+    console.log("state.sizeStyle", style);
+    style = toObjectStyle(style);
+    state.sizeStyle.width = style.width;
+    state.sizeStyle.height = style.height;
+    state.sizeStyle.minWidth = style.minWidth;
+    state.sizeStyle.minHeight = style.minHeight;
+    state.sizeStyle.maxWidth = style.maxWidth;
+    state.sizeStyle.maxHeight = style.maxHeight;
+    state.sizeStyle.overflow = style.overflow;
+    state.sizeStyle.objectFit = style.objectFit;
+    state.sizeStyle.objectPosition = style.objectPosition;
+    sizeStyleRef.value?.modelToState();
+    console.log("state.sizeStyle", state.sizeStyle);
+}, { immediate: true });
 
-const applyStyleDebounce = lodash.debounce(style => applyStyle(props.designerState.selectNodes.value, style), 300);
+const applyStyleDebounce = lodash.debounce((nodes: Array<RuntimeNode>, newStyle: object) => applyStyle(nodes, newStyle), 300);
 // watch(state.layoutStyle, style => {
 //     console.log("style", style);
 // });
-watch(state.layoutStyle, applyStyleDebounce);
-watch(state.sizeStyle, applyStyleDebounce);
+// watch(state.layoutStyle, applyStyleDebounce);
+watch(state.sizeStyle, style => applyStyleDebounce([...props.designerState.selectNodes.value], style));
 
 function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
+    console.log("newStyle", newStyle);
     const designerState = props.designerState;
     const blockInstance = props.designerState.blockInstance;
     let res = false;
     if (!nodes || !designerState || !blockInstance) return res;
     for (let node of nodes) {
-        if (!node.__raw_props_style) node.__raw_props_style = node.props.style ?? {};
-        node.props.style = mergeProps({ style: node.__raw_props_style }, { style: newStyle }).style;
+        if (!node.__raw_props_style) node.__raw_props_style = toObjectStyle(node.props.style);
+        node.props.style = lodash.defaults({ ...newStyle }, node.__raw_props_style);
         res = true;
     }
     if (res) {
@@ -99,7 +123,7 @@ function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
                 <SpacingStyle/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableSize!==true" class="settings-items" name="尺寸" title="尺寸">
-                <SizeStyle v-model="state.sizeStyle"/>
+                <SizeStyle ref="sizeStyleRef" v-model="state.sizeStyle"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disablePosition!==true" class="settings-items" name="定位" title="定位">
                 <PositionStyle/>

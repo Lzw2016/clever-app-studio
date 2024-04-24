@@ -1,8 +1,9 @@
 import lodash from "lodash";
-import { isNum } from "@/utils/Typeof";
+import { parseStringStyle } from "@vue/shared";
+import { isArray, isNum, isObj, isStr } from "@/utils/Typeof";
 
 /**
- * 自动应用 style 属性单位
+ * 自动补全 style 属性单位
  * @param value style属性值
  * @param unit  style属性单位默认是“px”
  */
@@ -22,6 +23,17 @@ function toStyleUnit(value: any, unit: string = "px"): string | undefined {
     }
     // 返回原值
     return value;
+}
+
+/**
+ * 移除 style 属性单位
+ * @param value style属性值
+ * @param unit  style属性单位默认是“px”
+ */
+function unStyleUnit(value: any, unit: string = "px"): string | undefined {
+    if (!isStr(value)) return value;
+    if (!value.endsWith(unit)) return value;
+    return value.substring(0, value.length - 2);
 }
 
 /**
@@ -113,12 +125,54 @@ function validateInputStyleValue(style: any, property: string, event: Event, use
     event.target["value"] = styleValue ?? "";
 }
 
-// TODO 内联样式转 style-object 使用 style-to-object 库
-// TODO style-object 转内联样式
+/**
+ * 把内联样式转成对象样式(对象样式属性是小写驼峰)
+ * @param inlineStyle 内联样式(字符串样式或者中划线命名的样式属性名)
+ */
+function toObjectStyle(inlineStyle: string | Record<string, any>): Record<string, any> {
+    if (!inlineStyle) return {};
+    let style: Record<string, any> | undefined;
+    if (isStr(inlineStyle)) {
+        try {
+            style = parseStringStyle(inlineStyle);
+        } catch (err) {
+            console.error(`无效的样式字符串: "${inlineStyle}"`);
+            console.error(err);
+        }
+    } else if (isObj(inlineStyle) && !isArray(inlineStyle)) {
+        style = inlineStyle;
+    }
+    if (!style) style = {};
+    const res: Record<string, any> = {};
+    for (let key in style) {
+        const newKey = key.replace(/-(\w)/g, (match, letter) => letter.toUpperCase());
+        res[key] = style[newKey];
+    }
+    return res;
+}
+
+/**
+ * 把对象样式转成内联样式(内联样式属性是中划线命名)
+ * @param style 对象样式(对象样式属性是小写驼峰)
+ */
+function toInlineStyle(style: Record<string, any>): Record<string, any> {
+    if (!style) return {};
+    const res: Record<string, any> = {};
+    if (isObj(style) && !isArray(style)) {
+        for (let key in style) {
+            const newKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+            res[key] = style[newKey];
+        }
+    }
+    return res;
+}
 
 export {
     toStyleUnit,
+    unStyleUnit,
     autoUseStyleUnit,
     toStyleValue,
     validateInputStyleValue,
+    toObjectStyle,
+    toInlineStyle,
 }
