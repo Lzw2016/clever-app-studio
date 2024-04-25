@@ -3,6 +3,7 @@ import { defineExpose, defineModel, reactive, shallowReactive, watch } from "vue
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Input as TinyInput, Select, Tooltip } from "@opentiny/vue";
+import { autoUseStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 import TextAlignLeft from "@/assets/images/text-align-left.svg?component";
 import TextAlignCenter from "@/assets/images/text-align-center.svg?component";
 import TextAlignRight from "@/assets/images/text-align-right.svg?component";
@@ -12,7 +13,6 @@ import FontStyleItalic from "@/assets/images/font-style-italic.svg?component";
 import TextDecorationStrike from "@/assets/images/text-decoration-strike.svg?component";
 import TextDecorationUnderline from "@/assets/images/text-decoration-underline.svg?component";
 import TextDecorationOverline from "@/assets/images/text-decoration-overline.svg?component";
-import { autoUseStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({

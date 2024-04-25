@@ -2,11 +2,11 @@
 import lodash from "lodash";
 import { defineExpose, defineModel, reactive, shallowReactive, watch } from "vue";
 import { Input, Tooltip } from "@opentiny/vue";
+import { autoUseStyleUnit, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 import OverflowAuto from "@/assets/images/overflow-auto.svg?component";
 import OverflowVisible from "@/assets/images/overflow-visible.svg?component";
 import OverflowHidden from "@/assets/images/overflow-hidden.svg?component";
 import OverflowScroll from "@/assets/images/overflow-scroll.svg?component";
-import { autoUseStyleUnit, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({

@@ -2,6 +2,7 @@
 import lodash from "lodash";
 import { defineExpose, defineModel, reactive, shallowReactive, watch } from "vue";
 import { Numeric, Tooltip } from "@opentiny/vue";
+import { autoUseStyleUnit, unStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
 import PositionAll from "@/assets/images/position-all.svg?component";
 import PositionBottom from "@/assets/images/position-bottom.svg?component";
 import PositionBottomLeft from "@/assets/images/position-bottom-left.svg?component";
@@ -11,7 +12,6 @@ import PositionRight from "@/assets/images/position-right.svg?component";
 import PositionTop from "@/assets/images/position-top.svg?component";
 import PositionTopLeft from "@/assets/images/position-top-left.svg?component";
 import PositionTopRight from "@/assets/images/position-top-right.svg?component";
-import { autoUseStyleUnit, unStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
