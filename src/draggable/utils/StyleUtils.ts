@@ -186,6 +186,24 @@ function importantStyle(style: Record<string, any>): Record<string, any> {
     return res;
 }
 
+/**
+ * 删除空 style 属性
+ * @param style 对象样式
+ */
+function removeNullStyle(style: Record<string, any>): Record<string, any> {
+    if (!style) return {};
+    const res: Record<string, any> = {};
+    if (isObj(style) && !isArray(style)) {
+        for (let key in style) {
+            const value = style[key];
+            if (hasValue(value)) {
+                res[key] = value;
+            }
+        }
+    }
+    return res;
+}
+
 export {
     toStyleUnit,
     unStyleUnit,
@@ -195,4 +213,5 @@ export {
     toObjectStyle,
     toInlineStyle,
     importantStyle,
+    removeNullStyle,
 }

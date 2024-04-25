@@ -156,29 +156,53 @@ watch(() => state.borderRightWidth, value => autoUseStyleUnit(model.value, "bord
 watch(() => state.borderBottomWidth, value => autoUseStyleUnit(model.value, "borderBottomWidth", value));
 watch(() => state.borderLeftWidth, value => autoUseStyleUnit(model.value, "borderLeftWidth", value));
 
+function deleteBorderRadius() {
+    delete state.borderRadiusSingle;
+    delete state.borderRadius;
+    delete state.borderTopLeftRadius;
+    delete state.borderTopRightRadius;
+    delete state.borderBottomLeftRadius;
+    delete state.borderBottomRightRadius;
+    delete model.value.borderTopLeftRadius;
+    delete model.value.borderTopRightRadius;
+    delete model.value.borderBottomLeftRadius;
+    delete model.value.borderBottomRightRadius;
+}
+
 function setBorderRadiusSingle(value: boolean) {
     if (state.borderRadiusSingle === value) {
-        delete state.borderRadiusSingle;
-        delete state.borderRadius;
-        delete state.borderTopLeftRadius;
-        delete state.borderTopRightRadius;
-        delete state.borderBottomLeftRadius;
-        delete state.borderBottomRightRadius;
+        deleteBorderRadius();
         return;
     }
     state.borderRadiusSingle = value;
 }
 
+function deleteBorderStyle() {
+    delete state.borderStyleSingle;
+    delete state.borderStyle;
+    delete state.borderColor;
+    delete state.borderWidth;
+    delete state.borderTopWidth;
+    delete state.borderRightWidth;
+    delete state.borderBottomWidth;
+    delete state.borderLeftWidth;
+    delete model.value.borderTopStyle;
+    delete model.value.borderRightStyle;
+    delete model.value.borderBottomStyle;
+    delete model.value.borderLeftStyle;
+    delete model.value.borderTopColor;
+    delete model.value.borderRightColor;
+    delete model.value.borderBottomColor;
+    delete model.value.borderLeftColor;
+    delete model.value.borderTopWidth;
+    delete model.value.borderRightWidth;
+    delete model.value.borderBottomWidth;
+    delete model.value.borderLeftWidth;
+}
+
 function setBorderStyleSingle(value: boolean) {
     if (state.borderStyleSingle === value) {
-        delete state.borderStyleSingle;
-        delete state.borderStyle;
-        delete state.borderColor;
-        delete state.borderWidth;
-        delete state.borderTopWidth;
-        delete state.borderRightWidth;
-        delete state.borderBottomWidth;
-        delete state.borderLeftWidth;
+        deleteBorderStyle();
         return;
     }
     state.borderStyleSingle = value;
@@ -193,8 +217,12 @@ function modelToState(modelValue: BorderStyleModel) {
         modelValue.borderBottomRightRadius,
     ].forEach(item => tmp.add(item));
     if (tmp.size === 1) {
-        state.borderRadiusSingle = true;
-        state.borderRadius = unStyleUnit(modelValue.borderTopLeftRadius);
+        if (modelValue.borderTopLeftRadius) {
+            state.borderRadiusSingle = true;
+            state.borderRadius = unStyleUnit(modelValue.borderTopLeftRadius);
+        } else {
+            deleteBorderRadius();
+        }
     } else {
         state.borderRadiusSingle = false;
         state.borderTopLeftRadius = unStyleUnit(modelValue.borderTopLeftRadius);
@@ -227,10 +255,14 @@ function modelToState(modelValue: BorderStyleModel) {
     ].forEach(item => tmp.add(item));
     const widthCount = tmp.size === 1;
     if (styleCount && colorCount && widthCount) {
-        state.borderStyleSingle = true;
-        state.borderStyle = modelValue.borderTopStyle;
-        state.borderColor = modelValue.borderTopColor;
-        state.borderWidth = unStyleUnit(modelValue.borderTopWidth);
+        if (!modelValue.borderTopStyle && !modelValue.borderTopColor && !modelValue.borderTopWidth) {
+            deleteBorderStyle();
+        } else {
+            state.borderStyleSingle = true;
+            state.borderStyle = modelValue.borderTopStyle;
+            state.borderColor = modelValue.borderTopColor;
+            state.borderWidth = unStyleUnit(modelValue.borderTopWidth);
+        }
     } else {
         state.borderStyleSingle = false;
         state.borderTopWidth = unStyleUnit(modelValue.borderTopWidth);

@@ -15,7 +15,7 @@ import FontStyle from "@/draggable/components/widgets/style/FontStyle.vue";
 import BorderStyle from "@/draggable/components/widgets/style/BorderStyle.vue";
 import EffectStyle from "@/draggable/components/widgets/style/EffectStyle.vue";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
-import { toObjectStyle } from "@/draggable/utils/StyleUtils";
+import { removeNullStyle, toObjectStyle } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -126,7 +126,8 @@ function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
     if (!nodes || !designerState || !blockInstance) return res;
     for (let node of nodes) {
         if (!node.__raw_props_style) node.__raw_props_style = toObjectStyle(node.props.style);
-        node.props.style = { ...node.__raw_props_style, ...newStyle };
+        node.props.style = { ...node.__raw_props_style, ...removeNullStyle(newStyle) };
+        console.log("style", node.props.style)
         res = true;
     }
     if (res) {
