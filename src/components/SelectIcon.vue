@@ -269,12 +269,15 @@ async function loadFontawesomeIcons() {
         const { fas } = await import("@fortawesome/free-solid-svg-icons");
         const { far } = await import("@fortawesome/free-regular-svg-icons");
         const { fab } = await import("@fortawesome/free-brands-svg-icons");
+        const uniqueIcons = new Set<string>();
         for (let iconPack of [fas, far, fab]) {
             for (let name in iconPack) {
                 const icon = iconPack[name];
-                if (state.fontAwesomeIcons.some(item => item.displayName === icon.iconName && item.styleGroup === icon.prefix)) {
+                const iconKey = [icon.iconName, icon.prefix].join("|");
+                if (uniqueIcons.has(iconKey)) {
                     continue;
                 }
+                uniqueIcons.add(iconKey);
                 state.fontAwesomeIcons.push(markRaw({
                     icon: markRaw(icon),
                     displayName: icon.iconName,
