@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive, watch } from "vue";
+import { defineExpose, defineModel, reactive, shallowReactive, watch } from "vue";
 import { Input as TinyInput, Select, Tooltip } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -15,7 +15,7 @@ import BorderMultiple from "@/assets/images/border-multiple.svg?component";
 // import BorderRight from "@/assets/images/border-right.svg?component";
 // import BorderBottom from "@/assets/images/border-bottom.svg?component";
 // import BorderLeft from "@/assets/images/border-left.svg?component";
-import { autoUseStyleUnit, toStyleUnit } from "@/draggable/utils/StyleUtils";
+import { autoUseStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -95,11 +95,6 @@ const model = defineModel<BorderStyleModel>({
     default: shallowReactive<BorderStyleModel>({}),
 });
 
-// 初始化
-if (model.value) {
-    // TODO model -> state
-}
-
 watch(() => state.borderRadius, value => {
     state.borderTopLeftRadius = value;
     state.borderTopRightRadius = value;
@@ -153,6 +148,66 @@ watch(() => state.borderTopWidth, value => autoUseStyleUnit(model.value, "border
 watch(() => state.borderRightWidth, value => autoUseStyleUnit(model.value, "borderRightWidth", value));
 watch(() => state.borderBottomWidth, value => autoUseStyleUnit(model.value, "borderBottomWidth", value));
 watch(() => state.borderLeftWidth, value => autoUseStyleUnit(model.value, "borderLeftWidth", value));
+
+function modelToState(modelValue: BorderStyleModel) {
+    const tmp = new Set<any>();
+    [
+        modelValue.borderTopLeftRadius,
+        modelValue.borderTopRightRadius,
+        modelValue.borderBottomLeftRadius,
+        modelValue.borderBottomRightRadius,
+    ].forEach(item => tmp.add(item));
+    if (tmp.size === 1) {
+        state.borderRadiusSingle = true;
+        state.borderRadius = unStyleUnit(modelValue.borderTopLeftRadius);
+    } else {
+        state.borderRadiusSingle = false;
+        state.borderTopLeftRadius = unStyleUnit(modelValue.borderTopLeftRadius);
+        state.borderTopRightRadius = unStyleUnit(modelValue.borderTopRightRadius);
+        state.borderBottomLeftRadius = unStyleUnit(modelValue.borderBottomLeftRadius);
+        state.borderBottomRightRadius = unStyleUnit(modelValue.borderBottomRightRadius);
+    }
+    tmp.clear();
+    [
+        modelValue.borderTopStyle,
+        modelValue.borderRightStyle,
+        modelValue.borderBottomStyle,
+        modelValue.borderLeftStyle,
+    ].forEach(item => tmp.add(item));
+    const styleCount = tmp.size === 1;
+    tmp.clear();
+    [
+        modelValue.borderTopColor,
+        modelValue.borderRightColor,
+        modelValue.borderBottomColor,
+        modelValue.borderLeftColor,
+    ].forEach(item => tmp.add(item));
+    const colorCount = tmp.size === 1;
+    tmp.clear();
+    [
+        modelValue.borderTopWidth,
+        modelValue.borderRightWidth,
+        modelValue.borderBottomWidth,
+        modelValue.borderLeftWidth,
+    ].forEach(item => tmp.add(item));
+    const widthCount = tmp.size === 1;
+    if (styleCount && colorCount && widthCount) {
+        state.borderStyleSingle = true;
+        state.borderStyle = modelValue.borderTopStyle;
+        state.borderColor = modelValue.borderTopColor;
+        state.borderWidth = unStyleUnit(modelValue.borderTopWidth);
+    } else {
+        state.borderStyleSingle = false;
+        state.borderTopWidth = unStyleUnit(modelValue.borderTopWidth);
+        state.borderRightWidth = unStyleUnit(modelValue.borderRightWidth);
+        state.borderBottomWidth = unStyleUnit(modelValue.borderBottomWidth);
+        state.borderLeftWidth = unStyleUnit(modelValue.borderLeftWidth);
+    }
+}
+
+defineExpose({
+    modelToState: () => modelToState(model.value),
+});
 </script>
 
 <template>

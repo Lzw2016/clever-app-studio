@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { computed, reactive, ref, watch } from "vue";
+import { computed, getCurrentInstance, nextTick, reactive, ref, watch } from "vue";
 import { Collapse, CollapseItem } from "@opentiny/vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
@@ -21,6 +21,9 @@ import { toObjectStyle } from "@/draggable/utils/StyleUtils";
 defineOptions({
     name: 'SetterStylePanel',
 });
+
+// 当前组件对象
+const instance = getCurrentInstance();
 
 // 定义 Props 类型
 interface SetterStylePanelProps {
@@ -61,6 +64,7 @@ const propsStyle = computed(() => {
     return nodes[0].props.style;
 });
 
+const componentStylesRef = ref<InstanceType<typeof ComponentStyles> | undefined>();
 const layoutStyleRef = ref<InstanceType<typeof LayoutStyle> | undefined>();
 const spacingStyleRef = ref<InstanceType<typeof SpacingStyle> | undefined>();
 const sizeStyleRef = ref<InstanceType<typeof SizeStyle> | undefined>();
@@ -70,18 +74,43 @@ const borderStyleRef = ref<InstanceType<typeof BorderStyle> | undefined>();
 const effectStyleRef = ref<InstanceType<typeof EffectStyle> | undefined>();
 watch(() => propsStyle.value, style => {
     style = toObjectStyle(style);
-    state.style.width /*            */ = style.width;
-    state.style.height /*           */ = style.height;
-    state.style.minWidth /*         */ = style.minWidth;
-    state.style.minHeight /*        */ = style.minHeight;
-    state.style.maxWidth /*         */ = style.maxWidth;
-    state.style.maxHeight /*        */ = style.maxHeight;
-    state.style.overflow /*         */ = style.overflow;
-    state.style.objectFit /*        */ = style.objectFit;
-    state.style.objectPosition /*   */ = style.objectPosition;
-    sizeStyleRef.value?.modelToState();
+    const styleProperties = [
+        // LayoutStyle
+        "display", "flexDirection", "flexWrap", "justifyContent", "alignContent", "justifyItems", "alignItems", "gridTemplateColumns", "gridTemplateRows", "gridColumnGap", "gridRowGap", "gridAutoFlow",
+        // SpacingStyle
+        "marginTop", "marginRight", "marginBottom", "marginLeft", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
+        // SizeStyle
+        "width", "height", "minWidth", "minHeight", "maxWidth", "maxHeight", "overflow", "objectFit", "objectPosition",
+        // PositionStyle
+        "top", "right", "bottom", "left",
+        // FontStyle
+        "fontSize", "lineHeight",
+        // BorderStyle
+        "borderTopLeftRadius", "borderTopRightRadius", "borderBottomLeftRadius", "borderBottomRightRadius",
+        "borderTopStyle", "borderRightStyle", "borderBottomStyle", "borderLeftStyle",
+        "borderTopColor", "borderRightColor", "borderBottomColor", "borderLeftColor",
+        "borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth",
+        // EffectStyle
+        "cursor", "backgroundColor", "opacity",
 
-
+    ];
+    for (let property of styleProperties) {
+        state.style[property] = style[property];
+    }
+    const modelToState = () => {
+        layoutStyleRef.value?.modelToState();
+        spacingStyleRef.value?.modelToState();
+        sizeStyleRef.value?.modelToState();
+        positionStyleRef.value?.modelToState();
+        fontStyleRef.value?.modelToState();
+        borderStyleRef.value?.modelToState();
+        effectStyleRef.value?.modelToState();
+    };
+    if (componentStylesRef.value) {
+        modelToState();
+    } else {
+        nextTick(modelToState).finally();
+    }
 }, { immediate: true });
 
 const applyStyleDebounce = lodash.debounce((nodes: Array<RuntimeNode>, newStyle: object) => applyStyle(nodes, newStyle), 300);
@@ -97,7 +126,7 @@ function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
     if (!nodes || !designerState || !blockInstance) return res;
     for (let node of nodes) {
         if (!node.__raw_props_style) node.__raw_props_style = toObjectStyle(node.props.style);
-        node.props.style = lodash.defaults({ ...newStyle }, node.__raw_props_style);
+        node.props.style = { ...node.__raw_props_style, ...newStyle };
         res = true;
     }
     if (res) {
@@ -121,16 +150,16 @@ function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
                 <LayoutStyle ref="layoutStyleRef" v-model="state.style"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableSpacing!==true" class="settings-items" name="间距" title="间距">
-                <SpacingStyle ref="spacingStyleRef"/>
+                <SpacingStyle ref="spacingStyleRef" v-model="state.style"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableSize!==true" class="settings-items" name="尺寸" title="尺寸">
                 <SizeStyle ref="sizeStyleRef" v-model="state.style"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disablePosition!==true" class="settings-items" name="定位" title="定位">
-                <PositionStyle ref="positionStyleRef"/>
+                <PositionStyle ref="positionStyleRef" v-model="state.style"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableFont!==true" class="settings-items" name="文本" title="文本">
-                <FontStyle ref="fontStyleRef"/>
+                <FontStyle ref="fontStyleRef" v-model="state.style"/>
             </CollapseItem>
             <!-- <CollapseItem class="settings-items" name="背景" title="背景"> -->
             <!-- </CollapseItem> -->
@@ -138,7 +167,7 @@ function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
                 <BorderStyle ref="borderStyleRef" v-model="state.style"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableEffect!==true" class="settings-items" name="效果" title="效果">
-                <EffectStyle ref="effectStyleRef"/>
+                <EffectStyle ref="effectStyleRef" v-model="state.style"/>
             </CollapseItem>
         </Collapse>
     </div>

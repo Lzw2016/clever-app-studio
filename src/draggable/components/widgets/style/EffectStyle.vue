@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive } from "vue";
+import { defineExpose, defineModel, reactive, shallowReactive } from "vue";
 import { Numeric, Select, Tooltip } from "@opentiny/vue";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -50,10 +50,12 @@ const model = defineModel<EffectStyleModel>({
     default: shallowReactive<EffectStyleModel>({}),
 });
 
-// 初始化
-if (model.value) {
-    // TODO model -> state
+function modelToState(modelValue: EffectStyleModel) {
 }
+
+defineExpose({
+    modelToState: () => modelToState(model.value),
+});
 </script>
 
 <template>

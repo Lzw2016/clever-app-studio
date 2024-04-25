@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive, watch } from "vue";
+import { defineExpose, defineModel, reactive, shallowReactive, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Input as TinyInput, Select, Tooltip } from "@opentiny/vue";
@@ -12,7 +12,7 @@ import FontStyleItalic from "@/assets/images/font-style-italic.svg?component";
 import TextDecorationStrike from "@/assets/images/text-decoration-strike.svg?component";
 import TextDecorationUnderline from "@/assets/images/text-decoration-underline.svg?component";
 import TextDecorationOverline from "@/assets/images/text-decoration-overline.svg?component";
-import { autoUseStyleUnit } from "@/draggable/utils/StyleUtils";
+import { autoUseStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -104,11 +104,6 @@ const model = defineModel<FontStyleModel>({
     default: shallowReactive<FontStyleModel>({}),
 });
 
-// 初始化
-if (model.value) {
-    // TODO model -> state
-}
-
 watch(() => state.fontSize, value => autoUseStyleUnit(model.value, "fontSize", value));
 watch(() => state.lineHeight, value => autoUseStyleUnit(model.value, "lineHeight", value));
 
@@ -131,6 +126,15 @@ function setFontStyle(val: string) {
 function setTextDecorationLine(val: string) {
     setStyleConfig("textDecorationLine", val);
 }
+
+function modelToState(modelValue: FontStyleModel) {
+    state.fontSize = unStyleUnit(modelValue.fontSize);
+    state.lineHeight = unStyleUnit(modelValue.lineHeight);
+}
+
+defineExpose({
+    modelToState: () => modelToState(model.value),
+});
 </script>
 
 <template>

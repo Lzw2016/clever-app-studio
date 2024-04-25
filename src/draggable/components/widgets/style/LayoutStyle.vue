@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive, watch } from "vue";
+import { defineExpose, defineModel, reactive, shallowReactive, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faPlus, faUpDownLeftRight } from "@fortawesome/free-solid-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
-import { Checkbox, Input, Numeric, Tooltip } from "@opentiny/vue";
+import { Checkbox, Input, Tooltip } from "@opentiny/vue";
 import { VueDraggable } from "vue-draggable-plus";
-import { toStyleUnit } from "@/draggable/utils/StyleUtils";
+import { autoUseStyleUnit, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 import DisplayBlock from "@/assets/images/display-block.svg?component";
 import DisplayInlineBlock from "@/assets/images/display-inline-block.svg?component";
 import DisplayInline from "@/assets/images/display-inline.svg?component";
@@ -78,9 +78,9 @@ interface LayoutStyleState {
     /** grid-template-rows 配置("px" | "%" | "fr" | "minmax" | "auto") */
     gridTemplateRows: Array<string>;
     /** grid-column-gap 属性 */
-    gridColumnGap?: number;
+    gridColumnGap?: string;
     /** grid-row-gap 属性 */
-    gridRowGap?: number;
+    gridRowGap?: string;
     /** grid-auto-flow 属性 */
     gridAutoFlow?: string;
     /** grid-auto-flow 属性 dense 选项 */
@@ -211,15 +211,6 @@ const model = defineModel<LayoutStyleModel>({
     default: shallowReactive<LayoutStyleModel>({}),
 });
 
-// 初始化
-if (model.value) {
-    // TODO gridTemplateColumns gridTemplateRows gridAutoFlowDense
-    // state.gridColumnGap = model.value.gridColumnGap;
-    // state.gridRowGap = model.value.gridRowGap;
-    state.gridAutoFlow = model.value.gridAutoFlow;
-    // state.gridAutoFlowDense = model.value.gridAutoFlowDense;
-}
-
 watch(state.gridTemplateColumns, gridTemplateColumns => {
     if (!model.value) return;
     if (gridTemplateColumns.length <= 0) {
@@ -228,7 +219,6 @@ watch(state.gridTemplateColumns, gridTemplateColumns => {
     }
     model.value.gridTemplateColumns = gridTemplateColumns.map(col => toStyleUnit(col) || 'auto').join(" ");
 });
-
 watch(state.gridTemplateRows, gridTemplateRows => {
     if (!model.value) return;
     if (gridTemplateRows.length <= 0) {
@@ -237,25 +227,8 @@ watch(state.gridTemplateRows, gridTemplateRows => {
     }
     model.value.gridTemplateRows = gridTemplateRows.map(col => toStyleUnit(col) || 'auto').join(" ");
 });
-
-watch(() => state.gridColumnGap, gridColumnGap => {
-    if (!model.value) return;
-    if (!gridColumnGap) {
-        delete model.value.gridColumnGap;
-        return;
-    }
-    model.value.gridColumnGap = `${gridColumnGap}px`;
-});
-
-watch(() => state.gridRowGap, gridRowGap => {
-    if (!model.value) return;
-    if (!gridRowGap) {
-        delete model.value.gridRowGap;
-        return;
-    }
-    model.value.gridRowGap = `${gridRowGap}px`;
-});
-
+watch(() => state.gridColumnGap, value => autoUseStyleUnit(model.value, "gridColumnGap", value));
+watch(() => state.gridRowGap, value => autoUseStyleUnit(model.value, "gridRowGap", value));
 watch(() => [state.gridAutoFlow, state.gridAutoFlowDense], () => {
     if (!model.value) return;
     if (!state.gridAutoFlow) {
@@ -325,6 +298,30 @@ function setGridAutoFlow(val: string) {
     }
     state.gridAutoFlow = val;
 }
+
+function modelToState(modelValue: LayoutStyleModel) {
+    if (modelValue.gridTemplateColumns) {
+        state.gridTemplateColumns = modelValue.gridTemplateColumns.split(" ").map(col => unStyleUnit(col) ?? "auto");
+    }
+    if (modelValue.gridTemplateRows) {
+        state.gridTemplateRows = modelValue.gridTemplateRows.split(" ").map(col => unStyleUnit(col) ?? "auto");
+    }
+    state.gridColumnGap = unStyleUnit(modelValue.gridColumnGap);
+    state.gridRowGap = unStyleUnit(modelValue.gridRowGap);
+    if (modelValue.gridAutoFlow) {
+        if (modelValue.gridAutoFlow.endsWith(" dense")) {
+            state.gridAutoFlowDense = true;
+            state.gridAutoFlow = modelValue.gridAutoFlow.substring(0, modelValue.gridAutoFlow.length - 6);
+        } else {
+            state.gridAutoFlowDense = false;
+            state.gridAutoFlow = modelValue.gridAutoFlow;
+        }
+    }
+}
+
+defineExpose({
+    modelToState: () => modelToState(model.value),
+});
 </script>
 
 <template>
@@ -624,16 +621,16 @@ function setGridAutoFlow(val: string) {
             </div>
             <div class="flex-row-container setter-row">
                 <div class="flex-item-fixed setter-row-label">
-                    <Tooltip effect="dark" placement="left" content="grid-row-gap/grid-column-gap 属性，设置行列的间隔">
+                    <Tooltip effect="dark" placement="left" content="grid-row-gap/grid-column-gap 属性，设置行列的间隔，需要手动设置单位：px、em等">
                         <span class="setter-label-tips">行列间隔</span>
                     </Tooltip>
                 </div>
                 <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
                     <!-- <span class="flex-item-fixed" style="margin-right: 4px;">列</span> -->
-                    <Numeric class="flex-item-fill" style="min-width: 60px;" v-model="state.gridColumnGap" unit="px" size="mini" :allow-empty="true" placeholder="列间隔"/>
+                    <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.gridColumnGap" unit="px" size="mini" :allow-empty="true" placeholder="列间隔"/>
                     <span style="margin-left: 12px;"/>
                     <!-- <span class="flex-item-fixed" style="margin-right: 4px;">行</span> -->
-                    <Numeric class="flex-item-fill" style="min-width: 60px;" v-model="state.gridRowGap" unit="px" size="mini" :allow-empty="true" placeholder="行间隔"/>
+                    <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.gridRowGap" unit="px" size="mini" :allow-empty="true" placeholder="行间隔"/>
                 </div>
             </div>
             <div class="flex-row-container setter-row">

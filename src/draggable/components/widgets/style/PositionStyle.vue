@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { defineModel, reactive, shallowReactive, watch } from "vue";
+import { defineExpose, defineModel, reactive, shallowReactive, watch } from "vue";
 import { Numeric, Tooltip } from "@opentiny/vue";
 import PositionAll from "@/assets/images/position-all.svg?component";
 import PositionBottom from "@/assets/images/position-bottom.svg?component";
@@ -11,7 +11,7 @@ import PositionRight from "@/assets/images/position-right.svg?component";
 import PositionTop from "@/assets/images/position-top.svg?component";
 import PositionTopLeft from "@/assets/images/position-top-left.svg?component";
 import PositionTopRight from "@/assets/images/position-top-right.svg?component";
-import { autoUseStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
+import { autoUseStyleUnit, unStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -89,11 +89,6 @@ const model = defineModel<PositionStyleModel>({
     default: shallowReactive<PositionStyleModel>({}),
 });
 
-// 初始化
-if (model.value) {
-    // TODO model -> state
-}
-
 watch(() => state.top, value => autoUseStyleUnit(model.value, "top", value));
 watch(() => state.right, value => autoUseStyleUnit(model.value, "right", value));
 watch(() => state.bottom, value => autoUseStyleUnit(model.value, "bottom", value));
@@ -136,6 +131,17 @@ function setFastPosition(val: { top: string, right: string, bottom: string, left
         lodash.assign(state, val);
     }
 }
+
+function modelToState(modelValue: PositionStyleModel) {
+    state.top = unStyleUnit(modelValue.top);
+    state.right = unStyleUnit(modelValue.right);
+    state.bottom = unStyleUnit(modelValue.bottom);
+    state.left = unStyleUnit(modelValue.left);
+}
+
+defineExpose({
+    modelToState: () => modelToState(model.value),
+});
 </script>
 
 <template>

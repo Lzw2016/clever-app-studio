@@ -1,6 +1,6 @@
 import lodash from "lodash";
 import { parseStringStyle } from "@vue/shared";
-import { isArray, isNum, isObj, isStr } from "@/utils/Typeof";
+import { hasValue, isArray, isNum, isObj, isStr } from "@/utils/Typeof";
 
 /**
  * 自动补全 style 属性单位
@@ -167,6 +167,25 @@ function toInlineStyle(style: Record<string, any>): Record<string, any> {
     return res;
 }
 
+/**
+ * 给 style 对象属性加上 “!important”
+ * @param style 对象样式
+ */
+function importantStyle(style: Record<string, any>): Record<string, any> {
+    if (!style) return {};
+    const res: Record<string, any> = {};
+    if (isObj(style) && !isArray(style)) {
+        for (let key in style) {
+            let value = style[key];
+            if (hasValue(value) && lodash.trim(value).length > 0) {
+                value = `${value} !important`;
+            }
+            res[key] = value;
+        }
+    }
+    return res;
+}
+
 export {
     toStyleUnit,
     unStyleUnit,
@@ -175,4 +194,5 @@ export {
     validateInputStyleValue,
     toObjectStyle,
     toInlineStyle,
+    importantStyle,
 }

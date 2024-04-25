@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive, watch } from "vue";
-import { autoUseStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
+import { defineExpose, defineModel, reactive, shallowReactive, watch } from "vue";
+import { autoUseStyleUnit, unStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -56,6 +56,21 @@ watch(() => state.paddingTop, value => autoUseStyleUnit(model.value, "paddingTop
 watch(() => state.paddingRight, value => autoUseStyleUnit(model.value, "paddingRight", value));
 watch(() => state.paddingBottom, value => autoUseStyleUnit(model.value, "paddingBottom", value));
 watch(() => state.paddingLeft, value => autoUseStyleUnit(model.value, "paddingLeft", value));
+
+function modelToState(modelValue: SpacingStyleModel) {
+    state.marginTop = unStyleUnit(modelValue.marginTop);
+    state.marginRight = unStyleUnit(modelValue.marginRight);
+    state.marginBottom = unStyleUnit(modelValue.marginBottom);
+    state.marginLeft = unStyleUnit(modelValue.marginLeft);
+    state.paddingTop = unStyleUnit(modelValue.paddingTop);
+    state.paddingRight = unStyleUnit(modelValue.paddingRight);
+    state.paddingBottom = unStyleUnit(modelValue.paddingBottom);
+    state.paddingLeft = unStyleUnit(modelValue.paddingLeft);
+}
+
+defineExpose({
+    modelToState: () => modelToState(model.value),
+});
 </script>
 
 <template>
