@@ -40,6 +40,10 @@ export default defineComponentMeta({
             groups: [],
         },
         style: {
+            componentStyles: [
+                { name: "测试A", class: "test_aaa compact" },
+                { name: "测试B", class: "test_bbb gorgeous" },
+            ],
         },
         // advanced: {
         //     title: "",

@@ -177,7 +177,7 @@ function importantStyle(style: Record<string, any>): Record<string, any> {
     if (isObj(style) && !isArray(style)) {
         for (let key in style) {
             let value = style[key];
-            if (hasValue(value) && lodash.trim(value).length > 0) {
+            if (hasValue(value) && lodash.trim(value as string).length > 0) {
                 value = `${value} !important`;
             }
             res[key] = value;

@@ -38,8 +38,10 @@ interface RuntimeNode {
     readonly ref: string;
     /** 组件属性 */
     readonly props: Record<string, any>;
-    /** 原始的样式属性 */
+    /** 原始的 style 属性 */
     __raw_props_style: any;
+    /** 原始的 class 属性 */
+    __raw_props_class?: string;
     /** 监听的事件(原函数) */
     readonly listeners: Record<string, RuntimeListener>;
     /** 监听的事件(已绑定 this 指针的 listeners 函数) */
