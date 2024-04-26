@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineModel, reactive, shallowReactive } from "vue";
+import { computed, defineModel, reactive } from "vue";
 import { Select, Tooltip } from "@opentiny/vue";
 import { ComponentStyle } from "@/draggable/types/ComponentMeta";
 import CodeSvg from "@/assets/images/code.svg?component";
@@ -12,6 +12,7 @@ defineOptions({
 // 定义 Props 类型
 interface ComponentStylesProps {
     componentStyles?: Array<ComponentStyle>;
+    style?: Record<string, any>;
 }
 
 // 读取组件 props 属性
@@ -26,19 +27,8 @@ const state = reactive<ComponentStylesState>({});
 // 内部数据
 const data = {};
 
-interface ComponentStylesModel {
-    class?: string;
-}
-
 // css display 值
-const model = defineModel<ComponentStylesModel>({
-    default: shallowReactive<ComponentStylesModel>({}),
-});
-
-// 初始化
-if (model.value) {
-    // TODO model -> state
-}
+const model = defineModel<string | undefined>();
 
 const componentStyles = computed(() => toSelectOptions(props.componentStyles));
 
@@ -69,7 +59,7 @@ function toSelectOptions(componentStyles: Array<ComponentStyle> | undefined) {
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input">
-                <Select v-model="model.class" :options="componentStyles" size="mini" :clearable="true" placeholder="选择内置样式"/>
+                <Select v-model="model" :options="componentStyles" size="mini" :clearable="true" placeholder="选择内置样式"/>
             </div>
         </div>
     </div>

@@ -168,8 +168,10 @@ const designerTest = defineDesignBlock({
             type: "div",
             tpl: "div容器",
             props: {
+                class: "aaaaaaaaaaaaa",
                 style: {
-                    // width: '300px',
+                    height: "100px",
+                    border: "1px solid #ccc",
                 },
             },
         },

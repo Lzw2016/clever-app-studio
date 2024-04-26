@@ -2,6 +2,7 @@
 import lodash from "lodash";
 import { computed, getCurrentInstance, nextTick, reactive, ref, watch } from "vue";
 import { Collapse, CollapseItem } from "@opentiny/vue";
+import { hasValue, isStr, noValue } from "@/utils/Typeof";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { SetterState } from "@/draggable/models/SetterState";
@@ -42,26 +43,37 @@ const props = withDefaults(defineProps<SetterStylePanelProps>(), {});
 
 // 定义 State 类型
 interface SetterStylePanelState {
-    componentStyles: Record<string, any>;
+    componentStyles: {
+        class?: string;
+        style?: Record<string, any>;
+    };
+    class?: string;
     style: Record<string, any>;
 }
 
 // state 属性
 const state = reactive<SetterStylePanelState>({
     componentStyles: {},
+    class: undefined,
     style: {},
 });
 // 内部数据
 // const data = {};
 
+const firstSelectNode = computed(() => getFirstSelectNode(props.designerState.selectNodes.value));
+
 const propsStyle = computed(() => {
-    const nodes = props.designerState.selectNodes.value;
-    const types = new Set<any>();
-    for (let node of nodes) {
-        types.add(node.type);
-    }
-    if (types.size !== 1) return;
-    return nodes[0].props.style;
+    const node = firstSelectNode.value;
+    if (!node) return;
+    return node.props.style;
+});
+
+const propsClass = computed(() => {
+    const node = firstSelectNode.value;
+    if (!node) return;
+    const rawClass = node.__raw_props_class;
+    const pClass = node.props.class;
+    return [rawClass, pClass];
 });
 
 const componentStylesRef = ref<InstanceType<typeof ComponentStyles> | undefined>();
@@ -92,7 +104,6 @@ watch(() => propsStyle.value, style => {
         "borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth",
         // EffectStyle
         "cursor", "backgroundColor", "opacity",
-
     ];
     for (let property of styleProperties) {
         state.style[property] = style[property];
@@ -112,22 +123,59 @@ watch(() => propsStyle.value, style => {
         nextTick(modelToState).finally();
     }
 }, { immediate: true });
+watch(() => propsClass.value, ([rawClass, pClass]) => {
+    let newClass: string | undefined;
+    if (noValue(rawClass)) {
+        newClass = undefined;
+    } else if (isStr(pClass) && hasValue(rawClass) && pClass.startsWith(rawClass)) {
+        newClass = pClass.substring(rawClass.length).trim();
+    } else {
+        newClass = pClass;
+    }
+    state.class = newClass;
+}, { immediate: true });
+// watch(() => firstSelectNode.value?.props, props => {
+//     state.componentStyles.style = props?.style ?? {};
+// }, { immediate: true });
 
 const applyStyleDebounce = lodash.debounce((nodes: Array<RuntimeNode>, newStyle: object) => applyStyle(nodes, newStyle), 300);
-// watch(state.style, style => {
-//     console.log("style", style);
-// });
 watch(state.style, style => applyStyleDebounce([...props.designerState.selectNodes.value], style));
 
+const applyClassDebounce = lodash.debounce((nodes: Array<RuntimeNode>, newClass?: string) => applyClass(nodes, newClass), 300);
+watch(() => state.class, pClass => applyClassDebounce([...props.designerState.selectNodes.value], pClass));
+
+function getFirstSelectNode(nodes: Array<RuntimeNode>) {
+    const types = new Set<any>();
+    for (let node of nodes) {
+        types.add(node.type);
+    }
+    if (types.size !== 1) return;
+    return nodes[0];
+}
+
 function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
+    newStyle = removeNullStyle(newStyle);
+    forEachSelectNodes(nodes, node => {
+        if (!node.__raw_props_style) node.__raw_props_style = toObjectStyle(node.props.style);
+        node.props.style = { ...node.__raw_props_style, ...newStyle };
+    });
+}
+
+function applyClass(nodes: Array<RuntimeNode>, newClass?: string) {
+    const noneClass = "__$_none_class";
+    forEachSelectNodes(nodes, node => {
+        if (!node.__raw_props_class) node.__raw_props_class = node.props.class ?? noneClass;
+        node.props.class = [node.__raw_props_class, newClass].filter(item => !!item && item !== noneClass).join(" ");
+    });
+}
+
+function forEachSelectNodes(nodes: Array<RuntimeNode>, each: (node: RuntimeNode) => void) {
     const designerState = props.designerState;
     const blockInstance = props.designerState.blockInstance;
     let res = false;
     if (!nodes || !designerState || !blockInstance) return res;
     for (let node of nodes) {
-        if (!node.__raw_props_style) node.__raw_props_style = toObjectStyle(node.props.style);
-        node.props.style = { ...node.__raw_props_style, ...removeNullStyle(newStyle) };
-        console.log("style", node.props.style)
+        each(node);
         res = true;
     }
     if (res) {
@@ -145,7 +193,7 @@ function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
     <div class="settings-groups flex-column-container">
         <Collapse class="flex-item-fill settings-content" v-model="props.setterState.expandGroups['style']">
             <CollapseItem class="settings-items" name="渲染节点" title="渲染节点">
-                <ComponentStyles :component-styles="props.stylePanel.componentStyles" v-model="state.componentStyles"/>
+                <ComponentStyles :component-styles="props.stylePanel.componentStyles" v-model="state.class"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局" title="布局">
                 <LayoutStyle ref="layoutStyleRef" v-model="state.style"/>
