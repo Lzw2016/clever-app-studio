@@ -1,5 +1,5 @@
 import lodash from "lodash";
-import { hasValue } from "@/utils/Typeof";
+import { hasValue, isArray, isObj } from "@/utils/Typeof";
 
 /** 模拟休眠 */
 function sleep(times: number): Promise<void> {
@@ -141,9 +141,46 @@ function toBatch<T = any>(data: Array<T>, batchSize: number = 1000): Array<Array
     return batchData;
 }
 
+/**
+ * 删除空属性
+ * @param object    对象样式
+ * @param createObj 是否创建新对象，不改变 object 对象
+ */
+function removeNullProperty(object: Record<string, any>, createObj: boolean): Record<string, any> {
+    if (!object) return object;
+    if (isObj(object) && !isArray(object)) {
+        if (createObj) object = { ...object };
+        for (let property in object) {
+            const value = object[property];
+            if (!hasValue(value)) {
+                delete object[property];
+            }
+        }
+    }
+    return object;
+}
+
+/**
+ * 覆写 sources 的所有属性到 object
+ * @param object    被覆写的对象(会改变这个对象)
+ * @param sources   数据源对象
+ */
+function overwriteProperty(object: Record<string, any>, sources: Record<string, any>) {
+    for (let property in object) {
+        if (!lodash.has(sources, property)) {
+            delete object[property];
+        }
+    }
+    for (let property in sources) {
+        object[property] = sources[property];
+    }
+}
+
 export {
     sleep,
     parseFun,
     funToString,
     toBatch,
+    removeNullProperty,
+    overwriteProperty,
 }

@@ -9,6 +9,7 @@ import { registerComponent } from "@/draggable/register/RegisterComponent";
 import { registerComponentMeta } from "@/draggable/register/RegisterComponentMeta";
 import { registerSetterComponent } from "@/draggable/register/RegisterSetterComponent";
 import { usePrimeVue } from "@/components/UsePrimeVue";
+import "@/components/UseLayer";
 import globalConfig from "@/GlobalConfig";
 import "@/assets/tiny-vue-themes.css";
 

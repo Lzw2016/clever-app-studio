@@ -2,7 +2,8 @@
 import lodash from "lodash";
 import { computed, getCurrentInstance, nextTick, reactive, ref, watch } from "vue";
 import { Collapse, CollapseItem } from "@opentiny/vue";
-import { hasValue, isStr, noValue } from "@/utils/Typeof";
+import { overwriteProperty, removeNullProperty } from "@/utils/Utils";
+import { isStr, noValue } from "@/utils/Typeof";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { SetterState } from "@/draggable/models/SetterState";
@@ -16,7 +17,7 @@ import FontStyle from "@/draggable/components/widgets/style/FontStyle.vue";
 import BorderStyle from "@/draggable/components/widgets/style/BorderStyle.vue";
 import EffectStyle from "@/draggable/components/widgets/style/EffectStyle.vue";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
-import { removeNullStyle, toObjectStyle } from "@/draggable/utils/StyleUtils";
+import { toObjectStyle } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -43,17 +44,12 @@ const props = withDefaults(defineProps<SetterStylePanelProps>(), {});
 
 // 定义 State 类型
 interface SetterStylePanelState {
-    componentStyles: {
-        class?: string;
-        style?: Record<string, any>;
-    };
     class?: string;
     style: Record<string, any>;
 }
 
 // state 属性
 const state = reactive<SetterStylePanelState>({
-    componentStyles: {},
     class: undefined,
     style: {},
 });
@@ -70,7 +66,7 @@ const propsStyle = computed(() => {
 
 const propsClass = computed(() => {
     const node = firstSelectNode.value;
-    if (!node) return;
+    if (!node) return [];
     const rawClass = node.__raw_props_class;
     const pClass = node.props.class;
     return [rawClass, pClass];
@@ -88,15 +84,16 @@ watch(() => propsStyle.value, style => {
     style = toObjectStyle(style);
     const styleProperties = [
         // LayoutStyle
-        "display", "flexDirection", "flexWrap", "justifyContent", "alignContent", "justifyItems", "alignItems", "gridTemplateColumns", "gridTemplateRows", "gridColumnGap", "gridRowGap", "gridAutoFlow",
+        "display", "flexDirection", "flexWrap", "justifyContent", "alignContent", "justifyItems", "alignItems",
+        "gridTemplateColumns", "gridTemplateRows", "gridColumnGap", "gridRowGap", "gridAutoFlow",
         // SpacingStyle
         "marginTop", "marginRight", "marginBottom", "marginLeft", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
         // SizeStyle
         "width", "height", "minWidth", "minHeight", "maxWidth", "maxHeight", "overflow", "objectFit", "objectPosition",
         // PositionStyle
-        "top", "right", "bottom", "left",
+        "position", "top", "right", "bottom", "left", "float", "clear", "zIndex",
         // FontStyle
-        "fontSize", "lineHeight",
+        "fontSize", "lineHeight", "fontFamily", "fontWeight", "color", "textAlign", "fontStyle", "textDecorationLine",
         // BorderStyle
         "borderTopLeftRadius", "borderTopRightRadius", "borderBottomLeftRadius", "borderBottomRightRadius",
         "borderTopStyle", "borderRightStyle", "borderBottomStyle", "borderLeftStyle",
@@ -108,35 +105,19 @@ watch(() => propsStyle.value, style => {
     for (let property of styleProperties) {
         state.style[property] = style[property];
     }
-    const modelToState = () => {
-        layoutStyleRef.value?.modelToState();
-        spacingStyleRef.value?.modelToState();
-        sizeStyleRef.value?.modelToState();
-        positionStyleRef.value?.modelToState();
-        fontStyleRef.value?.modelToState();
-        borderStyleRef.value?.modelToState();
-        effectStyleRef.value?.modelToState();
-    };
-    if (componentStylesRef.value) {
-        modelToState();
-    } else {
-        nextTick(modelToState).finally();
-    }
+    modelToState();
 }, { immediate: true });
 watch(() => propsClass.value, ([rawClass, pClass]) => {
     let newClass: string | undefined;
     if (noValue(rawClass)) {
         newClass = undefined;
-    } else if (isStr(pClass) && hasValue(rawClass) && pClass.startsWith(rawClass)) {
+    } else if (isStr(pClass) && isStr(rawClass) && pClass.startsWith(rawClass)) {
         newClass = pClass.substring(rawClass.length).trim();
     } else {
         newClass = pClass;
     }
     state.class = newClass;
 }, { immediate: true });
-// watch(() => firstSelectNode.value?.props, props => {
-//     state.componentStyles.style = props?.style ?? {};
-// }, { immediate: true });
 
 const applyStyleDebounce = lodash.debounce((nodes: Array<RuntimeNode>, newStyle: object) => applyStyle(nodes, newStyle), 300);
 watch(state.style, style => applyStyleDebounce([...props.designerState.selectNodes.value], style));
@@ -154,7 +135,7 @@ function getFirstSelectNode(nodes: Array<RuntimeNode>) {
 }
 
 function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
-    newStyle = removeNullStyle(newStyle);
+    newStyle = removeNullProperty(newStyle);
     forEachSelectNodes(nodes, node => {
         if (!node.__raw_props_style) node.__raw_props_style = toObjectStyle(node.props.style);
         node.props.style = { ...node.__raw_props_style, ...newStyle };
@@ -187,13 +168,41 @@ function forEachSelectNodes(nodes: Array<RuntimeNode>, each: (node: RuntimeNode)
         }).finally();
     }
 }
+
+function modelToState() {
+    const doModelToState = () => {
+        layoutStyleRef.value?.modelToState();
+        spacingStyleRef.value?.modelToState();
+        sizeStyleRef.value?.modelToState();
+        positionStyleRef.value?.modelToState();
+        fontStyleRef.value?.modelToState();
+        borderStyleRef.value?.modelToState();
+        effectStyleRef.value?.modelToState();
+    };
+    if (componentStylesRef.value) {
+        doModelToState();
+    } else {
+        nextTick(doModelToState).finally();
+    }
+}
+
+function updateStyle(style: Record<string, any>) {
+    overwriteProperty(state.style, style);
+    modelToState();
+}
 </script>
 
 <template>
     <div class="settings-groups flex-column-container">
         <Collapse class="flex-item-fill settings-content" v-model="props.setterState.expandGroups['style']">
-            <CollapseItem class="settings-items" name="渲染节点" title="渲染节点">
-                <ComponentStyles :component-styles="props.stylePanel.componentStyles" v-model="state.class"/>
+            <CollapseItem v-if="firstSelectNode" class="settings-items" name="渲染节点" title="渲染节点">
+                <ComponentStyles
+                    ref="componentStylesRef"
+                    v-model="state.class"
+                    :node="firstSelectNode"
+                    :component-styles="props.stylePanel.componentStyles"
+                    @update-style="updateStyle"
+                />
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局" title="布局">
                 <LayoutStyle ref="layoutStyleRef" v-model="state.style"/>

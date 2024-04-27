@@ -20,13 +20,6 @@ import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
 import AuxTool from "@/draggable/components/widgets/AuxTool.vue";
 import { designerTest } from "@/views/DesignerTest";
 
-// import { loader, VueMonacoEditor } from "@guolao/vue-monaco-editor";
-// loader.config({
-//     paths: {
-//         vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.47.0/min/vs',
-//     },
-// });
-
 // 定义组件选项
 defineOptions({
     name: 'DesignerPanel',
@@ -297,16 +290,6 @@ console.log("pageId", route.params.pageId)
                     :options="state.codeEditorOptions"
                     @ready="cm => codeEditorInstance=cm"
                 />
-<!--                <VueMonacoEditor-->
-<!--                    v-model:value="state.designerBlockCode"-->
-<!--                    theme="vs-dark"-->
-<!--                    defaultLanguage="json"-->
-<!--                    :options="{-->
-<!--                        automaticLayout: true,-->
-<!--                        formatOnType: true,-->
-<!--                        formatOnPaste: true,-->
-<!--                    }"-->
-<!--                />-->
             </div>
             <div v-show="isPreviewTab" class="designer-content">
                 预览

@@ -27,7 +27,11 @@ interface IconSetterProps extends SetterProps {
 }
 
 // 读取组件 props 属性
-const props = withDefaults(defineProps<IconSetterProps>(), {});
+const props = withDefaults(defineProps<IconSetterProps>(), {
+    disableFontawesome: globalConfig.useExternalLib.fontawesome !== true,
+    disableGoogleIcon: globalConfig.useExternalLib.googleIcon !== true,
+    disableTabler: globalConfig.useExternalLib.tablerIcon !== true,
+});
 
 // 定义 State 类型
 interface IconSetterState extends SetterState<ComponentParam> {

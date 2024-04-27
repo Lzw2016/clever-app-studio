@@ -1,7 +1,13 @@
 <script setup lang="ts">
+import lodash from "lodash";
 import { computed, defineModel, reactive } from "vue";
-import { Select, Tooltip } from "@opentiny/vue";
+import { Alert, Button, Modal, Select, Tooltip } from "@opentiny/vue";
+import { layer } from "@layui/layer-vue";
+import type { editor } from "monaco-editor";
+import MonacoEditor from "@/components/MonacoEditor.vue";
 import { ComponentStyle } from "@/draggable/types/ComponentMeta";
+import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { toInlineStyle, toObjectStyle } from "@/draggable/utils/StyleUtils";
 import CodeSvg from "@/assets/images/code.svg?component";
 
 // 定义组件选项
@@ -9,10 +15,15 @@ defineOptions({
     name: 'ComponentStyles',
 });
 
+// 自定义事件类型
+const emit = defineEmits<{
+    updateStyle: [style: Record<string, any>];
+}>();
+
 // 定义 Props 类型
 interface ComponentStylesProps {
+    node: RuntimeNode;
     componentStyles?: Array<ComponentStyle>;
-    style?: Record<string, any>;
 }
 
 // 读取组件 props 属性
@@ -20,12 +31,18 @@ const props = withDefaults(defineProps<ComponentStylesProps>(), {});
 
 // 定义 State 类型
 interface ComponentStylesState {
+    showStyleModal: boolean;
+    style?: string;
 }
 
 // state 属性
-const state = reactive<ComponentStylesState>({});
+const state = reactive<ComponentStylesState>({
+    showStyleModal: false,
+});
 // 内部数据
-const data = {};
+const data = {
+    styleHasErr: false,
+};
 
 // css display 值
 const model = defineModel<string | undefined>();
@@ -35,6 +52,50 @@ const componentStyles = computed(() => toSelectOptions(props.componentStyles));
 function toSelectOptions(componentStyles: Array<ComponentStyle> | undefined) {
     if (!componentStyles) return [];
     return componentStyles.filter(item => !!item).map(item => ({ label: item.name, value: item.class }));
+}
+
+function showStyleModal() {
+    let style = props.node.props.style;
+    const tab = "    ";
+    const inlineStyle: Array<string> = [];
+    if (style) {
+        style = toInlineStyle(style);
+        for (let key in style) {
+            inlineStyle.push(`${tab}${key}: ${style[key]};`);
+        }
+    }
+    inlineStyle.push(tab);
+    inlineStyle.push(tab);
+    inlineStyle.push(tab);
+    state.style = `:root {\n${inlineStyle.join("\n")}\n}\n`;
+    state.showStyleModal = true;
+}
+
+function onValidate(markers: editor.IMarker[]) {
+    console.log("markers", markers)
+    data.styleHasErr = markers.length > 0;
+}
+
+function saveStyle() {
+    if (data.styleHasErr) {
+        layer.msg("内联样式存在语法错误", { time: 1500 });
+        return;
+    }
+    const inlineStyle = lodash.trim(state.style);
+    // :root    匹配包含 :root 的部分
+    // \s*      匹配任意数量的空白字符(包括空格、制表符、换行符等)
+    // \{       匹配文本 {
+    // ([^}]*)  使用捕获组来匹配任意数量的非 } 字符。这是一个懒惰匹配，意味着它将尽可能少地匹配字符，直到遇到第一个 }
+    // \}       匹配文本 }
+    const match = inlineStyle.match(/^:root\s*\{([^}]*)}$/);
+    if (match && match[1]) {
+        const style = toObjectStyle(lodash.trim(match[1]));
+        emit("updateStyle", style);
+        state.showStyleModal = false;
+    } else {
+        layer.msg("不要修改“:root { ... }”格式", { time: 1500 });
+        return;
+    }
 }
 </script>
 
@@ -47,7 +108,7 @@ function toSelectOptions(componentStyles: Array<ComponentStyle> | undefined) {
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container">
-                <div class="setter-row-input-radio flex-row-container flex-center" title="编辑内联样式">
+                <div class="setter-row-input-radio flex-row-container flex-center" title="编辑内联样式" @click="showStyleModal">
                     <CodeSvg style="width: 16px; height: 16px;"/>
                 </div>
             </div>
@@ -62,6 +123,38 @@ function toSelectOptions(componentStyles: Array<ComponentStyle> | undefined) {
                 <Select v-model="model" :options="componentStyles" size="mini" :clearable="true" placeholder="选择内置样式"/>
             </div>
         </div>
+        <Modal
+            :modelValue="state.showStyleModal"
+            height="60%"
+            width="50%"
+            min-height="350px"
+            min-width="500px"
+            :esc-closable="true"
+            title="编辑节点内联样式"
+            :show-footer="true"
+            @cancel="state.showStyleModal=false"
+            @hide="state.showStyleModal=false"
+            @close="state.showStyleModal=false"
+        >
+            <div class="flex-column-container" style="width: 100%; height: 100%;">
+                <Alert class="flex-item-fixed" :closable="false" type="info">
+                    <template #description>
+                        <div>内联样式直接写在“:root { ... }”中，不要修改“:root { ... }”格式，否则无法更新样式！</div>
+                    </template>
+                </Alert>
+                <MonacoEditor
+                    class="flex-item-fill"
+                    style="border: 1px solid #c2c2c2;"
+                    v-model="state.style"
+                    default-language="css"
+                    :options="{ contextmenu: false }"
+                    :onValidate="onValidate"
+                />
+            </div>
+            <template #footer>
+                <Button :type="'primary'" @click="saveStyle">确定</Button>
+            </template>
+        </Modal>
     </div>
 </template>
 
@@ -69,6 +162,12 @@ function toSelectOptions(componentStyles: Array<ComponentStyle> | undefined) {
 .flex-row-container {
     display: flex;
     flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.flex-column-container {
+    display: flex;
+    flex-direction: column;
     flex-wrap: nowrap;
 }
 

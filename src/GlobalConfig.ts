@@ -256,11 +256,13 @@ if (!globalConfig.serverDate) {
 // 定义可选外部库
 const optionalExternalLib = globalConfig.useExternalLib ?? {};
 globalConfig.useExternalLib = lodash.defaults(optionalExternalLib, {
-    /** 使用 Ace Editor 编辑器 */
-    aceEditor: true,
-    /** 使用 Monaco Editor 编辑器 */
-    monacoEditor: true,
-});
+    fontawesome: true,
+    googleIcon: true,
+    tablerIcon: true,
+    monacoEditor: {
+        vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.48.0/min/vs',
+    },
+} as GlobalConfig['useExternalLib']);
 
 window.globalConfig = globalConfigProxy;
 

@@ -116,10 +116,16 @@ interface GlobalConfig {
     serverDate: (date?: Date) => Date;
     /** 定义需要使用的外部库 */
     useExternalLib: {
-        /** 使用 Ace Editor 编辑器 */
-        aceEditor?: boolean;
-        /** 使用 Monaco Editor 编辑器 */
-        monacoEditor?: boolean;
+        /** 使用 fontawesome 图标 */
+        fontawesome?: boolean;
+        /** 使用 googleIcon 图标 */
+        googleIcon?: boolean;
+        /** 使用 tabler 图标 */
+        tablerIcon?: boolean;
+        /** MonacoEditor配置 */
+        monacoEditor?: {
+            vs?: string;
+        };
     };
 }
 
