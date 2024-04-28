@@ -5,9 +5,9 @@ import type { editor } from "monaco-editor";
 import type * as Monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { loader, VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { isFun } from "@/utils/Typeof";
-import { defOptions, keyBinding } from "@/utils/MonacoEditorUtils";
+import { defOptions, keyBinding, registerTheme } from "@/utils/MonacoEditorUtils";
 
-type MonacoEditor = typeof Monaco;
+export type MonacoType = typeof Monaco;
 loader.config({
     paths: {
         vs: globalConfig.useExternalLib.monacoEditor?.vs ?? 'https://cdn.jsdelivr.net/npm/monaco-editor@0.48.0/min/vs',
@@ -52,9 +52,9 @@ interface MonacoEditorProps {
     /** 内层容器 class */
     className?: string;
     /** 编辑器实例创建前执行 */
-    onBeforeMount?: (monaco: MonacoEditor) => void;
+    onBeforeMount?: (monaco: MonacoType) => void;
     /** 编辑器实例创建后执行 */
-    onMount?: (editor: editor.IStandaloneCodeEditor, monaco: MonacoEditor) => void;
+    onMount?: (editor: editor.IStandaloneCodeEditor, monaco: MonacoType) => void;
     /** 编辑改变值后执行 */
     onChange?: (value: string | undefined, event: editor.IModelContentChangedEvent) => void;
     /** 当语法发生错误时执行 */
@@ -80,14 +80,15 @@ const data = {};
 
 const model = defineModel<string | undefined>();
 
-function onBeforeMount(monaco: MonacoEditor) {
+function onBeforeMount(monaco: MonacoType) {
+    registerTheme(monaco);
     const that = instance?.proxy;
     if (isFun(props.onBeforeMount)) {
         props.onBeforeMount.call(that, monaco);
     }
 }
 
-function onMount(editor: editor.IStandaloneCodeEditor, monaco: MonacoEditor) {
+function onMount(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
     keyBinding(editor, monaco);
     const that = instance?.proxy;
     if (isFun(props.onMount)) {

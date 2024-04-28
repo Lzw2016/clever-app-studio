@@ -146,7 +146,7 @@ function toBatch<T = any>(data: Array<T>, batchSize: number = 1000): Array<Array
  * @param object    对象样式
  * @param createObj 是否创建新对象，不改变 object 对象
  */
-function removeNullProperty(object: Record<string, any>, createObj: boolean): Record<string, any> {
+function removeNullProperty(object: Record<string, any>, createObj?: boolean): Record<string, any> {
     if (!object) return object;
     if (isObj(object) && !isArray(object)) {
         if (createObj) object = { ...object };

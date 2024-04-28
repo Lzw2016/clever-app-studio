@@ -4,7 +4,7 @@ import { computed, defineModel, reactive } from "vue";
 import { Alert, Button, Modal, Select, Tooltip } from "@opentiny/vue";
 import { layer } from "@layui/layer-vue";
 import type { editor } from "monaco-editor";
-import MonacoEditor from "@/components/MonacoEditor.vue";
+import MonacoEditor, { MonacoType } from "@/components/MonacoEditor.vue";
 import { ComponentStyle } from "@/draggable/types/ComponentMeta";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { toInlineStyle, toObjectStyle } from "@/draggable/utils/StyleUtils";
@@ -33,6 +33,7 @@ const props = withDefaults(defineProps<ComponentStylesProps>(), {});
 interface ComponentStylesState {
     showStyleModal: boolean;
     style?: string;
+    monacoEditorHeight?: number;
 }
 
 // state 属性
@@ -42,6 +43,7 @@ const state = reactive<ComponentStylesState>({
 // 内部数据
 const data = {
     styleHasErr: false,
+    monacoEditor: undefined as (editor.IStandaloneCodeEditor | undefined),
 };
 
 // css display 值
@@ -72,14 +74,13 @@ function showStyleModal() {
 }
 
 function onValidate(markers: editor.IMarker[]) {
-    console.log("markers", markers)
     data.styleHasErr = markers.length > 0;
 }
 
 function saveStyle() {
     if (data.styleHasErr) {
         layer.msg("内联样式存在语法错误", { time: 1500 });
-        return;
+        return false;
     }
     const inlineStyle = lodash.trim(state.style);
     // :root    匹配包含 :root 的部分
@@ -91,11 +92,29 @@ function saveStyle() {
     if (match && match[1]) {
         const style = toObjectStyle(lodash.trim(match[1]));
         emit("updateStyle", style);
-        state.showStyleModal = false;
+        return true;
     } else {
         layer.msg("不要修改“:root { ... }”格式", { time: 1500 });
-        return;
+        return false;
     }
+}
+
+function saveStyleAndClose() {
+    if (saveStyle()) {
+        state.showStyleModal = false;
+    }
+}
+
+function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
+    data.monacoEditor = editor;
+    editor.addAction({
+        id: 'applyStyle',
+        label: '应用内联样式',
+        keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
+        run: function () {
+            saveStyle();
+        },
+    });
 }
 </script>
 
@@ -139,20 +158,26 @@ function saveStyle() {
             <div class="flex-column-container" style="width: 100%; height: 100%;">
                 <Alert class="flex-item-fixed" :closable="false" type="info">
                     <template #description>
-                        <div>内联样式直接写在“:root { ... }”中，不要修改“:root { ... }”格式，否则无法更新样式！</div>
+                        <div>
+                            内联样式直接写在<span>“:root { ... }”</span>中，不要修改<span>“:root { ... }”</span>格式，否则无法更新样式！
+                            使用<span>“Ctrl + S”</span>快速应用样式。
+                        </div>
                     </template>
                 </Alert>
                 <MonacoEditor
                     class="flex-item-fill"
                     style="border: 1px solid #c2c2c2;"
+                    height="20px"
+                    theme="idea-light"
                     v-model="state.style"
                     default-language="css"
                     :options="{ contextmenu: false }"
                     :onValidate="onValidate"
+                    :onMount="initEditor"
                 />
             </div>
             <template #footer>
-                <Button :type="'primary'" @click="saveStyle">确定</Button>
+                <Button :type="'primary'" @click="saveStyleAndClose">确定</Button>
             </template>
         </Modal>
     </div>

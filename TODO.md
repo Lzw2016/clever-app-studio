@@ -14,7 +14,7 @@
 [OK]  2.Block 支持相互嵌套
 [OK]  3.Block 支持插槽和基础指令以及用户自定义指令功能(v-show、v-if、v-for、v-model)
 [OK]  4.Block 嵌套时内层 Block 如何使用外层 Block 的数据好函数
-[50]  5.完成 Block vue 组件封装(wrap)
+[OK]  5.完成 Block vue 组件封装(wrap)
 [OK]  6.Block vue 组件需要支持内部动态更新(内部更新Block配置)
 [OK]  7.createStaticVNode 打包后不更新问题。使用自定义封装的 createHtmlVNode 解决
 [OK]  8.组件定义时提供类似 ext 的 defaults 属性
@@ -45,7 +45,7 @@
 [OK] 33.完成 FontawesomeSetting.vue、GoogleIconSetting.vue 参考 TablerIconSetting.vue
 [OK] 34.完成 IconSetter.vue 组件
 [  ] 35.在项目中只使用 fontawesome 图标库，需要替换 tabler-icons 图标库的使用(优先级底)
-[  ] 36.完成组件“样式”配置面板
+[OK] 36.完成组件“样式”配置面板
 [  ] 37.完成组件“事件”配置面板
 [  ] 38.完成组件“高级”配置面板
 [  ] 39.注册 “@opentiny/vue” 的原子组件
