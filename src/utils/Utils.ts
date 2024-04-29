@@ -1,5 +1,5 @@
 import lodash from "lodash";
-import { hasValue, isArray, isObj } from "@/utils/Typeof";
+import { hasValue, isArray, isObj, noValue } from "@/utils/Typeof";
 
 /** 模拟休眠 */
 function sleep(times: number): Promise<void> {
@@ -152,7 +152,7 @@ function removeNullProperty(object: Record<string, any>, createObj?: boolean): R
         if (createObj) object = { ...object };
         for (let property in object) {
             const value = object[property];
-            if (!hasValue(value)) {
+            if (noValue(value)) {
                 delete object[property];
             }
         }

@@ -28,8 +28,8 @@
         "type:check": "vue-tsc --noEmit --skipLibCheck"
     },
     "dependencies": {
-        "@vue/shared": "^3.4.24",
-        "vue": "^3.4.24",
+        "@vue/shared": "^3.4.25",
+        "vue": "^3.4.25",
         "vue-router": "^4.3.2",
         "vue-i18n": "^9.13.1",
         "pinia": "^2.1.7",
@@ -61,15 +61,15 @@
         "@opentiny/vue": "^3.15.0",
         "@opentiny/vue-locale": "^3.15.0",
         "@opentiny/vue-icon": "^3.15.0",
-        "primevue": "^3.51.0",
-        "ant-design-vue": "^4.2.0"
+        "primevue": "^3.52.0",
+        "ant-design-vue": "^4.2.1"
     },
     "dependencies_bak": {
-        "primevue": "^3.51.0",
+        "primevue": "^3.52.0",
         "naive-ui": "^2.38.1",
         "vexip-ui": "^2.3.3",
         "@arco-design/web-vue": "^2.54.5",
-        "ant-design-vue": "^4.2.0",
+        "ant-design-vue": "^4.2.1",
         "@idux/components": "^2.0.0",
         "@opentiny/vue": "^3.15.0",
         "@opentiny/vue-locale": "^3.15.0",

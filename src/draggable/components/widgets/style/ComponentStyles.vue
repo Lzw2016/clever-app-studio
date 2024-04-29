@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { computed, defineModel, reactive } from "vue";
+import { computed, defineModel, nextTick, reactive } from "vue";
 import { Alert, Button, Modal, Select, Tooltip } from "@opentiny/vue";
 import { layer } from "@layui/layer-vue";
 import type { editor } from "monaco-editor";
@@ -9,6 +9,7 @@ import { ComponentStyle } from "@/draggable/types/ComponentMeta";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { toInlineStyle, toObjectStyle } from "@/draggable/utils/StyleUtils";
 import CodeSvg from "@/assets/images/code.svg?component";
+import { noValue } from "@/utils/Typeof";
 
 // 定义组件选项
 defineOptions({
@@ -44,6 +45,7 @@ const state = reactive<ComponentStylesState>({
 const data = {
     styleHasErr: false,
     monacoEditor: undefined as (editor.IStandaloneCodeEditor | undefined),
+    setTimeoutClearId: undefined as any,
 };
 
 // css display 值
@@ -63,7 +65,9 @@ function showStyleModal() {
     if (style) {
         style = toInlineStyle(style);
         for (let key in style) {
-            inlineStyle.push(`${tab}${key}: ${style[key]};`);
+            const value = style[key];
+            if (noValue(value) || lodash.trim(value).length <= 0) continue;
+            inlineStyle.push(`${tab}${key}: ${value};`);
         }
     }
     inlineStyle.push(tab);
@@ -71,6 +75,16 @@ function showStyleModal() {
     inlineStyle.push(tab);
     state.style = `:root {\n${inlineStyle.join("\n")}\n}\n`;
     state.showStyleModal = true;
+    const lineNumber = inlineStyle.length - 1;
+    const column = tab.length + 1;
+    nextTick(() => {
+        if (data.setTimeoutClearId) clearTimeout(data.setTimeoutClearId);
+        data.setTimeoutClearId = setTimeout(() => {
+            data.monacoEditor?.focus();
+            data.monacoEditor?.revealLine(lineNumber);
+            data.monacoEditor?.setPosition({ lineNumber, column });
+        }, 300);
+    });
 }
 
 function onValidate(markers: editor.IMarker[]) {

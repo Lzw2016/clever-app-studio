@@ -1,14 +1,202 @@
 <script setup lang="ts">
+import { defineExpose, defineModel, reactive, shallowReactive } from "vue";
+import { Numeric, Tooltip } from "@opentiny/vue";
+import FlexAlignItemsFlexStart from "@/assets/images/flex-align-items-flex-start.svg?component";
+import FlexAlignItemsFlexEnd from "@/assets/images/flex-align-items-flex-end.svg?component";
+import FlexAlignItemsCenter from "@/assets/images/flex-align-items-center.svg?component";
+import FlexAlignItemsBaseline from "@/assets/images/flex-align-items-baseline.svg?component";
+import FlexAlignItemsStretch from "@/assets/images/flex-align-items-stretch.svg?component";
 
-// flex-grow       属性定义项目的放大比例，默认为0，即如果存在剩余空间，也不放大
-// flex-shrink     属性定义了项目的缩小比例，默认为1，即如果空间不足，该项目将缩小
-// align-self      属性允许单个项目有与其他项目不一样的对齐方式，可覆盖align-items属性
+// 定义组件选项
+defineOptions({
+    name: 'FlexStyle',
+});
+
+// 定义 Props 类型
+interface FlexStyleProps {
+}
+
+// 读取组件 props 属性
+const props = withDefaults(defineProps<FlexStyleProps>(), {});
+
+// 定义 State 类型
+interface FlexStyleState {
+}
+
+// state 属性
+const state = reactive<FlexStyleState>({});
+// 内部数据
+const data = {
+    // align-self
+    flexAlignSelfList: [
+        { value: "flex-start", tip: "flex-start(起点对齐)", icon: FlexAlignItemsFlexStart },
+        { value: "flex-end", tip: "flex-end(终点对齐)", icon: FlexAlignItemsFlexEnd },
+        { value: "center", tip: "center(居中)", icon: FlexAlignItemsCenter },
+        { value: "stretch", tip: "stretch(沾满整个容器的高度)", icon: FlexAlignItemsStretch },
+        { value: "baseline", tip: "baseline(项目第一行文字的基线对齐)", icon: FlexAlignItemsBaseline },
+    ],
+};
+
+interface FlexStyleModel {
+    flexShrink?: number;
+    flexGrow?: number;
+    alignSelf?: string;
+}
+
+const model = defineModel<FlexStyleModel>({
+    default: shallowReactive<FlexStyleModel>({}),
+});
+
+function setModel(name: string, val: string) {
+    if (model.value?.[name] === val) {
+        delete model.value[name];
+        return;
+    }
+    if (!model.value) model.value = shallowReactive<FlexStyleModel>({});
+    model.value[name] = val;
+}
+
+function setAlignSelf(val: string) {
+    setModel("alignSelf", val);
+}
+
+function modelToState(modelValue: FlexStyleModel) {
+}
+
+defineExpose({
+    modelToState: () => modelToState(model.value),
+});
 </script>
 
 <template>
-
+    <div>
+        <div class="flex-row-container setter-row">
+            <div class="flex-item-fixed setter-row-label">
+                <Tooltip effect="dark" placement="left" content="(flex布局元素) flex-shrink/flex-grow 属性配置">
+                    <span class="setter-label-tips">自动缩放</span>
+                </Tooltip>
+            </div>
+            <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
+                <Numeric
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="model.flexShrink"
+                    size="mini"
+                    controls-position="right"
+                    :allow-empty="true"
+                    placeholder="缩小比例"
+                />
+                <span style="margin-left: 12px;"/>
+                <Numeric
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="model.flexGrow"
+                    size="mini"
+                    controls-position="right"
+                    :allow-empty="true"
+                    placeholder="放大比例"
+                />
+            </div>
+        </div>
+        <div class="flex-row-container setter-row">
+            <div class="flex-item-fixed setter-row-label">
+                <Tooltip effect="dark" placement="left" content="(flex布局元素) align-self 属性配置">
+                    <span class="setter-label-tips">元素对齐</span>
+                </Tooltip>
+            </div>
+            <div class="flex-item-fill setter-row-input flex-row-container">
+                <div
+                    v-for="alignSelf in data.flexAlignSelfList"
+                    :class="{
+                        'setter-row-input-radio': true,
+                        'selected': alignSelf.value===model.alignSelf,
+                        'flex-row-container': true,
+                        'flex-center': true,
+                    }"
+                    @click="setAlignSelf(alignSelf.value)"
+                    :title="alignSelf.tip"
+                >
+                    <component :is="alignSelf.icon" style="width: 16px; height: 16px;"/>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
+.flex-row-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
 
+.flex-item-fill {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.flex-item-fixed {
+    flex-shrink: 0;
+}
+
+.flex-center {
+    align-items: center;
+    justify-content: center;
+}
+
+.setter-label-tips {
+    cursor: help;
+    text-decoration-line: underline;
+    text-decoration-style: dashed;
+}
+
+.setter-row {
+    height: 24px;
+    margin-bottom: 12px;
+    align-items: center;
+}
+
+.setter-row:last-child {
+    margin-bottom: 0;
+}
+
+.setter-row-label {
+    width: 55px;
+}
+
+.setter-row-input {
+    overflow: hidden;
+}
+
+.setter-row-input-radio {
+    padding: 2px 4px;
+    margin: 2px 2px;
+    cursor: pointer;
+    border: 1px solid #c4c6cf;
+    box-sizing: border-box;
+}
+
+.setter-row-input-radio:first-child {
+    margin-left: 0;
+}
+
+.setter-row-input-radio:last-child {
+    margin-right: 0;
+}
+
+.setter-row-input-radio:hover {
+    background: #DFE1E6;
+}
+
+.setter-row-input-radio.selected {
+    fill: #4f77ff;
+    color: #4f77ff;
+    border: 1px solid #7693F5;
+}
+
+/* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
+
+.setter-row-input :deep(.tiny-numeric__input-inner) {
+    text-align: left;
+}
 </style>

@@ -329,18 +329,18 @@ defineExpose({
         <div class="flex-row-container setter-row">
             <div class="flex-item-fixed setter-row-label">
                 <Tooltip effect="dark" placement="left" content="display 属性配置">
-                    <span class="setter-label-tips">排布方式</span>
+                    <span class="setter-label-tips">容器布局</span>
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container">
                 <div
                     v-for="display in data.displayList"
                     :class="{
-                            'setter-row-input-radio': true,
-                            'selected': display.value===model?.display,
-                            'flex-row-container': true,
-                            'flex-center': true,
-                        }"
+                        'setter-row-input-radio': true,
+                        'selected': display.value===model?.display,
+                        'flex-row-container': true,
+                        'flex-center': true,
+                    }"
                     @click="setDisplay(display.value)"
                     :title="display.tip"
                 >
@@ -359,11 +359,11 @@ defineExpose({
                     <div
                         v-for="flexDirection in data.flexDirectionList"
                         :class="{
-                                'setter-row-input-radio': true,
-                                'selected': flexDirection.value===model.flexDirection,
-                                'flex-row-container': true,
-                                'flex-center': true,
-                            }"
+                            'setter-row-input-radio': true,
+                            'selected': flexDirection.value===model.flexDirection,
+                            'flex-row-container': true,
+                            'flex-center': true,
+                        }"
                         @click="setFlexDirection(flexDirection.value)"
                         :title="flexDirection.tip"
                     >
@@ -381,11 +381,11 @@ defineExpose({
                     <div
                         v-for="justifyContent in data.flexJustifyContentList"
                         :class="{
-                                'setter-row-input-radio': true,
-                                'selected': justifyContent.value===model.justifyContent,
-                                'flex-row-container': true,
-                                'flex-center': true,
-                            }"
+                            'setter-row-input-radio': true,
+                            'selected': justifyContent.value===model.justifyContent,
+                            'flex-row-container': true,
+                            'flex-center': true,
+                        }"
                         @click="setJustifyContent(justifyContent.value)"
                         :title="justifyContent.tip"
                     >
@@ -403,11 +403,11 @@ defineExpose({
                     <div
                         v-for="alignItems in data.flexAlignItemsList"
                         :class="{
-                                'setter-row-input-radio': true,
-                                'selected': alignItems.value===model.alignItems,
-                                'flex-row-container': true,
-                                'flex-center': true,
-                            }"
+                            'setter-row-input-radio': true,
+                            'selected': alignItems.value===model.alignItems,
+                            'flex-row-container': true,
+                            'flex-center': true,
+                        }"
                         @click="setAlignItems(alignItems.value)"
                         :title="alignItems.tip"
                     >
@@ -425,9 +425,9 @@ defineExpose({
                     <div
                         v-for="flexWrap in data.flexWrapList"
                         :class="{
-                                'setter-row-input-radio': true,
-                                'selected': flexWrap.value===model.flexWrap,
-                            }"
+                            'setter-row-input-radio': true,
+                            'selected': flexWrap.value===model.flexWrap,
+                        }"
                         @click="setFlexWrap(flexWrap.value)"
                         :title="flexWrap.tip"
                     >
@@ -447,11 +447,11 @@ defineExpose({
                     <div
                         v-for="justifyContent in data.gridJustifyContentList"
                         :class="{
-                                'setter-row-input-radio': true,
-                                'selected': justifyContent.value===model.justifyContent,
-                                'flex-row-container': true,
-                                'flex-center': true,
-                            }"
+                            'setter-row-input-radio': true,
+                            'selected': justifyContent.value===model.justifyContent,
+                            'flex-row-container': true,
+                            'flex-center': true,
+                        }"
                         @click="setJustifyContent(justifyContent.value)"
                         :title="justifyContent.tip"
                     >
@@ -469,11 +469,11 @@ defineExpose({
                     <div
                         v-for="alignContent in data.gridAlignContentList"
                         :class="{
-                                'setter-row-input-radio': true,
-                                'selected': alignContent.value===model.alignContent,
-                                'flex-row-container': true,
-                                'flex-center': true,
-                            }"
+                            'setter-row-input-radio': true,
+                            'selected': alignContent.value===model.alignContent,
+                            'flex-row-container': true,
+                            'flex-center': true,
+                        }"
                         @click="setAlignContent(alignContent.value)"
                         :title="alignContent.tip"
                     >
@@ -491,11 +491,11 @@ defineExpose({
                     <div
                         v-for="justifyItems in data.gridJustifyItemsList"
                         :class="{
-                                'setter-row-input-radio': true,
-                                'selected': justifyItems.value===model.justifyItems,
-                                'flex-row-container': true,
-                                'flex-center': true,
-                            }"
+                            'setter-row-input-radio': true,
+                            'selected': justifyItems.value===model.justifyItems,
+                            'flex-row-container': true,
+                            'flex-center': true,
+                        }"
                         @click="setJustifyItems(justifyItems.value)"
                         :title="justifyItems.tip"
                     >
@@ -513,11 +513,11 @@ defineExpose({
                     <div
                         v-for="alignItems in data.gridAlignItemsList"
                         :class="{
-                                'setter-row-input-radio': true,
-                                'selected': alignItems.value===model.alignItems,
-                                'flex-row-container': true,
-                                'flex-center': true,
-                            }"
+                            'setter-row-input-radio': true,
+                            'selected': alignItems.value===model.alignItems,
+                            'flex-row-container': true,
+                            'flex-center': true,
+                        }"
                         @click="setAlignItems(alignItems.value)"
                         :title="alignItems.tip"
                     >
@@ -643,9 +643,9 @@ defineExpose({
                     <div
                         v-for="autoFlow in data.gridAutoFlowList"
                         :class="{
-                                'setter-row-input-radio': true,
-                                'selected': autoFlow.value===state.gridAutoFlow,
-                            }"
+                            'setter-row-input-radio': true,
+                            'selected': autoFlow.value===state.gridAutoFlow,
+                        }"
                         @click="setGridAutoFlow(autoFlow.value)"
                         :title="autoFlow.tip"
                     >

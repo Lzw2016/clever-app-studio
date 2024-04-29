@@ -205,11 +205,11 @@ defineExpose({
                 <div
                     v-for="textAlign in data.textAlignList"
                     :class="{
-                            'setter-row-input-radio': true,
-                            'selected': textAlign.value===model.textAlign,
-                            'flex-row-container': true,
-                            'flex-center': true,
-                        }"
+                        'setter-row-input-radio': true,
+                        'selected': textAlign.value===model.textAlign,
+                        'flex-row-container': true,
+                        'flex-center': true,
+                    }"
                     @click="setTextAlign(textAlign.value)"
                     :title="textAlign.tip"
                 >
@@ -227,11 +227,11 @@ defineExpose({
                 <div
                     v-for="fontStyle in data.fontStyleList"
                     :class="{
-                            'setter-row-input-radio': true,
-                            'selected': fontStyle.value===model.fontStyle,
-                            'flex-row-container': true,
-                            'flex-center': true,
-                        }"
+                        'setter-row-input-radio': true,
+                        'selected': fontStyle.value===model.fontStyle,
+                        'flex-row-container': true,
+                        'flex-center': true,
+                    }"
                     @click="setFontStyle(fontStyle.value)"
                     :title="fontStyle.tip"
                 >
@@ -249,11 +249,11 @@ defineExpose({
                 <div
                     v-for="textDecorationLine in data.textDecorationLineList"
                     :class="{
-                            'setter-row-input-radio': true,
-                            'selected': textDecorationLine.value===model.textDecorationLine,
-                            'flex-row-container': true,
-                            'flex-center': true,
-                        }"
+                        'setter-row-input-radio': true,
+                        'selected': textDecorationLine.value===model.textDecorationLine,
+                        'flex-row-container': true,
+                        'flex-center': true,
+                    }"
                     @click="setTextDecorationLine(textDecorationLine.value)"
                     :title="textDecorationLine.tip"
                 >

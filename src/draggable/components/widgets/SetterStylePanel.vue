@@ -10,6 +10,8 @@ import { SetterState } from "@/draggable/models/SetterState";
 import { StylePanel } from "@/draggable/types/ComponentMeta";
 import ComponentStyles from "@/draggable/components/widgets/style/ComponentStyles.vue";
 import LayoutStyle from "@/draggable/components/widgets/style/LayoutStyle.vue";
+import FlexStyle from "@/draggable/components/widgets/style/FlexStyle.vue";
+import GridStyle from "@/draggable/components/widgets/style/GridStyle.vue";
 import SpacingStyle from "@/draggable/components/widgets/style/SpacingStyle.vue";
 import SizeStyle from "@/draggable/components/widgets/style/SizeStyle.vue";
 import PositionStyle from "@/draggable/components/widgets/style/PositionStyle.vue";
@@ -74,6 +76,8 @@ const propsClass = computed(() => {
 
 const componentStylesRef = ref<InstanceType<typeof ComponentStyles> | undefined>();
 const layoutStyleRef = ref<InstanceType<typeof LayoutStyle> | undefined>();
+const flexStyleRef = ref<InstanceType<typeof FlexStyle> | undefined>();
+const gridStyleRef = ref<InstanceType<typeof GridStyle> | undefined>();
 const spacingStyleRef = ref<InstanceType<typeof SpacingStyle> | undefined>();
 const sizeStyleRef = ref<InstanceType<typeof SizeStyle> | undefined>();
 const positionStyleRef = ref<InstanceType<typeof PositionStyle> | undefined>();
@@ -86,6 +90,10 @@ watch(() => propsStyle.value, style => {
         // LayoutStyle
         "display", "flexDirection", "flexWrap", "justifyContent", "alignContent", "justifyItems", "alignItems",
         "gridTemplateColumns", "gridTemplateRows", "gridColumnGap", "gridRowGap", "gridAutoFlow",
+        // FlexStyle
+        "flexGrow", "flexShrink", "alignSelf",
+        // GridStyle
+        "gridColumnStart", "gridColumnEnd", "gridRowStart", "gridRowEnd", "justifySelf", "alignSelf",
         // SpacingStyle
         "marginTop", "marginRight", "marginBottom", "marginLeft", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
         // SizeStyle
@@ -172,6 +180,8 @@ function forEachSelectNodes(nodes: Array<RuntimeNode>, each: (node: RuntimeNode)
 function modelToState() {
     const doModelToState = () => {
         layoutStyleRef.value?.modelToState();
+        flexStyleRef.value?.modelToState();
+        gridStyleRef.value?.modelToState();
         spacingStyleRef.value?.modelToState();
         sizeStyleRef.value?.modelToState();
         positionStyleRef.value?.modelToState();
@@ -204,8 +214,13 @@ function updateStyle(style: Record<string, any>) {
                     @update-style="updateStyle"
                 />
             </CollapseItem>
-            <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局" title="布局">
+            <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局(容器)" title="布局(容器)">
                 <LayoutStyle ref="layoutStyleRef" v-model="state.style"/>
+            </CollapseItem>
+            <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局(元素)" title="布局(元素)">
+                <FlexStyle ref="flexStyleRef" v-model="state.style"/>
+                <div style="height: 12px;"/>
+                <GridStyle ref="gridStyleRef" v-model="state.style"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableSpacing!==true" class="settings-items" name="间距" title="间距">
                 <SpacingStyle ref="spacingStyleRef" v-model="state.style"/>
