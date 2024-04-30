@@ -47,13 +47,15 @@ const props = withDefaults(defineProps<SetterStylePanelProps>(), {});
 // 定义 State 类型
 interface SetterStylePanelState {
     class?: string;
-    style: Record<string, any>;
+    readonly style: Record<string, any>;
+    forceUpdateVar: number,
 }
 
 // state 属性
 const state = reactive<SetterStylePanelState>({
     class: undefined,
     style: {},
+    forceUpdateVar: 0,
 });
 // 内部数据
 const data = {
@@ -117,6 +119,7 @@ watch(() => propsStyle.value, style => {
         // EffectStyle
         "cursor", "backgroundColor", "opacity",
     ];
+    state.forceUpdateVar++;
     for (let property of styleProperties) {
         state.style[property] = style[property];
     }
@@ -132,19 +135,26 @@ watch(() => propsClass.value, ([rawClass, pClass]) => {
         newClass = pClass;
     }
     state.class = newClass;
+    state.forceUpdateVar++;
 }, { immediate: true });
 
 const applyStyleDebounce = lodash.debounce((nodes: Array<RuntimeNode>, newStyle: object) => applyStyle(nodes, newStyle), 300);
-watch(state.style, style => {
+watch(() => ({ style: state.style, forceUpdateVar: state.forceUpdateVar }), ({ style }) => {
     if (data.nodeStyleChange) {
         data.nodeStyleChange = false;
         return;
     }
-    applyStyleDebounce([...props.designerState.selectNodes], style);
-});
+    applyStyleDebounce([...props.designerState.selectNodes], { ...style });
+}, { immediate: true, deep: true });
 
 const applyClassDebounce = lodash.debounce((nodes: Array<RuntimeNode>, newClass?: string) => applyClass(nodes, newClass), 300);
-watch(() => state.class, pClass => applyClassDebounce([...props.designerState.selectNodes], pClass));
+watch(() => ({ pClass: state.class, forceUpdateVar: state.forceUpdateVar }), ({ pClass }) => {
+    if (data.nodeClassChange) {
+        data.nodeClassChange = false;
+        return;
+    }
+    applyClassDebounce([...props.designerState.selectNodes], pClass);
+}, { immediate: true });
 
 function getFirstSelectNode(nodes: Array<RuntimeNode>) {
     const types = new Set<any>();
@@ -156,7 +166,7 @@ function getFirstSelectNode(nodes: Array<RuntimeNode>) {
 }
 
 function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
-    newStyle = removeNullProperty(newStyle);
+    newStyle = removeNullProperty(newStyle, true);
     forEachSelectNodes(nodes, node => {
         if (!node.__raw_props_style) node.__raw_props_style = toObjectStyle(node.props.style);
         node.props.style = { ...node.__raw_props_style, ...newStyle };
