@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, onBeforeMount, reactive, watch } from "vue";
-import { Collapse, CollapseItem, Form, FormItem, Loading, Tooltip } from "@opentiny/vue";
+import { Collapse, CollapseItem, Form, FormItem, Input, Loading, Tooltip } from "@opentiny/vue";
+import { IconBraces } from "@tabler/icons-vue";
+import { layer } from "@layui/layer-vue";
 import { isStr } from "@/utils/Typeof";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { Setter, SetterPanel } from "@/draggable/types/ComponentMeta";
+import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
-import { IconBraces } from "@tabler/icons-vue";
 
 const vLoading = Loading.directive;
 
@@ -37,33 +39,46 @@ interface SetterPropsFormState {
     loading: boolean;
     /** 加载错误对象 */
     loadErr?: Error;
+    /** 选中节点的ref值 */
+    nodeRef?: string,
 }
 
 // state 属性
 const state = reactive<SetterPropsFormState>({
     loading: true,
     loadErr: undefined,
+    nodeRef: undefined,
 });
 // 内部数据
 // const data = {};
 // 当前活动的设计器状态数据
 const setterState = computed(() => props.designerEngine.activeDesignerState?.setterState);
+const selectNode = computed(() => {
+    const selectNodes = props.designerState.selectNodes;
+    if (selectNodes.length === 1) {
+        return selectNodes[0];
+    }
+    return;
+});
 
 // 初始化设计器表单组件
-onBeforeMount(() => loadSetterComponent().finally());
+onBeforeMount(() => loadSetterComponent(props.setterPanel).finally());
 // 动态加载设计器表单组件
-watch(() => props.setterPanel, () => loadSetterComponent().finally());
+watch(() => props.setterPanel, setterPanel => loadSetterComponent(setterPanel).finally());
+// 选中节点的ref值
+watch(()=> selectNode.value, node => resetNodeRef(node), { immediate: true });
 
-async function loadSetterComponent() {
+async function loadSetterComponent(setterPanel: SetterPanel) {
     // 获取所有需要加载的组件类型
     const types = new Set<string>();
-    for (let setterGroup of props.setterPanel.groups) {
+    for (let setterGroup of setterPanel.groups) {
         for (let item of setterGroup.items) {
             if (isStr(item.cmp) && !isHtmlTag(item.cmp)) types.add(item.cmp);
         }
     }
     // 加载组件
     try {
+        state.loading = true;
         if (types.size > 0) await props.designerEngine.componentManage.loadAsyncComponent(Array.from(types));
     } catch (err: any) {
         state.loadErr = err;
@@ -96,6 +111,14 @@ function getFormItemProps(setter: Setter) {
     return obj;
 }
 
+function resetNodeRef(node: RuntimeNode) {
+    if(node) {
+        state.nodeRef = node.ref;
+    } else {
+        state.nodeRef = undefined;
+    }
+}
+
 function getSetterProps(setter: Setter) {
     const { designerState } = props;
     const {
@@ -120,6 +143,16 @@ function getSetterProps(setter: Setter) {
     // TODO enableBind, watchProps, listeners
     return obj;
 }
+
+function updateNodeRef(oldRef: string, newRef: string) {
+    const blockInstance = props.designerState.blockInstance;
+    if (!blockInstance) {
+        return;
+    }
+    if (!blockInstance.ops.updateNodeRef(oldRef, newRef)) {
+        layer.msg("ref值更新失败，ref值必须唯一", { time: 1500 });
+    }
+}
 </script>
 
 <template>
@@ -138,6 +171,28 @@ function getSetterProps(setter: Setter) {
             class="settings-groups"
             v-model="setterState.expandGroups['props']"
         >
+            <CollapseItem v-if="selectNode" class="settings-items" name="内置属性" title="内置属性">
+                <FormItem size="mini" labelPosition="left">
+                    <template #label>
+                        <Tooltip effect="dark" placement="left" content="设置当前选中节点的引用ref">
+                            <span class="setter-label-tips">节点ref</span>
+                        </Tooltip>
+                    </template>
+                    <div class="flex-row-container" style="align-items: center;">
+                        <div class="flex-item-fill flex-row-container" style="align-items: center;">
+                            <Input
+                                size="mini"
+                                :clearable="true"
+                                placeholder="ref必须唯一"
+                                v-model="state.nodeRef"
+                                @change="(newRef) => selectNode && updateNodeRef(selectNode.ref, newRef)"
+                                @blur="resetNodeRef(selectNode)"
+                            />
+                        </div>
+                        <span class="setter-button-placeholder"/>
+                    </div>
+                </FormItem>
+            </CollapseItem>
             <CollapseItem
                 class="settings-items"
                 v-for="group in props.setterPanel.groups"

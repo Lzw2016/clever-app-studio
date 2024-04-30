@@ -15,9 +15,9 @@ interface SetterProps {
     /** 被设置的属性名称 */
     propsName?: string;
     /** 自定义获取属性值逻辑 */
-    getPropsValue?: (props: any) => any;
+    getPropsValue?: (props: any, node: RuntimeNode) => any;
     /** 应用属性值到组件节点 */
-    applyPropsValue?: (props: any, value: any, setter: ComponentPublicInstance) => void;
+    applyPropsValue?: (props: any, value: any, node: RuntimeNode, setter: ComponentPublicInstance) => void;
     /** 监听属性值变化逻辑 */
     watchProps?: Setter['watchProps'];
     /** 更新属性值后不重新渲染block */

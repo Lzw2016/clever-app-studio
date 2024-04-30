@@ -131,9 +131,9 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.width" size="mini" :allow-empty="true" placeholder="宽(W)"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.width" size="mini" :clearable="true" placeholder="宽(W)"/>
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.height" size="mini" :allow-empty="true" placeholder="高(H)"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.height" size="mini" :clearable="true" placeholder="高(H)"/>
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -143,9 +143,9 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.minWidth" size="mini" :allow-empty="true" placeholder="最小宽"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.minWidth" size="mini" :clearable="true" placeholder="最小宽"/>
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.minHeight" size="mini" :allow-empty="true" placeholder="最小高"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.minHeight" size="mini" :clearable="true" placeholder="最小高"/>
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -155,9 +155,9 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.maxWidth" size="mini" :allow-empty="true" placeholder="最大宽"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.maxWidth" size="mini" :clearable="true" placeholder="最大宽"/>
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.maxHeight" size="mini" :allow-empty="true" placeholder="最大高"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.maxHeight" size="mini" :clearable="true" placeholder="最大高"/>
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -209,9 +209,9 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.objectPosition1" size="mini" :allow-empty="true" placeholder="水平方向"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.objectPosition1" size="mini" :clearable="true" placeholder="水平方向"/>
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.objectPosition2" size="mini" :allow-empty="true" placeholder="垂直方向"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.objectPosition2" size="mini" :clearable="true" placeholder="垂直方向"/>
             </div>
         </div>
     </div>

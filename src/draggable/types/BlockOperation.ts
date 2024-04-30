@@ -601,6 +601,14 @@ interface BlockOperation {
      * @param options   操作选项
      */
     removeChildren(ref: string, options?: OpsOptions): Array<RuntimeComponentSlotsItem>;
+
+    /**
+     * 更新节点的 ref 值，更新成功返回 true
+     * @param currRef   当前的ref值
+     * @param newRef    新的ref值
+     * @param options   操作选项
+     */
+    updateNodeRef(currRef: string, newRef: string, options?: OpsOptions): boolean;
 }
 
 export type {

@@ -21,6 +21,7 @@ class SetterState {
     protected getAllExpandTitles(meta?: ComponentMeta): Record<string, Array<string>> {
         if (!meta) return {};
         const expandGroups: Record<string, Array<string>> = {
+            props: ["内置属性"],
             style: ["渲染节点", "布局(容器)", "布局(元素)", "间距", "尺寸", "定位", "文本", "背景", "边框", "效果"],
         };
         const getExpands = (groups: Array<SetterGroup>) => {
@@ -32,7 +33,7 @@ class SetterState {
             }
             return expands;
         };
-        if (meta.setter.props) expandGroups.props = getExpands(meta.setter.props.groups);
+        if (meta.setter.props) expandGroups.props.push(...getExpands(meta.setter.props.groups));
         // if (meta.setter.events) expandGroups.events = getExpands(meta.setter.events.groups);
         // if (meta.setter.style) expandGroups.style = getExpands(meta.setter.style.groups);
         // if (meta.setter.advanced) expandGroups.advanced = getExpands(meta.setter.advanced.groups);

@@ -734,6 +734,34 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
     removeChildren(ref: string, options: OpsOptions = defOptions): Array<RuntimeComponentSlotsItem> {
         return this.removeChildrenNode(this.getNode(ref), options);
     }
+
+    updateNodeRef(currRef: string, newRef: string, options: OpsOptions = defOptions): boolean {
+        if (!newRef) return false;
+        // nodeRefVueRef nodeRefVueRef nodeRefVueRef
+        if (this.props.refId[newRef]) return false;
+        const id = this.props.refId[currRef];
+        if (!id) return false;
+        const node = this.props.allNode[id];
+        if (!node) return false;
+        (node as any).ref = newRef;
+        node.props[htmlExtAttr.nodeRef] = newRef;
+        delete this.props.refId[currRef];
+        this.props.refId[newRef] = node.id;
+        const blockRef = this.props.nodeRefVueRef[currRef];
+        if (blockRef) {
+            delete this.props.nodeRefVueRef[currRef];
+            this.props.nodeRefVueRef[newRef] = blockRef;
+        }
+        for (let ref in this.props.nodeRefVueRef) {
+            const blockRef = this.props.nodeRefVueRef[ref];
+            if (blockRef === currRef) {
+                this.props.nodeRefVueRef[ref] = newRef;
+            }
+        }
+        // 重新渲染组件
+        if (!options.cancelRender) this.props.instance.$forceUpdate();
+        return true;
+    }
 }
 
 export {

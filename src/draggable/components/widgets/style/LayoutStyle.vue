@@ -627,10 +627,10 @@ defineExpose({
                 </div>
                 <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
                     <!-- <span class="flex-item-fixed" style="margin-right: 4px;">列</span> -->
-                    <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.gridColumnGap" unit="px" size="mini" :allow-empty="true" placeholder="列间隔"/>
+                    <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.gridColumnGap" unit="px" size="mini" :clearable="true" placeholder="列间隔"/>
                     <span style="margin-left: 12px;"/>
                     <!-- <span class="flex-item-fixed" style="margin-right: 4px;">行</span> -->
-                    <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.gridRowGap" unit="px" size="mini" :allow-empty="true" placeholder="行间隔"/>
+                    <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.gridRowGap" unit="px" size="mini" :clearable="true" placeholder="行间隔"/>
                 </div>
             </div>
             <div class="flex-row-container setter-row">
