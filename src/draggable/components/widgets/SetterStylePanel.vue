@@ -56,17 +56,24 @@ const state = reactive<SetterStylePanelState>({
     style: {},
 });
 // 内部数据
-// const data = {};
+const data = {
+    // 选中节点发生变化导致的 style 变化
+    nodeStyleChange: false,
+    // 选中节点发生变化导致的 class 变化
+    nodeClassChange: false,
+};
 
 const firstSelectNode = computed(() => getFirstSelectNode(props.designerState.selectNodes));
 
 const propsStyle = computed(() => {
+    data.nodeStyleChange = true;
     const node = firstSelectNode.value;
     if (!node) return;
     return node.props.style;
 });
 
 const propsClass = computed(() => {
+    data.nodeClassChange = true;
     const node = firstSelectNode.value;
     if (!node) return [];
     const rawClass = node.__raw_props_class;
@@ -128,7 +135,13 @@ watch(() => propsClass.value, ([rawClass, pClass]) => {
 }, { immediate: true });
 
 const applyStyleDebounce = lodash.debounce((nodes: Array<RuntimeNode>, newStyle: object) => applyStyle(nodes, newStyle), 300);
-watch(state.style, style => applyStyleDebounce([...props.designerState.selectNodes], style));
+watch(state.style, style => {
+    if (data.nodeStyleChange) {
+        data.nodeStyleChange = false;
+        return;
+    }
+    applyStyleDebounce([...props.designerState.selectNodes], style);
+});
 
 const applyClassDebounce = lodash.debounce((nodes: Array<RuntimeNode>, newClass?: string) => applyClass(nodes, newClass), 300);
 watch(() => state.class, pClass => applyClassDebounce([...props.designerState.selectNodes], pClass));
