@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineExpose, defineModel, reactive, shallowReactive, watch } from "vue";
+import { defineModel, reactive, shallowReactive, watch } from "vue";
 import { autoUseStyleUnit, unStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项

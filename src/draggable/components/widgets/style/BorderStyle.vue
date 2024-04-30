@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineExpose, defineModel, reactive, shallowReactive, watch } from "vue";
+import { defineModel, reactive, shallowReactive, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Input as TinyInput, Select, Tooltip } from "@opentiny/vue";

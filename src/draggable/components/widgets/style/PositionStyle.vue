@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { defineExpose, defineModel, reactive, shallowReactive, watch } from "vue";
+import { defineModel, reactive, shallowReactive, watch } from "vue";
 import { Numeric, Tooltip } from "@opentiny/vue";
 import { autoUseStyleUnit, unStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
 import PositionAll from "@/assets/images/position-all.svg?component";

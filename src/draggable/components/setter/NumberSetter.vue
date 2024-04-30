@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ComponentPublicInstance, defineExpose, reactive, ref } from "vue";
+import { ComponentPublicInstance, reactive, ref } from "vue";
 import { Numeric } from "@opentiny/vue";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toNumber, watchNodes } from "@/draggable/utils/SetterUtils";

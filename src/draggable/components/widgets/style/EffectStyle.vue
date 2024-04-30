@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineExpose, defineModel, reactive, shallowReactive } from "vue";
+import { defineModel, reactive, shallowReactive } from "vue";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { Numeric, Select, Tooltip } from "@opentiny/vue";

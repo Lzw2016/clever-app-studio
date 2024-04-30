@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineExpose, defineModel, reactive, shallowReactive } from "vue";
+import { defineModel, reactive, shallowReactive } from "vue";
 import { Input, Tooltip } from "@opentiny/vue";
 import GridJustifyItemsStart from "@/assets/images/grid-justify-items-start.svg?component";
 import GridJustifyItemsCenter from "@/assets/images/grid-justify-items-center.svg?component";
@@ -93,25 +93,25 @@ defineExpose({
         <div class="flex-row-container setter-row">
             <div class="flex-item-fixed setter-row-label">
                 <Tooltip effect="dark" placement="left" content="(grid布局元素) grid-column-start/grid-column-end 属性配置">
-                    <span class="setter-label-tips">列起始</span>
+                    <span class="setter-label-tips">网格列</span>
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.gridColumnStart" size="mini" :clearable="true" placeholder="start"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.gridColumnStart" size="mini" :clearable="true" placeholder="起始列"/>
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.gridColumnEnd" size="mini" :clearable="true" placeholder="end"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.gridColumnEnd" size="mini" :clearable="true" placeholder="结束列"/>
             </div>
         </div>
         <div class="flex-row-container setter-row">
             <div class="flex-item-fixed setter-row-label">
                 <Tooltip effect="dark" placement="left" content="(grid布局元素) grid-row-start/grid-row-end 属性配置">
-                    <span class="setter-label-tips">行起始</span>
+                    <span class="setter-label-tips">网格行</span>
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.gridRowStart" size="mini" :clearable="true" placeholder="start"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.gridRowStart" size="mini" :clearable="true" placeholder="起始行"/>
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.gridRowEnd" size="mini" :clearable="true" placeholder="end"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.gridRowEnd" size="mini" :clearable="true" placeholder="结束行"/>
             </div>
         </div>
         <div class="flex-row-container setter-row">

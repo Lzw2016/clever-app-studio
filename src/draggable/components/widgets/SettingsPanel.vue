@@ -34,7 +34,7 @@ const data = {
 // 当前活动的设计器状态数据
 const designerState = computed(() => props.designerEngine.activeDesignerState);
 // 存在选中的节点
-const existsSelection = computed(() => designerState.value && designerState.value?.existsSelection.value);
+const existsSelection = computed(() => designerState.value && designerState.value?.existsSelection);
 // 选中了多个不同类型的节点
 const multipleSelection = computed(() => {
     if (!designerState.value) return false;

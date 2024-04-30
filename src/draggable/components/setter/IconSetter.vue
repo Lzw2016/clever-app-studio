@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from "vue";
-import { computed, defineExpose, isVNode, markRaw, reactive, ref } from "vue";
+import { computed, isVNode, markRaw, reactive, ref } from "vue";
 import { Input } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";

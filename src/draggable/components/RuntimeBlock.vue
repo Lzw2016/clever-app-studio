@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineExpose, Fragment, reactive, ref } from "vue";
+import { Fragment, reactive, ref } from "vue";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { getAllTypes } from "@/draggable/utils/DesignerUtils";
 import { DesignBlock } from "@/draggable/types/DesignBlock";

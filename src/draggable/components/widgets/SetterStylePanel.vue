@@ -58,7 +58,7 @@ const state = reactive<SetterStylePanelState>({
 // 内部数据
 // const data = {};
 
-const firstSelectNode = computed(() => getFirstSelectNode(props.designerState.selectNodes.value));
+const firstSelectNode = computed(() => getFirstSelectNode(props.designerState.selectNodes));
 
 const propsStyle = computed(() => {
     const node = firstSelectNode.value;
@@ -128,10 +128,10 @@ watch(() => propsClass.value, ([rawClass, pClass]) => {
 }, { immediate: true });
 
 const applyStyleDebounce = lodash.debounce((nodes: Array<RuntimeNode>, newStyle: object) => applyStyle(nodes, newStyle), 300);
-watch(state.style, style => applyStyleDebounce([...props.designerState.selectNodes.value], style));
+watch(state.style, style => applyStyleDebounce([...props.designerState.selectNodes], style));
 
 const applyClassDebounce = lodash.debounce((nodes: Array<RuntimeNode>, newClass?: string) => applyClass(nodes, newClass), 300);
-watch(() => state.class, pClass => applyClassDebounce([...props.designerState.selectNodes.value], pClass));
+watch(() => state.class, pClass => applyClassDebounce([...props.designerState.selectNodes], pClass));
 
 function getFirstSelectNode(nodes: Array<RuntimeNode>) {
     const types = new Set<any>();

@@ -25,11 +25,11 @@ class DesignerState {
     /** 设计器选择节点集合 */
     readonly selections: ShallowReactive<Array<Selection>> = shallowReactive<Array<Selection>>([]);
     /** 存在选中的节点 */
-    readonly existsSelection: ComputedRef<boolean> = computed<boolean>(() => this.selections.length > 0);
+    protected readonly _existsSelection: ComputedRef<boolean> = computed<boolean>(() => this.selections.length > 0);
     /** selections 中只有一个选择项 */
-    readonly singleSelection: ComputedRef<boolean> = computed<boolean>(() => this.selections.length === 1);
+    protected readonly _singleSelection: ComputedRef<boolean> = computed<boolean>(() => this.selections.length === 1);
     /** 设计器选择节点集合 */
-    readonly selectNodes: ComputedRef<Array<RuntimeNode>> = computed<Array<RuntimeNode>>(() => {
+    protected readonly _selectNodes: ComputedRef<Array<RuntimeNode>> = computed<Array<RuntimeNode>>(() => {
         const nodes: Array<RuntimeNode> = [];
         const blockInstance = this.blockInstance;
         if (blockInstance) {
@@ -96,6 +96,21 @@ class DesignerState {
     /** 设计时的代码(DesignBlock源码) */
     get designerBlockCode() {
         return this._designerBlockCode.value;
+    }
+
+    /** 存在选中的节点 */
+    get existsSelection() {
+        return  this._existsSelection.value
+    }
+
+    /** selections 中只有一个选择项 */
+    get singleSelection() {
+        return  this._singleSelection.value
+    }
+
+    /** 设计器选择节点集合 */
+    get selectNodes() {
+        return  this._selectNodes.value
     }
 
     /** 当前选中的 ComponentMeta */

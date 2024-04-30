@@ -111,7 +111,7 @@ function getSetterProps(setter: Setter) {
     const obj: any = {
         designerState: designerState,
         blockInstance: designerState.blockInstance,
-        nodes: designerState.selectNodes.value,
+        nodes: designerState.selectNodes,
         ...cmpProps,
         ...otherCmpProps,
     };

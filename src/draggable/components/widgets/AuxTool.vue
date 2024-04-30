@@ -71,6 +71,24 @@ const insertionStyle = computed(() => {
     }
     return style;
 });
+const selections = computed(() => {
+    const selections: Array<Selection> = [];
+    for (let selection of props.designerState.selections) {
+        // 判断选中节点大小存在
+        const position = selection.position;
+        if (position && (position.width < 0 || position.height < 0)) {
+            continue;
+        }
+        const node = props.designerState.selectNodes.find(n => n.id === selection.nodeId);
+        const style = node?.props?.style;
+        // 判断节点隐藏
+        if (style?.display === "none") {
+            continue;
+        }
+        selections.push(selection);
+    }
+    return selections;
+});
 
 function positionToStyle(position?: AuxToolPosition) {
     const style: CSSProperties = {};
@@ -209,7 +227,7 @@ function delNode(nodeId?: string) {
     blockInstance.opsById.removeById(nodeId);
     const idx = selections.findIndex(selection => selection.nodeId === nodeId);
     if (idx >= 0) selections.splice(idx, 1);
-    blockInstance.$nextTick(() => selections.forEach(selection=> selection.recalcAuxToolPosition())).finally();
+    blockInstance.$nextTick(() => selections.forEach(selection => selection.recalcAuxToolPosition())).finally();
 }
 </script>
 
@@ -241,9 +259,9 @@ function delNode(nodeId?: string) {
             </div>
         </div>
         <!-- 设计器时选择组件的实线 -->
-        <div v-if="!isDragging" v-for="selection in props.designerState.selections" class="aux-selection-box" :style="positionToStyle(selection.position)">
+        <div v-if="!isDragging" v-for="selection in selections" class="aux-selection-box" :style="positionToStyle(selection.position)">
             <div
-                v-if="selection.componentMeta && props.designerState.singleSelection"
+                v-if="selection.componentMeta"
                 :class="{
                     'mark-top-left': true,
                     'mark-top-left-up': !isTop(selection.position),
@@ -259,7 +277,6 @@ function delNode(nodeId?: string) {
                 </span>
             </div>
             <div
-                v-if="props.designerState.singleSelection"
                 :class="{
                     'mark-bottom-right': true,
                     'mark-bottom-right-up': isBottom(selection.position),

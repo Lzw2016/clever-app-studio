@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineExpose, defineModel, reactive, shallowReactive, watch } from "vue";
+import { defineModel, reactive, shallowReactive, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faPlus, faUpDownLeftRight } from "@fortawesome/free-solid-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";

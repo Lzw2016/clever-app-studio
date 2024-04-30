@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineExpose, defineModel, reactive, shallowReactive } from "vue";
+import { defineModel, reactive, shallowReactive } from "vue";
 import { Numeric, Tooltip } from "@opentiny/vue";
 import FlexAlignItemsFlexStart from "@/assets/images/flex-align-items-flex-start.svg?component";
 import FlexAlignItemsFlexEnd from "@/assets/images/flex-align-items-flex-end.svg?component";
