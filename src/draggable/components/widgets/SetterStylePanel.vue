@@ -119,11 +119,11 @@ watch(() => propsStyle.value, style => {
         // EffectStyle
         "cursor", "backgroundColor", "opacity",
     ];
-    state.forceUpdateVar++;
     for (let property of styleProperties) {
         state.style[property] = style[property];
     }
     modelToState();
+    state.forceUpdateVar++;
 }, { immediate: true });
 watch(() => propsClass.value, ([rawClass, pClass]) => {
     let newClass: string | undefined;
