@@ -4,6 +4,29 @@ import { BaseDirectives, BaseProps, ComponentListener, DesignNode } from "@/drag
 import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
 
+/** 监听属性值变化逻辑配置 */
+interface WatchPropsConfig<TargetProps = any> {
+    /** 监听的属性名 */
+    propsNames: Array<string>;
+
+    /**
+     * 属性值变化时的回调
+     * @param props     目标组件节点的 props 对象
+     * @param value     当前属性值
+     * @param setter    当前设置器对象
+     */
+    onChange(props: TargetProps, value: any, setter: SetterInstance): void;
+
+    /** 在侦听器创建时立即触发回调 */
+    immediate?: boolean;
+    /** 调整回调的刷新时机 */
+    flush?: 'pre' | 'post' | 'sync';
+    /** 如果源是对象或数组，则强制深度遍历源，以便在深度变更时触发回调 */
+    deep?: boolean;
+    /** 一次性侦听器 */
+    once?: boolean;
+}
+
 /** 设置器基本props */
 interface SetterProps {
     /** 设计器状态数据 */
@@ -14,12 +37,22 @@ interface SetterProps {
     nodes: Array<RuntimeNode>;
     /** 被设置的属性名称 */
     propsName?: string;
-    /** 自定义获取属性值逻辑 */
+    /**
+     * 自定义获取属性值逻辑
+     * @param props 渲染节点的 props
+     * @param node  渲染节点
+     */
     getPropsValue?: (props: any, node: RuntimeNode) => any;
-    /** 应用属性值到组件节点 */
+    /**
+     * 应用属性值到组件节点
+     * @param props     渲染节点的 props
+     * @param value     设置器当前值
+     * @param node      渲染节点
+     * @param setter    当前设置器实例
+     */
     applyPropsValue?: (props: any, value: any, node: RuntimeNode, setter: ComponentPublicInstance) => void;
     /** 监听属性值变化逻辑 */
-    watchProps?: Setter['watchProps'];
+    watchProps?: Array<WatchPropsConfig>;
     /** 更新属性值后不重新渲染block */
     disableReRender?: boolean;
     /** 更新属性后需要重新计算辅助工具的位置 */
@@ -53,37 +86,14 @@ interface SetterExpose {
 /** 设置器实例 */
 type SetterInstance = ComponentPublicInstance & SetterExpose;
 
-/** 监听属性值变化逻辑配置 */
-interface WatchPropsConfig<TargetProps> {
-    /** 监听的属性名 */
-    propsNames: Array<string>;
-
-    /**
-     * 属性值变化时的回调
-     * @param props     目标组件节点的 props 对象
-     * @param value     当前属性值
-     * @param setter    当前设置器对象
-     */
-    onChange(props: TargetProps, value: any, setter: SetterInstance): void;
-
-    /** 在侦听器创建时立即触发回调 */
-    immediate?: boolean;
-    /** 调整回调的刷新时机 */
-    flush?: 'pre' | 'post' | 'sync';
-    /** 如果源是对象或数组，则强制深度遍历源，以便在深度变更时触发回调 */
-    deep?: boolean;
-    /** 一次性侦听器 */
-    once?: boolean;
-}
-
 /** 设置器 */
-interface Setter<SetterProps extends BaseProps = BaseProps, TargetProps = any> {
+interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
     /** 设置器组件实例的引用名称 */
     ref?: string;
     /** 设置器组件 */
     cmp: VueComponent | string;
     /** 设置器组件属性 */
-    cmpProps?: SetterProps;
+    cmpProps?: Props;
     /** 配置项名称 */
     label?: string;
     /** 配置项名称说明 */
@@ -92,20 +102,12 @@ interface Setter<SetterProps extends BaseProps = BaseProps, TargetProps = any> {
     propsName?: string;
     /** 启用数据绑定(默认启用) */
     enableBind?: boolean;
-    /**
-     * 从组件节点读取属性值
-     * @param props 目标组件的 props 对象
-     */
-    getPropsValue?: (props: TargetProps) => any;
-    /**
-     * 应用属性值到组件节点
-     * @param props     目标组件节点的 props 对象
-     * @param value     设置器的当前值
-     * @param setter    当前设置器对象
-     */
-    applyPropsValue?: (props: TargetProps, value: any, setter: SetterInstance) => void;
+    /** 从组件节点读取属性值 */
+    getPropsValue?: SetterProps['getPropsValue'];
+    /** 应用属性值到组件节点 */
+    applyPropsValue?: SetterProps['applyPropsValue'];
     /** 监听属性值变化逻辑 */
-    watchProps?: Array<WatchPropsConfig<TargetProps>>;
+    watchProps?: SetterProps['watchProps'];
     /** 监听设置器的事件 */
     listeners?: Record<keyof Event, ComponentListener>;
     /** 更新属性值后不重新渲染block */
