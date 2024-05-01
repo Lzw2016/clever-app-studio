@@ -1,6 +1,123 @@
 import lodash from "lodash";
 import { parseStringStyle } from "@vue/shared";
-import { hasValue, isArray, isNum, isObj, isStr } from "@/utils/Typeof";
+import { hasValue, isArray, isFunction, isNum, isObj, isStr, noValue } from "@/utils/Typeof";
+import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
+import { ValueTransform } from "@/draggable/utils/SetterUtils";
+
+/** 获取style属性值 */
+type GetStyleValue = (style: Record<string, any>) => any;
+
+function getStylePropertyValue(style: Record<string, any>, styleProperty: string): any {
+    return style[styleProperty];
+}
+
+/**
+ * 获取 state 默认值
+ */
+function getDefState(): StyleSetterState {
+    return {
+        multipleValues: false,
+    };
+}
+
+/**
+ * 获取 style property 值
+ * @param props             样式设置器 props 属性
+ * @param state             样式设置器 state 属性
+ * @param styleProperty     样式属性名
+ * @param transform         样式值转换函数
+ */
+function getStyle<R = any>(props: StyleSetterProps, state: StyleSetterState, styleProperty: string, transform?: ValueTransform<R>): R {
+    let value = _doGetStyle(props, state, style => getStylePropertyValue(style, styleProperty));
+    if (isFunction(transform)) {
+        value = transform(value);
+    }
+    return value;
+}
+
+function _doGetStyle(props: StyleSetterProps, state: StyleSetterState, getPropsValue: GetStyleValue, transform?: ValueTransform): any {
+    const { nodes } = props;
+    if (!nodes) return;
+    if (!isFunction(getPropsValue)) return;
+    const values = new Set<any>();
+    for (let node of nodes) {
+        let value = undefined;
+        const style = node.props?.style;
+        if (hasValue(style)) value = getPropsValue(style);
+        if (isFunction(transform)) value = transform(value);
+        if (noValue(value)) value = undefined;
+        values.add(value);
+        if (values.size > 1) {
+            break;
+        }
+    }
+    if (values.size <= 0) {
+        return;
+    } else if (values.size === 1) {
+        return values.values().next().value;
+    } else {
+        state.multipleValues = true;
+        return;
+    }
+}
+
+interface ApplyStyleOptions {
+    /** 样式值转换函数 */
+    transform?: ValueTransform;
+    /** 更新样式值后不重新渲染block */
+    disableReRender?: boolean;
+    /** 更新样式后不需要重新计算辅助工具的位置 */
+    cancelCalcAuxToolPosition?: boolean;
+}
+
+/**
+ * 应用 style property 值到组件节点
+ * @param props         样式设置器 props 属性
+ * @param state         样式设置器 state 属性
+ * @param styleProperty 样式属性名
+ * @param value         应用的setter值
+ * @param options       扩展选项
+ */
+function applyStyle<T = any, R = any>(props: StyleSetterProps, state: StyleSetterState, styleProperty: string, value: T, options?: ApplyStyleOptions): boolean {
+    const {
+        designerState,
+        blockInstance,
+        nodes,
+    } = props;
+    if (isFunction(options?.transform)) value = options?.transform(value);
+    let res = false;
+    if (!nodes) return res;
+    for (let node of nodes) {
+        if (!node.__raw_props_style) node.__raw_props_style = toObjectStyle(node.props.style);
+        const style: Record<string, any> = node.props.style ?? {};
+        node.props.style = { ...node.__raw_props_style, ...style };
+        if (noValue(value)) {
+            delete node.props.style[styleProperty];
+        } else {
+            node.props.style[styleProperty] = value;
+        }
+        res = true;
+    }
+    // 需要重新渲染 block
+    if (res) {
+        state.multipleValues = false;
+        if (!options?.disableReRender) {
+            blockInstance.$forceUpdate();
+            // 重新计算辅助工具的位置(更新属性有可能改变渲染节点的大小和位置)
+            if (!options?.cancelCalcAuxToolPosition) {
+                blockInstance.$nextTick(() => {
+                    const nodeIds = nodes.map(node => node.id);
+                    for (let selection of designerState.selections) {
+                        if (selection.nodeId && nodeIds.includes(selection.nodeId)) {
+                            selection.recalcAuxToolPosition();
+                        }
+                    }
+                }).finally();
+            }
+        }
+    }
+    return res;
+}
 
 /**
  * 自动补全 style 属性单位
@@ -186,7 +303,16 @@ function importantStyle(style: Record<string, any>): Record<string, any> {
     return res;
 }
 
+export type {
+    GetStyleValue,
+    ApplyStyleOptions,
+}
+
 export {
+    getStylePropertyValue,
+    getDefState,
+    getStyle,
+    applyStyle,
     toStyleUnit,
     unStyleUnit,
     autoUseStyleUnit,

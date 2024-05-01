@@ -182,6 +182,22 @@ interface SetterPanel {
     groups: Array<SetterGroup>;
 }
 
+/** 样式设置器props */
+interface StyleSetterProps {
+    /** 设计器状态数据 */
+    designerState: DesignerState;
+    /** block实例对象 */
+    blockInstance: BlockInstance;
+    /** 当前设置的渲染节点集合 */
+    nodes: Array<RuntimeNode>;
+}
+
+/** 样式设置器state */
+interface StyleSetterState {
+    /** 是否存在多个RuntimeNode，而且都是不同的值 */
+    multipleValues: boolean;
+}
+
 /**
  * 组件内置样式(主题)
  */
@@ -345,6 +361,8 @@ export type {
     FormItemProps,
     SetterGroup,
     SetterPanel,
+    StyleSetterProps,
+    StyleSetterState,
     ComponentStyle,
     StylePanel,
     ComponentSetter,

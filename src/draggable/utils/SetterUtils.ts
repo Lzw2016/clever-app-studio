@@ -54,7 +54,7 @@ function getDefState(): SetterState {
  * @param transform     setter值转换函数
  */
 function getValue<R = any>(props: SetterProps, state: SetterState, transform?: ValueTransform<R>): R {
-    let value = _doGetValue(props, state, transform);
+    let value = _doGetValue(props, state);
     if (isFunction(transform)) {
         value = transform(value);
     }
@@ -73,8 +73,8 @@ function _doGetValue(props: SetterProps, state: SetterState, transform?: ValueTr
         } else if (propsName) {
             value = node.props?.[propsName];
         }
-        if (noValue(value)) value = undefined;
         if (isFunction(transform)) value = transform(value);
+        if (noValue(value)) value = undefined;
         values.add(value);
         if (values.size > 1) {
             break;
@@ -194,6 +194,10 @@ function getSetterExpose<T = any>(props: SetterProps, state: SetterState, setter
         // 隐藏组件
         //
     };
+}
+
+export type {
+    ValueTransform,
 }
 
 export {

@@ -55,7 +55,7 @@ defineOptions({
 });
 
 // 定义 Props 类型
-interface LayoutStyleProps {
+interface LayoutStyleProps /*extends StyleSetterProps*/ {
 }
 
 // 读取组件 props 属性
@@ -95,6 +95,8 @@ const state = reactive<LayoutStyleState>({
     gridRowGap: undefined,
     gridAutoFlow: undefined,
     gridAutoFlowDense: undefined,
+
+
 });
 // 内部数据
 const data = {

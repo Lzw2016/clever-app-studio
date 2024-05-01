@@ -65,6 +65,22 @@ const data = {
     nodeClassChange: false,
 };
 
+const styleSetterProps = computed(() => {
+    const { designerState } = props;
+    return {
+        designerState: designerState,
+        blockInstance: designerState.blockInstance,
+        nodes: designerState.selectNodes,
+    }
+});
+
+
+
+
+
+
+
+
 const firstSelectNode = computed(() => getFirstSelectNode(props.designerState.selectNodes));
 
 const propsStyle = computed(() => {
@@ -238,7 +254,7 @@ function updateStyle(style: Record<string, any>) {
                 />
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局(容器)" title="布局(容器)">
-                <LayoutStyle ref="layoutStyleRef" v-model="state.style"/>
+                <LayoutStyle ref="layoutStyleRef" v-model="state.style" v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局(元素)" title="布局(元素)">
                 <FlexStyle ref="flexStyleRef" v-model="state.style"/>
