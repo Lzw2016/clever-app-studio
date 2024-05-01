@@ -5,6 +5,7 @@ import { faPlus, faUpDownLeftRight } from "@fortawesome/free-solid-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { Checkbox, Input, Tooltip } from "@opentiny/vue";
 import { VueDraggable } from "vue-draggable-plus";
+import { StyleSetterProps } from "@/draggable/types/ComponentMeta";
 import { autoUseStyleUnit, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 import DisplayBlock from "@/assets/images/display-block.svg?component";
 import DisplayInlineBlock from "@/assets/images/display-inline-block.svg?component";
@@ -55,7 +56,7 @@ defineOptions({
 });
 
 // 定义 Props 类型
-interface LayoutStyleProps /*extends StyleSetterProps*/ {
+interface LayoutStyleProps extends StyleSetterProps {
 }
 
 // 读取组件 props 属性
