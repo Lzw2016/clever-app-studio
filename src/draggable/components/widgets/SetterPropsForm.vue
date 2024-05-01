@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, onBeforeMount, reactive, watch } from "vue";
+import lodash from "lodash";
+import { computed, getCurrentInstance, onBeforeMount, reactive, ref, watch } from "vue";
 import { Collapse, CollapseItem, Form, FormItem, Input, Loading, Tooltip } from "@opentiny/vue";
 import { IconBraces } from "@tabler/icons-vue";
 import { layer } from "@layui/layer-vue";
@@ -51,6 +52,7 @@ const state = reactive<SetterPropsFormState>({
 });
 // 内部数据
 // const data = {};
+const refInputRef = ref<any>();
 // 当前活动的设计器状态数据
 const setterState = computed(() => props.designerEngine.activeDesignerState?.setterState);
 const selectNode = computed(() => {
@@ -111,7 +113,7 @@ function getFormItemProps(setter: Setter) {
     return obj;
 }
 
-function resetNodeRef(node: RuntimeNode) {
+function resetNodeRef(node?: RuntimeNode) {
     if(node) {
         state.nodeRef = node.ref;
     } else {
@@ -145,6 +147,7 @@ function getSetterProps(setter: Setter) {
 }
 
 function updateNodeRef(oldRef: string, newRef: string) {
+    if (!newRef || lodash.trim(newRef).length <= 0) return;
     const blockInstance = props.designerState.blockInstance;
     if (!blockInstance) {
         return;
@@ -181,12 +184,14 @@ function updateNodeRef(oldRef: string, newRef: string) {
                     <div class="flex-row-container" style="align-items: center;">
                         <div class="flex-item-fill flex-row-container" style="align-items: center;">
                             <Input
+                                ref="refInputRef"
                                 size="mini"
                                 :clearable="true"
                                 placeholder="ref必须唯一"
                                 v-model="state.nodeRef"
                                 @change="(newRef) => selectNode && updateNodeRef(selectNode.ref, newRef)"
                                 @blur="resetNodeRef(selectNode)"
+                                @clear="() => refInputRef && refInputRef.focus()"
                             />
                         </div>
                         <span class="setter-button-placeholder"/>

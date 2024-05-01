@@ -736,7 +736,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
     }
 
     updateNodeRef(currRef: string, newRef: string, options: OpsOptions = defOptions): boolean {
-        if (!newRef) return false;
+        if (!newRef || lodash.trim(newRef).length <= 0) return false;
         // nodeRefVueRef nodeRefVueRef nodeRefVueRef
         if (this.props.refId[newRef]) return false;
         const id = this.props.refId[currRef];
