@@ -2,7 +2,7 @@
 import lodash from "lodash";
 import { reactive, watch } from "vue";
 import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
-import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, getStyle, unStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
+import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, getStyle, toStyleUnit, unStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -85,14 +85,6 @@ const applyStylePaddingTop = lodash.debounce(applyStyle, applyStyleDebounceTime)
 const applyStylePaddingRight = lodash.debounce(applyStyle, applyStyleDebounceTime);
 const applyStylePaddingBottom = lodash.debounce(applyStyle, applyStyleDebounceTime);
 const applyStylePaddingLeft = lodash.debounce(applyStyle, applyStyleDebounceTime);
-watch(() => state.style.marginTop, marginTop => applyStyleMarginTop(props, state, "marginTop", marginTop));
-watch(() => state.style.marginRight, marginRight => applyStyleMarginRight(props, state, "marginRight", marginRight));
-watch(() => state.style.marginBottom, marginBottom => applyStyleMarginBottom(props, state, "marginBottom", marginBottom));
-watch(() => state.style.marginLeft, marginLeft => applyStyleMarginLeft(props, state, "marginLeft", marginLeft));
-watch(() => state.style.paddingTop, paddingTop => applyStylePaddingTop(props, state, "paddingTop", paddingTop));
-watch(() => state.style.paddingRight, paddingRight => applyStylePaddingRight(props, state, "paddingRight", paddingRight));
-watch(() => state.style.paddingBottom, paddingBottom => applyStylePaddingBottom(props, state, "paddingBottom", paddingBottom));
-watch(() => state.style.paddingLeft, paddingLeft => applyStylePaddingLeft(props, state, "paddingLeft", paddingLeft));
 
 function initState() {
     state.marginTop = unStyleUnit(state.style.marginTop);
@@ -188,6 +180,7 @@ function initState() {
                     placeholder="0"
                     @input="validateInputStyleValue(state,'marginTop' ,$event, true, false)"
                     @blur="state.edit=undefined"
+                    @change="event => applyStyleMarginTop(props, state, 'marginTop', toStyleUnit(event.target?.['value']))"
                 />
 
                 <div
@@ -207,6 +200,7 @@ function initState() {
                     :value="state.marginRight"
                     @input="validateInputStyleValue(state,'marginRight' ,$event, true, false)"
                     @blur="state.edit=undefined"
+                    @change="event => applyStyleMarginRight(props, state, 'marginRight', toStyleUnit(event.target?.['value']))"
                 />
 
                 <div
@@ -226,6 +220,7 @@ function initState() {
                     placeholder="0"
                     @input="validateInputStyleValue(state,'marginBottom' ,$event, true, false)"
                     @blur="state.edit=undefined"
+                    @change="event => applyStyleMarginBottom(props, state, 'marginBottom', toStyleUnit(event.target?.['value']))"
                 />
 
                 <div
@@ -244,6 +239,7 @@ function initState() {
                     placeholder="0"
                     @input="validateInputStyleValue(state,'marginLeft' ,$event, true, false)"
                     @blur="state.edit=undefined"
+                    @change="event => applyStyleMarginLeft(props, state, 'marginLeft', toStyleUnit(event.target?.['value']))"
                 />
             </div>
             <div class="spacing-min-icon">
@@ -326,6 +322,7 @@ function initState() {
                     placeholder="0"
                     @input="validateInputStyleValue(state,'paddingTop' ,$event, false, false)"
                     @blur="state.edit=undefined"
+                    @change="event => applyStylePaddingTop(props, state, 'paddingTop', toStyleUnit(event.target?.['value']))"
                 />
 
                 <div
@@ -344,6 +341,7 @@ function initState() {
                     placeholder="0"
                     @input="validateInputStyleValue(state,'paddingRight' ,$event, false, false)"
                     @blur="state.edit=undefined"
+                    @change="event => applyStylePaddingRight(props, state, 'paddingRight', toStyleUnit(event.target?.['value']))"
                 />
 
                 <div
@@ -363,6 +361,7 @@ function initState() {
                     placeholder="0"
                     @input="validateInputStyleValue(state,'paddingBottom' ,$event, false, false)"
                     @blur="state.edit=undefined"
+                    @change="event => applyStylePaddingBottom(props, state, 'paddingBottom', toStyleUnit(event.target?.['value']))"
                 />
 
                 <div
@@ -382,6 +381,7 @@ function initState() {
                     placeholder="0"
                     @input="validateInputStyleValue(state,'paddingLeft' ,$event, false, false)"
                     @blur="state.edit=undefined"
+                    @change="event => applyStylePaddingLeft(props, state, 'paddingLeft', toStyleUnit(event.target?.['value']))"
                 />
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" style="grid-area: 3 / 3 / span 3 / span 3; pointer-events: none">

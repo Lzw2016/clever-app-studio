@@ -87,27 +87,24 @@ const applyStyleGridRowStart = lodash.debounce(applyStyle, applyStyleDebounceTim
 const applyStyleGridRowEnd = lodash.debounce(applyStyle, applyStyleDebounceTime);
 const applyStyleJustifySelf = lodash.debounce(applyStyle, applyStyleDebounceTime);
 const applyStyleAlignSelf = lodash.debounce(applyStyle, applyStyleDebounceTime);
-watch(() => state.style.gridColumnStart, gridColumnStart => applyStyleGridColumnStart(props, state, "gridColumnStart", gridColumnStart));
-watch(() => state.style.gridColumnEnd, gridColumnEnd => applyStyleGridColumnEnd(props, state, "gridColumnEnd", gridColumnEnd));
-watch(() => state.style.gridRowStart, gridRowStart => applyStyleGridRowStart(props, state, "gridRowStart", gridRowStart));
-watch(() => state.style.gridRowEnd, gridRowEnd => applyStyleGridRowEnd(props, state, "gridRowEnd", gridRowEnd));
-watch(() => state.style.justifySelf, justifySelf => applyStyleJustifySelf(props, state, "justifySelf", justifySelf));
-watch(() => state.style.alignSelf, alignSelf => applyStyleAlignSelf(props, state, "alignSelf", alignSelf));
 
-function setStyle(name: string, val: string) {
+function setStyle(name: string, val?: string) {
     if (state.style[name] === val) {
         delete state.style[name];
         return;
     }
     state.style[name] = val;
+    return val;
 }
 
-function setJustifySelf(val: string) {
-    setStyle("justifySelf", val);
+function setJustifySelf(val?: string) {
+    val = setStyle("justifySelf", val);
+    applyStyleJustifySelf(props, state, "justifySelf", val);
 }
 
-function setAlignSelf(val: string) {
-    setStyle("alignSelf", val);
+function setAlignSelf(val?: string) {
+    val = setStyle("alignSelf", val);
+    applyStyleAlignSelf(props, state, "alignSelf", val);
 }
 </script>
 
@@ -120,9 +117,25 @@ function setAlignSelf(val: string) {
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.style.gridColumnStart" size="mini" :clearable="true" placeholder="起始列"/>
+                <Input
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="state.style.gridColumnStart"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="起始列"
+                    @change="value => applyStyleGridColumnStart(props, state, 'gridColumnStart', value)"
+                />
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.style.gridColumnEnd" size="mini" :clearable="true" placeholder="结束列"/>
+                <Input
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="state.style.gridColumnEnd"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="结束列"
+                    @change="value => applyStyleGridColumnEnd(props, state, 'gridColumnEnd', value)"
+                />
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -132,9 +145,25 @@ function setAlignSelf(val: string) {
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.style.gridRowStart" size="mini" :clearable="true" placeholder="起始行"/>
+                <Input
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="state.style.gridRowStart"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="起始行"
+                    @change="value => applyStyleGridRowStart(props, state, 'gridRowStart', value)"
+                />
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.style.gridRowEnd" size="mini" :clearable="true" placeholder="结束行"/>
+                <Input
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="state.style.gridRowEnd"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="结束行"
+                    @change="value => applyStyleGridRowEnd(props, state, 'gridRowEnd', value)"
+                />
             </div>
         </div>
         <div class="flex-row-container setter-row">

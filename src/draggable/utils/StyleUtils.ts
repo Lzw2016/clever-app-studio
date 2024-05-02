@@ -2,7 +2,7 @@ import lodash from "lodash";
 import { parseStringStyle } from "@vue/shared";
 import { hasValue, isArray, isFunction, isNum, isObj, isStr, noValue } from "@/utils/Typeof";
 import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
-import { ValueTransform } from "@/draggable/utils/SetterUtils";
+import { forceUpdateBlock, ValueTransform } from "@/draggable/utils/SetterUtils";
 
 /**
  * 调用 applyStyle 的防抖时间
@@ -76,9 +76,9 @@ function _doGetStyle(props: StyleSetterProps, state: StyleSetterState, getPropsV
     }
 }
 
-interface ApplyStyleOptions {
+interface ApplyStyleOptions<R = any> {
     /** 样式值转换函数 */
-    transform?: ValueTransform;
+    transform?: ValueTransform<R>;
     /** 更新样式值后不重新渲染block */
     disableReRender?: boolean;
     /** 更新样式后不需要重新计算辅助工具的位置 */
@@ -95,7 +95,7 @@ interface ApplyStyleOptions {
  * @param value         应用的setter值
  * @param options       扩展选项
  */
-function applyStyle<T = any, R = any>(props: StyleSetterProps, state: StyleSetterState, styleProperty: string, value: T, options?: ApplyStyleOptions): boolean {
+function applyStyle<T = any, R = any>(props: StyleSetterProps, state: StyleSetterState, styleProperty: string, value: T, options?: ApplyStyleOptions<R>): boolean {
     const {
         designerState,
         blockInstance,
@@ -104,7 +104,7 @@ function applyStyle<T = any, R = any>(props: StyleSetterProps, state: StyleSette
     console.log("applyStyle styleProperty", `${styleProperty}=${value}`);
     let res = false;
     if (!nodes) return res;
-    if (isFunction(options?.transform)) value = options?.transform(value);
+    if (isFunction(options?.transform)) value = options?.transform(value) as any;
     for (let node of nodes) {
         if (!node.__raw_props_style) node.__raw_props_style = toObjectStyle(node.props.style);
         const rawStyleValue = node.__raw_props_style[styleProperty];
@@ -126,21 +126,45 @@ function applyStyle<T = any, R = any>(props: StyleSetterProps, state: StyleSette
     // 需要重新渲染 block
     if (res) {
         if (isFunction(options?.multipleValuesUpdate)) options?.multipleValuesUpdate(false);
-        if (!options?.disableReRender) {
-            blockInstance.$forceUpdate();
-            console.log("applyStyle $forceUpdate");
-            // 重新计算辅助工具的位置(更新属性有可能改变渲染节点的大小和位置)
-            if (!options?.cancelCalcAuxToolPosition) {
-                blockInstance.$nextTick(() => {
-                    const nodeIds = nodes.map(node => node.id);
-                    for (let selection of designerState.selections) {
-                        if (selection.nodeId && nodeIds.includes(selection.nodeId)) {
-                            selection.recalcAuxToolPosition();
-                        }
-                    }
-                }).finally();
+        forceUpdateBlock(designerState, blockInstance, nodes, options?.disableReRender, !options?.cancelCalcAuxToolPosition);
+    }
+    return res;
+}
+
+/**
+ * 批量应用 style property 值到组件节点
+ * @param props     样式设置器 props 属性
+ * @param state     样式设置器 state 属性
+ * @param style     需要批量应用的样式对象
+ * @param options   扩展选项
+ */
+function batchApplyStyle(props: StyleSetterProps, state: StyleSetterState, style: Record<string, any>, options?: ApplyStyleOptions): boolean {
+    let res = false;
+    const styleProperties = Object.keys(style)
+    for (let idx = 0; idx < styleProperties.length; idx++) {
+        const styleProperty = styleProperties[idx];
+        const value = style[styleProperty];
+        res = applyStyle(
+            props,
+            state,
+            styleProperty,
+            value,
+            {
+                transform: options?.transform,
+                multipleValuesUpdate: options?.multipleValuesUpdate,
+                disableReRender: true,
+                cancelCalcAuxToolPosition: true,
             }
-        }
+        ) || res;
+    }
+    // 需要重新渲染 block
+    if (res) {
+        const {
+            designerState,
+            blockInstance,
+            nodes,
+        } = props;
+        forceUpdateBlock(designerState, blockInstance, nodes, false, true);
     }
     return res;
 }
@@ -341,6 +365,7 @@ export {
     getDefState,
     getStyle,
     applyStyle,
+    batchApplyStyle,
     toStyleUnit,
     unStyleUnit,
     autoUseStyleUnit,

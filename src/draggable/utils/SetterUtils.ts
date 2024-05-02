@@ -1,7 +1,9 @@
 import lodash from "lodash";
 import { computed, markRaw, useAttrs, watch } from "vue";
 import { isFunction, noValue } from "@/utils/Typeof";
+import { DesignerState } from "@/draggable/models/DesignerState";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
+import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 
 /** 当选中多个节点且节点的同一属性有不同值时的提示文本 */
 const multipleValuesText = "存在多个不同值";
@@ -123,22 +125,35 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any
     // 需要重新渲染 block
     if (res) {
         state.multipleValues = false;
-        if (!disableReRender) {
-            blockInstance.$forceUpdate();
-            // 重新计算辅助工具的位置(更新属性有可能改变渲染节点的大小和位置)
-            if (recalcAuxToolPosition) {
-                blockInstance.$nextTick(() => {
-                    const nodeIds = nodes.map(node => node.id);
-                    for (let selection of designerState.selections) {
-                        if (selection.nodeId && nodeIds.includes(selection.nodeId)) {
-                            selection.recalcAuxToolPosition();
-                        }
-                    }
-                }).finally();
-            }
-        }
+        forceUpdateBlock(designerState, blockInstance, nodes, disableReRender, recalcAuxToolPosition);
     }
     return res;
+}
+
+/**
+ * 强制重新渲染 Block 组件
+ * @param designerState             设计器状态数据
+ * @param blockInstance             block实例对象
+ * @param nodes                     当前设置的渲染节点集合
+ * @param disableReRender           更新属性值后不重新渲染block
+ * @param recalcAuxToolPosition     更新属性后需要重新计算辅助工具的位置
+ */
+function forceUpdateBlock(designerState: DesignerState, blockInstance: BlockInstance, nodes: Array<RuntimeNode>, disableReRender?: boolean, recalcAuxToolPosition?: boolean) {
+    if (!disableReRender) {
+        blockInstance.$forceUpdate();
+        console.log("blockInstance $forceUpdate");
+        // 重新计算辅助工具的位置(更新属性有可能改变渲染节点的大小和位置)
+        if (recalcAuxToolPosition) {
+            blockInstance.$nextTick(() => {
+                const nodeIds = nodes.map(node => node.id);
+                for (let selection of designerState.selections) {
+                    if (selection.nodeId && nodeIds.includes(selection.nodeId)) {
+                        selection.recalcAuxToolPosition();
+                    }
+                }
+            }).finally();
+        }
+    }
 }
 
 /**
@@ -209,6 +224,7 @@ export {
     getDefState,
     getValue,
     applyValue,
+    forceUpdateBlock,
     getInputProps,
     watchNodes,
     getSetterExpose,

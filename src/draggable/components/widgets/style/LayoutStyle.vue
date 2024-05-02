@@ -7,7 +7,7 @@ import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { Checkbox, Input, Tooltip } from "@opentiny/vue";
 import { VueDraggable } from "vue-draggable-plus";
 import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
-import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, getStyle, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
+import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, batchApplyStyle, getStyle, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 import DisplayBlock from "@/assets/images/display-block.svg?component";
 import DisplayInlineBlock from "@/assets/images/display-inline-block.svg?component";
 import DisplayInline from "@/assets/images/display-inline.svg?component";
@@ -242,27 +242,30 @@ watch(() => props.nodes, () => {
 }, { immediate: true });
 // state -> state.style
 watch(() => state.gridTemplateColumns, gridTemplateColumns => {
-    if (gridTemplateColumns.length <= 0) {
+    const value = getGridTemplateColumns(gridTemplateColumns);
+    if (value) {
+        state.style.gridTemplateColumns = value;
+    } else {
         delete state.style.gridTemplateColumns;
-        return;
     }
-    state.style.gridTemplateColumns = gridTemplateColumns.map(col => toStyleUnit(col) || 'auto').join(" ");
 }, { deep: true });
-watch(state.gridTemplateRows, gridTemplateRows => {
-    if (gridTemplateRows.length <= 0) {
+watch(() => state.gridTemplateRows, gridTemplateRows => {
+    const value = getGridTemplateRows(gridTemplateRows);
+    if (value) {
+        state.style.gridTemplateRows = value;
+    } else {
         delete state.style.gridTemplateRows;
-        return;
     }
-    state.style.gridTemplateRows = gridTemplateRows.map(col => toStyleUnit(col) || 'auto').join(" ");
-});
+}, { deep: true });
 watch(() => state.gridColumnGap, gridColumnGap => autoUseStyleUnit(state.style, "gridColumnGap", gridColumnGap));
 watch(() => state.gridRowGap, gridRowGap => autoUseStyleUnit(state.style, "gridRowGap", gridRowGap));
-watch(() => [state.gridAutoFlow, state.gridAutoFlowDense], () => {
-    if (!state.gridAutoFlow) {
+watch(() => ({ gridAutoFlow: state.gridAutoFlow, gridAutoFlowDense: state.gridAutoFlowDense }), ({ gridAutoFlow, gridAutoFlowDense }) => {
+    const value = getGridAutoFlow(gridAutoFlow, gridAutoFlowDense);
+    if (value) {
+        state.style.gridAutoFlow = value;
+    } else {
         delete state.style.gridAutoFlow;
-        return;
     }
-    state.style.gridAutoFlow = `${state.gridAutoFlow}${state.gridAutoFlowDense ? ' dense' : ''}`;
 });
 // state.style属性变化后应用 style
 const applyStyleDisplay = lodash.debounce(applyStyle, applyStyleDebounceTime);
@@ -277,18 +280,8 @@ const applyStyleGridTemplateRows = lodash.debounce(applyStyle, applyStyleDebounc
 const applyStyleGridColumnGap = lodash.debounce(applyStyle, applyStyleDebounceTime);
 const applyStyleGridRowGap = lodash.debounce(applyStyle, applyStyleDebounceTime);
 const applyStyleGridAutoFlow = lodash.debounce(applyStyle, applyStyleDebounceTime);
-watch(() => state.style.display, display => applyStyleDisplay(props, state, "display", display));
-watch(() => state.style.flexDirection, flexDirection => applyStyleFlexDirection(props, state, "flexDirection", flexDirection));
-watch(() => state.style.flexWrap, flexWrap => applyStyleFlexWrap(props, state, "flexWrap", flexWrap));
-watch(() => state.style.justifyContent, justifyContent => applyStyleJustifyContent(props, state, "justifyContent", justifyContent));
-watch(() => state.style.alignContent, alignContent => applyStyleAlignContent(props, state, "alignContent", alignContent));
-watch(() => state.style.justifyItems, justifyItems => applyStyleJustifyItems(props, state, "justifyItems", justifyItems));
-watch(() => state.style.alignItems, alignItems => applyStyleAlignItems(props, state, "alignItems", alignItems));
-watch(() => state.style.gridTemplateColumns, gridTemplateColumns => applyStyleGridTemplateColumns(props, state, "gridTemplateColumns", gridTemplateColumns));
-watch(() => state.style.gridTemplateRows, gridTemplateRows => applyStyleGridTemplateRows(props, state, "gridTemplateRows", gridTemplateRows));
-watch(() => state.style.gridColumnGap, gridColumnGap => applyStyleGridColumnGap(props, state, "gridColumnGap", gridColumnGap));
-watch(() => state.style.gridRowGap, gridRowGap => applyStyleGridRowGap(props, state, "gridRowGap", gridRowGap));
-watch(() => state.style.gridAutoFlow, gridAutoFlow => applyStyleGridAutoFlow(props, state, "gridAutoFlow", gridAutoFlow));
+// watch(() => state.style.gridTemplateColumns, gridTemplateColumns => applyStyleGridTemplateColumns(props, state, "gridTemplateColumns", gridTemplateColumns));
+// watch(() => state.style.gridTemplateRows, gridTemplateRows => applyStyleGridTemplateRows(props, state, "gridTemplateRows", gridTemplateRows));
 
 function initState() {
     if (state.style.gridTemplateColumns) {
@@ -314,6 +307,27 @@ function initState() {
     }
 }
 
+function getGridTemplateColumns(gridTemplateColumns: Array<string>) {
+    if (gridTemplateColumns.length <= 0) {
+        return;
+    }
+    return gridTemplateColumns.map(col => toStyleUnit(col) || 'auto').join(" ");
+}
+
+function getGridTemplateRows(gridTemplateRows: Array<string>) {
+    if (gridTemplateRows.length <= 0) {
+        return;
+    }
+    return gridTemplateRows.map(col => toStyleUnit(col) || 'auto').join(" ");
+}
+
+function getGridAutoFlow(gridAutoFlow?: string, gridAutoFlowDense?: boolean) {
+    if (!gridAutoFlow) {
+        return;
+    }
+    return `${gridAutoFlow}${gridAutoFlowDense ? ' dense' : ''}`;
+}
+
 function setDisplay(val: string) {
     if (state.style.display === val) {
         delete state.style.display;
@@ -329,50 +343,94 @@ function setDisplay(val: string) {
         delete state.style.gridRowGap;
         delete state.style.gridAutoFlow;
         initState();
+        batchApplyStyle(props, state, {
+            display: undefined,
+            flexDirection: undefined,
+            flexWrap: undefined,
+            justifyContent: undefined,
+            alignContent: undefined,
+            justifyItems: undefined,
+            alignItems: undefined,
+            gridTemplateColumns: undefined,
+            gridTemplateRows: undefined,
+            gridColumnGap: undefined,
+            gridRowGap: undefined,
+            gridAutoFlow: undefined,
+        });
         return;
     }
     state.style.display = val;
+    applyStyleDisplay(props, state, "display", val);
 }
 
-function setStyle(name: string, val: string) {
+function setStyle(name: string, val?: string) {
     if (state.style[name] === val) {
         delete state.style[name];
         return;
     }
     state.style[name] = val;
+    return val;
 }
 
-function setFlexDirection(val: string) {
-    setStyle("flexDirection", val);
+function setFlexDirection(val?: string) {
+    val = setStyle("flexDirection", val);
+    applyStyleFlexDirection(props, state, "flexDirection", val);
 }
 
-function setJustifyContent(val: string) {
-    setStyle("justifyContent", val);
+function setFlexWrap(val?: string) {
+    val = setStyle("flexWrap", val);
+    applyStyleFlexWrap(props, state, "flexWrap", val);
 }
 
-function setAlignContent(val: string) {
-    setStyle("alignContent", val);
+function setJustifyContent(val?: string) {
+    val = setStyle("justifyContent", val);
+    applyStyleJustifyContent(props, state, "justifyContent", val);
 }
 
-function setJustifyItems(val: string) {
-    setStyle("justifyItems", val);
+function setAlignContent(val?: string) {
+    val = setStyle("alignContent", val);
+    applyStyleAlignContent(props, state, "alignContent", val);
 }
 
-function setAlignItems(val: string) {
-    setStyle("alignItems", val);
+function setJustifyItems(val?: string) {
+    val = setStyle("justifyItems", val);
+    applyStyleJustifyItems(props, state, "justifyItems", val);
 }
 
-function setFlexWrap(val: string) {
-    setStyle("flexWrap", val);
+function setAlignItems(val?: string) {
+    val = setStyle("alignItems", val);
+    applyStyleAlignItems(props, state, "alignItems", val);
 }
 
 function setGridAutoFlow(val: string) {
     if (state.gridAutoFlow === val) {
         state.gridAutoFlow = undefined;
         state.gridAutoFlowDense = undefined;
+        applyStyleGridAutoFlow(props, state, "gridAutoFlow", undefined)
         return;
     }
     state.gridAutoFlow = val;
+    applyStyleGridAutoFlow(props, state, "gridAutoFlow", getGridAutoFlow(val, state.gridAutoFlowDense));
+}
+
+function addGridTemplateColumns() {
+    state.gridTemplateColumns.push('auto');
+    applyStyleGridTemplateColumns(props, state, 'gridTemplateColumns', getGridTemplateColumns(state.gridTemplateColumns));
+}
+
+function delGridTemplateColumns(idx: number) {
+    state.gridTemplateColumns.splice(idx, 1);
+    applyStyleGridTemplateColumns(props, state, 'gridTemplateColumns', getGridTemplateColumns(state.gridTemplateColumns));
+}
+
+function addGridTemplateRows() {
+    state.gridTemplateRows.push('auto');
+    applyStyleGridTemplateRows(props, state, 'gridTemplateRows', getGridTemplateRows(state.gridTemplateRows));
+}
+
+function delGridTemplateRows(idx: number) {
+    state.gridTemplateRows.splice(idx, 1);
+    applyStyleGridTemplateRows(props, state, 'gridTemplateRows', getGridTemplateRows(state.gridTemplateRows));
 }
 </script>
 
@@ -586,7 +644,7 @@ function setGridAutoFlow(val: string) {
                     </div>
                     <div class="flex-item-fixed">{{ state.gridTemplateColumns.length }} 列</div>
                     <div class="flex-item-fill setter-row-input flex-row-container" style="justify-content: right;">
-                        <div class="setter-row-input-button" title="新增列配置" @click="state.gridTemplateColumns.push('auto')">
+                        <div class="setter-row-input-button" title="新增列配置" @click="addGridTemplateColumns">
                             <FontAwesomeIcon :icon="faPlus"/>
                         </div>
                     </div>
@@ -610,13 +668,11 @@ function setGridAutoFlow(val: string) {
                                         size="mini"
                                         placeholder="支持：px、%、fr、auto、minmax(min, max)"
                                         :clearable="true"
+                                        @change="applyStyleGridTemplateColumns(props, state, 'gridTemplateColumns', getGridTemplateColumns(state.gridTemplateColumns))"
                                     />
                                 </Tooltip>
                             </div>
-                            <div
-                                class="flex-item-fixed flex-row-container flex-center setter-row-list-button"
-                                @click="state.gridTemplateColumns.splice(idx, 1);"
-                            >
+                            <div class="flex-item-fixed flex-row-container flex-center setter-row-list-button" @click="delGridTemplateColumns(idx)">
                                 <FontAwesomeIcon :icon="faTrashCan"/>
                             </div>
                         </div>
@@ -633,7 +689,7 @@ function setGridAutoFlow(val: string) {
                     <div class="flex-item-fixed">{{ state.gridTemplateRows.length }} 行</div>
                     <div class="flex-item-fill setter-row-input">
                         <div class="flex-row-container" style="justify-content: right;">
-                            <div class="setter-row-input-button" title="新增行配置" @click="state.gridTemplateRows.push('auto')">
+                            <div class="setter-row-input-button" title="新增行配置" @click="addGridTemplateRows">
                                 <FontAwesomeIcon :icon="faPlus"/>
                             </div>
                         </div>
@@ -658,13 +714,11 @@ function setGridAutoFlow(val: string) {
                                         size="mini"
                                         placeholder="支持：px、%、fr、auto、minmax(min, max)"
                                         :clearable="true"
+                                        @change="applyStyleGridTemplateRows(props, state, 'gridTemplateRows', getGridTemplateRows(state.gridTemplateRows))"
                                     />
                                 </Tooltip>
                             </div>
-                            <div
-                                class="flex-item-fixed flex-row-container flex-center setter-row-list-button"
-                                @click="state.gridTemplateRows.splice(idx, 1);"
-                            >
+                            <div class="flex-item-fixed flex-row-container flex-center setter-row-list-button" @click="delGridTemplateRows(idx)">
                                 <FontAwesomeIcon :icon="faTrashCan"/>
                             </div>
                         </div>
@@ -678,11 +732,25 @@ function setGridAutoFlow(val: string) {
                     </Tooltip>
                 </div>
                 <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                    <!-- <span class="flex-item-fixed" style="margin-right: 4px;">列</span> -->
-                    <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.gridColumnGap" size="mini" :clearable="true" placeholder="列间隔"/>
+                    <Input
+                        class="flex-item-fill"
+                        style="min-width: 60px;"
+                        v-model="state.gridColumnGap"
+                        size="mini"
+                        :clearable="true"
+                        placeholder="列间隔"
+                        @change="value => applyStyleGridColumnGap(props, state, 'gridColumnGap', toStyleUnit(value))"
+                    />
                     <span style="margin-left: 12px;"/>
-                    <!-- <span class="flex-item-fixed" style="margin-right: 4px;">行</span> -->
-                    <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.gridRowGap" size="mini" :clearable="true" placeholder="行间隔"/>
+                    <Input
+                        class="flex-item-fill"
+                        style="min-width: 60px;"
+                        v-model="state.gridRowGap"
+                        size="mini"
+                        :clearable="true"
+                        placeholder="行间隔"
+                        @change="value => applyStyleGridRowGap(props, state, 'gridRowGap', toStyleUnit(value))"
+                    />
                 </div>
             </div>
             <div class="flex-row-container setter-row">
@@ -709,6 +777,7 @@ function setGridAutoFlow(val: string) {
                         v-model="state.gridAutoFlowDense"
                         size="mini"
                         title="并且尽可能紧密填满，尽量不出现空格"
+                        @change="value => applyStyleGridAutoFlow(props, state, 'gridAutoFlow', getGridAutoFlow(state.gridAutoFlow, value))"
                     >
                         dense
                     </Checkbox>

@@ -62,20 +62,19 @@ watch(() => props.nodes, () => {
 const applyStyleFlexShrink = lodash.debounce(applyStyle, applyStyleDebounceTime);
 const applyStyleFlexGrow = lodash.debounce(applyStyle, applyStyleDebounceTime);
 const applyStyleAlignSelf = lodash.debounce(applyStyle, applyStyleDebounceTime);
-watch(() => state.style.flexShrink, flexShrink => applyStyleFlexShrink(props, state, "flexShrink", flexShrink));
-watch(() => state.style.flexGrow, flexGrow => applyStyleFlexGrow(props, state, "flexGrow", flexGrow));
-watch(() => state.style.alignSelf, alignSelf => applyStyleAlignSelf(props, state, "alignSelf", alignSelf));
 
-function setStyle(name: string, val: string) {
+function setStyle(name: string, val?: string) {
     if (state.style[name] === val) {
         delete state.style[name];
         return;
     }
     state.style[name] = val;
+    return val;
 }
 
-function setAlignSelf(val: string) {
-    setStyle("alignSelf", val);
+function setAlignSelf(val?: string) {
+    val = setStyle("alignSelf", val);
+    applyStyleAlignSelf(props, state, "alignSelf", val);
 }
 </script>
 
@@ -96,6 +95,7 @@ function setAlignSelf(val: string) {
                     controls-position="right"
                     :allow-empty="true"
                     placeholder="缩小比例"
+                    @change="value => applyStyleFlexShrink(props, state, 'flexShrink', value)"
                 />
                 <span style="margin-left: 12px;"/>
                 <Numeric
@@ -106,6 +106,7 @@ function setAlignSelf(val: string) {
                     controls-position="right"
                     :allow-empty="true"
                     placeholder="放大比例"
+                    @change="value => applyStyleFlexGrow(props, state, 'flexGrow', value)"
                 />
             </div>
         </div>
