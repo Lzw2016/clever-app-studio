@@ -4,6 +4,11 @@ import { hasValue, isArray, isFunction, isNum, isObj, isStr, noValue } from "@/u
 import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
 import { ValueTransform } from "@/draggable/utils/SetterUtils";
 
+/**
+ * 调用 applyStyle 的防抖时间
+ */
+const applyStyleDebounceTime = 350;
+
 /** 获取style属性值 */
 type GetStyleValue = (style: Record<string, any>) => any;
 
@@ -16,35 +21,45 @@ function getStylePropertyValue(style: Record<string, any>, styleProperty: string
  */
 function getDefState(): StyleSetterState {
     return {
-        multipleValues: false,
+        style: {},
     };
+}
+
+interface GetStyleOptions<R = any> {
+    /** 样式值转换函数 */
+    transform?: ValueTransform<R>;
+    /** 更新multipleValues值 */
+    multipleValuesUpdate?: (multipleValues: boolean) => void;
 }
 
 /**
  * 获取 style property 值
- * @param props             样式设置器 props 属性
- * @param state             样式设置器 state 属性
- * @param styleProperty     样式属性名
- * @param transform         样式值转换函数
+ * @param props         样式设置器 props 属性
+ * @param state         样式设置器 state 属性
+ * @param styleProperty 样式属性名
+ * @param options       扩展选项
  */
-function getStyle<R = any>(props: StyleSetterProps, state: StyleSetterState, styleProperty: string, transform?: ValueTransform<R>): R {
-    let value = _doGetStyle(props, state, style => getStylePropertyValue(style, styleProperty));
-    if (isFunction(transform)) {
-        value = transform(value);
-    }
+function getStyle<R = any>(props: StyleSetterProps, state: StyleSetterState, styleProperty: string, options?: GetStyleOptions<R>): R {
+    let value = _doGetStyle(
+        props,
+        state,
+        style => getStylePropertyValue(style, styleProperty),
+        { multipleValuesUpdate: options?.multipleValuesUpdate },
+    );
+    if (isFunction(options?.transform)) value = options.transform(value);
     return value;
 }
 
-function _doGetStyle(props: StyleSetterProps, state: StyleSetterState, getPropsValue: GetStyleValue, transform?: ValueTransform): any {
+function _doGetStyle(props: StyleSetterProps, state: StyleSetterState, getPropsValue: GetStyleValue, options?: GetStyleOptions): any {
     const { nodes } = props;
     if (!nodes) return;
     if (!isFunction(getPropsValue)) return;
     const values = new Set<any>();
     for (let node of nodes) {
         let value = undefined;
-        const style = node.props?.style;
+        const style = toObjectStyle(node.props?.style);
         if (hasValue(style)) value = getPropsValue(style);
-        if (isFunction(transform)) value = transform(value);
+        if (isFunction(options?.transform)) value = options.transform(value);
         if (noValue(value)) value = undefined;
         values.add(value);
         if (values.size > 1) {
@@ -55,8 +70,8 @@ function _doGetStyle(props: StyleSetterProps, state: StyleSetterState, getPropsV
         return;
     } else if (values.size === 1) {
         return values.values().next().value;
-    } else {
-        state.multipleValues = true;
+    } else if (isFunction(options?.multipleValuesUpdate)) {
+        options.multipleValuesUpdate(true);
         return;
     }
 }
@@ -68,6 +83,8 @@ interface ApplyStyleOptions {
     disableReRender?: boolean;
     /** 更新样式后不需要重新计算辅助工具的位置 */
     cancelCalcAuxToolPosition?: boolean;
+    /** 更新multipleValues值 */
+    multipleValuesUpdate?: (multipleValues: boolean) => void;
 }
 
 /**
@@ -84,6 +101,7 @@ function applyStyle<T = any, R = any>(props: StyleSetterProps, state: StyleSette
         blockInstance,
         nodes,
     } = props;
+    // console.log("applyStyle styleProperty", styleProperty)
     if (isFunction(options?.transform)) value = options?.transform(value);
     let res = false;
     if (!nodes) return res;
@@ -92,17 +110,19 @@ function applyStyle<T = any, R = any>(props: StyleSetterProps, state: StyleSette
         const style: Record<string, any> = node.props.style ?? {};
         node.props.style = { ...node.__raw_props_style, ...style };
         if (noValue(value)) {
+            res = res || hasValue(node.props.style[styleProperty]);
             delete node.props.style[styleProperty];
         } else {
+            res = res || node.props.style[styleProperty] !== value;
             node.props.style[styleProperty] = value;
         }
-        res = true;
     }
     // 需要重新渲染 block
     if (res) {
-        state.multipleValues = false;
+        if (isFunction(options?.multipleValuesUpdate)) options?.multipleValuesUpdate(false);
         if (!options?.disableReRender) {
             blockInstance.$forceUpdate();
+            // console.log("applyStyle $forceUpdate")
             // 重新计算辅助工具的位置(更新属性有可能改变渲染节点的大小和位置)
             if (!options?.cancelCalcAuxToolPosition) {
                 blockInstance.$nextTick(() => {
@@ -305,10 +325,12 @@ function importantStyle(style: Record<string, any>): Record<string, any> {
 
 export type {
     GetStyleValue,
+    GetStyleOptions,
     ApplyStyleOptions,
 }
 
 export {
+    applyStyleDebounceTime,
     getStylePropertyValue,
     getDefState,
     getStyle,

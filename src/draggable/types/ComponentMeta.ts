@@ -194,8 +194,8 @@ interface StyleSetterProps {
 
 /** 样式设置器state */
 interface StyleSetterState {
-    /** 是否存在多个RuntimeNode，而且都是不同的值 */
-    multipleValues: boolean;
+    /** 样式属性 */
+    readonly style: Record<string, any>;
 }
 
 /**

@@ -113,11 +113,11 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any
     if (!propsName && !isFunction(applyPropsValue)) return res;
     for (let node of nodes) {
         if (applyPropsValue) {
+            res = true;
             applyPropsValue(node.props, value, node, setter);
-            res = true;
         } else if (propsName && node.props) {
+            res = res || node.props[propsName] !== value;
             node.props[propsName] = value;
-            res = true;
         }
     }
     // 需要重新渲染 block

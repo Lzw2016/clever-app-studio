@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive, watch } from "vue";
+import lodash from "lodash";
+import { reactive, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faPlus, faUpDownLeftRight } from "@fortawesome/free-solid-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { Checkbox, Input, Tooltip } from "@opentiny/vue";
 import { VueDraggable } from "vue-draggable-plus";
-import { StyleSetterProps } from "@/draggable/types/ComponentMeta";
-import { autoUseStyleUnit, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
+import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
+import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, getStyle, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 import DisplayBlock from "@/assets/images/display-block.svg?component";
 import DisplayInlineBlock from "@/assets/images/display-inline-block.svg?component";
 import DisplayInline from "@/assets/images/display-inline.svg?component";
@@ -73,7 +74,7 @@ interface GridTemplateRowColumn {
 }
 
 // 定义 State 类型
-interface LayoutStyleState {
+interface LayoutStyleState extends StyleSetterState {
     /** grid-template-columns 配置("px" | "%" | "fr" | "minmax" | "auto") */
     gridTemplateColumns: Array<string>;
     /** grid-template-rows 配置("px" | "%" | "fr" | "minmax" | "auto") */
@@ -86,6 +87,33 @@ interface LayoutStyleState {
     gridAutoFlow?: string;
     /** grid-auto-flow 属性 dense 选项 */
     gridAutoFlowDense?: boolean;
+    /** 样式属性 */
+    readonly style: {
+        /** display 值 */
+        display?: string;
+        /** flex-direction 值 */
+        flexDirection?: string;
+        /** flex-wrap 值 */
+        flexWrap?: string;
+        /** justify-content 值 */
+        justifyContent?: string;
+        /** align-content 值 */
+        alignContent?: string;
+        /** justify-items 值 */
+        justifyItems?: string;
+        /** align-items 值 */
+        alignItems?: string;
+        /** grid-template-columns 配置("px" | "%" | "fr" | "minmax" | "auto") */
+        gridTemplateColumns?: string;
+        /** grid-template-rows 配置("px" | "%" | "fr" | "minmax" | "auto") */
+        gridTemplateRows?: string;
+        /** grid-column-gap 属性 */
+        gridColumnGap?: string;
+        /** grid-row-gap 属性 */
+        gridRowGap?: string;
+        /** grid-auto-flow 属性 */
+        gridAutoFlow?: string;
+    },
 }
 
 // state 属性
@@ -96,8 +124,20 @@ const state = reactive<LayoutStyleState>({
     gridRowGap: undefined,
     gridAutoFlow: undefined,
     gridAutoFlowDense: undefined,
-
-
+    style: {
+        display: undefined,
+        flexDirection: undefined,
+        flexWrap: undefined,
+        justifyContent: undefined,
+        alignContent: undefined,
+        justifyItems: undefined,
+        alignItems: undefined,
+        gridTemplateColumns: undefined,
+        gridTemplateRows: undefined,
+        gridColumnGap: undefined,
+        gridRowGap: undefined,
+        gridAutoFlow: undefined,
+    },
 });
 // 内部数据
 const data = {
@@ -182,91 +222,124 @@ const data = {
     ],
 };
 
-interface LayoutStyleModel {
-    /** display 值 */
-    display?: string;
-    /** flex-direction 值 */
-    flexDirection?: string;
-    /** flex-wrap 值 */
-    flexWrap?: string;
-    /** justify-content 值 */
-    justifyContent?: string;
-    /** align-content 值 */
-    alignContent?: string;
-    /** justify-items 值 */
-    justifyItems?: string;
-    /** align-items 值 */
-    alignItems?: string;
-    /** grid-template-columns 配置("px" | "%" | "fr" | "minmax" | "auto") */
-    gridTemplateColumns?: string;
-    /** grid-template-rows 配置("px" | "%" | "fr" | "minmax" | "auto") */
-    gridTemplateRows?: string;
-    /** grid-column-gap 属性 */
-    gridColumnGap?: string;
-    /** grid-row-gap 属性 */
-    gridRowGap?: string;
-    /** grid-auto-flow 属性 */
-    gridAutoFlow?: string;
+// 选中节点变化后更新 state.style & state
+watch(() => props.nodes, () => {
+    // 读取 style 信息
+    state.style.display = getStyle(props, state, "display");
+    state.style.flexDirection = getStyle(props, state, "flexDirection");
+    state.style.flexWrap = getStyle(props, state, "flexWrap");
+    state.style.justifyContent = getStyle(props, state, "justifyContent");
+    state.style.alignContent = getStyle(props, state, "alignContent");
+    state.style.justifyItems = getStyle(props, state, "justifyItems");
+    state.style.alignItems = getStyle(props, state, "alignItems");
+    state.style.gridTemplateColumns = getStyle(props, state, "gridTemplateColumns");
+    state.style.gridTemplateRows = getStyle(props, state, "gridTemplateRows");
+    state.style.gridColumnGap = getStyle(props, state, "gridColumnGap");
+    state.style.gridRowGap = getStyle(props, state, "gridRowGap");
+    state.style.gridAutoFlow = getStyle(props, state, "gridAutoFlow");
+    // state.style -> state
+    initState();
+}, { immediate: true });
+// state -> state.style
+watch(() => state.gridTemplateColumns, gridTemplateColumns => {
+    if (gridTemplateColumns.length <= 0) {
+        delete state.style.gridTemplateColumns;
+        return;
+    }
+    state.style.gridTemplateColumns = gridTemplateColumns.map(col => toStyleUnit(col) || 'auto').join(" ");
+}, { deep: true });
+watch(state.gridTemplateRows, gridTemplateRows => {
+    if (gridTemplateRows.length <= 0) {
+        delete state.style.gridTemplateRows;
+        return;
+    }
+    state.style.gridTemplateRows = gridTemplateRows.map(col => toStyleUnit(col) || 'auto').join(" ");
+});
+watch(() => state.gridColumnGap, gridColumnGap => autoUseStyleUnit(state.style, "gridColumnGap", gridColumnGap));
+watch(() => state.gridRowGap, gridRowGap => autoUseStyleUnit(state.style, "gridRowGap", gridRowGap));
+watch(() => [state.gridAutoFlow, state.gridAutoFlowDense], () => {
+    if (!state.gridAutoFlow) {
+        delete state.style.gridAutoFlow;
+        return;
+    }
+    state.style.gridAutoFlow = `${state.gridAutoFlow}${state.gridAutoFlowDense ? ' dense' : ''}`;
+});
+// state.style属性变化后应用 style
+const applyStyleDisplay = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleFlexDirection = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleFlexWrap = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleJustifyContent = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleAlignContent = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleJustifyItems = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleAlignItems = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleGridTemplateColumns = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleGridTemplateRows = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleGridColumnGap = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleGridRowGap = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleGridAutoFlow = lodash.debounce(applyStyle, applyStyleDebounceTime);
+watch(() => state.style.display, display => applyStyleDisplay(props, state, "display", display));
+watch(() => state.style.flexDirection, flexDirection => applyStyleFlexDirection(props, state, "flexDirection", flexDirection));
+watch(() => state.style.flexWrap, flexWrap => applyStyleFlexWrap(props, state, "flexWrap", flexWrap));
+watch(() => state.style.justifyContent, justifyContent => applyStyleJustifyContent(props, state, "justifyContent", justifyContent));
+watch(() => state.style.alignContent, alignContent => applyStyleAlignContent(props, state, "alignContent", alignContent));
+watch(() => state.style.justifyItems, justifyItems => applyStyleJustifyItems(props, state, "justifyItems", justifyItems));
+watch(() => state.style.alignItems, alignItems => applyStyleAlignItems(props, state, "alignItems", alignItems));
+watch(() => state.style.gridTemplateColumns, gridTemplateColumns => applyStyleGridTemplateColumns(props, state, "gridTemplateColumns", gridTemplateColumns));
+watch(() => state.style.gridTemplateRows, gridTemplateRows => applyStyleGridTemplateRows(props, state, "gridTemplateRows", gridTemplateRows));
+watch(() => state.style.gridColumnGap, gridColumnGap => applyStyleGridColumnGap(props, state, "gridColumnGap", gridColumnGap));
+watch(() => state.style.gridRowGap, gridRowGap => applyStyleGridRowGap(props, state, "gridRowGap", gridRowGap));
+watch(() => state.style.gridAutoFlow, gridAutoFlow => applyStyleGridAutoFlow(props, state, "gridAutoFlow", gridAutoFlow));
+
+function initState() {
+    if (state.style.gridTemplateColumns) {
+        state.gridTemplateColumns = state.style.gridTemplateColumns.split(" ").map(col => unStyleUnit(col) ?? "auto");
+    } else {
+        state.gridTemplateColumns = [];
+    }
+    if (state.style.gridTemplateRows) {
+        state.gridTemplateRows = state.style.gridTemplateRows.split(" ").map(col => unStyleUnit(col) ?? "auto");
+    } else {
+        state.gridTemplateRows = [];
+    }
+    state.gridColumnGap = unStyleUnit(state.style.gridColumnGap);
+    state.gridRowGap = unStyleUnit(state.style.gridRowGap);
+    if (state.style.gridAutoFlow) {
+        if (state.style.gridAutoFlow.endsWith(" dense")) {
+            state.gridAutoFlowDense = true;
+            state.gridAutoFlow = state.style.gridAutoFlow.substring(0, state.style.gridAutoFlow.length - 6);
+        } else {
+            state.gridAutoFlowDense = false;
+            state.gridAutoFlow = state.style.gridAutoFlow;
+        }
+    }
 }
 
-// css display 值
-const model = defineModel<LayoutStyleModel>({
-    default: shallowReactive<LayoutStyleModel>({}),
-});
-
-watch(state.gridTemplateColumns, gridTemplateColumns => {
-    if (!model.value) return;
-    if (gridTemplateColumns.length <= 0) {
-        delete model.value.gridTemplateColumns;
-        return;
-    }
-    model.value.gridTemplateColumns = gridTemplateColumns.map(col => toStyleUnit(col) || 'auto').join(" ");
-});
-watch(state.gridTemplateRows, gridTemplateRows => {
-    if (!model.value) return;
-    if (gridTemplateRows.length <= 0) {
-        delete model.value.gridTemplateRows;
-        return;
-    }
-    model.value.gridTemplateRows = gridTemplateRows.map(col => toStyleUnit(col) || 'auto').join(" ");
-});
-watch(() => state.gridColumnGap, value => autoUseStyleUnit(model.value, "gridColumnGap", value));
-watch(() => state.gridRowGap, value => autoUseStyleUnit(model.value, "gridRowGap", value));
-watch(() => [state.gridAutoFlow, state.gridAutoFlowDense], () => {
-    if (!model.value) return;
-    if (!state.gridAutoFlow) {
-        delete model.value.gridAutoFlow;
-        return;
-    }
-    model.value.gridAutoFlow = `${state.gridAutoFlow}${state.gridAutoFlowDense ? ' dense' : ''}`;
-});
-
 function setDisplay(val: string) {
-    if (model.value?.display === val) {
-        delete model.value.display;
-        delete model.value.flexDirection;
-        delete model.value.flexWrap;
-        delete model.value.justifyContent;
-        delete model.value.alignContent;
-        delete model.value.justifyItems;
-        delete model.value.alignItems;
-        delete model.value.gridTemplateColumns;
-        delete model.value.gridTemplateRows;
-        delete model.value.gridColumnGap;
-        delete model.value.gridRowGap;
-        delete model.value.gridAutoFlow;
+    if (state.style.display === val) {
+        delete state.style.display;
+        delete state.style.flexDirection;
+        delete state.style.flexWrap;
+        delete state.style.justifyContent;
+        delete state.style.alignContent;
+        delete state.style.justifyItems;
+        delete state.style.alignItems;
+        delete state.style.gridTemplateColumns;
+        delete state.style.gridTemplateRows;
+        delete state.style.gridColumnGap;
+        delete state.style.gridRowGap;
+        delete state.style.gridAutoFlow;
+        initState();
         return;
     }
-    model.value.display = val;
+    state.style.display = val;
 }
 
 function setDisplayConfig(name: string, val: string) {
-    if (model.value?.[name] === val) {
-        delete model.value[name];
+    if (state.style[name] === val) {
+        delete state.style[name];
         return;
     }
-    if (!model.value) model.value = shallowReactive<LayoutStyleModel>({});
-    model.value[name] = val;
+    state.style[name] = val;
 }
 
 function setFlexDirection(val: string) {
@@ -301,30 +374,6 @@ function setGridAutoFlow(val: string) {
     }
     state.gridAutoFlow = val;
 }
-
-function modelToState(modelValue: LayoutStyleModel) {
-    if (modelValue.gridTemplateColumns) {
-        state.gridTemplateColumns = modelValue.gridTemplateColumns.split(" ").map(col => unStyleUnit(col) ?? "auto");
-    }
-    if (modelValue.gridTemplateRows) {
-        state.gridTemplateRows = modelValue.gridTemplateRows.split(" ").map(col => unStyleUnit(col) ?? "auto");
-    }
-    state.gridColumnGap = unStyleUnit(modelValue.gridColumnGap);
-    state.gridRowGap = unStyleUnit(modelValue.gridRowGap);
-    if (modelValue.gridAutoFlow) {
-        if (modelValue.gridAutoFlow.endsWith(" dense")) {
-            state.gridAutoFlowDense = true;
-            state.gridAutoFlow = modelValue.gridAutoFlow.substring(0, modelValue.gridAutoFlow.length - 6);
-        } else {
-            state.gridAutoFlowDense = false;
-            state.gridAutoFlow = modelValue.gridAutoFlow;
-        }
-    }
-}
-
-defineExpose({
-    modelToState: () => modelToState(model.value),
-});
 </script>
 
 <template>
@@ -340,7 +389,7 @@ defineExpose({
                     v-for="display in data.displayList"
                     :class="{
                         'setter-row-input-radio': true,
-                        'selected': display.value===model?.display,
+                        'selected': display.value===state.style.display,
                         'flex-row-container': true,
                         'flex-center': true,
                     }"
@@ -351,7 +400,7 @@ defineExpose({
                 </div>
             </div>
         </div>
-        <template v-if="model?.display==='flex'">
+        <template v-if="state.style.display==='flex'">
             <div class="flex-row-container setter-row">
                 <div class="flex-item-fixed setter-row-label">
                     <Tooltip effect="dark" placement="left" content="flex-direction 属性">
@@ -363,7 +412,7 @@ defineExpose({
                         v-for="flexDirection in data.flexDirectionList"
                         :class="{
                             'setter-row-input-radio': true,
-                            'selected': flexDirection.value===model.flexDirection,
+                            'selected': flexDirection.value===state.style.flexDirection,
                             'flex-row-container': true,
                             'flex-center': true,
                         }"
@@ -385,7 +434,7 @@ defineExpose({
                         v-for="justifyContent in data.flexJustifyContentList"
                         :class="{
                             'setter-row-input-radio': true,
-                            'selected': justifyContent.value===model.justifyContent,
+                            'selected': justifyContent.value===state.style.justifyContent,
                             'flex-row-container': true,
                             'flex-center': true,
                         }"
@@ -407,7 +456,7 @@ defineExpose({
                         v-for="alignItems in data.flexAlignItemsList"
                         :class="{
                             'setter-row-input-radio': true,
-                            'selected': alignItems.value===model.alignItems,
+                            'selected': alignItems.value===state.style.alignItems,
                             'flex-row-container': true,
                             'flex-center': true,
                         }"
@@ -429,7 +478,7 @@ defineExpose({
                         v-for="flexWrap in data.flexWrapList"
                         :class="{
                             'setter-row-input-radio': true,
-                            'selected': flexWrap.value===model.flexWrap,
+                            'selected': flexWrap.value===state.style.flexWrap,
                         }"
                         @click="setFlexWrap(flexWrap.value)"
                         :title="flexWrap.tip"
@@ -439,7 +488,7 @@ defineExpose({
                 </div>
             </div>
         </template>
-        <template v-if="model?.display==='grid'">
+        <template v-if="state.style.display==='grid'">
             <div class="flex-row-container setter-row">
                 <div class="flex-item-fixed setter-row-label">
                     <Tooltip effect="dark" placement="left" content="justify-content 属性，整个内容区域在容器里面的水平位置">
@@ -451,7 +500,7 @@ defineExpose({
                         v-for="justifyContent in data.gridJustifyContentList"
                         :class="{
                             'setter-row-input-radio': true,
-                            'selected': justifyContent.value===model.justifyContent,
+                            'selected': justifyContent.value===state.style.justifyContent,
                             'flex-row-container': true,
                             'flex-center': true,
                         }"
@@ -473,7 +522,7 @@ defineExpose({
                         v-for="alignContent in data.gridAlignContentList"
                         :class="{
                             'setter-row-input-radio': true,
-                            'selected': alignContent.value===model.alignContent,
+                            'selected': alignContent.value===state.style.alignContent,
                             'flex-row-container': true,
                             'flex-center': true,
                         }"
@@ -495,7 +544,7 @@ defineExpose({
                         v-for="justifyItems in data.gridJustifyItemsList"
                         :class="{
                             'setter-row-input-radio': true,
-                            'selected': justifyItems.value===model.justifyItems,
+                            'selected': justifyItems.value===state.style.justifyItems,
                             'flex-row-container': true,
                             'flex-center': true,
                         }"
@@ -517,7 +566,7 @@ defineExpose({
                         v-for="alignItems in data.gridAlignItemsList"
                         :class="{
                             'setter-row-input-radio': true,
-                            'selected': alignItems.value===model.alignItems,
+                            'selected': alignItems.value===state.style.alignItems,
                             'flex-row-container': true,
                             'flex-center': true,
                         }"
@@ -630,10 +679,10 @@ defineExpose({
                 </div>
                 <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
                     <!-- <span class="flex-item-fixed" style="margin-right: 4px;">列</span> -->
-                    <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.gridColumnGap" unit="px" size="mini" :clearable="true" placeholder="列间隔"/>
+                    <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.gridColumnGap" size="mini" :clearable="true" placeholder="列间隔"/>
                     <span style="margin-left: 12px;"/>
                     <!-- <span class="flex-item-fixed" style="margin-right: 4px;">行</span> -->
-                    <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.gridRowGap" unit="px" size="mini" :clearable="true" placeholder="行间隔"/>
+                    <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.gridRowGap" size="mini" :clearable="true" placeholder="行间隔"/>
                 </div>
             </div>
             <div class="flex-row-container setter-row">

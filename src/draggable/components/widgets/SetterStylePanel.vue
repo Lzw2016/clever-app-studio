@@ -7,7 +7,7 @@ import { isStr, noValue } from "@/utils/Typeof";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { SetterState } from "@/draggable/models/SetterState";
-import { StylePanel } from "@/draggable/types/ComponentMeta";
+import { StylePanel, StyleSetterProps } from "@/draggable/types/ComponentMeta";
 import ComponentStyles from "@/draggable/components/widgets/style/ComponentStyles.vue";
 import LayoutStyle from "@/draggable/components/widgets/style/LayoutStyle.vue";
 import FlexStyle from "@/draggable/components/widgets/style/FlexStyle.vue";
@@ -65,11 +65,11 @@ const data = {
     nodeClassChange: false,
 };
 
-const styleSetterProps = computed(() => {
+const styleSetterProps = computed<StyleSetterProps>(() => {
     const { designerState } = props;
     return {
         designerState: designerState,
-        blockInstance: designerState.blockInstance,
+        blockInstance: designerState.blockInstance!,
         nodes: designerState.selectNodes,
     }
 });
@@ -100,7 +100,6 @@ const propsClass = computed(() => {
 });
 
 const componentStylesRef = ref<InstanceType<typeof ComponentStyles> | undefined>();
-const layoutStyleRef = ref<InstanceType<typeof LayoutStyle> | undefined>();
 const flexStyleRef = ref<InstanceType<typeof FlexStyle> | undefined>();
 const gridStyleRef = ref<InstanceType<typeof GridStyle> | undefined>();
 const spacingStyleRef = ref<InstanceType<typeof SpacingStyle> | undefined>();
@@ -218,7 +217,6 @@ function forEachSelectNodes(nodes: Array<RuntimeNode>, each: (node: RuntimeNode)
 
 function modelToState() {
     const doModelToState = () => {
-        layoutStyleRef.value?.modelToState();
         flexStyleRef.value?.modelToState();
         gridStyleRef.value?.modelToState();
         spacingStyleRef.value?.modelToState();
@@ -254,7 +252,7 @@ function updateStyle(style: Record<string, any>) {
                 />
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局(容器)" title="布局(容器)">
-                <LayoutStyle ref="layoutStyleRef" v-model="state.style" v-bind="styleSetterProps"/>
+                <LayoutStyle v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局(元素)" title="布局(元素)">
                 <FlexStyle ref="flexStyleRef" v-model="state.style"/>
