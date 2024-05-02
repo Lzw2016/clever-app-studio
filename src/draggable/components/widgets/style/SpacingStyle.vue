@@ -41,17 +41,7 @@ interface SpacingStyleState extends StyleSetterState {
 
 // state 属性
 const state = reactive<SpacingStyleState>({
-    edit: undefined,
-    style: {
-        marginTop: undefined,
-        marginRight: undefined,
-        marginBottom: undefined,
-        marginLeft: undefined,
-        paddingTop: undefined,
-        paddingRight: undefined,
-        paddingBottom: undefined,
-        paddingLeft: undefined,
-    },
+    style: {},
 });
 // 选中节点变化后更新 state.style & state
 watch(() => props.nodes, () => {

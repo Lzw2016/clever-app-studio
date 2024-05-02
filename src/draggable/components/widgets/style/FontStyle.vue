@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive, watch } from "vue";
+import lodash from "lodash";
+import { reactive, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Input as TinyInput, Select, Tooltip } from "@opentiny/vue";
-import { autoUseStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
+import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
+import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, getStyle, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 import TextAlignLeft from "@/assets/images/text-align-left.svg?component";
 import TextAlignCenter from "@/assets/images/text-align-center.svg?component";
 import TextAlignRight from "@/assets/images/text-align-right.svg?component";
@@ -20,20 +22,32 @@ defineOptions({
 });
 
 // 定义 Props 类型
-interface FontStyleProps {
+interface FontStyleProps extends StyleSetterProps {
 }
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<FontStyleProps>(), {});
 
 // 定义 State 类型
-interface FontStyleState {
+interface FontStyleState extends StyleSetterState {
     fontSize?: string;
     lineHeight?: string;
+    readonly style: {
+        fontSize?: string;
+        lineHeight?: string;
+        fontFamily?: string;
+        fontWeight?: string;
+        color?: string;
+        textAlign?: string;
+        fontStyle?: string;
+        textDecorationLine?: string;
+    };
 }
 
 // state 属性
-const state = reactive<FontStyleState>({});
+const state = reactive<FontStyleState>({
+    style: {},
+});
 // 内部数据
 const data = {
     fontFamilyList: [
@@ -88,53 +102,66 @@ const data = {
     ],
 };
 
-interface FontStyleModel {
-    fontSize?: string;
-    lineHeight?: string;
-    fontFamily?: string;
-    fontWeight?: string;
-    color?: string;
-    textAlign?: string;
-    fontStyle?: string;
-    textDecorationLine?: string;
+// 选中节点变化后更新 state.style & state
+watch(() => props.nodes, () => {
+    // 读取 style 信息
+    state.style.fontSize = getStyle(props, state, "fontSize");
+    state.style.lineHeight = getStyle(props, state, "lineHeight");
+    state.style.fontFamily = getStyle(props, state, "fontFamily");
+    state.style.fontWeight = getStyle(props, state, "fontWeight");
+    state.style.color = getStyle(props, state, "color");
+    state.style.textAlign = getStyle(props, state, "textAlign");
+    state.style.fontStyle = getStyle(props, state, "fontStyle");
+    state.style.textDecorationLine = getStyle(props, state, "textDecorationLine");
+    // state.style -> state
+    initState();
+}, { immediate: true });
+// state -> state.style
+watch(() => state.fontSize, fontSize => autoUseStyleUnit(state.style, "fontSize", fontSize));
+watch(() => state.lineHeight, lineHeight => autoUseStyleUnit(state.style, "lineHeight", lineHeight));
+// state.style属性变化后应用 style
+const applyStyleFontSize = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleLineHeight = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleFontFamily = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleFontWeight = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleColor = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleTextAlign = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleFontStyle = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleTextDecorationLine = lodash.debounce(applyStyle, applyStyleDebounceTime);
+
+function initState() {
+    state.fontSize = unStyleUnit(state.style.fontSize);
+    state.lineHeight = unStyleUnit(state.style.lineHeight);
 }
 
-// css display 值
-const model = defineModel<FontStyleModel>({
-    default: shallowReactive<FontStyleModel>({}),
-});
-
-watch(() => state.fontSize, value => autoUseStyleUnit(model.value, "fontSize", value));
-watch(() => state.lineHeight, value => autoUseStyleUnit(model.value, "lineHeight", value));
-
-function setStyleConfig(name: string, val: string) {
-    if (model.value?.[name] === val) {
-        delete model.value[name];
+function setStyle(name: string, val?: string) {
+    if (state.style[name] === val) {
+        delete state.style[name];
         return;
     }
-    model.value[name] = val;
+    state.style[name] = val;
+    return val;
 }
 
-function setTextAlign(val: string) {
-    setStyleConfig("textAlign", val);
+function setTextAlign(val?: string) {
+    val = setStyle("textAlign", val);
+    applyStyleTextAlign(props, state, "textAlign", val);
 }
 
-function setFontStyle(val: string) {
-    setStyleConfig("fontStyle", val);
+function setFontStyle(val?: string) {
+    val = setStyle("fontStyle", val);
+    applyStyleFontStyle(props, state, "fontStyle", val);
 }
 
-function setTextDecorationLine(val: string) {
-    setStyleConfig("textDecorationLine", val);
+function setTextDecorationLine(val?: string) {
+    val = setStyle("textDecorationLine", val);
+    applyStyleTextDecorationLine(props, state, "textDecorationLine", val);
 }
 
-function modelToState(modelValue: FontStyleModel) {
-    state.fontSize = unStyleUnit(modelValue.fontSize);
-    state.lineHeight = unStyleUnit(modelValue.lineHeight);
+function clearColor() {
+    delete state.style.color;
+    applyStyleColor(props, state, 'color', undefined);
 }
-
-defineExpose({
-    modelToState: () => modelToState(model.value),
-});
 </script>
 
 <template>
@@ -146,9 +173,25 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <TinyInput class="flex-item-fill" style="min-width: 60px;" v-model="state.fontSize" size="mini" :clearable="true" placeholder="字号"/>
+                <TinyInput
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="state.fontSize"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="字号"
+                    @change="value => applyStyleFontSize(props, state, 'fontSize', toStyleUnit(value))"
+                />
                 <span style="margin-left: 12px;"/>
-                <TinyInput class="flex-item-fill" style="min-width: 60px;" v-model="state.lineHeight" size="mini" :clearable="true" placeholder="行高"/>
+                <TinyInput
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="state.lineHeight"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="行高"
+                    @change="value => applyStyleLineHeight(props, state, 'lineHeight', toStyleUnit(value))"
+                />
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -161,25 +204,27 @@ defineExpose({
                 <Select
                     class="flex-item-fill"
                     style="min-width: 60px;"
-                    v-model="model.fontFamily"
+                    v-model="state.style.fontFamily"
                     :filterable="true"
                     :allow-create="true"
                     :options="data.fontFamilyList"
                     size="mini"
                     :clearable="true"
                     placeholder="字体"
+                    @change="value => applyStyleFontFamily(props, state, 'fontFamily', value)"
                 />
                 <span style="margin-left: 12px;"/>
                 <Select
                     class="flex-item-fill"
                     style="min-width: 60px;"
-                    v-model="model.fontWeight"
+                    v-model="state.style.fontWeight"
                     :filterable="true"
                     :allow-create="true"
                     :options="data.fontWeightList"
                     size="mini"
                     :clearable="true"
                     placeholder="字重"
+                    @change="value => applyStyleFontWeight(props, state, 'fontWeight', value)"
                 />
             </div>
         </div>
@@ -190,9 +235,19 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <input :value="model.color ?? '#000000'" @input="e => model.color= e.target?.['value']" type="color"/>
-                <span style="margin-left: 8px;">{{ model.color }}</span>
-                <FontAwesomeIcon v-show="model.color" class="button-clear" :icon="faXmark" title="清除文本颜色" @click="delete model.color"/>
+                <input
+                    :value="state.style.color ?? '#000000'"
+                    @input="e => state.style.color= e.target?.['value']"
+                    type="color"
+                    @change="event => applyStyleColor(props, state, 'color', event.target?.['value'])"
+                />
+                <span style="margin-left: 8px;">{{ state.style.color }}</span>
+                <FontAwesomeIcon
+                    v-show="state.style.color"
+                    class="button-clear"
+                    :icon="faXmark" title="清除文本颜色"
+                    @click="clearColor"
+                />
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -206,7 +261,7 @@ defineExpose({
                     v-for="textAlign in data.textAlignList"
                     :class="{
                         'setter-row-input-radio': true,
-                        'selected': textAlign.value===model.textAlign,
+                        'selected': textAlign.value===state.style.textAlign,
                         'flex-row-container': true,
                         'flex-center': true,
                     }"
@@ -228,7 +283,7 @@ defineExpose({
                     v-for="fontStyle in data.fontStyleList"
                     :class="{
                         'setter-row-input-radio': true,
-                        'selected': fontStyle.value===model.fontStyle,
+                        'selected': fontStyle.value===state.style.fontStyle,
                         'flex-row-container': true,
                         'flex-center': true,
                     }"
@@ -250,7 +305,7 @@ defineExpose({
                     v-for="textDecorationLine in data.textDecorationLineList"
                     :class="{
                         'setter-row-input-radio': true,
-                        'selected': textDecorationLine.value===model.textDecorationLine,
+                        'selected': textDecorationLine.value===state.style.textDecorationLine,
                         'flex-row-container': true,
                         'flex-center': true,
                     }"

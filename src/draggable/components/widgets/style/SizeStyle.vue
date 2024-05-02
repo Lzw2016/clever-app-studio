@@ -47,17 +47,7 @@ interface SizeStyleState extends StyleSetterState {
 
 // state 属性
 const state = reactive<SizeStyleState>({
-    style: {
-        width: undefined,
-        height: undefined,
-        minWidth: undefined,
-        minHeight: undefined,
-        maxWidth: undefined,
-        maxHeight: undefined,
-        overflow: undefined,
-        objectFit: undefined,
-        objectPosition: undefined,
-    },
+    style: {},
 });
 
 // 内部数据

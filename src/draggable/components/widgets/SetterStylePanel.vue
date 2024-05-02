@@ -100,8 +100,6 @@ const propsClass = computed(() => {
 });
 
 const componentStylesRef = ref<InstanceType<typeof ComponentStyles> | undefined>();
-const positionStyleRef = ref<InstanceType<typeof PositionStyle> | undefined>();
-const fontStyleRef = ref<InstanceType<typeof FontStyle> | undefined>();
 const borderStyleRef = ref<InstanceType<typeof BorderStyle> | undefined>();
 const effectStyleRef = ref<InstanceType<typeof EffectStyle> | undefined>();
 watch(() => propsStyle.value, style => {
@@ -213,8 +211,6 @@ function forEachSelectNodes(nodes: Array<RuntimeNode>, each: (node: RuntimeNode)
 
 function modelToState() {
     const doModelToState = () => {
-        positionStyleRef.value?.modelToState();
-        fontStyleRef.value?.modelToState();
         borderStyleRef.value?.modelToState();
         effectStyleRef.value?.modelToState();
     };
@@ -258,10 +254,10 @@ function updateStyle(style: Record<string, any>) {
                 <SizeStyle v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disablePosition!==true" class="settings-items" name="定位" title="定位">
-                <PositionStyle ref="positionStyleRef" v-model="state.style"/>
+                <PositionStyle v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableFont!==true" class="settings-items" name="文本" title="文本">
-                <FontStyle ref="fontStyleRef" v-model="state.style"/>
+                <FontStyle v-bind="styleSetterProps"/>
             </CollapseItem>
             <!-- <CollapseItem class="settings-items" name="背景" title="背景"> -->
             <!-- </CollapseItem> -->

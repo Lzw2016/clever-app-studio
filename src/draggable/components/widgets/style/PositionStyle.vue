@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { defineModel, reactive, shallowReactive, watch } from "vue";
+import { reactive, watch } from "vue";
 import { Numeric, Tooltip } from "@opentiny/vue";
-import { autoUseStyleUnit, unStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
+import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
+import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, batchApplyStyle, getStyle, toStyleUnit, unStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
 import PositionAll from "@/assets/images/position-all.svg?component";
 import PositionBottom from "@/assets/images/position-bottom.svg?component";
 import PositionBottomLeft from "@/assets/images/position-bottom-left.svg?component";
@@ -19,23 +20,35 @@ defineOptions({
 });
 
 // 定义 Props 类型
-interface PositionStyleProps {
+interface PositionStyleProps extends StyleSetterProps {
 }
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<PositionStyleProps>(), {});
 
 // 定义 State 类型
-interface PositionStyleState {
+interface PositionStyleState extends StyleSetterState {
     edit?: "top" | "right" | "bottom" | "left";
     top?: string;
     right?: string;
     bottom?: string;
     left?: string;
+    readonly style: {
+        position?: string;
+        top?: string;
+        right?: string;
+        bottom?: string;
+        left?: string;
+        float?: string;
+        clear?: string;
+        zIndex?: number;
+    };
 }
 
 // state 属性
-const state = reactive<PositionStyleState>({});
+const state = reactive<PositionStyleState>({
+    style: {},
+});
 // 内部数据
 const data = {
     positionList: [
@@ -73,45 +86,64 @@ const data = {
     ],
 };
 
-interface PositionStyleModel {
-    position?: string;
-    top?: string;
-    right?: string;
-    bottom?: string;
-    left?: string;
-    float?: string;
-    clear?: string;
-    zIndex?: number;
+// 选中节点变化后更新 state.style & state
+watch(() => props.nodes, () => {
+    // 读取 style 信息
+    state.style.position = getStyle(props, state, "position");
+    state.style.top = getStyle(props, state, "top");
+    state.style.right = getStyle(props, state, "right");
+    state.style.bottom = getStyle(props, state, "bottom");
+    state.style.left = getStyle(props, state, "left");
+    state.style.float = getStyle(props, state, "float");
+    state.style.clear = getStyle(props, state, "clear");
+    state.style.zIndex = getStyle(props, state, "zIndex");
+    // state.style -> state
+    initState();
+}, { immediate: true });
+// state -> state.style
+watch(() => state.top, top => autoUseStyleUnit(state.style, "top", top));
+watch(() => state.right, right => autoUseStyleUnit(state.style, "right", right));
+watch(() => state.bottom, bottom => autoUseStyleUnit(state.style, "bottom", bottom));
+watch(() => state.left, left => autoUseStyleUnit(state.style, "left", left));
+// state.style属性变化后应用 style
+const applyStylePosition = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleTop = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleRight = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleBottom = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleLeft = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleFloat = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleClear = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleZIndex = lodash.debounce(applyStyle, applyStyleDebounceTime);
+
+function initState() {
+    state.top = unStyleUnit(state.style.top);
+    state.right = unStyleUnit(state.style.right);
+    state.bottom = unStyleUnit(state.style.bottom);
+    state.left = unStyleUnit(state.style.left);
 }
 
-// css display 值
-const model = defineModel<PositionStyleModel>({
-    default: shallowReactive<PositionStyleModel>({}),
-});
-
-watch(() => state.top, value => autoUseStyleUnit(model.value, "top", value));
-watch(() => state.right, value => autoUseStyleUnit(model.value, "right", value));
-watch(() => state.bottom, value => autoUseStyleUnit(model.value, "bottom", value));
-watch(() => state.left, value => autoUseStyleUnit(model.value, "left", value));
-
-function setPositionConfig(name: string, val: string) {
-    if (model.value[name] === val) {
-        delete model.value[name];
+function setStyle(name: string, val?: string) {
+    if (state.style[name] === val) {
+        delete state.style[name];
         return;
     }
-    model.value[name] = val;
+    state.style[name] = val;
+    return val;
 }
 
-function setPosition(val: string) {
-    setPositionConfig("position", val);
+function setPosition(val?: string) {
+    val = setStyle("position", val);
+    applyStylePosition(props, state, "position", val);
 }
 
-function setFloat(val: string) {
-    setPositionConfig("float", val);
+function setFloat(val?: string) {
+    val = setStyle("float", val);
+    applyStyleFloat(props, state, "float", val);
 }
 
-function setClear(val: string) {
-    setPositionConfig("clear", val);
+function setClear(val?: string) {
+    val = setStyle("clear", val);
+    applyStyleClear(props, state, "clear", val);
 }
 
 function equalPosition(val: { top: string, right: string, bottom: string, left: string }) {
@@ -130,18 +162,13 @@ function setFastPosition(val: { top: string, right: string, bottom: string, left
     } else {
         lodash.assign(state, val);
     }
+    batchApplyStyle(props, state, {
+        top: state.top,
+        right: state.right,
+        bottom: state.bottom,
+        left: state.left,
+    });
 }
-
-function modelToState(modelValue: PositionStyleModel) {
-    state.top = unStyleUnit(modelValue.top);
-    state.right = unStyleUnit(modelValue.right);
-    state.bottom = unStyleUnit(modelValue.bottom);
-    state.left = unStyleUnit(modelValue.left);
-}
-
-defineExpose({
-    modelToState: () => modelToState(model.value),
-});
 </script>
 
 <template>
@@ -157,7 +184,7 @@ defineExpose({
                     v-for="position in data.positionList"
                     :class="{
                         'setter-row-input-radio': true,
-                        'selected': position.value===model.position,
+                        'selected': position.value===state.style.position,
                     }"
                     @click="setPosition(position.value)"
                     :title="position.tip"
@@ -166,7 +193,7 @@ defineExpose({
                 </div>
             </div>
         </div>
-        <div v-if="model.position && ['absolute', 'fixed'].includes(model.position)" class="flex-row-container setter-row" style="height: auto;">
+        <div v-if="state.style.position && ['absolute', 'fixed'].includes(state.style.position)" class="flex-row-container setter-row" style="height: auto;">
             <div class="flex-item-fixed setter-row-label">
                 <Tooltip effect="dark" placement="left" content="快速设置 top、bottom、left、right 值">
                     <span class="setter-label-tips">快速选择</span>
@@ -189,7 +216,7 @@ defineExpose({
                 </div>
             </div>
         </div>
-        <div v-if="model.position && ['relative', 'absolute', 'fixed', 'sticky'].includes(model.position)" class="setter-row" style="height: auto;">
+        <div v-if="state.style.position && ['relative', 'absolute', 'fixed', 'sticky'].includes(state.style.position)" class="setter-row" style="height: auto;">
             <div class="flex-item-fixed setter-row-label"/>
             <div class="flex-item-fill setter-row-input">
                 <div class="setting-wrap">
@@ -273,6 +300,7 @@ defineExpose({
                             placeholder="0"
                             @input="validateInputStyleValue(state, 'top',$event, true, true)"
                             @blur="state.edit=undefined"
+                            @change="event => applyStyleTop(props, state, 'top', toStyleUnit(event.target?.['value']))"
                         />
 
                         <div
@@ -292,6 +320,7 @@ defineExpose({
                             placeholder="0"
                             @input="validateInputStyleValue(state, 'right',$event, true, true)"
                             @blur="state.edit=undefined"
+                            @change="event => applyStyleRight(props, state, 'right', toStyleUnit(event.target?.['value']))"
                         />
 
                         <div
@@ -311,6 +340,7 @@ defineExpose({
                             placeholder="0"
                             @input="validateInputStyleValue(state, 'bottom',$event, true, true)"
                             @blur="state.edit=undefined"
+                            @change="event => applyStyleBottom(props, state, 'bottom', toStyleUnit(event.target?.['value']))"
                         />
 
                         <div
@@ -330,6 +360,7 @@ defineExpose({
                             placeholder="0"
                             @input="validateInputStyleValue(state, 'left',$event, true, true)"
                             @blur="state.edit=undefined"
+                            @change="event => applyStyleLeft(props, state, 'left', toStyleUnit(event.target?.['value']))"
                         />
                     </div>
                 </div>
@@ -346,7 +377,7 @@ defineExpose({
                     v-for="float in data.floatList"
                     :class="{
                         'setter-row-input-radio': true,
-                        'selected': float.value===model.float,
+                        'selected': float.value===state.style.float,
                     }"
                     @click="setFloat(float.value)"
                     :title="float.tip"
@@ -366,7 +397,7 @@ defineExpose({
                     v-for="clear in data.clearList"
                     :class="{
                         'setter-row-input-radio': true,
-                        'selected': clear.value===model.clear,
+                        'selected': clear.value===state.style.clear,
                     }"
                     @click="setClear(clear.value)"
                     :title="clear.tip"
@@ -382,7 +413,16 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container">
-                <Numeric style="width: 100%;" v-model="model.zIndex" size="mini" :allow-empty="true" :clearable="true" controlsPosition="right" placeholder="z-index"/>
+                <Numeric
+                    style="width: 100%;"
+                    v-model="state.style.zIndex"
+                    size="mini"
+                    :allow-empty="true"
+                    :clearable="true"
+                    controlsPosition="right"
+                    placeholder="z-index"
+                    @change="value => applyStyleZIndex(props, state, 'zIndex', value)"
+                />
             </div>
         </div>
     </div>

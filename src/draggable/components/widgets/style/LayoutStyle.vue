@@ -120,24 +120,7 @@ interface LayoutStyleState extends StyleSetterState {
 const state = reactive<LayoutStyleState>({
     gridTemplateColumns: [],
     gridTemplateRows: [],
-    gridColumnGap: undefined,
-    gridRowGap: undefined,
-    gridAutoFlow: undefined,
-    gridAutoFlowDense: undefined,
-    style: {
-        display: undefined,
-        flexDirection: undefined,
-        flexWrap: undefined,
-        justifyContent: undefined,
-        alignContent: undefined,
-        justifyItems: undefined,
-        alignItems: undefined,
-        gridTemplateColumns: undefined,
-        gridTemplateRows: undefined,
-        gridColumnGap: undefined,
-        gridRowGap: undefined,
-        gridAutoFlow: undefined,
-    },
+    style: {},
 });
 // 内部数据
 const data = {
@@ -280,8 +263,6 @@ const applyStyleGridTemplateRows = lodash.debounce(applyStyle, applyStyleDebounc
 const applyStyleGridColumnGap = lodash.debounce(applyStyle, applyStyleDebounceTime);
 const applyStyleGridRowGap = lodash.debounce(applyStyle, applyStyleDebounceTime);
 const applyStyleGridAutoFlow = lodash.debounce(applyStyle, applyStyleDebounceTime);
-// watch(() => state.style.gridTemplateColumns, gridTemplateColumns => applyStyleGridTemplateColumns(props, state, "gridTemplateColumns", gridTemplateColumns));
-// watch(() => state.style.gridTemplateRows, gridTemplateRows => applyStyleGridTemplateRows(props, state, "gridTemplateRows", gridTemplateRows));
 
 function initState() {
     if (state.style.gridTemplateColumns) {

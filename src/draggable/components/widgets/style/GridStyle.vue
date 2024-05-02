@@ -41,14 +41,7 @@ interface GridStyleState extends StyleSetterState {
 
 // state 属性
 const state = reactive<GridStyleState>({
-    style: {
-        gridColumnStart: undefined,
-        gridColumnEnd: undefined,
-        gridRowStart: undefined,
-        gridRowEnd: undefined,
-        justifySelf: undefined,
-        alignSelf: undefined,
-    },
+    style: {},
 });
 // 内部数据
 const data = {

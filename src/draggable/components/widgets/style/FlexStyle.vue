@@ -33,11 +33,7 @@ interface FlexStyleState extends StyleSetterState {
 
 // state 属性
 const state = reactive<FlexStyleState>({
-    style: {
-        flexShrink: undefined,
-        flexGrow: undefined,
-        alignSelf: undefined,
-    },
+    style: {},
 });
 // 内部数据
 const data = {
