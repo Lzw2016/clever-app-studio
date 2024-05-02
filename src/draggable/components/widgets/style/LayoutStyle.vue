@@ -113,7 +113,7 @@ interface LayoutStyleState extends StyleSetterState {
         gridRowGap?: string;
         /** grid-auto-flow 属性 */
         gridAutoFlow?: string;
-    },
+    };
 }
 
 // state 属性
@@ -334,7 +334,7 @@ function setDisplay(val: string) {
     state.style.display = val;
 }
 
-function setDisplayConfig(name: string, val: string) {
+function setStyle(name: string, val: string) {
     if (state.style[name] === val) {
         delete state.style[name];
         return;
@@ -343,27 +343,27 @@ function setDisplayConfig(name: string, val: string) {
 }
 
 function setFlexDirection(val: string) {
-    setDisplayConfig("flexDirection", val);
+    setStyle("flexDirection", val);
 }
 
 function setJustifyContent(val: string) {
-    setDisplayConfig("justifyContent", val);
+    setStyle("justifyContent", val);
 }
 
 function setAlignContent(val: string) {
-    setDisplayConfig("alignContent", val);
+    setStyle("alignContent", val);
 }
 
 function setJustifyItems(val: string) {
-    setDisplayConfig("justifyItems", val);
+    setStyle("justifyItems", val);
 }
 
 function setAlignItems(val: string) {
-    setDisplayConfig("alignItems", val);
+    setStyle("alignItems", val);
 }
 
 function setFlexWrap(val: string) {
-    setDisplayConfig("flexWrap", val);
+    setStyle("flexWrap", val);
 }
 
 function setGridAutoFlow(val: string) {

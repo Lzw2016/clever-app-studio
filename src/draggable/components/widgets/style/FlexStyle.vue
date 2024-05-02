@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive } from "vue";
+import lodash from "lodash";
+import { reactive, watch } from "vue";
 import { Numeric, Tooltip } from "@opentiny/vue";
+import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
+import { applyStyle, applyStyleDebounceTime, getStyle } from "@/draggable/utils/StyleUtils";
 import FlexAlignItemsFlexStart from "@/assets/images/flex-align-items-flex-start.svg?component";
 import FlexAlignItemsFlexEnd from "@/assets/images/flex-align-items-flex-end.svg?component";
 import FlexAlignItemsCenter from "@/assets/images/flex-align-items-center.svg?component";
@@ -13,18 +16,29 @@ defineOptions({
 });
 
 // 定义 Props 类型
-interface FlexStyleProps {
+interface FlexStyleProps extends StyleSetterProps {
 }
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<FlexStyleProps>(), {});
 
 // 定义 State 类型
-interface FlexStyleState {
+interface FlexStyleState extends StyleSetterState {
+    readonly style: {
+        flexShrink?: number;
+        flexGrow?: number;
+        alignSelf?: string;
+    };
 }
 
 // state 属性
-const state = reactive<FlexStyleState>({});
+const state = reactive<FlexStyleState>({
+    style: {
+        flexShrink: undefined,
+        flexGrow: undefined,
+        alignSelf: undefined,
+    },
+});
 // 内部数据
 const data = {
     // align-self
@@ -37,35 +51,32 @@ const data = {
     ],
 };
 
-interface FlexStyleModel {
-    flexShrink?: number;
-    flexGrow?: number;
-    alignSelf?: string;
-}
+// 选中节点变化后更新 state.style & state
+watch(() => props.nodes, () => {
+    // 读取 style 信息
+    state.style.flexShrink = getStyle(props, state, "flexShrink");
+    state.style.flexGrow = getStyle(props, state, "flexGrow");
+    state.style.alignSelf = getStyle(props, state, "alignSelf");
+}, { immediate: true });
+// state.style属性变化后应用 style
+const applyStyleFlexShrink = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleFlexGrow = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleAlignSelf = lodash.debounce(applyStyle, applyStyleDebounceTime);
+watch(() => state.style.flexShrink, flexShrink => applyStyleFlexShrink(props, state, "flexShrink", flexShrink));
+watch(() => state.style.flexGrow, flexGrow => applyStyleFlexGrow(props, state, "flexGrow", flexGrow));
+watch(() => state.style.alignSelf, alignSelf => applyStyleAlignSelf(props, state, "alignSelf", alignSelf));
 
-const model = defineModel<FlexStyleModel>({
-    default: shallowReactive<FlexStyleModel>({}),
-});
-
-function setModel(name: string, val: string) {
-    if (model.value?.[name] === val) {
-        delete model.value[name];
+function setStyle(name: string, val: string) {
+    if (state.style[name] === val) {
+        delete state.style[name];
         return;
     }
-    if (!model.value) model.value = shallowReactive<FlexStyleModel>({});
-    model.value[name] = val;
+    state.style[name] = val;
 }
 
 function setAlignSelf(val: string) {
-    setModel("alignSelf", val);
+    setStyle("alignSelf", val);
 }
-
-function modelToState(modelValue: FlexStyleModel) {
-}
-
-defineExpose({
-    modelToState: () => modelToState(model.value),
-});
 </script>
 
 <template>
@@ -80,7 +91,7 @@ defineExpose({
                 <Numeric
                     class="flex-item-fill"
                     style="min-width: 60px;"
-                    v-model="model.flexShrink"
+                    v-model="state.style.flexShrink"
                     size="mini"
                     controls-position="right"
                     :allow-empty="true"
@@ -90,7 +101,7 @@ defineExpose({
                 <Numeric
                     class="flex-item-fill"
                     style="min-width: 60px;"
-                    v-model="model.flexGrow"
+                    v-model="state.style.flexGrow"
                     size="mini"
                     controls-position="right"
                     :allow-empty="true"
@@ -109,7 +120,7 @@ defineExpose({
                     v-for="alignSelf in data.flexAlignSelfList"
                     :class="{
                         'setter-row-input-radio': true,
-                        'selected': alignSelf.value===model.alignSelf,
+                        'selected': alignSelf.value===state.style.alignSelf,
                         'flex-row-container': true,
                         'flex-center': true,
                     }"

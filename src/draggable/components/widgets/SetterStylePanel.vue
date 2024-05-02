@@ -100,10 +100,6 @@ const propsClass = computed(() => {
 });
 
 const componentStylesRef = ref<InstanceType<typeof ComponentStyles> | undefined>();
-const flexStyleRef = ref<InstanceType<typeof FlexStyle> | undefined>();
-const gridStyleRef = ref<InstanceType<typeof GridStyle> | undefined>();
-const spacingStyleRef = ref<InstanceType<typeof SpacingStyle> | undefined>();
-const sizeStyleRef = ref<InstanceType<typeof SizeStyle> | undefined>();
 const positionStyleRef = ref<InstanceType<typeof PositionStyle> | undefined>();
 const fontStyleRef = ref<InstanceType<typeof FontStyle> | undefined>();
 const borderStyleRef = ref<InstanceType<typeof BorderStyle> | undefined>();
@@ -217,10 +213,6 @@ function forEachSelectNodes(nodes: Array<RuntimeNode>, each: (node: RuntimeNode)
 
 function modelToState() {
     const doModelToState = () => {
-        flexStyleRef.value?.modelToState();
-        gridStyleRef.value?.modelToState();
-        spacingStyleRef.value?.modelToState();
-        sizeStyleRef.value?.modelToState();
         positionStyleRef.value?.modelToState();
         fontStyleRef.value?.modelToState();
         borderStyleRef.value?.modelToState();
@@ -255,15 +247,15 @@ function updateStyle(style: Record<string, any>) {
                 <LayoutStyle v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局(元素)" title="布局(元素)">
-                <FlexStyle ref="flexStyleRef" v-model="state.style"/>
+                <FlexStyle v-bind="styleSetterProps"/>
                 <div style="height: 12px;"/>
-                <GridStyle ref="gridStyleRef" v-model="state.style"/>
+                <GridStyle v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableSpacing!==true" class="settings-items" name="间距" title="间距">
-                <SpacingStyle ref="spacingStyleRef" v-model="state.style"/>
+                <SpacingStyle v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableSize!==true" class="settings-items" name="尺寸" title="尺寸">
-                <SizeStyle ref="sizeStyleRef" v-model="state.style"/>
+                <SizeStyle v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disablePosition!==true" class="settings-items" name="定位" title="定位">
                 <PositionStyle ref="positionStyleRef" v-model="state.style"/>

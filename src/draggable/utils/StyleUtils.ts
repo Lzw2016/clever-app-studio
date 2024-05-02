@@ -101,10 +101,10 @@ function applyStyle<T = any, R = any>(props: StyleSetterProps, state: StyleSette
         blockInstance,
         nodes,
     } = props;
-    // console.log("applyStyle styleProperty", styleProperty)
-    if (isFunction(options?.transform)) value = options?.transform(value);
+    console.log("applyStyle styleProperty", `${styleProperty}=${value}`);
     let res = false;
     if (!nodes) return res;
+    if (isFunction(options?.transform)) value = options?.transform(value);
     for (let node of nodes) {
         if (!node.__raw_props_style) node.__raw_props_style = toObjectStyle(node.props.style);
         const style: Record<string, any> = node.props.style ?? {};
@@ -122,7 +122,7 @@ function applyStyle<T = any, R = any>(props: StyleSetterProps, state: StyleSette
         if (isFunction(options?.multipleValuesUpdate)) options?.multipleValuesUpdate(false);
         if (!options?.disableReRender) {
             blockInstance.$forceUpdate();
-            // console.log("applyStyle $forceUpdate")
+            console.log("applyStyle $forceUpdate");
             // 重新计算辅助工具的位置(更新属性有可能改变渲染节点的大小和位置)
             if (!options?.cancelCalcAuxToolPosition) {
                 blockInstance.$nextTick(() => {

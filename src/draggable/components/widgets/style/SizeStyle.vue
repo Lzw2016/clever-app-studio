@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { defineModel, reactive, shallowReactive, watch } from "vue";
+import { reactive, watch } from "vue";
 import { Input, Tooltip } from "@opentiny/vue";
-import { autoUseStyleUnit, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
+import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
+import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, getStyle, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 import OverflowAuto from "@/assets/images/overflow-auto.svg?component";
 import OverflowVisible from "@/assets/images/overflow-visible.svg?component";
 import OverflowHidden from "@/assets/images/overflow-hidden.svg?component";
 import OverflowScroll from "@/assets/images/overflow-scroll.svg?component";
+import { hasValue } from "@/utils/Typeof";
 
 // 定义组件选项
 defineOptions({
@@ -14,14 +16,14 @@ defineOptions({
 });
 
 // 定义 Props 类型
-interface SizeStyleProps {
+interface SizeStyleProps extends StyleSetterProps {
 }
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<SizeStyleProps>(), {});
 
 // 定义 State 类型
-interface SizeStyleState {
+interface SizeStyleState extends StyleSetterState {
     width?: string;
     height?: string;
     minWidth?: string;
@@ -30,10 +32,33 @@ interface SizeStyleState {
     maxHeight?: string;
     objectPosition1?: string;
     objectPosition2?: string;
+    readonly style: {
+        width?: string;
+        height?: string;
+        minWidth?: string;
+        minHeight?: string;
+        maxWidth?: string;
+        maxHeight?: string;
+        overflow?: string;
+        objectFit?: string;
+        objectPosition?: string;
+    };
 }
 
 // state 属性
-const state = reactive<SizeStyleState>({});
+const state = reactive<SizeStyleState>({
+    style: {
+        width: undefined,
+        height: undefined,
+        minWidth: undefined,
+        minHeight: undefined,
+        maxWidth: undefined,
+        maxHeight: undefined,
+        overflow: undefined,
+        objectFit: undefined,
+        objectPosition: undefined,
+    },
+});
 
 // 内部数据
 const data = {
@@ -51,75 +76,98 @@ const data = {
         { value: "scale-down", tip: "scale-down(自动缩小内容)", icon: null, text: "缩小" },
     ],
 };
-
-interface SizeStyleModel {
-    width?: string;
-    height?: string;
-    minWidth?: string;
-    minHeight?: string;
-    maxWidth?: string;
-    maxHeight?: string;
-    overflow?: string;
-    objectFit?: string;
-    objectPosition?: string;
-}
-
-// css width height 值
-const model = defineModel<SizeStyleModel>({
-    default: shallowReactive<SizeStyleModel>({}),
-});
-
-watch(() => state.width, value => autoUseStyleUnit(model.value, "width", value));
-watch(() => state.height, value => autoUseStyleUnit(model.value, "height", value));
-watch(() => state.minWidth, value => autoUseStyleUnit(model.value, "minWidth", value));
-watch(() => state.minHeight, value => autoUseStyleUnit(model.value, "minHeight", value));
-watch(() => state.maxWidth, value => autoUseStyleUnit(model.value, "maxWidth", value));
-watch(() => state.maxHeight, value => autoUseStyleUnit(model.value, "maxHeight", value));
-watch(() => [state.objectPosition1, state.objectPosition2], () => {
-    if (!model.value) return;
-    let val = [toStyleUnit(state.objectPosition1), toStyleUnit(state.objectPosition2)].map(item => item ?? "").join(" ");
-    val = lodash.trim(val);
-    if (val.length <= 0) {
-        delete model.value.objectPosition;
+// 选中节点变化后更新 state.style & state
+watch(() => props.nodes, () => {
+    // 读取 style 信息
+    state.style.width = getStyle(props, state, "width");
+    state.style.height = getStyle(props, state, "height");
+    state.style.minWidth = getStyle(props, state, "minWidth");
+    state.style.minHeight = getStyle(props, state, "minHeight");
+    state.style.maxWidth = getStyle(props, state, "maxWidth");
+    state.style.maxHeight = getStyle(props, state, "maxHeight");
+    state.style.overflow = getStyle(props, state, "overflow");
+    state.style.objectFit = getStyle(props, state, "objectFit");
+    state.style.objectPosition = getStyle(props, state, "objectPosition");
+    // state.style -> state
+    initState();
+}, { immediate: true });
+// state -> state.style
+watch(() => state.width, width => autoUseStyleUnit(state.style, "width", width));
+watch(() => state.height, height => autoUseStyleUnit(state.style, "height", height));
+watch(() => state.minWidth, minWidth => autoUseStyleUnit(state.style, "minWidth", minWidth));
+watch(() => state.minHeight, minHeight => autoUseStyleUnit(state.style, "minHeight", minHeight));
+watch(() => state.maxWidth, maxWidth => autoUseStyleUnit(state.style, "maxWidth", maxWidth));
+watch(() => state.maxHeight, maxHeight => autoUseStyleUnit(state.style, "maxHeight", maxHeight));
+watch(() => [state.objectPosition1, state.objectPosition2], ([objectPosition1, objectPosition2]) => {
+    const objectPosition = getObjectPosition(objectPosition1, objectPosition2);
+    if (hasValue(objectPosition)) {
+        state.style.objectPosition = objectPosition;
     } else {
-        model.value.objectPosition = val;
+        delete state.style.objectPosition;
     }
 });
+// state.style属性变化后应用 style
+const applyStyleWidth = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleHeight = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleMinWidth = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleMinHeight = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleMaxWidth = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleMaxHeight = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleOverflow = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleObjectFit = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleObjectPosition = lodash.debounce(applyStyle, applyStyleDebounceTime);
+// watch(() => state.style.width, width => applyStyleWidth(props, state, "width", width));
+// watch(() => state.style.height, height => applyStyleHeight(props, state, "height", height));
+// watch(() => state.style.minWidth, minWidth => applyStyleMinWidth(props, state, "minWidth", minWidth));
+// watch(() => state.style.minHeight, minHeight => applyStyleMinHeight(props, state, "minHeight", minHeight));
+// watch(() => state.style.maxWidth, maxWidth => applyStyleMaxWidth(props, state, "maxWidth", maxWidth));
+// watch(() => state.style.maxHeight, maxHeight => applyStyleMaxHeight(props, state, "maxHeight", maxHeight));
+// watch(() => state.style.overflow, overflow => applyStyleOverflow(props, state, "overflow", overflow));
+// watch(() => state.style.objectFit, objectFit => applyStyleObjectFit(props, state, "objectFit", objectFit));
+// watch(() => state.style.objectPosition, objectPosition => applyStyleObjectPosition(props, state, "objectPosition", objectPosition));
 
-function setModel(name: string, val: string) {
-    if (model.value?.[name] === val) {
-        delete model.value[name];
-        return;
-    }
-    if (!model.value) model.value = shallowReactive<SizeStyleModel>({});
-    model.value[name] = val;
-}
-
-function setOverflow(val: string) {
-    setModel("overflow", val);
-}
-
-function setObjectFit(val: string) {
-    setModel("objectFit", val);
-}
-
-function modelToState(modelValue: SizeStyleModel) {
-    state.width = unStyleUnit(modelValue.width);
-    state.height = unStyleUnit(modelValue.height);
-    state.minWidth = unStyleUnit(modelValue.minWidth);
-    state.minHeight = unStyleUnit(modelValue.minHeight);
-    state.maxWidth = unStyleUnit(modelValue.maxWidth);
-    state.maxHeight = unStyleUnit(modelValue.maxHeight);
-    if (modelValue.objectPosition) {
-        const [objectPosition1, objectPosition2] = modelValue.objectPosition.split(" ");
+function initState() {
+    state.width = unStyleUnit(state.style.width);
+    state.height = unStyleUnit(state.style.height);
+    state.minWidth = unStyleUnit(state.style.minWidth);
+    state.minHeight = unStyleUnit(state.style.minHeight);
+    state.maxWidth = unStyleUnit(state.style.maxWidth);
+    state.maxHeight = unStyleUnit(state.style.maxHeight);
+    if (state.style.objectPosition) {
+        const [objectPosition1, objectPosition2] = state.style.objectPosition.split(" ");
         state.objectPosition1 = objectPosition1;
         state.objectPosition2 = objectPosition2;
     }
 }
 
-defineExpose({
-    modelToState: () => modelToState(model.value),
-});
+function getObjectPosition(objectPosition1?: string, objectPosition2?: string) {
+    let val = [toStyleUnit(objectPosition1), toStyleUnit(objectPosition2)].map(item => item ?? "").join(" ");
+    val = lodash.trim(val);
+    if (val.length <= 0) {
+        return;
+    } else {
+        return val;
+    }
+}
+
+function setStyle(name: string, val?: string) {
+    if (state.style[name] === val) {
+        delete state.style[name];
+        return;
+    }
+    state.style[name] = val;
+    return val;
+}
+
+function setOverflow(val?: string) {
+    val = setStyle("overflow", val);
+    applyStyleOverflow(props, state, "overflow", val);
+}
+
+function setObjectFit(val?: string) {
+    val = setStyle("objectFit", val);
+    applyStyleObjectFit(props, state, "objectFit", val);
+}
 </script>
 
 <template>
@@ -131,9 +179,25 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.width" size="mini" :clearable="true" placeholder="宽(W)"/>
+                <Input
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="state.width"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="宽(W)"
+                    @change="value => applyStyleWidth(props, state, 'width', toStyleUnit(value))"
+                />
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.height" size="mini" :clearable="true" placeholder="高(H)"/>
+                <Input
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="state.height"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="高(H)"
+                    @change="value => applyStyleHeight(props, state, 'height', toStyleUnit(value))"
+                />
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -143,9 +207,25 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.minWidth" size="mini" :clearable="true" placeholder="最小宽"/>
+                <Input
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="state.minWidth"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="最小宽"
+                    @change="value => applyStyleMinWidth(props, state, 'minWidth', toStyleUnit(value))"
+                />
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.minHeight" size="mini" :clearable="true" placeholder="最小高"/>
+                <Input
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="state.minHeight"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="最小高"
+                    @change="value => applyStyleMinHeight(props, state, 'minHeight', toStyleUnit(value))"
+                />
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -155,9 +235,25 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.maxWidth" size="mini" :clearable="true" placeholder="最大宽"/>
+                <Input
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="state.maxWidth"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="最大宽"
+                    @change="value => applyStyleMaxWidth(props, state, 'maxWidth', toStyleUnit(value))"
+                />
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.maxHeight" size="mini" :clearable="true" placeholder="最大高"/>
+                <Input
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="state.maxHeight"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="最大高"
+                    @change="value => applyStyleMaxHeight(props, state, 'maxHeight', toStyleUnit(value))"
+                />
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -171,7 +267,7 @@ defineExpose({
                     v-for="overflow in data.overflowList"
                     :class="{
                         'setter-row-input-radio': true,
-                        'selected': overflow.value===model?.overflow,
+                        'selected': overflow.value===state.style.overflow,
                         'flex-row-container': true,
                         'flex-center': true,
                     }"
@@ -193,7 +289,7 @@ defineExpose({
                     v-for="objectFit in data.objectFitList"
                     :class="{
                         'setter-row-input-radio': true,
-                        'selected': objectFit.value===model.objectFit,
+                        'selected': objectFit.value===state.style.objectFit,
                     }"
                     @click="setObjectFit(objectFit.value)"
                     :title="objectFit.tip"
@@ -209,9 +305,25 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.objectPosition1" size="mini" :clearable="true" placeholder="水平方向"/>
+                <Input
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="state.objectPosition1"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="水平方向"
+                    @change="value => applyStyleObjectPosition(props, state, 'objectPosition', getObjectPosition(value, state.objectPosition2))"
+                />
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.objectPosition2" size="mini" :clearable="true" placeholder="垂直方向"/>
+                <Input
+                    class="flex-item-fill"
+                    style="min-width: 60px;"
+                    v-model="state.objectPosition2"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="垂直方向"
+                    @change="value => applyStyleObjectPosition(props, state, 'objectPosition', getObjectPosition(state.objectPosition1, value))"
+                />
             </div>
         </div>
     </div>

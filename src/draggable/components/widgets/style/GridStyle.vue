@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive } from "vue";
+import lodash from "lodash";
+import { reactive, watch } from "vue";
 import { Input, Tooltip } from "@opentiny/vue";
+import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
+import { applyStyle, applyStyleDebounceTime, getStyle } from "@/draggable/utils/StyleUtils";
 import GridJustifyItemsStart from "@/assets/images/grid-justify-items-start.svg?component";
 import GridJustifyItemsCenter from "@/assets/images/grid-justify-items-center.svg?component";
 import GridJustifyItemsEnd from "@/assets/images/grid-justify-items-end.svg?component";
@@ -18,18 +21,35 @@ defineOptions({
 });
 
 // 定义 Props 类型
-interface GridStyleProps {
+interface GridStyleProps extends StyleSetterProps {
 }
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<GridStyleProps>(), {});
 
 // 定义 State 类型
-interface GridStyleState {
+interface GridStyleState extends StyleSetterState {
+    readonly style: {
+        gridColumnStart?: string;
+        gridColumnEnd?: string;
+        gridRowStart?: string;
+        gridRowEnd?: string;
+        justifySelf?: string;
+        alignSelf?: string;
+    };
 }
 
 // state 属性
-const state = reactive<GridStyleState>({});
+const state = reactive<GridStyleState>({
+    style: {
+        gridColumnStart: undefined,
+        gridColumnEnd: undefined,
+        gridRowStart: undefined,
+        gridRowEnd: undefined,
+        justifySelf: undefined,
+        alignSelf: undefined,
+    },
+});
 // 内部数据
 const data = {
     // justify-self
@@ -50,42 +70,45 @@ const data = {
     ],
 };
 
-interface GridStyleModel {
-    gridColumnStart?: string;
-    gridColumnEnd?: string;
-    gridRowStart?: string;
-    gridRowEnd?: string;
-    justifySelf?: string;
-    alignSelf?: string;
-}
+// 选中节点变化后更新 state.style & state
+watch(() => props.nodes, () => {
+    // 读取 style 信息
+    state.style.gridColumnStart = getStyle(props, state, "gridColumnStart");
+    state.style.gridColumnEnd = getStyle(props, state, "gridColumnEnd");
+    state.style.gridRowStart = getStyle(props, state, "gridRowStart");
+    state.style.gridRowEnd = getStyle(props, state, "gridRowEnd");
+    state.style.justifySelf = getStyle(props, state, "justifySelf");
+    state.style.alignSelf = getStyle(props, state, "alignSelf");
+}, { immediate: true });
+// state.style属性变化后应用 style
+const applyStyleGridColumnStart = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleGridColumnEnd = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleGridRowStart = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleGridRowEnd = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleJustifySelf = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleAlignSelf = lodash.debounce(applyStyle, applyStyleDebounceTime);
+watch(() => state.style.gridColumnStart, gridColumnStart => applyStyleGridColumnStart(props, state, "gridColumnStart", gridColumnStart));
+watch(() => state.style.gridColumnEnd, gridColumnEnd => applyStyleGridColumnEnd(props, state, "gridColumnEnd", gridColumnEnd));
+watch(() => state.style.gridRowStart, gridRowStart => applyStyleGridRowStart(props, state, "gridRowStart", gridRowStart));
+watch(() => state.style.gridRowEnd, gridRowEnd => applyStyleGridRowEnd(props, state, "gridRowEnd", gridRowEnd));
+watch(() => state.style.justifySelf, justifySelf => applyStyleJustifySelf(props, state, "justifySelf", justifySelf));
+watch(() => state.style.alignSelf, alignSelf => applyStyleAlignSelf(props, state, "alignSelf", alignSelf));
 
-const model = defineModel<GridStyleModel>({
-    default: shallowReactive<GridStyleModel>({}),
-});
-
-function setModel(name: string, val: string) {
-    if (model.value?.[name] === val) {
-        delete model.value[name];
+function setStyle(name: string, val: string) {
+    if (state.style[name] === val) {
+        delete state.style[name];
         return;
     }
-    if (!model.value) model.value = shallowReactive<GridStyleModel>({});
-    model.value[name] = val;
+    state.style[name] = val;
 }
 
 function setJustifySelf(val: string) {
-    setModel("justifySelf", val);
+    setStyle("justifySelf", val);
 }
 
 function setAlignSelf(val: string) {
-    setModel("alignSelf", val);
+    setStyle("alignSelf", val);
 }
-
-function modelToState(modelValue: GridStyleModel) {
-}
-
-defineExpose({
-    modelToState: () => modelToState(model.value),
-});
 </script>
 
 <template>
@@ -97,9 +120,9 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.gridColumnStart" size="mini" :clearable="true" placeholder="起始列"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.style.gridColumnStart" size="mini" :clearable="true" placeholder="起始列"/>
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.gridColumnEnd" size="mini" :clearable="true" placeholder="结束列"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.style.gridColumnEnd" size="mini" :clearable="true" placeholder="结束列"/>
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -109,9 +132,9 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.gridRowStart" size="mini" :clearable="true" placeholder="起始行"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.style.gridRowStart" size="mini" :clearable="true" placeholder="起始行"/>
                 <span style="margin-left: 12px;"/>
-                <Input class="flex-item-fill" style="min-width: 60px;" v-model="model.gridRowEnd" size="mini" :clearable="true" placeholder="结束行"/>
+                <Input class="flex-item-fill" style="min-width: 60px;" v-model="state.style.gridRowEnd" size="mini" :clearable="true" placeholder="结束行"/>
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -125,7 +148,7 @@ defineExpose({
                     v-for="justifySelf in data.gridJustifySelfList"
                     :class="{
                         'setter-row-input-radio': true,
-                        'selected': justifySelf.value===model.justifySelf,
+                        'selected': justifySelf.value===state.style.justifySelf,
                         'flex-row-container': true,
                         'flex-center': true,
                     }"
@@ -147,7 +170,7 @@ defineExpose({
                     v-for="alignSelf in data.gridAlignSelfList"
                     :class="{
                         'setter-row-input-radio': true,
-                        'selected': alignSelf.value===model.alignSelf,
+                        'selected': alignSelf.value===state.style.alignSelf,
                         'flex-row-container': true,
                         'flex-center': true,
                     }"

@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive, watch } from "vue";
-import { autoUseStyleUnit, unStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
+import lodash from "lodash";
+import { reactive, watch } from "vue";
+import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
+import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, getStyle, unStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -8,14 +10,14 @@ defineOptions({
 });
 
 // 定义 Props 类型
-interface SpacingStyleProps {
+interface SpacingStyleProps extends StyleSetterProps {
 }
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<SpacingStyleProps>(), {});
 
 // 定义 State 类型
-interface SpacingStyleState {
+interface SpacingStyleState extends StyleSetterState {
     edit?: "marginTop" | "marginRight" | "marginBottom" | "marginLeft" | "paddingTop" | "paddingRight" | "paddingBottom" | "paddingLeft";
     marginTop?: string;
     marginRight?: string;
@@ -25,52 +27,83 @@ interface SpacingStyleState {
     paddingRight?: string;
     paddingBottom?: string;
     paddingLeft?: string;
+    readonly style: {
+        marginTop?: string;
+        marginRight?: string;
+        marginBottom?: string;
+        marginLeft?: string;
+        paddingTop?: string;
+        paddingRight?: string;
+        paddingBottom?: string;
+        paddingLeft?: string;
+    };
 }
 
 // state 属性
 const state = reactive<SpacingStyleState>({
     edit: undefined,
+    style: {
+        marginTop: undefined,
+        marginRight: undefined,
+        marginBottom: undefined,
+        marginLeft: undefined,
+        paddingTop: undefined,
+        paddingRight: undefined,
+        paddingBottom: undefined,
+        paddingLeft: undefined,
+    },
 });
+// 选中节点变化后更新 state.style & state
+watch(() => props.nodes, () => {
+    // 读取 style 信息
+    state.style.marginTop = getStyle(props, state, "marginTop");
+    state.style.marginRight = getStyle(props, state, "marginRight");
+    state.style.marginBottom = getStyle(props, state, "marginBottom");
+    state.style.marginLeft = getStyle(props, state, "marginLeft");
+    state.style.paddingTop = getStyle(props, state, "paddingTop");
+    state.style.paddingRight = getStyle(props, state, "paddingRight");
+    state.style.paddingBottom = getStyle(props, state, "paddingBottom");
+    state.style.paddingLeft = getStyle(props, state, "paddingLeft");
+    // state.style -> state
+    initState();
+}, { immediate: true });
+// state -> state.style
+watch(() => state.marginTop, marginTop => autoUseStyleUnit(state.style, "marginTop", marginTop));
+watch(() => state.marginRight, marginRight => autoUseStyleUnit(state.style, "marginRight", marginRight));
+watch(() => state.marginBottom, marginBottom => autoUseStyleUnit(state.style, "marginBottom", marginBottom));
+watch(() => state.marginLeft, marginLeft => autoUseStyleUnit(state.style, "marginLeft", marginLeft));
+watch(() => state.paddingTop, paddingTop => autoUseStyleUnit(state.style, "paddingTop", paddingTop));
+watch(() => state.paddingRight, paddingRight => autoUseStyleUnit(state.style, "paddingRight", paddingRight));
+watch(() => state.paddingBottom, paddingBottom => autoUseStyleUnit(state.style, "paddingBottom", paddingBottom));
+watch(() => state.paddingLeft, paddingLeft => autoUseStyleUnit(state.style, "paddingLeft", paddingLeft));
+// state.style属性变化后应用 style
+const applyStyleMarginTop = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleMarginRight = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleMarginBottom = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleMarginLeft = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStylePaddingTop = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStylePaddingRight = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStylePaddingBottom = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStylePaddingLeft = lodash.debounce(applyStyle, applyStyleDebounceTime);
+watch(() => state.style.marginTop, marginTop => applyStyleMarginTop(props, state, "marginTop", marginTop));
+watch(() => state.style.marginRight, marginRight => applyStyleMarginRight(props, state, "marginRight", marginRight));
+watch(() => state.style.marginBottom, marginBottom => applyStyleMarginBottom(props, state, "marginBottom", marginBottom));
+watch(() => state.style.marginLeft, marginLeft => applyStyleMarginLeft(props, state, "marginLeft", marginLeft));
+watch(() => state.style.paddingTop, paddingTop => applyStylePaddingTop(props, state, "paddingTop", paddingTop));
+watch(() => state.style.paddingRight, paddingRight => applyStylePaddingRight(props, state, "paddingRight", paddingRight));
+watch(() => state.style.paddingBottom, paddingBottom => applyStylePaddingBottom(props, state, "paddingBottom", paddingBottom));
+watch(() => state.style.paddingLeft, paddingLeft => applyStylePaddingLeft(props, state, "paddingLeft", paddingLeft));
 
-interface SpacingStyleModel {
-    marginTop?: string;
-    marginRight?: string;
-    marginBottom?: string;
-    marginLeft?: string;
-    paddingTop?: string;
-    paddingRight?: string;
-    paddingBottom?: string;
-    paddingLeft?: string;
+function initState() {
+    state.marginTop = unStyleUnit(state.style.marginTop);
+    state.marginRight = unStyleUnit(state.style.marginRight);
+    state.marginBottom = unStyleUnit(state.style.marginBottom);
+    state.marginLeft = unStyleUnit(state.style.marginLeft);
+    state.paddingTop = unStyleUnit(state.style.paddingTop);
+    state.paddingRight = unStyleUnit(state.style.paddingRight);
+    state.paddingBottom = unStyleUnit(state.style.paddingBottom);
+    state.paddingLeft = unStyleUnit(state.style.paddingLeft);
 }
-
-// css margin padding 值
-const model = defineModel<SpacingStyleModel>({
-    default: shallowReactive<SpacingStyleModel>({}),
-});
-
-watch(() => state.marginTop, value => autoUseStyleUnit(model.value, "marginTop", value));
-watch(() => state.marginRight, value => autoUseStyleUnit(model.value, "marginRight", value));
-watch(() => state.marginBottom, value => autoUseStyleUnit(model.value, "marginBottom", value));
-watch(() => state.marginLeft, value => autoUseStyleUnit(model.value, "marginLeft", value));
-watch(() => state.paddingTop, value => autoUseStyleUnit(model.value, "paddingTop", value));
-watch(() => state.paddingRight, value => autoUseStyleUnit(model.value, "paddingRight", value));
-watch(() => state.paddingBottom, value => autoUseStyleUnit(model.value, "paddingBottom", value));
-watch(() => state.paddingLeft, value => autoUseStyleUnit(model.value, "paddingLeft", value));
-
-function modelToState(modelValue: SpacingStyleModel) {
-    state.marginTop = unStyleUnit(modelValue.marginTop);
-    state.marginRight = unStyleUnit(modelValue.marginRight);
-    state.marginBottom = unStyleUnit(modelValue.marginBottom);
-    state.marginLeft = unStyleUnit(modelValue.marginLeft);
-    state.paddingTop = unStyleUnit(modelValue.paddingTop);
-    state.paddingRight = unStyleUnit(modelValue.paddingRight);
-    state.paddingBottom = unStyleUnit(modelValue.paddingBottom);
-    state.paddingLeft = unStyleUnit(modelValue.paddingLeft);
-}
-
-defineExpose({
-    modelToState: () => modelToState(model.value),
-});
 </script>
 
 <template>
