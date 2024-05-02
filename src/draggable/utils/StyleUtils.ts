@@ -107,11 +107,17 @@ function applyStyle<T = any, R = any>(props: StyleSetterProps, state: StyleSette
     if (isFunction(options?.transform)) value = options?.transform(value);
     for (let node of nodes) {
         if (!node.__raw_props_style) node.__raw_props_style = toObjectStyle(node.props.style);
+        const rawStyleValue = node.__raw_props_style[styleProperty];
         const style: Record<string, any> = node.props.style ?? {};
         node.props.style = { ...node.__raw_props_style, ...style };
         if (noValue(value)) {
-            res = res || hasValue(node.props.style[styleProperty]);
-            delete node.props.style[styleProperty];
+            if (hasValue(rawStyleValue)) {
+                res = res || node.props.style[styleProperty] !== rawStyleValue;
+                node.props.style[styleProperty] = rawStyleValue;
+            } else {
+                res = res || hasValue(node.props.style[styleProperty]);
+                delete node.props.style[styleProperty];
+            }
         } else {
             res = res || node.props.style[styleProperty] !== value;
             node.props.style[styleProperty] = value;

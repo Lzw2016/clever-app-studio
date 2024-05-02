@@ -116,15 +116,6 @@ const applyStyleMaxHeight = lodash.debounce(applyStyle, applyStyleDebounceTime);
 const applyStyleOverflow = lodash.debounce(applyStyle, applyStyleDebounceTime);
 const applyStyleObjectFit = lodash.debounce(applyStyle, applyStyleDebounceTime);
 const applyStyleObjectPosition = lodash.debounce(applyStyle, applyStyleDebounceTime);
-// watch(() => state.style.width, width => applyStyleWidth(props, state, "width", width));
-// watch(() => state.style.height, height => applyStyleHeight(props, state, "height", height));
-// watch(() => state.style.minWidth, minWidth => applyStyleMinWidth(props, state, "minWidth", minWidth));
-// watch(() => state.style.minHeight, minHeight => applyStyleMinHeight(props, state, "minHeight", minHeight));
-// watch(() => state.style.maxWidth, maxWidth => applyStyleMaxWidth(props, state, "maxWidth", maxWidth));
-// watch(() => state.style.maxHeight, maxHeight => applyStyleMaxHeight(props, state, "maxHeight", maxHeight));
-// watch(() => state.style.overflow, overflow => applyStyleOverflow(props, state, "overflow", overflow));
-// watch(() => state.style.objectFit, objectFit => applyStyleObjectFit(props, state, "objectFit", objectFit));
-// watch(() => state.style.objectPosition, objectPosition => applyStyleObjectPosition(props, state, "objectPosition", objectPosition));
 
 function initState() {
     state.width = unStyleUnit(state.style.width);
