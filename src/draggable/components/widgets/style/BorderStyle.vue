@@ -112,7 +112,6 @@ watch(() => props.nodes, () => {
     // state.style -> state
     initState();
 }, { immediate: true });
-
 // state -> state.style
 watch(() => state.borderRadius, value => {
     if (value) {

@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive } from "vue";
+import lodash from "lodash";
+import { reactive, watch } from "vue";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { Numeric, Select, Tooltip } from "@opentiny/vue";
+import { hasValue } from "@/utils/Typeof";
+import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
+import { applyStyle, applyStyleDebounceTime, getStyle } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -10,18 +14,25 @@ defineOptions({
 });
 
 // 定义 Props 类型
-interface EffectStyleProps {
+interface EffectStyleProps extends StyleSetterProps {
 }
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<EffectStyleProps>(), {});
 
 // 定义 State 类型
-interface EffectStyleState {
+interface EffectStyleState extends StyleSetterState {
+    readonly style: {
+        cursor?: string;
+        backgroundColor?: string;
+        opacity?: number;
+    };
 }
 
 // state 属性
-const state = reactive<EffectStyleState>({});
+const state = reactive<EffectStyleState>({
+    style: {},
+});
 // 内部数据
 const data = {
     cursorList: [
@@ -39,23 +50,27 @@ const data = {
     ],
 };
 
-interface EffectStyleModel {
-    cursor?: string;
-    backgroundColor?: string;
-    opacity?: number;
+// 选中节点变化后更新 state.style & state
+watch(() => props.nodes, () => {
+    // 读取 style 信息
+    state.style.cursor = getStyle(props, state, "cursor");
+    state.style.backgroundColor = getStyle(props, state, "backgroundColor");
+    state.style.opacity = getStyle(props, state, "opacity");
+    // state.style -> state
+    initState();
+}, { immediate: true });
+// state.style属性变化后应用 style
+const applyStyleCursor = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleBackgroundColor = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleOpacity = lodash.debounce(applyStyle, applyStyleDebounceTime);
+
+function initState() {
 }
 
-// css display 值
-const model = defineModel<EffectStyleModel>({
-    default: shallowReactive<EffectStyleModel>({}),
-});
-
-function modelToState(modelValue: EffectStyleModel) {
+function delBackgroundColor() {
+    delete state.style.backgroundColor;
+    applyStyleBackgroundColor(props, state, 'backgroundColor', undefined);
 }
-
-defineExpose({
-    modelToState: () => modelToState(model.value),
-});
 </script>
 
 <template>
@@ -70,13 +85,14 @@ defineExpose({
                 <Select
                     class="flex-item-fill"
                     style="min-width: 60px;"
-                    v-model="model.cursor"
+                    v-model="state.style.cursor"
                     :filterable="true"
                     :allow-create="true"
                     :options="data.cursorList"
                     size="mini"
                     :clearable="true"
                     placeholder="光标样式"
+                    @change="value => applyStyleCursor(props, state, 'cursor', value)"
                 />
             </div>
         </div>
@@ -87,9 +103,20 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container" style="align-items: center;">
-                <input :value="model.backgroundColor ?? '#000000'" @input="e => model.backgroundColor= e.target?.['value']" type="color"/>
-                <span style="margin-left: 8px;">{{ model.backgroundColor }}</span>
-                <FontAwesomeIcon v-show="model.backgroundColor" class="button-clear" :icon="faXmark" title="清除背景颜色" @click="delete model.backgroundColor"/>
+                <input
+                    :value="state.style.backgroundColor ?? '#000000'"
+                    @input="e => state.style.backgroundColor= e.target?.['value']"
+                    type="color"
+                    @change="e => applyStyleBackgroundColor(props, state, 'backgroundColor', e.target?.['value'])"
+                />
+                <span style="margin-left: 8px;">{{ state.style.backgroundColor }}</span>
+                <FontAwesomeIcon
+                    v-show="state.style.backgroundColor"
+                    class="button-clear"
+                    :icon="faXmark"
+                    title="清除背景颜色"
+                    @click="delBackgroundColor"
+                />
             </div>
         </div>
         <div class="flex-row-container setter-row">
@@ -99,7 +126,17 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input">
-                <Numeric style="width: 100%;" v-model="model.opacity" unit="%" size="mini" :min="0" :max="100" :allow-empty="true" placeholder="不透明度"/>
+                <Numeric
+                    style="width: 100%;"
+                    v-model="state.style.opacity"
+                    unit="%"
+                    size="mini"
+                    :min="0"
+                    :max="100"
+                    :allow-empty="true"
+                    placeholder="不透明度"
+                    @change="value => applyStyleOpacity(props, state, 'opacity', hasValue(value)? value/100: undefined)"
+                />
             </div>
         </div>
     </div>

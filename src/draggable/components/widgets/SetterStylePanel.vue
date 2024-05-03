@@ -100,7 +100,6 @@ const propsClass = computed(() => {
 });
 
 const componentStylesRef = ref<InstanceType<typeof ComponentStyles> | undefined>();
-const effectStyleRef = ref<InstanceType<typeof EffectStyle> | undefined>();
 watch(() => propsStyle.value, style => {
     style = toObjectStyle(style);
     const styleProperties = [
@@ -210,7 +209,6 @@ function forEachSelectNodes(nodes: Array<RuntimeNode>, each: (node: RuntimeNode)
 
 function modelToState() {
     const doModelToState = () => {
-        effectStyleRef.value?.modelToState();
     };
     if (componentStylesRef.value) {
         doModelToState();
@@ -263,7 +261,7 @@ function updateStyle(style: Record<string, any>) {
                 <BorderStyle v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableEffect!==true" class="settings-items" name="效果" title="效果">
-                <EffectStyle ref="effectStyleRef" v-model="state.style"/>
+                <EffectStyle v-bind="styleSetterProps"/>
             </CollapseItem>
         </Collapse>
     </div>
