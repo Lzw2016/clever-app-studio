@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { defineModel, reactive, shallowReactive, watch } from "vue";
+import lodash from "lodash";
+import { reactive, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Input as TinyInput, Select, Tooltip } from "@opentiny/vue";
-import { autoUseStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
+import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
+import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, batchApplyStyle, getStyle, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 import BorderRadiusSingle from "@/assets/images/border-radius-single.svg?component";
 import BorderRadiusMultiple from "@/assets/images/border-radius-multiple.svg?component";
 import BorderRadiusTopLeft from "@/assets/images/border-radius-topleft.svg?component";
@@ -23,14 +25,14 @@ defineOptions({
 });
 
 // 定义 Props 类型
-interface BorderStyleProps {
+interface BorderStyleProps extends StyleSetterProps {
 }
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<BorderStyleProps>(), {});
 
 // 定义 State 类型
-interface BorderStyleState {
+interface BorderStyleState extends StyleSetterState {
     borderRadiusSingle?: boolean;
     borderRadius?: string;
     borderTopLeftRadius?: string;
@@ -45,12 +47,29 @@ interface BorderStyleState {
     borderRightWidth?: string;
     borderBottomWidth?: string;
     borderLeftWidth?: string;
+    readonly style: {
+        borderTopLeftRadius?: string;
+        borderTopRightRadius?: string;
+        borderBottomLeftRadius?: string;
+        borderBottomRightRadius?: string;
+        borderTopStyle?: string;
+        borderRightStyle?: string;
+        borderBottomStyle?: string;
+        borderLeftStyle?: string;
+        borderTopColor?: string;
+        borderRightColor?: string;
+        borderBottomColor?: string;
+        borderLeftColor?: string;
+        borderTopWidth?: string;
+        borderRightWidth?: string;
+        borderBottomWidth?: string;
+        borderLeftWidth?: string;
+    };
 }
 
 // state 属性
 const state = reactive<BorderStyleState>({
-    borderRadiusSingle: undefined,
-    borderStyleSingle: undefined,
+    style: {},
 });
 // 内部数据
 const data = {
@@ -71,30 +90,30 @@ const data = {
     ],
 };
 
-interface BorderStyleModel {
-    borderTopLeftRadius?: string;
-    borderTopRightRadius?: string;
-    borderBottomLeftRadius?: string;
-    borderBottomRightRadius?: string;
-    borderTopStyle?: string;
-    borderRightStyle?: string;
-    borderBottomStyle?: string;
-    borderLeftStyle?: string;
-    borderTopColor?: string;
-    borderRightColor?: string;
-    borderBottomColor?: string;
-    borderLeftColor?: string;
-    borderTopWidth?: string;
-    borderRightWidth?: string;
-    borderBottomWidth?: string;
-    borderLeftWidth?: string;
-}
+// 选中节点变化后更新 state.style & state
+watch(() => props.nodes, () => {
+    // 读取 style 信息
+    state.style.borderTopLeftRadius = getStyle(props, state, "borderTopLeftRadius");
+    state.style.borderTopRightRadius = getStyle(props, state, "borderTopRightRadius");
+    state.style.borderBottomLeftRadius = getStyle(props, state, "borderBottomLeftRadius");
+    state.style.borderBottomRightRadius = getStyle(props, state, "borderBottomRightRadius");
+    state.style.borderTopStyle = getStyle(props, state, "borderTopStyle");
+    state.style.borderRightStyle = getStyle(props, state, "borderRightStyle");
+    state.style.borderBottomStyle = getStyle(props, state, "borderBottomStyle");
+    state.style.borderLeftStyle = getStyle(props, state, "borderLeftStyle");
+    state.style.borderTopColor = getStyle(props, state, "borderTopColor");
+    state.style.borderRightColor = getStyle(props, state, "borderRightColor");
+    state.style.borderBottomColor = getStyle(props, state, "borderBottomColor");
+    state.style.borderLeftColor = getStyle(props, state, "borderLeftColor");
+    state.style.borderTopWidth = getStyle(props, state, "borderTopWidth");
+    state.style.borderRightWidth = getStyle(props, state, "borderRightWidth");
+    state.style.borderBottomWidth = getStyle(props, state, "borderBottomWidth");
+    state.style.borderLeftWidth = getStyle(props, state, "borderLeftWidth");
+    // state.style -> state
+    initState();
+}, { immediate: true });
 
-// css display 值
-const model = defineModel<BorderStyleModel>({
-    default: shallowReactive<BorderStyleModel>({}),
-});
-
+// state -> state.style
 watch(() => state.borderRadius, value => {
     if (value) {
         state.borderTopLeftRadius = value;
@@ -108,34 +127,34 @@ watch(() => state.borderRadius, value => {
         delete state.borderBottomRightRadius;
     }
 });
-watch(() => state.borderTopLeftRadius, value => autoUseStyleUnit(model.value, "borderTopLeftRadius", value));
-watch(() => state.borderTopRightRadius, value => autoUseStyleUnit(model.value, "borderTopRightRadius", value));
-watch(() => state.borderBottomLeftRadius, value => autoUseStyleUnit(model.value, "borderBottomLeftRadius", value));
-watch(() => state.borderBottomRightRadius, value => autoUseStyleUnit(model.value, "borderBottomRightRadius", value));
+watch(() => state.borderTopLeftRadius, value => autoUseStyleUnit(state.style, "borderTopLeftRadius", value));
+watch(() => state.borderTopRightRadius, value => autoUseStyleUnit(state.style, "borderTopRightRadius", value));
+watch(() => state.borderBottomLeftRadius, value => autoUseStyleUnit(state.style, "borderBottomLeftRadius", value));
+watch(() => state.borderBottomRightRadius, value => autoUseStyleUnit(state.style, "borderBottomRightRadius", value));
 watch(() => state.borderStyle, value => {
     if (value) {
-        model.value.borderTopStyle = value;
-        model.value.borderRightStyle = value;
-        model.value.borderBottomStyle = value;
-        model.value.borderLeftStyle = value;
+        state.style.borderTopStyle = value;
+        state.style.borderRightStyle = value;
+        state.style.borderBottomStyle = value;
+        state.style.borderLeftStyle = value;
     } else {
-        delete model.value.borderTopStyle;
-        delete model.value.borderRightStyle;
-        delete model.value.borderBottomStyle;
-        delete model.value.borderLeftStyle;
+        delete state.style.borderTopStyle;
+        delete state.style.borderRightStyle;
+        delete state.style.borderBottomStyle;
+        delete state.style.borderLeftStyle;
     }
 });
 watch(() => state.borderColor, value => {
     if (value) {
-        model.value.borderTopColor = value;
-        model.value.borderRightColor = value;
-        model.value.borderBottomColor = value;
-        model.value.borderLeftColor = value;
+        state.style.borderTopColor = value;
+        state.style.borderRightColor = value;
+        state.style.borderBottomColor = value;
+        state.style.borderLeftColor = value;
     } else {
-        delete model.value.borderTopColor;
-        delete model.value.borderRightColor;
-        delete model.value.borderBottomColor;
-        delete model.value.borderLeftColor;
+        delete state.style.borderTopColor;
+        delete state.style.borderRightColor;
+        delete state.style.borderBottomColor;
+        delete state.style.borderLeftColor;
     }
 });
 watch(() => state.borderWidth, value => {
@@ -151,10 +170,107 @@ watch(() => state.borderWidth, value => {
         delete state.borderLeftWidth;
     }
 });
-watch(() => state.borderTopWidth, value => autoUseStyleUnit(model.value, "borderTopWidth", value));
-watch(() => state.borderRightWidth, value => autoUseStyleUnit(model.value, "borderRightWidth", value));
-watch(() => state.borderBottomWidth, value => autoUseStyleUnit(model.value, "borderBottomWidth", value));
-watch(() => state.borderLeftWidth, value => autoUseStyleUnit(model.value, "borderLeftWidth", value));
+watch(() => state.borderTopWidth, value => autoUseStyleUnit(state.style, "borderTopWidth", value));
+watch(() => state.borderRightWidth, value => autoUseStyleUnit(state.style, "borderRightWidth", value));
+watch(() => state.borderBottomWidth, value => autoUseStyleUnit(state.style, "borderBottomWidth", value));
+watch(() => state.borderLeftWidth, value => autoUseStyleUnit(state.style, "borderLeftWidth", value));
+// state.style属性变化后应用 style
+const batchApplyStyleBorderRadius = lodash.debounce(batchApplyStyle, applyStyleDebounceTime);
+const applyStyleBorderTopLeftRadius = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleBorderTopRightRadius = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleBorderBottomLeftRadius = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleBorderBottomRightRadius = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const batchApplyStyleBorderStyle = lodash.debounce(batchApplyStyle, applyStyleDebounceTime);
+const applyStyleBorderTopStyle = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleBorderRightStyle = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleBorderBottomStyle = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleBorderLeftStyle = lodash.debounce(applyStyle, applyStyleDebounceTime);
+
+const batchApplyStyleBorderColor = lodash.debounce(batchApplyStyle, applyStyleDebounceTime);
+const applyStyleBorderTopColor = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleBorderRightColor = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleBorderBottomColor = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleBorderLeftColor = lodash.debounce(applyStyle, applyStyleDebounceTime);
+
+const batchApplyStyleBorderTopWidth = lodash.debounce(batchApplyStyle, applyStyleDebounceTime);
+const applyStyleBorderTopWidth = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleBorderRightWidth = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleBorderBottomWidth = lodash.debounce(applyStyle, applyStyleDebounceTime);
+const applyStyleBorderLeftWidth = lodash.debounce(applyStyle, applyStyleDebounceTime);
+
+function initState() {
+    const tmp = new Set<any>();
+    [
+        state.style.borderTopLeftRadius,
+        state.style.borderTopRightRadius,
+        state.style.borderBottomLeftRadius,
+        state.style.borderBottomRightRadius,
+    ].forEach(item => tmp.add(item));
+    if (tmp.size === 1) {
+        if (state.style.borderTopLeftRadius) {
+            state.borderRadiusSingle = true;
+            state.borderRadius = unStyleUnit(state.style.borderTopLeftRadius);
+        } else {
+            deleteBorderRadius();
+        }
+    } else {
+        state.borderRadiusSingle = false;
+        state.borderTopLeftRadius = unStyleUnit(state.style.borderTopLeftRadius);
+        state.borderTopRightRadius = unStyleUnit(state.style.borderTopRightRadius);
+        state.borderBottomLeftRadius = unStyleUnit(state.style.borderBottomLeftRadius);
+        state.borderBottomRightRadius = unStyleUnit(state.style.borderBottomRightRadius);
+    }
+    tmp.clear();
+    [
+        state.style.borderTopStyle,
+        state.style.borderRightStyle,
+        state.style.borderBottomStyle,
+        state.style.borderLeftStyle,
+    ].forEach(item => tmp.add(item));
+    const styleCount = tmp.size === 1;
+    tmp.clear();
+    [
+        state.style.borderTopColor,
+        state.style.borderRightColor,
+        state.style.borderBottomColor,
+        state.style.borderLeftColor,
+    ].forEach(item => tmp.add(item));
+    const colorCount = tmp.size === 1;
+    tmp.clear();
+    [
+        state.style.borderTopWidth,
+        state.style.borderRightWidth,
+        state.style.borderBottomWidth,
+        state.style.borderLeftWidth,
+    ].forEach(item => tmp.add(item));
+    const widthCount = tmp.size === 1;
+    if (styleCount && colorCount && widthCount) {
+        if (!state.style.borderTopStyle && !state.style.borderTopColor && !state.style.borderTopWidth) {
+            deleteBorderStyle();
+        } else {
+            state.borderStyleSingle = true;
+            state.borderStyle = state.style.borderTopStyle;
+            state.borderColor = state.style.borderTopColor;
+            state.borderWidth = unStyleUnit(state.style.borderTopWidth);
+        }
+    } else {
+        state.borderStyleSingle = false;
+        state.borderTopWidth = unStyleUnit(state.style.borderTopWidth);
+        state.borderRightWidth = unStyleUnit(state.style.borderRightWidth);
+        state.borderBottomWidth = unStyleUnit(state.style.borderBottomWidth);
+        state.borderLeftWidth = unStyleUnit(state.style.borderLeftWidth);
+    }
+}
+
+function getBorderRadius(borderRadius?: string) {
+    borderRadius = toStyleUnit(borderRadius);
+    return {
+        borderTopLeftRadius: borderRadius,
+        borderTopRightRadius: borderRadius,
+        borderBottomLeftRadius: borderRadius,
+        borderBottomRightRadius: borderRadius,
+    };
+}
 
 function deleteBorderRadius() {
     delete state.borderRadiusSingle;
@@ -163,18 +279,61 @@ function deleteBorderRadius() {
     delete state.borderTopRightRadius;
     delete state.borderBottomLeftRadius;
     delete state.borderBottomRightRadius;
-    delete model.value.borderTopLeftRadius;
-    delete model.value.borderTopRightRadius;
-    delete model.value.borderBottomLeftRadius;
-    delete model.value.borderBottomRightRadius;
+    delete state.style.borderTopLeftRadius;
+    delete state.style.borderTopRightRadius;
+    delete state.style.borderBottomLeftRadius;
+    delete state.style.borderBottomRightRadius;
 }
 
 function setBorderRadiusSingle(value: boolean) {
     if (state.borderRadiusSingle === value) {
         deleteBorderRadius();
-        return;
+        batchApplyStyleBorderRadius(props, state, getBorderRadius(undefined));
+    } else {
+        state.borderRadiusSingle = value;
+        if (value) {
+            batchApplyStyleBorderRadius(props, state, getBorderRadius(state.borderRadius));
+        } else {
+            batchApplyStyleBorderRadius(props, state, {
+                borderTopLeftRadius: state.style.borderTopLeftRadius,
+                borderTopRightRadius: state.style.borderTopRightRadius,
+                borderBottomLeftRadius: state.style.borderBottomLeftRadius,
+                borderBottomRightRadius: state.style.borderBottomRightRadius,
+            });
+        }
     }
-    state.borderRadiusSingle = value;
+}
+
+function getBorderStyle(borderStyle?: string) {
+    return {
+        borderTopStyle: borderStyle,
+        borderRightStyle: borderStyle,
+        borderBottomStyle: borderStyle,
+        borderLeftStyle: borderStyle,
+    };
+}
+
+function getBorderWidth(borderWidth?: string) {
+    return {
+        borderTopWidth: toStyleUnit(borderWidth),
+        borderRightWidth: toStyleUnit(borderWidth),
+        borderBottomWidth: toStyleUnit(borderWidth),
+        borderLeftWidth: toStyleUnit(borderWidth),
+    };
+}
+
+function getBorderColor(borderColor?: string) {
+    return {
+        borderTopColor: borderColor,
+        borderRightColor: borderColor,
+        borderBottomColor: borderColor,
+        borderLeftColor: borderColor,
+    };
+}
+
+function delBorderColor() {
+    delete state.borderColor;
+    batchApplyStyleBorderColor(props, state, getBorderColor(undefined));
 }
 
 function deleteBorderStyle() {
@@ -186,95 +345,92 @@ function deleteBorderStyle() {
     delete state.borderRightWidth;
     delete state.borderBottomWidth;
     delete state.borderLeftWidth;
-    delete model.value.borderTopStyle;
-    delete model.value.borderRightStyle;
-    delete model.value.borderBottomStyle;
-    delete model.value.borderLeftStyle;
-    delete model.value.borderTopColor;
-    delete model.value.borderRightColor;
-    delete model.value.borderBottomColor;
-    delete model.value.borderLeftColor;
-    delete model.value.borderTopWidth;
-    delete model.value.borderRightWidth;
-    delete model.value.borderBottomWidth;
-    delete model.value.borderLeftWidth;
+    delete state.style.borderTopStyle;
+    delete state.style.borderRightStyle;
+    delete state.style.borderBottomStyle;
+    delete state.style.borderLeftStyle;
+    delete state.style.borderTopColor;
+    delete state.style.borderRightColor;
+    delete state.style.borderBottomColor;
+    delete state.style.borderLeftColor;
+    delete state.style.borderTopWidth;
+    delete state.style.borderRightWidth;
+    delete state.style.borderBottomWidth;
+    delete state.style.borderLeftWidth;
 }
 
 function setBorderStyleSingle(value: boolean) {
     if (state.borderStyleSingle === value) {
         deleteBorderStyle();
-        return;
-    }
-    state.borderStyleSingle = value;
-}
-
-function modelToState(modelValue: BorderStyleModel) {
-    const tmp = new Set<any>();
-    [
-        modelValue.borderTopLeftRadius,
-        modelValue.borderTopRightRadius,
-        modelValue.borderBottomLeftRadius,
-        modelValue.borderBottomRightRadius,
-    ].forEach(item => tmp.add(item));
-    if (tmp.size === 1) {
-        if (modelValue.borderTopLeftRadius) {
-            state.borderRadiusSingle = true;
-            state.borderRadius = unStyleUnit(modelValue.borderTopLeftRadius);
-        } else {
-            deleteBorderRadius();
-        }
+        batchApplyStyle(props, state, {
+            borderTopStyle: undefined,
+            borderRightStyle: undefined,
+            borderBottomStyle: undefined,
+            borderLeftStyle: undefined,
+            borderTopColor: undefined,
+            borderRightColor: undefined,
+            borderBottomColor: undefined,
+            borderLeftColor: undefined,
+            borderTopWidth: undefined,
+            borderRightWidth: undefined,
+            borderBottomWidth: undefined,
+            borderLeftWidth: undefined,
+        });
     } else {
-        state.borderRadiusSingle = false;
-        state.borderTopLeftRadius = unStyleUnit(modelValue.borderTopLeftRadius);
-        state.borderTopRightRadius = unStyleUnit(modelValue.borderTopRightRadius);
-        state.borderBottomLeftRadius = unStyleUnit(modelValue.borderBottomLeftRadius);
-        state.borderBottomRightRadius = unStyleUnit(modelValue.borderBottomRightRadius);
-    }
-    tmp.clear();
-    [
-        modelValue.borderTopStyle,
-        modelValue.borderRightStyle,
-        modelValue.borderBottomStyle,
-        modelValue.borderLeftStyle,
-    ].forEach(item => tmp.add(item));
-    const styleCount = tmp.size === 1;
-    tmp.clear();
-    [
-        modelValue.borderTopColor,
-        modelValue.borderRightColor,
-        modelValue.borderBottomColor,
-        modelValue.borderLeftColor,
-    ].forEach(item => tmp.add(item));
-    const colorCount = tmp.size === 1;
-    tmp.clear();
-    [
-        modelValue.borderTopWidth,
-        modelValue.borderRightWidth,
-        modelValue.borderBottomWidth,
-        modelValue.borderLeftWidth,
-    ].forEach(item => tmp.add(item));
-    const widthCount = tmp.size === 1;
-    if (styleCount && colorCount && widthCount) {
-        if (!modelValue.borderTopStyle && !modelValue.borderTopColor && !modelValue.borderTopWidth) {
-            deleteBorderStyle();
+        state.borderStyleSingle = value;
+        if(value) {
+            batchApplyStyle(props, state, {
+                borderTopStyle: state.borderStyle,
+                borderRightStyle: state.borderStyle,
+                borderBottomStyle: state.borderStyle,
+                borderLeftStyle: state.borderStyle,
+                borderTopColor: state.borderColor,
+                borderRightColor: state.borderColor,
+                borderBottomColor: state.borderColor,
+                borderLeftColor: state.borderColor,
+                borderTopWidth: state.borderWidth,
+                borderRightWidth: state.borderWidth,
+                borderBottomWidth: state.borderWidth,
+                borderLeftWidth: state.borderWidth,
+            });
         } else {
-            state.borderStyleSingle = true;
-            state.borderStyle = modelValue.borderTopStyle;
-            state.borderColor = modelValue.borderTopColor;
-            state.borderWidth = unStyleUnit(modelValue.borderTopWidth);
+            batchApplyStyle(props, state, {
+                borderTopStyle: state.style.borderTopStyle,
+                borderRightStyle: state.style.borderRightStyle,
+                borderBottomStyle: state.style.borderBottomStyle,
+                borderLeftStyle: state.style.borderLeftStyle,
+                borderTopColor: state.style.borderTopColor,
+                borderRightColor: state.style.borderRightColor,
+                borderBottomColor: state.style.borderBottomColor,
+                borderLeftColor: state.style.borderLeftColor,
+                borderTopWidth: state.style.borderTopWidth,
+                borderRightWidth: state.style.borderRightWidth,
+                borderBottomWidth: state.style.borderBottomWidth,
+                borderLeftWidth: state.style.borderLeftWidth,
+            });
         }
-    } else {
-        state.borderStyleSingle = false;
-        state.borderTopWidth = unStyleUnit(modelValue.borderTopWidth);
-        state.borderRightWidth = unStyleUnit(modelValue.borderRightWidth);
-        state.borderBottomWidth = unStyleUnit(modelValue.borderBottomWidth);
-        state.borderLeftWidth = unStyleUnit(modelValue.borderLeftWidth);
     }
 }
 
-defineExpose({
-    modelToState: () => modelToState(model.value),
-});
+function delBorderTopColor() {
+    delete state.style.borderTopColor;
+    applyStyleBorderTopColor(props, state, 'borderTopColor', undefined);
+}
+
+function delBorderRightColor() {
+    delete state.style.borderRightColor;
+    applyStyleBorderRightColor(props, state, 'borderRightColor', undefined);
+}
+
+function delBorderBottomColor() {
+    delete state.style.borderBottomColor
+    applyStyleBorderBottomColor(props, state, 'borderBottomColor', undefined);
+}
+
+function delBorderLeftColor() {
+    delete state.style.borderLeftColor
+    applyStyleBorderLeftColor(props, state, 'borderLeftColor', undefined);
+}
 </script>
 
 <template>
@@ -299,7 +455,15 @@ defineExpose({
                 >
                     <component :is="borderRadiusSingle.icon" style="width: 16px; height: 16px;"/>
                 </div>
-                <TinyInput v-if="state.borderRadiusSingle" class="flex-item-fill" v-model="state.borderRadius" size="mini" :clearable="true" placeholder="统一设置圆角大小"/>
+                <TinyInput
+                    v-if="state.borderRadiusSingle"
+                    class="flex-item-fill"
+                    v-model="state.borderRadius"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="统一设置圆角大小"
+                    @change="value => batchApplyStyleBorderRadius(props, state, getBorderRadius(value))"
+                />
             </div>
         </div>
         <template v-if="state.borderRadiusSingle===false">
@@ -310,14 +474,28 @@ defineExpose({
                         <div class="flex-row-container flex-center" style="padding: 2px 4px; margin: 2px 2px; border: 1px solid #c4c6cf;" title="左上圆角大小">
                             <BorderRadiusTopLeft style="width: 16px; height: 16px;"/>
                         </div>
-                        <TinyInput class="flex-item-fill" v-model="state.borderTopLeftRadius" size="mini" :clearable="true" placeholder="左上"/>
+                        <TinyInput
+                            class="flex-item-fill"
+                            v-model="state.borderTopLeftRadius"
+                            size="mini"
+                            :clearable="true"
+                            placeholder="左上"
+                            @change="value => applyStyleBorderTopLeftRadius(props, state, 'borderTopLeftRadius', toStyleUnit(value))"
+                        />
                     </div>
                     <div style="width: 16px;"/>
                     <div class="flex-item-fill flex-row-container" style="align-items: center;">
                         <div class="flex-row-container flex-center" style="padding: 2px 4px; margin: 2px 2px; border: 1px solid #c4c6cf;" title="右上圆角大小">
                             <BorderRadiusTopRight style="width: 16px; height: 16px;"/>
                         </div>
-                        <TinyInput class="flex-item-fill" v-model="state.borderTopRightRadius" size="mini" :clearable="true" placeholder="右上"/>
+                        <TinyInput
+                            class="flex-item-fill"
+                            v-model="state.borderTopRightRadius"
+                            size="mini"
+                            :clearable="true"
+                            placeholder="右上"
+                            @change="value => applyStyleBorderTopRightRadius(props, state, 'borderTopRightRadius', toStyleUnit(value))"
+                        />
                     </div>
                 </div>
             </div>
@@ -328,14 +506,28 @@ defineExpose({
                         <div class="flex-row-container flex-center" style="padding: 2px 4px; margin: 2px 2px; border: 1px solid #c4c6cf;" title="左下圆角大小">
                             <BorderRadiusBottomLeft style="width: 16px; height: 16px;"/>
                         </div>
-                        <TinyInput class="flex-item-fill" v-model="state.borderBottomLeftRadius" size="mini" :clearable="true" placeholder="左下"/>
+                        <TinyInput
+                            class="flex-item-fill"
+                            v-model="state.borderBottomLeftRadius"
+                            size="mini"
+                            :clearable="true"
+                            placeholder="左下"
+                            @change="value => applyStyleBorderBottomLeftRadius(props, state, 'borderBottomLeftRadius', toStyleUnit(value))"
+                        />
                     </div>
                     <div style="width: 16px;"/>
                     <div class="flex-item-fill flex-row-container" style="align-items: center;">
                         <div class="flex-row-container flex-center" style="padding: 2px 4px; margin: 2px 2px; border: 1px solid #c4c6cf;" title="右下圆角大小">
                             <BorderRadiusBottomRight style="width: 16px; height: 16px;"/>
                         </div>
-                        <TinyInput class="flex-item-fill" v-model="state.borderBottomRightRadius" size="mini" :clearable="true" placeholder="右下"/>
+                        <TinyInput
+                            class="flex-item-fill"
+                            v-model="state.borderBottomRightRadius"
+                            size="mini"
+                            :clearable="true"
+                            placeholder="右下"
+                            @change="value => applyStyleBorderBottomRightRadius(props, state, 'borderBottomRightRadius', toStyleUnit(value))"
+                        />
                     </div>
                 </div>
             </div>
@@ -369,17 +561,38 @@ defineExpose({
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input flex-row-container flex-center">
-                <Select class="flex-item-fill" v-model="state.borderStyle" :options="data.borderStyleList" size="mini" :clearable="true" placeholder="样式"/>
+                <Select
+                    class="flex-item-fill"
+                    v-model="state.borderStyle"
+                    :options="data.borderStyleList"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="样式"
+                    @change="value => batchApplyStyleBorderStyle(props, state, getBorderStyle(value))"
+                />
                 <span style="margin-left: 8px;"/>
-                <TinyInput class="flex-item-fill" v-model="state.borderWidth" size="mini" :clearable="true" placeholder="宽度"/>
+                <TinyInput
+                    class="flex-item-fill"
+                    v-model="state.borderWidth"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="宽度"
+                    @change="value => batchApplyStyleBorderTopWidth(props, state, getBorderWidth(value))"
+                />
                 <span style="margin-left: 8px;"/>
                 <div class="flex-item-fixed flex-row-container flex-center">
-                    <input :value="state.borderColor ?? '#000000'" @input="e => state.borderColor= e.target?.['value']" type="color" title="选择边框颜色"/>
+                    <input
+                        :value="state.borderColor ?? '#000000'"
+                        @input="e => state.borderColor= e.target?.['value']"
+                        type="color"
+                        title="选择边框颜色"
+                        @change="e => batchApplyStyleBorderColor(props, state, getBorderColor(e.target?.['value']))"
+                    />
                     <FontAwesomeIcon
                         class="button-clear"
                         :style="{ visibility: state.borderColor ? 'unset': 'hidden' }"
                         :icon="faXmark"
-                        @click="delete state.borderColor"
+                        @click="delBorderColor"
                         title="清除边框颜色"
                     />
                 </div>
@@ -394,17 +607,38 @@ defineExpose({
                     <!-- <BorderTop style="width: 16px; height: 16px;"/> -->
                 </div>
                 <div class="flex-item-fill setter-row-input flex-row-container flex-center">
-                    <Select class="flex-item-fill" v-model="model.borderTopStyle" :options="data.borderStyleList" size="mini" :clearable="true" placeholder="样式"/>
+                    <Select
+                        class="flex-item-fill"
+                        v-model="state.style.borderTopStyle"
+                        :options="data.borderStyleList"
+                        size="mini"
+                        :clearable="true"
+                        placeholder="样式"
+                        @change="value => applyStyleBorderTopStyle(props, state, 'borderTopStyle', value)"
+                    />
                     <span style="margin-left: 8px;"/>
-                    <TinyInput class="flex-item-fill" v-model="state.borderTopWidth" size="mini" :clearable="true" placeholder="宽度"/>
+                    <TinyInput
+                        class="flex-item-fill"
+                        v-model="state.borderTopWidth"
+                        size="mini"
+                        :clearable="true"
+                        placeholder="宽度"
+                        @change="value => applyStyleBorderTopWidth(props, state, 'borderTopWidth', toStyleUnit(value))"
+                    />
                     <span style="margin-left: 8px;"/>
                     <div class="flex-item-fixed flex-row-container flex-center">
-                        <input :value="model.borderTopColor ?? '#000000'" @input="e => model.borderTopColor= e.target?.['value']" type="color" title="选择边框颜色"/>
+                        <input
+                            :value="state.style.borderTopColor ?? '#000000'"
+                            @input="e => state.style.borderTopColor= e.target?.['value']"
+                            type="color"
+                            title="选择边框颜色"
+                            @change="e => applyStyleBorderTopColor(props, state, 'borderTopColor', e.target?.['value'])"
+                        />
                         <FontAwesomeIcon
                             class="button-clear"
-                            :style="{ visibility: model.borderTopColor ? 'unset': 'hidden' }"
+                            :style="{ visibility: state.style.borderTopColor ? 'unset': 'hidden' }"
                             :icon="faXmark"
-                            @click="delete model.borderTopColor"
+                            @click="delBorderTopColor"
                             title="清除边框颜色"
                         />
                     </div>
@@ -418,17 +652,38 @@ defineExpose({
                     <!-- <BorderRight style="width: 16px; height: 16px;"/> -->
                 </div>
                 <div class="flex-item-fill setter-row-input flex-row-container flex-center">
-                    <Select class="flex-item-fill" v-model="model.borderRightStyle" :options="data.borderStyleList" size="mini" :clearable="true" placeholder="样式"/>
+                    <Select
+                        class="flex-item-fill"
+                        v-model="state.style.borderRightStyle"
+                        :options="data.borderStyleList"
+                        size="mini"
+                        :clearable="true"
+                        placeholder="样式"
+                        @change="value => applyStyleBorderRightStyle(props, state, 'borderRightStyle', value)"
+                    />
                     <span style="margin-left: 8px;"/>
-                    <TinyInput class="flex-item-fill" v-model="state.borderRightWidth" size="mini" :clearable="true" placeholder="宽度"/>
+                    <TinyInput
+                        class="flex-item-fill"
+                        v-model="state.borderRightWidth"
+                        size="mini"
+                        :clearable="true"
+                        placeholder="宽度"
+                        @change="value => applyStyleBorderRightWidth(props, state, 'borderRightWidth', toStyleUnit(value))"
+                    />
                     <span style="margin-left: 8px;"/>
                     <div class="flex-item-fixed flex-row-container flex-center">
-                        <input :value="model.borderRightColor ?? '#000000'" @input="e => model.borderRightColor= e.target?.['value']" type="color" title="选择边框颜色"/>
+                        <input
+                            :value="state.style.borderRightColor ?? '#000000'"
+                            @input="e => state.style.borderRightColor= e.target?.['value']"
+                            type="color"
+                            title="选择边框颜色"
+                            @change="e => applyStyleBorderRightColor(props, state, 'borderRightColor', e.target?.['value'])"
+                        />
                         <FontAwesomeIcon
                             class="button-clear"
-                            :style="{ visibility: model.borderRightColor ? 'unset': 'hidden' }"
+                            :style="{ visibility: state.style.borderRightColor ? 'unset': 'hidden' }"
                             :icon="faXmark"
-                            @click="delete model.borderRightColor"
+                            @click="delBorderRightColor"
                             title="清除边框颜色"
                         />
                     </div>
@@ -442,17 +697,38 @@ defineExpose({
                     <!-- <BorderBottom style="width: 16px; height: 16px;"/> -->
                 </div>
                 <div class="flex-item-fill setter-row-input flex-row-container flex-center">
-                    <Select class="flex-item-fill" v-model="model.borderBottomStyle" :options="data.borderStyleList" size="mini" :clearable="true" placeholder="样式"/>
+                    <Select
+                        class="flex-item-fill"
+                        v-model="state.style.borderBottomStyle"
+                        :options="data.borderStyleList"
+                        size="mini"
+                        :clearable="true"
+                        placeholder="样式"
+                        @change="value => applyStyleBorderBottomStyle(props, state, 'borderBottomStyle', value)"
+                    />
                     <span style="margin-left: 8px;"/>
-                    <TinyInput class="flex-item-fill" v-model="state.borderBottomWidth" size="mini" :clearable="true" placeholder="宽度"/>
+                    <TinyInput
+                        class="flex-item-fill"
+                        v-model="state.borderBottomWidth"
+                        size="mini"
+                        :clearable="true"
+                        placeholder="宽度"
+                        @change="value => applyStyleBorderBottomWidth(props, state, 'borderBottomWidth', toStyleUnit(value))"
+                    />
                     <span style="margin-left: 8px;"/>
                     <div class="flex-item-fixed flex-row-container flex-center">
-                        <input :value="model.borderBottomColor ?? '#000000'" @input="e => model.borderBottomColor= e.target?.['value']" type="color" title="选择边框颜色"/>
+                        <input
+                            :value="state.style.borderBottomColor ?? '#000000'"
+                            @input="e => state.style.borderBottomColor= e.target?.['value']"
+                            type="color"
+                            title="选择边框颜色"
+                            @change="e => applyStyleBorderBottomColor(props, state, 'borderBottomColor', e.target?.['value'])"
+                        />
                         <FontAwesomeIcon
                             class="button-clear"
-                            :style="{ visibility: model.borderBottomColor ? 'unset': 'hidden' }"
+                            :style="{ visibility: state.style.borderBottomColor ? 'unset': 'hidden' }"
                             :icon="faXmark"
-                            @click="delete model.borderBottomColor"
+                            @click="delBorderBottomColor"
                             title="清除边框颜色"
                         />
                     </div>
@@ -466,17 +742,38 @@ defineExpose({
                     <!-- <BorderLeft style="width: 16px; height: 16px;"/> -->
                 </div>
                 <div class="flex-item-fill setter-row-input flex-row-container flex-center">
-                    <Select class="flex-item-fill" v-model="model.borderLeftStyle" :options="data.borderStyleList" size="mini" :clearable="true" placeholder="样式"/>
+                    <Select
+                        class="flex-item-fill"
+                        v-model="state.style.borderLeftStyle"
+                        :options="data.borderStyleList"
+                        size="mini"
+                        :clearable="true"
+                        placeholder="样式"
+                        @change="value => applyStyleBorderLeftStyle(props, state, 'borderLeftStyle', value)"
+                    />
                     <span style="margin-left: 8px;"/>
-                    <TinyInput class="flex-item-fill" v-model="state.borderLeftWidth" size="mini" :clearable="true" placeholder="宽度"/>
+                    <TinyInput
+                        class="flex-item-fill"
+                        v-model="state.borderLeftWidth"
+                        size="mini"
+                        :clearable="true"
+                        placeholder="宽度"
+                        @change="value => applyStyleBorderLeftWidth(props, state, 'borderLeftWidth', toStyleUnit(value))"
+                    />
                     <span style="margin-left: 8px;"/>
                     <div class="flex-item-fixed flex-row-container flex-center">
-                        <input :value="model.borderLeftColor ?? '#000000'" @input="e => model.borderLeftColor= e.target?.['value']" type="color" title="选择边框颜色"/>
+                        <input
+                            :value="state.style.borderLeftColor ?? '#000000'"
+                            @input="e => state.style.borderLeftColor= e.target?.['value']"
+                            type="color"
+                            title="选择边框颜色"
+                            @change="e => applyStyleBorderLeftColor(props, state, 'borderLeftColor', e.target?.['value'])"
+                        />
                         <FontAwesomeIcon
                             class="button-clear"
-                            :style="{ visibility: model.borderLeftColor ? 'unset': 'hidden' }"
+                            :style="{ visibility: state.style.borderLeftColor ? 'unset': 'hidden' }"
                             :icon="faXmark"
-                            @click="delete model.borderLeftColor"
+                            @click="delBorderLeftColor"
                             title="清除边框颜色"
                         />
                     </div>

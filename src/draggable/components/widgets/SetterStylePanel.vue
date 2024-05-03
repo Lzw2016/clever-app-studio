@@ -100,7 +100,6 @@ const propsClass = computed(() => {
 });
 
 const componentStylesRef = ref<InstanceType<typeof ComponentStyles> | undefined>();
-const borderStyleRef = ref<InstanceType<typeof BorderStyle> | undefined>();
 const effectStyleRef = ref<InstanceType<typeof EffectStyle> | undefined>();
 watch(() => propsStyle.value, style => {
     style = toObjectStyle(style);
@@ -211,7 +210,6 @@ function forEachSelectNodes(nodes: Array<RuntimeNode>, each: (node: RuntimeNode)
 
 function modelToState() {
     const doModelToState = () => {
-        borderStyleRef.value?.modelToState();
         effectStyleRef.value?.modelToState();
     };
     if (componentStylesRef.value) {
@@ -262,7 +260,7 @@ function updateStyle(style: Record<string, any>) {
             <!-- <CollapseItem class="settings-items" name="背景" title="背景"> -->
             <!-- </CollapseItem> -->
             <CollapseItem v-if="props.stylePanel.disableBorder!==true" class="settings-items" name="边框" title="边框">
-                <BorderStyle ref="borderStyleRef" v-model="state.style"/>
+                <BorderStyle v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableEffect!==true" class="settings-items" name="效果" title="效果">
                 <EffectStyle ref="effectStyleRef" v-model="state.style"/>
