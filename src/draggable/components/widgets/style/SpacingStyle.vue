@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import lodash from "lodash";
 import { reactive, watch } from "vue";
+import { overwriteProperty } from "@/utils/Utils";
 import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
 import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, getStyle, toStyleUnit, unStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
 
@@ -86,6 +87,29 @@ function initState() {
     state.paddingBottom = unStyleUnit(state.style.paddingBottom);
     state.paddingLeft = unStyleUnit(state.style.paddingLeft);
 }
+
+const styleProperties = [
+    "marginTop",
+    "marginRight",
+    "marginBottom",
+    "marginLeft",
+    "paddingTop",
+    "paddingRight",
+    "paddingBottom",
+    "paddingLeft",
+];
+
+function updateStyle(style: Record<string, any>) {
+    overwriteProperty(state.style, style, {
+        includes: styleProperties,
+    });
+}
+
+defineExpose({
+    initState,
+    styleProperties,
+    updateStyle,
+});
 </script>
 
 <template>

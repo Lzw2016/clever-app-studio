@@ -4,6 +4,7 @@ import { reactive, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Input as TinyInput, Select, Tooltip } from "@opentiny/vue";
+import { overwriteProperty } from "@/utils/Utils";
 import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
 import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, getStyle, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 import TextAlignLeft from "@/assets/images/text-align-left.svg?component";
@@ -162,6 +163,29 @@ function clearColor() {
     delete state.style.color;
     applyStyleColor(props, state, 'color', undefined);
 }
+
+const styleProperties = [
+    "fontSize",
+    "lineHeight",
+    "fontFamily",
+    "fontWeight",
+    "color",
+    "textAlign",
+    "fontStyle",
+    "textDecorationLine",
+];
+
+function updateStyle(style: Record<string, any>) {
+    overwriteProperty(state.style, style, {
+        includes: styleProperties,
+    });
+}
+
+defineExpose({
+    initState,
+    styleProperties,
+    updateStyle,
+});
 </script>
 
 <template>

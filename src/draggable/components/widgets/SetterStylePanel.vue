@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import lodash from "lodash";
-import { computed, getCurrentInstance, nextTick, reactive, ref, watch } from "vue";
+import { computed, getCurrentInstance, reactive, ref } from "vue";
 import { Collapse, CollapseItem } from "@opentiny/vue";
-import { overwriteProperty, removeNullProperty } from "@/utils/Utils";
-import { isStr, noValue } from "@/utils/Typeof";
+import { batchApplyStyle } from "@/draggable/utils/StyleUtils";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { SetterState } from "@/draggable/models/SetterState";
@@ -18,8 +16,6 @@ import PositionStyle from "@/draggable/components/widgets/style/PositionStyle.vu
 import FontStyle from "@/draggable/components/widgets/style/FontStyle.vue";
 import BorderStyle from "@/draggable/components/widgets/style/BorderStyle.vue";
 import EffectStyle from "@/draggable/components/widgets/style/EffectStyle.vue";
-import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
-import { toObjectStyle } from "@/draggable/utils/StyleUtils";
 
 // 定义组件选项
 defineOptions({
@@ -74,194 +70,97 @@ const styleSetterProps = computed<StyleSetterProps>(() => {
     }
 });
 
-
-
-
-
-
-
-
-const firstSelectNode = computed(() => getFirstSelectNode(props.designerState.selectNodes));
-
-const propsStyle = computed(() => {
-    data.nodeStyleChange = true;
-    const node = firstSelectNode.value;
-    if (!node) return;
-    return node.props.style;
-});
-
-const propsClass = computed(() => {
-    data.nodeClassChange = true;
-    const node = firstSelectNode.value;
-    if (!node) return [];
-    const rawClass = node.__raw_props_class;
-    const pClass = node.props.class;
-    return [rawClass, pClass];
-});
-
 const componentStylesRef = ref<InstanceType<typeof ComponentStyles> | undefined>();
-watch(() => propsStyle.value, style => {
-    style = toObjectStyle(style);
-    const styleProperties = [
-        // LayoutStyle
-        "display", "flexDirection", "flexWrap", "justifyContent", "alignContent", "justifyItems", "alignItems",
-        "gridTemplateColumns", "gridTemplateRows", "gridColumnGap", "gridRowGap", "gridAutoFlow",
-        // FlexStyle
-        "flexGrow", "flexShrink", "alignSelf",
-        // GridStyle
-        "gridColumnStart", "gridColumnEnd", "gridRowStart", "gridRowEnd", "justifySelf", "alignSelf",
-        // SpacingStyle
-        "marginTop", "marginRight", "marginBottom", "marginLeft", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
-        // SizeStyle
-        "width", "height", "minWidth", "minHeight", "maxWidth", "maxHeight", "overflow", "objectFit", "objectPosition",
-        // PositionStyle
-        "position", "top", "right", "bottom", "left", "float", "clear", "zIndex",
-        // FontStyle
-        "fontSize", "lineHeight", "fontFamily", "fontWeight", "color", "textAlign", "fontStyle", "textDecorationLine",
-        // BorderStyle
-        "borderTopLeftRadius", "borderTopRightRadius", "borderBottomLeftRadius", "borderBottomRightRadius",
-        "borderTopStyle", "borderRightStyle", "borderBottomStyle", "borderLeftStyle",
-        "borderTopColor", "borderRightColor", "borderBottomColor", "borderLeftColor",
-        "borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth",
-        // EffectStyle
-        "cursor", "backgroundColor", "opacity",
-    ];
-    for (let property of styleProperties) {
-        state.style[property] = style[property];
-    }
-    modelToState();
-    state.forceUpdateVar++;
-}, { immediate: true });
-watch(() => propsClass.value, ([rawClass, pClass]) => {
-    let newClass: string | undefined;
-    if (noValue(rawClass)) {
-        newClass = undefined;
-    } else if (isStr(pClass) && isStr(rawClass) && pClass.startsWith(rawClass)) {
-        newClass = pClass.substring(rawClass.length).trim();
-    } else {
-        newClass = pClass;
-    }
-    state.class = newClass;
-    state.forceUpdateVar++;
-}, { immediate: true });
-
-const applyStyleDebounce = lodash.debounce((nodes: Array<RuntimeNode>, newStyle: object) => applyStyle(nodes, newStyle), 300);
-watch(() => ({ style: state.style, forceUpdateVar: state.forceUpdateVar }), ({ style }) => {
-    if (data.nodeStyleChange) {
-        data.nodeStyleChange = false;
-        return;
-    }
-    applyStyleDebounce([...props.designerState.selectNodes], { ...style });
-}, { immediate: true, deep: true });
-
-const applyClassDebounce = lodash.debounce((nodes: Array<RuntimeNode>, newClass?: string) => applyClass(nodes, newClass), 300);
-watch(() => ({ pClass: state.class, forceUpdateVar: state.forceUpdateVar }), ({ pClass }) => {
-    if (data.nodeClassChange) {
-        data.nodeClassChange = false;
-        return;
-    }
-    applyClassDebounce([...props.designerState.selectNodes], pClass);
-}, { immediate: true });
-
-function getFirstSelectNode(nodes: Array<RuntimeNode>) {
-    const types = new Set<any>();
-    for (let node of nodes) {
-        types.add(node.type);
-    }
-    if (types.size !== 1) return;
-    return nodes[0];
-}
-
-function applyStyle(nodes: Array<RuntimeNode>, newStyle: object) {
-    newStyle = removeNullProperty(newStyle, true);
-    forEachSelectNodes(nodes, node => {
-        if (!node.__raw_props_style) node.__raw_props_style = toObjectStyle(node.props.style);
-        node.props.style = { ...node.__raw_props_style, ...newStyle };
-    });
-}
-
-function applyClass(nodes: Array<RuntimeNode>, newClass?: string) {
-    const noneClass = "__$_none_class";
-    forEachSelectNodes(nodes, node => {
-        if (!node.__raw_props_class) node.__raw_props_class = node.props.class ?? noneClass;
-        node.props.class = [node.__raw_props_class, newClass].filter(item => !!item && item !== noneClass).join(" ");
-    });
-}
-
-function forEachSelectNodes(nodes: Array<RuntimeNode>, each: (node: RuntimeNode) => void) {
-    const designerState = props.designerState;
-    const blockInstance = props.designerState.blockInstance;
-    let res = false;
-    if (!nodes || !designerState || !blockInstance) return res;
-    for (let node of nodes) {
-        each(node);
-        res = true;
-    }
-    if (res) {
-        blockInstance.$forceUpdate();
-        blockInstance.$nextTick(() => {
-            for (let selection of designerState.selections) {
-                selection.recalcAuxToolPosition();
-            }
-        }).finally();
-    }
-}
-
-function modelToState() {
-    const doModelToState = () => {
-    };
-    if (componentStylesRef.value) {
-        doModelToState();
-    } else {
-        nextTick(doModelToState).finally();
-    }
-}
+const layoutStyleRef = ref<InstanceType<typeof LayoutStyle> | undefined>();
+const flexStyleRef = ref<InstanceType<typeof FlexStyle> | undefined>();
+const gridStyleRef = ref<InstanceType<typeof GridStyle> | undefined>();
+const spacingStyleRef = ref<InstanceType<typeof SpacingStyle> | undefined>();
+const sizeStyleRef = ref<InstanceType<typeof SizeStyle> | undefined>();
+const positionStyleRef = ref<InstanceType<typeof PositionStyle> | undefined>();
+const fontStyleRef = ref<InstanceType<typeof FontStyle> | undefined>();
+const borderStyleRef = ref<InstanceType<typeof BorderStyle> | undefined>();
+const effectStyleRef = ref<InstanceType<typeof EffectStyle> | undefined>();
 
 function updateStyle(style: Record<string, any>) {
-    overwriteProperty(state.style, style);
-    modelToState();
+    if (!props.designerState.existsSelection) return;
+    // StyleSetter 支持的样式配置
+    const styleProperties = [
+        ...(layoutStyleRef.value?.styleProperties ?? []),
+        ...(flexStyleRef.value?.styleProperties ?? []),
+        ...(gridStyleRef.value?.styleProperties ?? []),
+        ...(spacingStyleRef.value?.styleProperties ?? []),
+        ...(sizeStyleRef.value?.styleProperties ?? []),
+        ...(positionStyleRef.value?.styleProperties ?? []),
+        ...(fontStyleRef.value?.styleProperties ?? []),
+        ...(borderStyleRef.value?.styleProperties ?? []),
+        ...(effectStyleRef.value?.styleProperties ?? []),
+    ];
+    const baseStyle: Record<string, any> = {};
+    for (let property of styleProperties) {
+        baseStyle[property] = style[property];
+    }
+    // 更新渲染节点
+    batchApplyStyle(styleSetterProps.value, { style: {} }, { ...baseStyle, ...style });
+    // 更新 StyleSetter 状态
+    layoutStyleRef.value?.updateStyle(baseStyle);
+    flexStyleRef.value?.updateStyle(baseStyle);
+    gridStyleRef.value?.updateStyle(baseStyle);
+    spacingStyleRef.value?.updateStyle(baseStyle);
+    sizeStyleRef.value?.updateStyle(baseStyle);
+    positionStyleRef.value?.updateStyle(baseStyle);
+    fontStyleRef.value?.updateStyle(baseStyle);
+    borderStyleRef.value?.updateStyle(baseStyle);
+    effectStyleRef.value?.updateStyle(baseStyle);
+    layoutStyleRef.value?.initState();
+    flexStyleRef.value?.initState();
+    gridStyleRef.value?.initState();
+    spacingStyleRef.value?.initState();
+    sizeStyleRef.value?.initState();
+    positionStyleRef.value?.initState();
+    fontStyleRef.value?.initState();
+    borderStyleRef.value?.initState();
+    effectStyleRef.value?.initState();
 }
 </script>
 
 <template>
     <div class="settings-groups flex-column-container">
         <Collapse class="flex-item-fill settings-content" v-model="props.setterState.expandGroups['style']">
-            <CollapseItem v-if="firstSelectNode" class="settings-items" name="渲染节点" title="渲染节点">
+            <CollapseItem v-if="props.designerState.existsSelection" class="settings-items" name="渲染节点" title="渲染节点">
                 <ComponentStyles
                     ref="componentStylesRef"
-                    v-model="state.class"
-                    :node="firstSelectNode"
+                    v-bind="styleSetterProps"
                     :component-styles="props.stylePanel.componentStyles"
                     @update-style="updateStyle"
                 />
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局(容器)" title="布局(容器)">
-                <LayoutStyle v-bind="styleSetterProps"/>
+                <LayoutStyle ref="layoutStyleRef" v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableLayout!==true" class="settings-items" name="布局(元素)" title="布局(元素)">
-                <FlexStyle v-bind="styleSetterProps"/>
+                <FlexStyle ref="flexStyleRef" v-bind="styleSetterProps"/>
                 <div style="height: 12px;"/>
-                <GridStyle v-bind="styleSetterProps"/>
+                <GridStyle ref="gridStyleRef" v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableSpacing!==true" class="settings-items" name="间距" title="间距">
-                <SpacingStyle v-bind="styleSetterProps"/>
+                <SpacingStyle ref="spacingStyleRef" v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableSize!==true" class="settings-items" name="尺寸" title="尺寸">
-                <SizeStyle v-bind="styleSetterProps"/>
+                <SizeStyle ref="sizeStyleRef" v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disablePosition!==true" class="settings-items" name="定位" title="定位">
-                <PositionStyle v-bind="styleSetterProps"/>
+                <PositionStyle ref="positionStyleRef" v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableFont!==true" class="settings-items" name="文本" title="文本">
-                <FontStyle v-bind="styleSetterProps"/>
+                <FontStyle ref="fontStyleRef" v-bind="styleSetterProps"/>
             </CollapseItem>
             <!-- <CollapseItem class="settings-items" name="背景" title="背景"> -->
             <!-- </CollapseItem> -->
             <CollapseItem v-if="props.stylePanel.disableBorder!==true" class="settings-items" name="边框" title="边框">
-                <BorderStyle v-bind="styleSetterProps"/>
+                <BorderStyle ref="borderStyleRef" v-bind="styleSetterProps"/>
             </CollapseItem>
             <CollapseItem v-if="props.stylePanel.disableEffect!==true" class="settings-items" name="效果" title="效果">
-                <EffectStyle v-bind="styleSetterProps"/>
+                <EffectStyle ref="effectStyleRef" v-bind="styleSetterProps"/>
             </CollapseItem>
         </Collapse>
     </div>

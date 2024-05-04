@@ -9,6 +9,11 @@ import { forceUpdateBlock, ValueTransform } from "@/draggable/utils/SetterUtils"
  */
 const applyStyleDebounceTime = 350;
 
+/**
+ * class 不存在时的占位符
+ */
+const noneClass = "__$_none_class";
+
 /** 获取style属性值 */
 type GetStyleValue = (style: Record<string, any>) => any;
 
@@ -50,16 +55,51 @@ function getStyle<R = any>(props: StyleSetterProps, state: StyleSetterState, sty
     return value;
 }
 
-function _doGetStyle(props: StyleSetterProps, state: StyleSetterState, getPropsValue: GetStyleValue, options?: GetStyleOptions): any {
+function _doGetStyle(props: StyleSetterProps, state: StyleSetterState, getStyleValue: GetStyleValue, options?: GetStyleOptions): any {
     const { nodes } = props;
     if (!nodes) return;
-    if (!isFunction(getPropsValue)) return;
+    if (!isFunction(getStyleValue)) return;
     const values = new Set<any>();
     for (let node of nodes) {
         let value = undefined;
         const style = toObjectStyle(node.props?.style);
-        if (hasValue(style)) value = getPropsValue(style);
+        if (hasValue(style)) value = getStyleValue(style);
         if (isFunction(options?.transform)) value = options.transform(value);
+        if (noValue(value)) value = undefined;
+        values.add(value);
+        if (values.size > 1) {
+            break;
+        }
+    }
+    if (values.size <= 0) {
+        return;
+    } else if (values.size === 1) {
+        return values.values().next().value;
+    } else if (isFunction(options?.multipleValuesUpdate)) {
+        options.multipleValuesUpdate(true);
+        return;
+    }
+}
+
+/**
+ * 获取 class 值
+ * @param props     样式设置器 props 属性
+ * @param options   扩展选项
+ */
+function getClass(props: StyleSetterProps, options?: GetStyleOptions<string>) {
+    const { nodes } = props;
+    if (!nodes) return;
+    const values = new Set<any>();
+    for (let node of nodes) {
+        if (!node.__raw_props_class) node.__raw_props_class = node.props.class ?? noneClass;
+        let value: any = undefined;
+        const rawClass = node.__raw_props_class;
+        const pClass = node.props?.class;
+        if (isStr(pClass) && isStr(rawClass) && pClass.startsWith(rawClass)) {
+            value = pClass.substring(rawClass.length).trim();
+        } else {
+            value = pClass;
+        }
         if (noValue(value)) value = undefined;
         values.add(value);
         if (values.size > 1) {
@@ -96,11 +136,7 @@ interface ApplyStyleOptions<R = any> {
  * @param options       扩展选项
  */
 function applyStyle<T = any, R = any>(props: StyleSetterProps, state: StyleSetterState, styleProperty: string, value: T, options?: ApplyStyleOptions<R>): boolean {
-    const {
-        designerState,
-        blockInstance,
-        nodes,
-    } = props;
+    const { designerState, blockInstance, nodes } = props;
     console.log("applyStyle styleProperty", `${styleProperty}=${value}`);
     let res = false;
     if (!nodes) return res;
@@ -110,16 +146,17 @@ function applyStyle<T = any, R = any>(props: StyleSetterProps, state: StyleSette
         const rawStyleValue = node.__raw_props_style[styleProperty];
         const style: Record<string, any> = node.props.style ?? {};
         node.props.style = { ...node.__raw_props_style, ...style };
+        const oldStyleValue = node.props.style[styleProperty];
         if (noValue(value)) {
             if (hasValue(rawStyleValue)) {
-                res = res || node.props.style[styleProperty] !== rawStyleValue;
+                res = res || oldStyleValue !== rawStyleValue;
                 node.props.style[styleProperty] = rawStyleValue;
             } else {
-                res = res || hasValue(node.props.style[styleProperty]);
+                res = res || hasValue(oldStyleValue);
                 delete node.props.style[styleProperty];
             }
         } else {
-            res = res || node.props.style[styleProperty] !== value;
+            res = res || oldStyleValue !== value;
             node.props.style[styleProperty] = value;
         }
     }
@@ -159,12 +196,33 @@ function batchApplyStyle(props: StyleSetterProps, state: StyleSetterState, style
     }
     // 需要重新渲染 block
     if (res) {
-        const {
-            designerState,
-            blockInstance,
-            nodes,
-        } = props;
+        const { designerState, blockInstance, nodes } = props;
         forceUpdateBlock(designerState, blockInstance, nodes, false, true);
+    }
+    return res;
+}
+
+/**
+ * 应用 class 值到组件节点
+ * @param props     样式设置器 props 属性
+ * @param pClass    class名
+ * @param options   扩展选项
+ */
+function applyClass(props: StyleSetterProps, pClass?: string, options?: ApplyStyleOptions<string>) {
+    const { designerState, blockInstance, nodes } = props;
+    console.log("applyClass", `class=${pClass}`);
+    let res = false;
+    if (!nodes) return res;
+    for (let node of nodes) {
+        if (!node.__raw_props_class) node.__raw_props_class = node.props.class ?? noneClass;
+        const oldClass = node.props.class;
+        node.props.class = [node.__raw_props_class, pClass].filter(item => !!item && item !== noneClass).join(" ");
+        res = res || lodash.trim(oldClass) !== lodash.trim(node.props.class);
+    }
+    // 需要重新渲染 block
+    if (res) {
+        if (isFunction(options?.multipleValuesUpdate)) options?.multipleValuesUpdate(false);
+        forceUpdateBlock(designerState, blockInstance, nodes, options?.disableReRender, !options?.cancelCalcAuxToolPosition);
     }
     return res;
 }
@@ -364,8 +422,10 @@ export {
     getStylePropertyValue,
     getDefState,
     getStyle,
+    getClass,
     applyStyle,
     batchApplyStyle,
+    applyClass,
     toStyleUnit,
     unStyleUnit,
     autoUseStyleUnit,

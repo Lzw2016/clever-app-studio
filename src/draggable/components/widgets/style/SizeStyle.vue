@@ -2,13 +2,14 @@
 import lodash from "lodash";
 import { reactive, watch } from "vue";
 import { Input, Tooltip } from "@opentiny/vue";
+import { hasValue } from "@/utils/Typeof";
+import { overwriteProperty } from "@/utils/Utils";
 import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
 import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, getStyle, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 import OverflowAuto from "@/assets/images/overflow-auto.svg?component";
 import OverflowVisible from "@/assets/images/overflow-visible.svg?component";
 import OverflowHidden from "@/assets/images/overflow-hidden.svg?component";
 import OverflowScroll from "@/assets/images/overflow-scroll.svg?component";
-import { hasValue } from "@/utils/Typeof";
 
 // 定义组件选项
 defineOptions({
@@ -149,6 +150,30 @@ function setObjectFit(val?: string) {
     val = setStyle("objectFit", val);
     applyStyleObjectFit(props, state, "objectFit", val);
 }
+
+const styleProperties = [
+    "width",
+    "height",
+    "minWidth",
+    "minHeight",
+    "maxWidth",
+    "maxHeight",
+    "overflow",
+    "objectFit",
+    "objectPosition",
+];
+
+function updateStyle(style: Record<string, any>) {
+    overwriteProperty(state.style, style, {
+        includes: styleProperties,
+    });
+}
+
+defineExpose({
+    initState,
+    styleProperties,
+    updateStyle,
+});
 </script>
 
 <template>

@@ -6,6 +6,7 @@ import { faPlus, faUpDownLeftRight } from "@fortawesome/free-solid-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { Checkbox, Input, Tooltip } from "@opentiny/vue";
 import { VueDraggable } from "vue-draggable-plus";
+import { overwriteProperty } from "@/utils/Utils";
 import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
 import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, batchApplyStyle, getStyle, toStyleUnit, unStyleUnit } from "@/draggable/utils/StyleUtils";
 import DisplayBlock from "@/assets/images/display-block.svg?component";
@@ -413,6 +414,33 @@ function delGridTemplateRows(idx: number) {
     state.gridTemplateRows.splice(idx, 1);
     applyStyleGridTemplateRows(props, state, 'gridTemplateRows', getGridTemplateRows(state.gridTemplateRows));
 }
+
+const styleProperties = [
+    "display",
+    "flexDirection",
+    "flexWrap",
+    "justifyContent",
+    "alignContent",
+    "justifyItems",
+    "alignItems",
+    "gridTemplateColumns",
+    "gridTemplateRows",
+    "gridColumnGap",
+    "gridRowGap",
+    "gridAutoFlow",
+];
+
+function updateStyle(style: Record<string, any>) {
+    overwriteProperty(state.style, style, {
+        includes: styleProperties,
+    });
+}
+
+defineExpose({
+    initState,
+    styleProperties,
+    updateStyle,
+});
 </script>
 
 <template>

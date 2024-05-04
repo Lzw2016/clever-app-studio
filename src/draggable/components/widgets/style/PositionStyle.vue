@@ -2,6 +2,7 @@
 import lodash from "lodash";
 import { reactive, watch } from "vue";
 import { Numeric, Tooltip } from "@opentiny/vue";
+import { overwriteProperty } from "@/utils/Utils";
 import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
 import { applyStyle, applyStyleDebounceTime, autoUseStyleUnit, batchApplyStyle, getStyle, toStyleUnit, unStyleUnit, validateInputStyleValue } from "@/draggable/utils/StyleUtils";
 import PositionAll from "@/assets/images/position-all.svg?component";
@@ -169,6 +170,29 @@ function setFastPosition(val: { top: string, right: string, bottom: string, left
         left: state.left,
     });
 }
+
+const styleProperties = [
+    "position",
+    "top",
+    "right",
+    "bottom",
+    "left",
+    "float",
+    "clear",
+    "zIndex",
+];
+
+function updateStyle(style: Record<string, any>) {
+    overwriteProperty(state.style, style, {
+        includes: styleProperties,
+    });
+}
+
+defineExpose({
+    initState,
+    styleProperties,
+    updateStyle,
+});
 </script>
 
 <template>

@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { computed, defineModel, nextTick, reactive } from "vue";
+import { computed, nextTick, reactive, watch } from "vue";
 import { Alert, Button, Modal, Select, Tooltip } from "@opentiny/vue";
 import { layer } from "@layui/layer-vue";
 import type { editor } from "monaco-editor";
-import MonacoEditor, { MonacoType } from "@/components/MonacoEditor.vue";
-import { ComponentStyle } from "@/draggable/types/ComponentMeta";
-import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
-import { toInlineStyle, toObjectStyle } from "@/draggable/utils/StyleUtils";
-import CodeSvg from "@/assets/images/code.svg?component";
 import { noValue } from "@/utils/Typeof";
+import MonacoEditor, { MonacoType } from "@/components/MonacoEditor.vue";
+import { ComponentStyle, StyleSetterProps } from "@/draggable/types/ComponentMeta";
+import { applyClass, applyStyleDebounceTime, getClass, toInlineStyle, toObjectStyle } from "@/draggable/utils/StyleUtils";
+import CodeSvg from "@/assets/images/code.svg?component";
+import { getSamePropertyObj } from "@/utils/Utils";
 
 // 定义组件选项
 defineOptions({
@@ -22,8 +22,8 @@ const emit = defineEmits<{
 }>();
 
 // 定义 Props 类型
-interface ComponentStylesProps {
-    node: RuntimeNode;
+interface ComponentStylesProps extends StyleSetterProps {
+    // node: RuntimeNode;
     componentStyles?: Array<ComponentStyle>;
 }
 
@@ -33,8 +33,9 @@ const props = withDefaults(defineProps<ComponentStylesProps>(), {});
 // 定义 State 类型
 interface ComponentStylesState {
     showStyleModal: boolean;
-    style?: string;
     monacoEditorHeight?: number;
+    style?: string;
+    class?: string;
 }
 
 // state 属性
@@ -48,8 +49,10 @@ const data = {
     setTimeoutClearId: undefined as any,
 };
 
-// css display 值
-const model = defineModel<string | undefined>();
+// 选中节点变化后更新 class
+watch(() => props.nodes, () => state.class = getClass(props), { immediate: true });
+// state.style属性变化后应用 style
+const applyClassDebounce = lodash.debounce(applyClass, applyStyleDebounceTime);
 
 const componentStyles = computed(() => toSelectOptions(props.componentStyles));
 
@@ -59,7 +62,7 @@ function toSelectOptions(componentStyles: Array<ComponentStyle> | undefined) {
 }
 
 function showStyleModal() {
-    let style = props.node.props.style;
+    let style = props.nodes.length > 1 ? getSamePropertyObj(props.nodes.map(node => node.props?.style)) : props.nodes[0].props?.style;
     const tab = "    ";
     const inlineStyle: Array<string> = [];
     if (style) {
@@ -153,7 +156,14 @@ function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
                 </Tooltip>
             </div>
             <div class="flex-item-fill setter-row-input">
-                <Select v-model="model" :options="componentStyles" size="mini" :clearable="true" placeholder="选择内置样式"/>
+                <Select
+                    v-model="state.class"
+                    :options="componentStyles"
+                    size="mini"
+                    :clearable="true"
+                    placeholder="选择内置样式"
+                    @change="value => applyClassDebounce(props, value)"
+                />
             </div>
         </div>
         <Modal

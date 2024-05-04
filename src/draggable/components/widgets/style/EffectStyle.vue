@@ -4,9 +4,10 @@ import { reactive, watch } from "vue";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { Numeric, Select, Tooltip } from "@opentiny/vue";
-import { hasValue } from "@/utils/Typeof";
+import { isNum } from "@/utils/Typeof";
 import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
 import { applyStyle, applyStyleDebounceTime, getStyle } from "@/draggable/utils/StyleUtils";
+import { overwriteProperty } from "@/utils/Utils";
 
 // 定义组件选项
 defineOptions({
@@ -71,6 +72,24 @@ function delBackgroundColor() {
     delete state.style.backgroundColor;
     applyStyleBackgroundColor(props, state, 'backgroundColor', undefined);
 }
+
+const styleProperties = [
+    "cursor",
+    "backgroundColor",
+    "opacity",
+];
+
+function updateStyle(style: Record<string, any>) {
+    overwriteProperty(state.style, style, {
+        includes: styleProperties,
+    });
+}
+
+defineExpose({
+    initState,
+    styleProperties,
+    updateStyle,
+});
 </script>
 
 <template>
@@ -135,7 +154,7 @@ function delBackgroundColor() {
                     :max="100"
                     :allow-empty="true"
                     placeholder="不透明度"
-                    @change="value => applyStyleOpacity(props, state, 'opacity', hasValue(value)? value/100: undefined)"
+                    @change="value => applyStyleOpacity(props, state, 'opacity', isNum(value)? value/100: undefined)"
                 />
             </div>
         </div>

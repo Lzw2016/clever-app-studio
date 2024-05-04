@@ -2,6 +2,7 @@
 import lodash from "lodash";
 import { reactive, watch } from "vue";
 import { Numeric, Tooltip } from "@opentiny/vue";
+import { overwriteProperty } from "@/utils/Utils";
 import { StyleSetterProps, StyleSetterState } from "@/draggable/types/ComponentMeta";
 import { applyStyle, applyStyleDebounceTime, getStyle } from "@/draggable/utils/StyleUtils";
 import FlexAlignItemsFlexStart from "@/assets/images/flex-align-items-flex-start.svg?component";
@@ -59,6 +60,9 @@ const applyStyleFlexShrink = lodash.debounce(applyStyle, applyStyleDebounceTime)
 const applyStyleFlexGrow = lodash.debounce(applyStyle, applyStyleDebounceTime);
 const applyStyleAlignSelf = lodash.debounce(applyStyle, applyStyleDebounceTime);
 
+function initState() {
+}
+
 function setStyle(name: string, val?: string) {
     if (state.style[name] === val) {
         delete state.style[name];
@@ -72,6 +76,24 @@ function setAlignSelf(val?: string) {
     val = setStyle("alignSelf", val);
     applyStyleAlignSelf(props, state, "alignSelf", val);
 }
+
+const styleProperties = [
+    "flexShrink",
+    "flexGrow",
+    "alignSelf",
+];
+
+function updateStyle(style: Record<string, any>) {
+    overwriteProperty(state.style, style, {
+        includes: styleProperties,
+    });
+}
+
+defineExpose({
+    initState,
+    styleProperties,
+    updateStyle,
+});
 </script>
 
 <template>
