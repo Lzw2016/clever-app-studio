@@ -28,8 +28,8 @@
         "type:check": "vue-tsc --noEmit --skipLibCheck"
     },
     "dependencies": {
-        "@vue/shared": "^3.4.25",
-        "vue": "^3.4.25",
+        "@vue/shared": "3.4.25",
+        "vue": "3.4.25",
         "vue-router": "^4.3.2",
         "vue-i18n": "^9.13.1",
         "pinia": "^2.1.7",
@@ -57,7 +57,7 @@
         "@guolao/vue-monaco-editor": "^1.5.1",
         "sortablejs": "^1.15.2",
         "vue-draggable-plus": "^0.4.0",
-        "@layui/layer-vue": "^2.3.2",
+        "@layui/layer-vue": "^2.3.3",
         "@opentiny/vue": "^3.15.0",
         "@opentiny/vue-locale": "^3.15.0",
         "@opentiny/vue-icon": "^3.15.0",
@@ -78,7 +78,7 @@
     },
     "devDependencies": {
         "typescript": "^5.4.5",
-        "@types/node": "^20.12.8",
+        "@types/node": "^20.12.10",
         "@types/lodash": "^4.17.1",
         "@types/qs": "^6.9.15",
         "@types/numeral": "^2.0.5",
