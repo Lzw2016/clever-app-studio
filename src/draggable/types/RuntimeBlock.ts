@@ -1,5 +1,5 @@
 import { WatchCallback, WatchOptions } from "vue";
-import { AnyFunction, ComponentInstance, I18N, VueComponent } from "@/draggable/types/Base";
+import { AnyFunction, ComponentInstance, I18N, ModifierGuardsKeys, VueComponent } from "@/draggable/types/Base";
 import { BaseDirectives, BlockMeta, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
 import { BlockOperation, BlockOperationById } from "@/draggable/types/BlockOperation";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
@@ -11,7 +11,7 @@ type RuntimeComponentSlotsItem = RuntimeNode | Omit<RuntimeBlock, "meta" | "i18n
 interface RuntimeListener {
     handler: AnyFunction<ComponentInstance>;
     /** 事件修饰符 */
-    modifiers?: Array<string>;
+    modifiers?: Array<ModifierGuardsKeys>;
 }
 
 /** 组件节点(运行时) */

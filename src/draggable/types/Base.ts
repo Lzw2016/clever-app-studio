@@ -6,6 +6,8 @@ import { BaseProps } from "@/draggable/types/DesignBlock";
 // 参考vue类型定义(vue内部的类型定义，直接复制过来的)
 // -------------------------------------------------------------------------------------------------------------------
 
+type ModifierGuardsKeys = 'stop' | 'prevent' | 'self' | 'ctrl' | 'shift' | 'alt' | 'meta' | 'left' | 'middle' | 'right' | 'exact';
+
 // /** 通用的vue组件实例 */
 // type ComponentInstance = ComponentPublicInstance<any, any, any, any, any, any, any, any, any, any, any, any>;
 
@@ -166,6 +168,7 @@ interface FunctionParam extends FunctionConfig {
 }
 
 export type {
+    ModifierGuardsKeys,
     ComponentInstance,
     ErrorCapturedHook,
     VueComponent,

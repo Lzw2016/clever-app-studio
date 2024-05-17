@@ -167,7 +167,7 @@ function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
             </div>
         </div>
         <Modal
-            :modelValue="state.showStyleModal"
+            v-model="state.showStyleModal"
             height="60%"
             width="50%"
             min-height="350px"
