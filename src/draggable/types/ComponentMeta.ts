@@ -182,6 +182,24 @@ interface SetterPanel {
     groups: Array<SetterGroup>;
 }
 
+/** 事件分组 */
+interface EventGroup {
+    /** 分组标题 */
+    title: string;
+    /** 是否展开状态(默认为true) */
+    expand?: boolean;
+    /** 事件元数据集合 */
+    items: Array<FunctionMeta>;
+}
+
+/** 事件设置器面板 */
+interface EventPanel {
+    /** 面板标题 */
+    title?: string;
+    /** 事件分组 */
+    groups: Array<EventGroup>;
+}
+
 /** 样式设置器props */
 interface StyleSetterProps {
     /** 设计器状态数据 */
@@ -235,7 +253,7 @@ interface ComponentSetter {
     /** 组件属性设置 */
     props?: SetterPanel;
     /** 组件事件绑定 */
-    events?: SetterPanel;
+    events?: EventPanel;
     /** 样式设置(内置的固定设置) */
     style?: StylePanel;
     /** vue指令设置(内置的固定设置) */
@@ -307,9 +325,7 @@ interface ComponentMeta {
     defDesignNode: DefDesignNode;
     /** 设计时的组件指令 */
     designDirectives?: DesignDirectives;
-    /** 组件事件元信息 */
-    events: Record<string, Omit<FunctionMeta, 'name'>>;
-    /** 组件插槽元信息 */
+    /** TODO 组件插槽元信息 */
     slots: Record<string, Omit<ComponentSlotMeta, 'name'>>;
     /** 组件设计器 */
     setter: ComponentSetter;
@@ -361,6 +377,7 @@ export type {
     FormItemProps,
     SetterGroup,
     SetterPanel,
+    EventPanel,
     StyleSetterProps,
     StyleSetterState,
     ComponentStyle,

@@ -1,4 +1,5 @@
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
+import { VarType } from "@/draggable/types/Base";
 
 export default defineComponentMeta({
     type: "Input",
@@ -21,7 +22,6 @@ export default defineComponentMeta({
         "disable-event": {},
         "clear-draggable-html-attr": {},
     },
-    events: {},
     slots: {},
     setter: {
         props: {
@@ -326,8 +326,47 @@ export default defineComponentMeta({
             ],
         },
         events: {
-            title: "",
-            groups: [],
+            title: "事件",
+            groups: [
+                {
+                    title: "常用事件",
+                    expand: true,
+                    items: [
+                        {
+                            title: "失去焦点时触发",
+                            name: "onBlur",
+                            params: [
+                                {
+                                    name: "event",
+                                    type: VarType.Event,
+                                },
+                            ],
+                            return: VarType.Void,
+                            examples: [
+                                {
+                                    title: "基本使用",
+                                    code: [
+                                        "function onBlur() {",
+                                        "    Modal.message({ message: 'blur 事件触发了', status: 'info' })",
+                                        "}",
+                                    ],
+                                },
+                            ],
+                        },
+                        {
+                            title: "值改变时触发",
+                            name: "onChange",
+                            params: [
+                                {
+                                    name: "value",
+                                    type: "string | number",
+                                },
+                            ],
+                            return: VarType.Void,
+                        },
+                    ],
+                },
+            ],
         },
         style: {
             componentStyles: [

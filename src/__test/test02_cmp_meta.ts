@@ -22,31 +22,6 @@ const componentMeta = defineComponentMeta({
         slots: {},
         items: [],
     },
-    events: {
-        change: {
-            title: "输入值值更改事件",
-            description: "值更改时调用的回调。",
-            params: [
-                {
-                    name: "event",
-                    type: "AutoCompleteChangeEvent",
-                },
-            ],
-            return: "void",
-            examples: [
-                {
-                    title: "简单使用",
-                    description: "读取变化后的值",
-                    code: [
-                        'function demo1(event) {',
-                        '    // 打印当前值',
-                        '    console.log(event.value)',
-                        '}',
-                    ],
-                },
-            ],
-        },
-    },
     slots: {
         icon: {
             title: "标题插槽",

@@ -87,19 +87,21 @@ interface CodeExample {
 /** 变量类型 */
 enum VarType {
     Void = 'void',
+    Any = 'any',
     Boolean = 'boolean',
     Number = 'number',
     String = 'string',
     Symbol = 'symbol',
-    Bigint = 'bigint',
+    // Bigint = 'bigint',
     Object = 'object',
-    Array = 'array',
-    Date = 'date',
-    Function = 'function',
-    RegExp = 'regexp',
-    Map = 'map',
-    Set = 'set',
-    Promise = 'promise',
+    Array = 'Array',
+    Date = 'Date',
+    Function = 'Function',
+    RegExp = 'RegExp',
+    Map = 'Map',
+    Set = 'Set',
+    Promise = 'Promise',
+    Event = 'Event',
 }
 
 /** 变量类型 */

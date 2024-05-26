@@ -20,7 +20,6 @@ export default defineComponentMeta({
         },
         tpl: "新span",
     },
-    events: {},
     slots: {},
     setter: {
         props: {

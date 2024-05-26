@@ -206,7 +206,6 @@ export default defineComponentMeta({
             ],
         },
     },
-    events: {},
     slots: {},
     setter: {
         props: {
