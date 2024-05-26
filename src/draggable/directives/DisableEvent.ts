@@ -91,9 +91,9 @@ const defPreventDefaultEvents = fixEventNames([
 interface DirectiveValue {
     /** 递归的最大深度 */
     maxDepth?: number;
-    /** 禁用的事件名称，如果未设置就是用默认的事件集合(defDisableEvents)，优先级: manualDisable > enableEvents > disableEvents */
+    /** 禁用的事件名称，如果未设置就是用默认的事件集合(defDisableEvents)，优先级: enableEvents > disableEvents */
     disableEvents?: string | Array<string>;
-    /**启用的事件名称，优先级: manualDisable > enableEvents > disableEvents  */
+    /**启用的事件名称，优先级: enableEvents > disableEvents  */
     enableEvents?: string | Array<string>;
     /** 阻止默认行为的事件集合 */
     preventDefaultEvents?: Array<string>;

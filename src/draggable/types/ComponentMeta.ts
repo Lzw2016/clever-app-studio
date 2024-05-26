@@ -100,15 +100,15 @@ interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
     labelTips?: string;
     /** 被设置的属性名称 */
     propsName?: string;
-    /** 启用数据绑定(默认启用) */
+    /** TODO 启用数据绑定(默认启用) */
     enableBind?: boolean;
     /** 从组件节点读取属性值 */
     getPropsValue?: SetterProps['getPropsValue'];
     /** 应用属性值到组件节点 */
     applyPropsValue?: SetterProps['applyPropsValue'];
-    /** 监听属性值变化逻辑 */
+    /** TODO 监听属性值变化逻辑 */
     watchProps?: SetterProps['watchProps'];
-    /** 监听设置器的事件 */
+    /** TODO 监听设置器的事件 */
     listeners?: Record<keyof Event, ComponentListener>;
     /** 更新属性值后不重新渲染block */
     disableReRender?: boolean;
@@ -212,6 +212,8 @@ interface ComponentStyle {
 interface StylePanel {
     /** 面板标题 */
     title?: string;
+    /** 组件内置的样式 */
+    componentStyles?: Array<ComponentStyle>;
     /** 禁用布局设置 */
     disableLayout?: boolean;
     /** 禁用间距设置 */
@@ -226,8 +228,6 @@ interface StylePanel {
     disableBorder?: boolean;
     /** 禁用效果设置 */
     disableEffect?: boolean;
-    /** 组件内置的样式 */
-    componentStyles?: Array<ComponentStyle>;
 }
 
 /** 组件元信息 setter */
@@ -253,9 +253,9 @@ interface DesignDirectives extends BaseDirectives {
         value?: {
             /** 递归的最大深度 */
             maxDepth?: number;
-            /** 禁用的事件名称，如果未设置就是用默认的事件集合(defDisableEvents)，优先级: manualDisable > enableEvents > disableEvents */
+            /** 禁用的事件名称，如果未设置就是用默认的事件集合(defDisableEvents)，优先级: enableEvents > disableEvents */
             disableEvents?: string | Array<string>;
-            /**启用的事件名称，优先级: manualDisable > enableEvents > disableEvents  */
+            /** 启用的事件名称，优先级: enableEvents > disableEvents  */
             enableEvents?: string | Array<string>;
             /** 阻止默认行为的事件集合 */
             preventDefaultEvents?: Array<string>;
@@ -265,7 +265,7 @@ interface DesignDirectives extends BaseDirectives {
             manualEvents?: Record<string, Function>;
         };
     };
-    /** 禁用组件内部事件 */
+    /** 清除组件内部的 HTMLElement 节点上与拖拽的相关的属性 */
     'clear-draggable-html-attr'?: {
         /** 指令参数 */
         value?: {
