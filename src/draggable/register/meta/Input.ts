@@ -329,7 +329,7 @@ export default defineComponentMeta({
             title: "事件",
             groups: [
                 {
-                    title: "常用事件",
+                    title: "常用",
                     expand: true,
                     items: [
                         {
