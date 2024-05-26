@@ -366,6 +366,29 @@ export default defineComponentMeta({
                         },
                     ],
                 },
+                {
+                    title: "键盘输入",
+                    expand: true,
+                    items: [
+                        {
+                            title: "输入值时触发事件",
+                            name: "onInput",
+                            params: [
+                                {
+                                    name: "event",
+                                    type: "InputEvent",
+                                },
+                            ],
+                            return: VarType.Void,
+                        },
+                        {
+                            title: "点击清空按钮时触发",
+                            name: "onClear",
+                            params: [],
+                            return: VarType.Void,
+                        },
+                    ],
+                }
             ],
         },
         style: {

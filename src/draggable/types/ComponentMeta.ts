@@ -325,6 +325,8 @@ interface ComponentMeta {
     defDesignNode: DefDesignNode;
     /** 设计时的组件指令 */
     designDirectives?: DesignDirectives;
+    /** TODO 组件函数 */
+    // methods: Array<FunctionMeta>;
     /** TODO 组件插槽元信息 */
     slots: Record<string, Omit<ComponentSlotMeta, 'name'>>;
     /** 组件设计器 */
@@ -377,6 +379,7 @@ export type {
     FormItemProps,
     SetterGroup,
     SetterPanel,
+    EventGroup,
     EventPanel,
     StyleSetterProps,
     StyleSetterState,

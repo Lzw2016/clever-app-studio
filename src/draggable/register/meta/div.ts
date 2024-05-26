@@ -35,8 +35,10 @@ export default defineComponentMeta({
             ],
         },
         events: {
-            title: "",
-            groups: [],
+            title: "常用事件",
+            groups: [
+
+            ],
         },
         style: {
             componentStyles: [
