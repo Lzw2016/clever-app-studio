@@ -35,7 +35,7 @@ export default defineComponentMeta({
             ],
         },
         events: {
-            title: "常用事件",
+            title: "事件",
             groups: [
 
             ],
