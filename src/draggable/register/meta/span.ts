@@ -23,7 +23,6 @@ export default defineComponentMeta({
     slots: {},
     setter: {
         props: {
-            title: "",
             groups: [
                 {
                     title: "常规",
@@ -38,12 +37,10 @@ export default defineComponentMeta({
             ],
         },
         events: {
-            title: "",
             groups: [],
         },
         style: {},
         // advanced: {
-        //     title: "",
         //     groups: [],
         // },
     },

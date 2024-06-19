@@ -21,7 +21,6 @@ export default defineComponentMeta({
     slots: {},
     setter: {
         props: {
-            title: "",
             groups: [
                 {
                     title: "数据绑定",
@@ -35,10 +34,7 @@ export default defineComponentMeta({
             ],
         },
         events: {
-            title: "事件",
-            groups: [
-
-            ],
+            groups: [],
         },
         style: {
             componentStyles: [

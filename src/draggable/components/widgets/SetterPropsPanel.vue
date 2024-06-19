@@ -15,7 +15,7 @@ const vLoading = Loading.directive;
 
 // 定义组件选项
 defineOptions({
-    name: 'SetterPropsForm',
+    name: 'SetterPropsPanel',
 });
 
 // 当前组件对象

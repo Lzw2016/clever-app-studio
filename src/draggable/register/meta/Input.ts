@@ -1,5 +1,4 @@
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
-import { VarType } from "@/draggable/types/Base";
 
 export default defineComponentMeta({
     type: "Input",
@@ -25,7 +24,6 @@ export default defineComponentMeta({
     slots: {},
     setter: {
         props: {
-            title: "",
             formProps: {
                 labelWidth: "75px",
             },
@@ -326,69 +324,67 @@ export default defineComponentMeta({
             ],
         },
         events: {
-            title: "事件",
+            innerEvents: true,
             groups: [
                 {
-                    title: "常用",
-                    expand: true,
+                    title: "组件事件",
                     items: [
                         {
-                            title: "失去焦点时触发",
-                            name: "onBlur",
+                            title: "失去焦点",
+                            description: "监听输入框失去焦点事件",
+                            name: "blur",
                             params: [
                                 {
                                     name: "event",
-                                    type: VarType.Event,
+                                    type: "MouseEvent",
+                                    note: "事件对象",
                                 },
                             ],
-                            return: VarType.Void,
+                            return: "void",
                             examples: [
                                 {
-                                    title: "基本使用",
+                                    title: "",
+                                    description: "",
                                     code: [
-                                        "function onBlur() {",
-                                        "    Modal.message({ message: 'blur 事件触发了', status: 'info' })",
+                                        "function(event) {",
+                                        "  Modal.message({",
+                                        "    message: '触发 blur 事件',",
+                                        "    status: 'info'",
+                                        "  })",
                                         "}",
                                     ],
                                 },
                             ],
                         },
                         {
-                            title: "值改变时触发",
-                            name: "onChange",
-                            params: [
-                                {
-                                    name: "value",
-                                    type: "string | number",
-                                },
-                            ],
-                            return: VarType.Void,
+                            title: "值变更",
+                            name: "change",
+                        },
+                        {
+                            title: "清除值",
+                            name: "clear",
+                        },
+                        {
+                            title: "获取焦点",
+                            name: "focus",
+                        },
+                        {
+                            title: "移除标签",
+                            description: "监听多选时移除标签事件",
+                            name: "remove-tag",
+                        },
+                        {
+                            title: "点击新增按钮",
+                            description: "监听顶部新增按钮点击事件，同 top-create 属性一起使用",
+                            name: "top-create-click",
+                        },
+                        {
+                            title: "下拉框显示状态变化",
+                            description: "监听下拉弹框的显示隐藏状态",
+                            name: "visible-change",
                         },
                     ],
                 },
-                {
-                    title: "键盘输入",
-                    expand: true,
-                    items: [
-                        {
-                            title: "输入值时触发事件",
-                            name: "onInput",
-                            params: [
-                                {
-                                    name: "event",
-                                    type: "InputEvent",
-                                },
-                            ],
-                            return: VarType.Void,
-                        },
-                        {
-                            title: "点击清空按钮时触发",
-                            name: "onClear",
-                            params: [],
-                            return: VarType.Void,
-                        },
-                    ],
-                }
             ],
         },
         style: {

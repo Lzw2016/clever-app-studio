@@ -20,20 +20,16 @@ export default defineComponentMeta({
     slots: {},
     setter: {
         props: {
-            title: "",
             groups: [],
         },
         events: {
-            title: "",
             groups: [],
         },
         style: {
-            title: "",
             disableFont: true,
             disableBorder: true,
         },
         advanced: {
-            title: "",
             groups: [],
         },
     },

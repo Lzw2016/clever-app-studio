@@ -197,6 +197,18 @@ body .tiny-modal > .tiny-modal__box > .tiny-modal__footer {
 }
 
 
+/* select */
+body .tiny-select-dropdown.tiny-popper > .tiny-scrollbar {
+    height: 100%;
+}
+
+body .tiny-select-dropdown.tiny-popper > .tiny-scrollbar > .tiny-select-dropdown__wrap.tiny-scrollbar__wrap {
+    height: 100%;
+    max-height: unset;
+    /*width: ;*/
+}
+
+
 /* dialog对话框 */
 body .tiny-dialog-box {
     --ti-dialog-box-drawer-header-padding-top: calc(var(--ti-common-size-base) * 6);

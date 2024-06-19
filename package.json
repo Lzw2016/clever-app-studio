@@ -16,6 +16,7 @@
     "bugs": {
         "url": "https://github.com/"
     },
+    "type": "module",
     "scripts": {
         "init": "pnpm i",
         "ncu": "ncu -u",

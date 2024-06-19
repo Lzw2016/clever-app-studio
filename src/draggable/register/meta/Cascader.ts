@@ -209,17 +209,14 @@ export default defineComponentMeta({
     slots: {},
     setter: {
         props: {
-            title: "",
             groups: [],
         },
         events: {
-            title: "",
             groups: [],
         },
         style: {
         },
         advanced: {
-            title: "",
             groups: [],
         },
     },

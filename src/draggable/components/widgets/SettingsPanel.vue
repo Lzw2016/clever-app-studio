@@ -4,7 +4,8 @@ import { TabItem, Tabs } from "@opentiny/vue";
 import { IconX } from "@tabler/icons-vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
-import SetterPropsForm from "@/draggable/components/widgets/SetterPropsForm.vue";
+import SetterPropsPanel from "@/draggable/components/widgets/SetterPropsPanel.vue";
+import SetterEventPanel from "@/draggable/components/widgets/SetterEventPanel.vue";
 import SetterStylePanel from "@/draggable/components/widgets/SetterStylePanel.vue";
 
 // 定义组件选项
@@ -127,7 +128,7 @@ function existsSetter(meta?: ComponentMeta) {
                 :lazy="false"
                 :title="selectedComponentMeta.setter.props?.title || data.setterTabs.props"
             >
-                <SetterPropsForm
+                <SetterPropsPanel
                     :designer-engine="props.designerEngine"
                     :designer-state="designerState"
                     :setter-panel="selectedComponentMeta.setter.props"
@@ -141,7 +142,11 @@ function existsSetter(meta?: ComponentMeta) {
                 :lazy="false"
                 :title="selectedComponentMeta.setter.events?.title || data.setterTabs.events"
             >
-                组件事件绑定
+                <SetterEventPanel
+                    :designer-engine="props.designerEngine"
+                    :designer-state="designerState"
+                    :event-panel="selectedComponentMeta.setter.events"
+                />
             </TabItem>
             <TabItem
                 v-if="selectedComponentMeta.setter.style"

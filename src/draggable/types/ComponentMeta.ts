@@ -182,20 +182,31 @@ interface SetterPanel {
     groups: Array<SetterGroup>;
 }
 
+/** 事件信息 */
+interface EventInfo extends FunctionMeta {
+    /** 是否禁用 */
+    disabled?: boolean;
+}
+
 /** 事件分组 */
 interface EventGroup {
     /** 分组标题 */
     title: string;
-    /** 是否展开状态(默认为true) */
-    expand?: boolean;
+    /** 是否禁用 */
+    disabled?: boolean;
     /** 事件元数据集合 */
-    items: Array<FunctionMeta>;
+    items: Array<EventInfo>;
 }
+
+/** 内置html原生事件分组 */
+type InnerEventGroup = "表单事件" | "鼠标事件" | "键盘事件" | "触摸事件" | "焦点事件";
 
 /** 事件设置器面板 */
 interface EventPanel {
     /** 面板标题 */
     title?: string;
+    /** 包含的内置html原生事件(true表示包含所有的内置html原生事件) */
+    innerEvents?: Array<InnerEventGroup> | true;
     /** 事件分组 */
     groups: Array<EventGroup>;
 }
@@ -379,7 +390,9 @@ export type {
     FormItemProps,
     SetterGroup,
     SetterPanel,
+    EventInfo,
     EventGroup,
+    InnerEventGroup,
     EventPanel,
     StyleSetterProps,
     StyleSetterState,
