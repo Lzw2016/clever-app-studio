@@ -41,7 +41,7 @@ const state = reactive<SetterEventPanelState>({
 // 内部数据
 const data = {};
 // 当前选择组件支持的事件分组
-const eventGroups = computed<Array<EventGroup>>(() => getEventGroups(props.eventPanel));
+const eventGroups = computed<Array<EventGroup>>(() => getEventGroups(props.eventPanel, props.designerState.selectNode));
 // 所有的事件监听器
 const allListener = computed<Array<ListenerInfo>>(() => getAllListener(eventGroups.value, props.designerState.selectNode));
 
@@ -49,7 +49,7 @@ function getEventTitle(event) {
     // event
 }
 
-function getEventGroups(eventPanel: EventPanel): Array<EventGroup> {
+function getEventGroups(eventPanel: EventPanel, node?: RuntimeNode): Array<EventGroup> {
     const array: Array<EventGroup> = [];
     // 获取所有的事件
     if (eventPanel.groups) array.push(...eventPanel.groups);
@@ -75,7 +75,17 @@ function getEventGroups(eventPanel: EventPanel): Array<EventGroup> {
         }
     }
     // 已经监听了的事件，设置成禁用状态
-
+    if (node?.listeners) {
+        const listenerEvents: Array<string> = [];
+        for (let eventName in node.listeners) {
+            listenerEvents.push(toElementEventName(eventName));
+        }
+        for (let listenerEvent of listenerEvents) {
+            array.forEach(group => group.items.forEach(item => {
+                item.disabled = listenerEvents.includes(item.name);
+            }));
+        }
+    }
     return array;
 }
 
@@ -130,6 +140,7 @@ function getAllEventName(groups: Array<EventGroup>): Set<string> {
                         <div class="event-title">
                             {{ item.name }}-{{ item.title }}
                         </div>
+                        <!-- {{ item.disabled ? '(已监听)' : '' }} -->
                     </Option>
                 </OptionGroup>
             </Select>
