@@ -1,12 +1,12 @@
 import { computed, ComputedRef, markRaw, Ref, ref, ShallowReactive, shallowReactive } from "vue";
 import { runtimeNodeToDesignNode } from "@/draggable/utils/BlockPropsTransform";
 import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { HoverDashed } from "@/draggable/models/HoverDashed";
 import { Selection } from "@/draggable/models/Selection";
+import { SetterShareState } from "@/draggable/models/SetterShareState";
 import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
-import { ComponentMeta } from "@/draggable/types/ComponentMeta";
-import { SetterState } from "@/draggable/models/SetterState";
 
 /**
  * 设计器状态数据
@@ -42,10 +42,19 @@ class DesignerState {
         }
         return nodes;
     });
+    /** 设计器选择的第一个节点 */
+    protected readonly _selectNode: ComputedRef<RuntimeNode | undefined> = computed<RuntimeNode | undefined>(() => {
+        const blockInstance = this.blockInstance;
+        if (!blockInstance) return;
+        if (this.selections.length <= 0) return;
+        const nodeId = this.selections[0].nodeId;
+        if (!nodeId) return;
+        return blockInstance.globalContext.allNode[nodeId];
+    });
     /** 当前选中的 ComponentMeta */
     protected readonly _selectedComponentMeta: ComputedRef<ComponentMeta | undefined> = computed<ComponentMeta | undefined>(() => this.getCurrentComponentMeta());
-    /** 设计器的组件配置面板状态 */
-    readonly setterState: SetterState = new SetterState(this);
+    /** 组件配置面板共享状态 */
+    readonly setterShareState: SetterShareState = new SetterShareState(this);
 
     constructor(designerEngine: DesignerEngine) {
         this.designerEngine = designerEngine;
@@ -100,17 +109,22 @@ class DesignerState {
 
     /** 存在选中的节点 */
     get existsSelection() {
-        return  this._existsSelection.value
+        return this._existsSelection.value
     }
 
     /** selections 中只有一个选择项 */
     get singleSelection() {
-        return  this._singleSelection.value
+        return this._singleSelection.value
     }
 
     /** 设计器选择节点集合 */
     get selectNodes() {
-        return  this._selectNodes.value
+        return this._selectNodes.value
+    }
+
+    /** 设计器选择的第一个节点 */
+    get selectNode() {
+        return this._selectNode.value
     }
 
     /** 当前选中的 ComponentMeta */

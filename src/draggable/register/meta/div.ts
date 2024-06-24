@@ -18,6 +18,9 @@ export default defineComponentMeta({
             },
         },
     },
+    designDirectives: {
+        "disable-event": {},
+    },
     slots: {},
     setter: {
         props: {
@@ -34,6 +37,8 @@ export default defineComponentMeta({
             ],
         },
         events: {
+            includeInnerEvents: true,
+            excludeInnerEvents: ["表单事件"],
             groups: [],
         },
         style: {

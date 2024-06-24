@@ -1,5 +1,5 @@
 import { ComponentPublicInstance, VNode } from "vue";
-import { ComponentSlotMeta, FunctionMeta, I18N, VueComponent } from "@/draggable/types/Base";
+import { ComponentSlotMeta, FunctionInfo, FunctionMeta, I18N, ModifierGuardsKeys, VueComponent } from "@/draggable/types/Base";
 import { BaseDirectives, BaseProps, ComponentListener, DesignNode } from "@/draggable/types/DesignBlock";
 import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
@@ -188,6 +188,20 @@ interface EventInfo extends FunctionMeta {
     disabled?: boolean;
 }
 
+/**
+ * 设计器事件信息
+ */
+interface ListenerInfo {
+    /** 事件名称 */
+    eventName: string;
+    /** 函数代码 */
+    funInfo?: FunctionInfo;
+    /** 事件修饰符 */
+    modifiers?: Array<ModifierGuardsKeys>;
+    /** 函数元数据 */
+    funMeta?: FunctionMeta;
+}
+
 /** 事件分组 */
 interface EventGroup {
     /** 分组标题 */
@@ -199,14 +213,16 @@ interface EventGroup {
 }
 
 /** 内置html原生事件分组 */
-type InnerEventGroup = "表单事件" | "鼠标事件" | "键盘事件" | "触摸事件" | "焦点事件";
+type InnerEventGroup = "表单事件" | "鼠标事件" | "键盘事件" | "触摸事件" | "焦点事件" | string;
 
 /** 事件设置器面板 */
 interface EventPanel {
     /** 面板标题 */
     title?: string;
     /** 包含的内置html原生事件(true表示包含所有的内置html原生事件) */
-    innerEvents?: Array<InnerEventGroup> | true;
+    includeInnerEvents?: Array<InnerEventGroup> | true;
+    /** 排除的内置html原生事件 */
+    excludeInnerEvents?: Array<InnerEventGroup>;
     /** 事件分组 */
     groups: Array<EventGroup>;
 }
@@ -391,6 +407,7 @@ export type {
     SetterGroup,
     SetterPanel,
     EventInfo,
+    ListenerInfo,
     EventGroup,
     InnerEventGroup,
     EventPanel,

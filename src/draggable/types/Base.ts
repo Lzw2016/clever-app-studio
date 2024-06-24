@@ -133,6 +133,22 @@ interface FunctionMeta {
     examples?: Array<CodeExample>;
 }
 
+/**
+ * 函数运行时信息
+ */
+interface FunctionInfo {
+    /** 是否是异步函数 */
+    async: boolean;
+    /** 函数名 */
+    name?: string;
+    /** 函数参数 */
+    params: Array<string>;
+    /** 函数体 */
+    body: string;
+    /** 是否是 lambda 形式的函数 */
+    lambda: boolean;
+}
+
 /** 组件插槽元信息 */
 interface ComponentSlotMeta {
     /** 简单说明 */
@@ -184,6 +200,7 @@ export type {
     ParamVarType,
     ParamMeta,
     FunctionMeta,
+    FunctionInfo,
     ComponentSlotMeta,
     ComponentParam,
     FunctionParam,

@@ -324,7 +324,7 @@ export default defineComponentMeta({
             ],
         },
         events: {
-            innerEvents: true,
+            includeInnerEvents: true,
             groups: [
                 {
                     title: "组件事件",

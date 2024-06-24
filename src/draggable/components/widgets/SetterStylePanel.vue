@@ -4,7 +4,7 @@ import { Collapse, CollapseItem } from "@opentiny/vue";
 import { batchApplyStyle } from "@/draggable/utils/StyleUtils";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
-import { SetterState } from "@/draggable/models/SetterState";
+import { SetterShareState } from "@/draggable/models/SetterShareState";
 import { StylePanel, StyleSetterProps } from "@/draggable/types/ComponentMeta";
 import ComponentStyles from "@/draggable/components/widgets/style/ComponentStyles.vue";
 import LayoutStyle from "@/draggable/components/widgets/style/LayoutStyle.vue";
@@ -32,7 +32,7 @@ interface SetterStylePanelProps {
     /** 设计器状态数据 */
     designerState: DesignerState;
     /** 设计器的组件配置面板状态 */
-    setterState: SetterState;
+    setterState: SetterShareState;
     /** 样式设置器面板 */
     stylePanel: StylePanel;
 }

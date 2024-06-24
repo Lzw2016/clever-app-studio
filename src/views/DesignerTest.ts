@@ -174,6 +174,9 @@ const designerTest = defineDesignBlock({
                     border: "1px solid #ccc",
                 },
             },
+            listeners: {
+                onClick: 'addSpan',
+            },
         },
     ],
     methods: {

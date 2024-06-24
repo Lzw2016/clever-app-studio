@@ -3,9 +3,9 @@ import { DesignerState } from "@/draggable/models/DesignerState";
 import { ComponentMeta, SetterGroup } from "@/draggable/types/ComponentMeta";
 
 /**
- * 设计器的组件配置面板状态
+ * 组件配置面板共享状态
  */
-class SetterState {
+class SetterShareState {
     /** 设计器状态数据 */
     readonly designerState: DesignerState;
     /** 活动的叶签 */
@@ -67,5 +67,5 @@ class SetterState {
 }
 
 export {
-    SetterState,
+    SetterShareState,
 }

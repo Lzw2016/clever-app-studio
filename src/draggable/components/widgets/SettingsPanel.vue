@@ -55,7 +55,7 @@ const selectedComponentMeta = computed(() => {
     if (meta) return filterEmptyMeta(meta);
 });
 // 当前活动的设计器状态数据
-const setterState = computed(() => props.designerEngine.activeDesignerState?.setterState);
+const setterState = computed(() => props.designerEngine.activeDesignerState?.setterShareState);
 
 // 重新计算expandGroups(展开的组件分组)
 watch(() => selectedComponentMeta.value, () => setterState.value?.recalcExpandGroups());

@@ -54,7 +54,7 @@ const state = reactive<SetterPropsFormState>({
 // const data = {};
 const refInputRef = ref<any>();
 // 当前活动的设计器状态数据
-const setterState = computed(() => props.designerEngine.activeDesignerState?.setterState);
+const setterState = computed(() => props.designerEngine.activeDesignerState?.setterShareState);
 const selectNode = computed(() => {
     const selectNodes = props.designerState.selectNodes;
     if (selectNodes.length === 1) {

@@ -3,10 +3,13 @@ import { computed, reactive } from "vue";
 import { Grid, GridColumn, Option, OptionGroup, Select } from '@opentiny/vue'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faCode, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { innerEvents } from "@/draggable/Constant";
+import { toElementEventName } from "@/draggable/utils/HtmlTag";
+import { parseFun } from "@/draggable/utils/Utils";
+import { EventGroup, EventInfo, EventPanel, ListenerInfo } from "@/draggable/types/ComponentMeta";
+import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
-import { EventGroup, EventPanel } from "@/draggable/types/ComponentMeta";
-import { innerEvents } from "@/draggable/Constant";
 
 // 定义组件选项
 defineOptions({
@@ -37,24 +40,78 @@ const state = reactive<SetterEventPanelState>({
 });
 // 内部数据
 const data = {};
-
-const eventGroups = computed<Array<EventGroup>>(() => {
-    const events = (props.eventPanel.groups ? [...props.eventPanel.groups] : []);
-    events.push(...innerEvents);
-    return events;
-});
+// 当前选择组件支持的事件分组
+const eventGroups = computed<Array<EventGroup>>(() => getEventGroups(props.eventPanel));
+// 所有的事件监听器
+const allListener = computed<Array<ListenerInfo>>(() => getAllListener(eventGroups.value, props.designerState.selectNode));
 
 function getEventTitle(event) {
     // event
 }
 
 function getEventGroups(eventPanel: EventPanel): Array<EventGroup> {
-    return [];
+    const array: Array<EventGroup> = [];
+    // 获取所有的事件
+    if (eventPanel.groups) array.push(...eventPanel.groups);
+    const allName = getAllEventName(array);
+    const { includeInnerEvents, excludeInnerEvents } = eventPanel;
+    let innerGroup: Array<string> = [];
+    if (includeInnerEvents === true) {
+        innerGroup = innerEvents.map(group => group.title);
+    } else if (includeInnerEvents) {
+        innerGroup = [...includeInnerEvents];
+    }
+    if (excludeInnerEvents) {
+        innerGroup = innerGroup.filter(group => !excludeInnerEvents.includes(group));
+    }
+    for (let innerEvent of innerEvents) {
+        if (!innerGroup.includes(innerEvent.title)) continue;
+        const group: EventGroup = { ...innerEvent, items: [] };
+        for (let item of innerEvent.items) {
+            if (!allName.has(item.name)) group.items.push(item);
+        }
+        if (group.items.length > 0) {
+            array.push(group);
+        }
+    }
+    // 已经监听了的事件，设置成禁用状态
+
+    return array;
+}
+
+function getAllListener(eventGroups: Array<EventGroup>, node?: RuntimeNode): Array<ListenerInfo> {
+    if (!node) return [];
+    const eventMap = new Map<string, EventInfo>();
+    eventGroups.forEach(group => group.items.forEach(item => eventMap.set(item.name, item)));
+    const array: Array<ListenerInfo> = [];
+    for (let eventName in node.listeners) {
+        const listener = node.listeners[eventName];
+        if (!listener) continue;
+        eventName = toElementEventName(eventName);
+        const listenerInfo: ListenerInfo = {
+            eventName: eventName,
+            funInfo: parseFun(listener.handler),
+            modifiers: listener.modifiers,
+            funMeta: eventMap.get(eventName),
+        };
+        array.push(listenerInfo);
+    }
+    return array;
+}
+
+function getAllEventName(groups: Array<EventGroup>): Set<string> {
+    const allName = new Set<string>();
+    for (let group of groups) {
+        for (let item of group.items) {
+            allName.add(item.name);
+        }
+    }
+    return allName;
 }
 </script>
 
 <template>
-    <div class="event-panel" v-if="eventGroups.length>0">
+    <div class="event-panel" v-if="props.designerState.singleSelection && eventGroups.length>0">
         <div class="event-tools">
             <Select
                 :filterable="false"
@@ -85,25 +142,16 @@ function getEventGroups(eventPanel: EventPanel): Array<EventGroup> {
             :stripe="true"
             :border="true"
             size="mini"
-            :data="[
-                {event: 'a'},
-                {event: 'b'},
-                {event: 'c'},
-                {event: 'c'},
-                {event: 'c'},
-                {event: 'c'},
-                {event: 'c'},
-            ]"
+            :data="allListener"
         >
             <GridColumn type="index" title="#" :width="30"/>
             <GridColumn field="event" title="已绑定事件" width="auto">
                 <template #default="data">
-                    <!--{{data.row.event}}={{data.row.event}}-->
                     <div>
-                        click-鼠标单击事件
+                        {{ data.row.eventName }}-{{ data.row.funMeta?.title }}
                     </div>
                     <div class="event-binds-name">
-                        setAlignItems
+                        {{ data.row.funInfo?.name }}
                     </div>
                 </template>
             </GridColumn>
@@ -119,8 +167,11 @@ function getEventGroups(eventPanel: EventPanel): Array<EventGroup> {
             </GridColumn>
         </Grid>
     </div>
-    <div v-else class="event-panel-none">
+    <div class="event-panel-none" v-else-if="eventGroups.length<=0">
         组件未配置事件
+    </div>
+    <div class="event-panel-none" v-else>
+        已选中多个节点
     </div>
 </template>
 
