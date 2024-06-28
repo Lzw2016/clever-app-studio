@@ -59,9 +59,9 @@
         "sortablejs": "^1.15.2",
         "vue-draggable-plus": "^0.4.1",
         "@layui/layer-vue": "^2.3.3",
-        "@opentiny/vue": "3.16.0",
-        "@opentiny/vue-locale": "3.16.0",
-        "@opentiny/vue-icon": "3.16.0",
+        "@opentiny/vue": "3.17.0",
+        "@opentiny/vue-locale": "3.17.0",
+        "@opentiny/vue-icon": "3.17.0",
         "primevue": "^3.52.0",
         "ant-design-vue": "^4.2.1"
     },
