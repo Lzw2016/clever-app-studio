@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, reactive } from "vue";
-import { Grid, GridColumn, Option, OptionGroup, Select } from '@opentiny/vue'
+import lodash from "lodash";
+import { computed, reactive, ref } from "vue";
+import { Grid, GridColumn, Modal, Option, OptionGroup, Select } from '@opentiny/vue'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faCode, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { innerEvents } from "@/draggable/Constant";
@@ -10,6 +11,7 @@ import { EventGroup, EventInfo, EventPanel, ListenerInfo } from "@/draggable/typ
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
+import EventEditor from "@/draggable/components/widgets/EventEditor.vue";
 
 // 定义组件选项
 defineOptions({
@@ -31,15 +33,18 @@ const props = withDefaults(defineProps<SetterEventPanelProps>(), {});
 
 // 定义 State 类型
 interface SetterEventPanelState {
-    value1?: string;
+    /** 显示事件编辑器对话框 */
+    showEventEditorDialog: boolean;
 }
 
 // state 属性
 const state = reactive<SetterEventPanelState>({
-    value1: undefined,
+    showEventEditorDialog: false,
 });
 // 内部数据
 const data = {};
+// 事件编辑器组件
+const eventEditor = ref<InstanceType<typeof EventEditor> | undefined>();
 // 当前选择组件支持的事件分组
 const eventGroups = computed<Array<EventGroup>>(() => getEventGroups(props.eventPanel, props.designerState.selectNode));
 // 所有的事件监听器
@@ -49,10 +54,11 @@ function getEventTitle(event) {
     // event
 }
 
+/** 获取当前渲染节点支持的事件 */
 function getEventGroups(eventPanel: EventPanel, node?: RuntimeNode): Array<EventGroup> {
     const array: Array<EventGroup> = [];
     // 获取所有的事件
-    if (eventPanel.groups) array.push(...eventPanel.groups);
+    if (eventPanel.groups) array.push(...lodash.cloneDeep(eventPanel.groups));
     const allName = getAllEventName(array);
     const { includeInnerEvents, excludeInnerEvents } = eventPanel;
     let innerGroup: Array<string> = [];
@@ -66,9 +72,10 @@ function getEventGroups(eventPanel: EventPanel, node?: RuntimeNode): Array<Event
     }
     for (let innerEvent of innerEvents) {
         if (!innerGroup.includes(innerEvent.title)) continue;
-        const group: EventGroup = { ...innerEvent, items: [] };
+        const { title, disabled } = innerEvent;
+        const group: EventGroup = { title, disabled, items: [] };
         for (let item of innerEvent.items) {
-            if (!allName.has(item.name)) group.items.push(item);
+            if (!allName.has(item.name)) group.items.push(lodash.cloneDeep(item));
         }
         if (group.items.length > 0) {
             array.push(group);
@@ -89,6 +96,7 @@ function getEventGroups(eventPanel: EventPanel, node?: RuntimeNode): Array<Event
     return array;
 }
 
+/** 获取当前渲染节点所有监听的事件 */
 function getAllListener(eventGroups: Array<EventGroup>, node?: RuntimeNode): Array<ListenerInfo> {
     if (!node) return [];
     const eventMap = new Map<string, EventInfo>();
@@ -109,6 +117,7 @@ function getAllListener(eventGroups: Array<EventGroup>, node?: RuntimeNode): Arr
     return array;
 }
 
+/** 获取所有的事件名称 */
 function getAllEventName(groups: Array<EventGroup>): Set<string> {
     const allName = new Set<string>();
     for (let group of groups) {
@@ -117,6 +126,10 @@ function getAllEventName(groups: Array<EventGroup>): Set<string> {
         }
     }
     return allName;
+}
+
+function showEventEditorDialog() {
+    state.showEventEditorDialog = true;
 }
 </script>
 
@@ -161,14 +174,14 @@ function getAllEventName(groups: Array<EventGroup>): Set<string> {
                     <div>
                         {{ data.row.eventName }}-{{ data.row.funMeta?.title }}
                     </div>
-                    <div class="event-binds-name">
+                    <div class="event-binds-name" @click="showEventEditorDialog">
                         {{ data.row.funInfo?.name }}
                     </div>
                 </template>
             </GridColumn>
             <GridColumn field="action" title="操作" :width="65" :align="'center'">
                 <template #default="data">
-                    <span class="event-binds-action" title="编辑代码">
+                    <span class="event-binds-action" title="编辑代码" @click="showEventEditorDialog">
                         <FontAwesomeIcon :icon="faCode"/>
                     </span>
                     <span class="event-binds-action" title="删除">
@@ -184,6 +197,19 @@ function getAllEventName(groups: Array<EventGroup>): Set<string> {
     <div class="event-panel-none" v-else>
         已选中多个节点
     </div>
+    <Modal
+        class="event-modal"
+        v-model="state.showEventEditorDialog"
+        height="80%"
+        width="60%"
+        min-height="350px"
+        min-width="500px"
+        :esc-closable="false"
+        :resize="false"
+        title="编辑事件代码"
+    >
+        <EventEditor ref="eventEditor" />
+    </Modal>
 </template>
 
 <style scoped>
@@ -233,13 +259,14 @@ function getAllEventName(groups: Array<EventGroup>): Set<string> {
 }
 
 .event-binds-action {
-    width: 18px;
-    height: 18px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+    color: #252b3a;
     cursor: pointer;
-    margin-right: 8px;
 }
 
 .event-binds-action:hover {
@@ -248,5 +275,10 @@ function getAllEventName(groups: Array<EventGroup>): Set<string> {
 
 .event-binds-action:last-child {
     margin-right: 0;
+}
+
+/* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
+.event-modal :deep(.tiny-modal__box .tiny-modal__body .tiny-modal__content) {
+    padding: 8px 0 16px 0;
 }
 </style>

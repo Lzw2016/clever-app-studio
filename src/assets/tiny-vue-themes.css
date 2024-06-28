@@ -196,6 +196,15 @@ body .tiny-modal > .tiny-modal__box > .tiny-modal__footer {
     text-align: right;
 }
 
+body .tiny-modal > .tiny-modal__box > .tiny-modal__body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body .tiny-modal > .tiny-modal__box > .tiny-modal__body > .tiny-modal__content {
+    height: 100%;
+    overflow: hidden;
+}
 
 /* select */
 body .tiny-select-dropdown.tiny-popper > .tiny-scrollbar {
@@ -206,6 +215,12 @@ body .tiny-select-dropdown.tiny-popper > .tiny-scrollbar > .tiny-select-dropdown
     height: 100%;
     max-height: unset;
     /*width: ;*/
+}
+
+
+/* tree树组件 */
+body .tiny-tree-node > .tiny-tree-node__content:hover {
+    background-color: var(--ti-tree-node-hover-inner-bg-color);
 }
 
 
