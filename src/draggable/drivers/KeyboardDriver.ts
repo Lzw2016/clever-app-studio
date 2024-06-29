@@ -19,6 +19,8 @@ class KeyboardDriver extends DesignerDriver {
     protected readonly shortcutKeys = {
         allKey: "*",
         save: "ctrl+s",
+        showBlockEditorDialog: "ctrl+p",
+        showEventEditorDialog: "ctrl+e",
     };
 
     /** 启动当前 EventDriver 的监听 */
@@ -26,6 +28,8 @@ class KeyboardDriver extends DesignerDriver {
         hotkeys.setScope(this.scope);
         hotkeys(this.shortcutKeys.allKey, { scope: this.scope, keyup: true, keydown: true, capture: true }, this.keepPressedKey);
         hotkeys(this.shortcutKeys.save, { scope: this.scope, capture: true }, this.onSave);
+        hotkeys(this.shortcutKeys.showBlockEditorDialog, { scope: this.scope, capture: true }, this.onShowBlockEditorDialog);
+        hotkeys(this.shortcutKeys.showEventEditorDialog, { scope: this.scope, capture: true }, this.onShowEventEditorDialog);
     }
 
     /** 停止当前 EventDriver 的监听 */
@@ -38,6 +42,22 @@ class KeyboardDriver extends DesignerDriver {
     onSave = (keyboardEvent: KeyboardEvent, hotkeysEvent: HotkeysEvent) => {
         this.preventDefault(keyboardEvent);
         this.eventbus.dispatch(new ShortcutKeyEvent(keyboardEvent, hotkeysEvent));
+    }
+
+    // 打开Block编辑对话框
+    onShowBlockEditorDialog = (keyboardEvent: KeyboardEvent, hotkeysEvent: HotkeysEvent) => {
+        this.preventDefault(keyboardEvent);
+        this.designerEngine.showBlockEditorDialog = true;
+        // 关闭其它对话框
+        this.designerEngine.showEventEditorDialog = false;
+    }
+
+    // 打开Event编辑对话框
+    onShowEventEditorDialog = (keyboardEvent: KeyboardEvent, hotkeysEvent: HotkeysEvent) => {
+        this.preventDefault(keyboardEvent);
+        this.designerEngine.showEventEditorDialog = true;
+        // 关闭其它对话框
+        this.designerEngine.showBlockEditorDialog = false;
     }
 
     // 键盘按键是否按下的状态维护

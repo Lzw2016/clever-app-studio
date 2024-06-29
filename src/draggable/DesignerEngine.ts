@@ -48,13 +48,17 @@ class DesignerEngine {
     /** 正在拖拽的组件的元信息 */
     readonly draggingCmpMetas: DraggingCmpMetas;
     /** 当前活动的设计器页面路由路径(fullPath) */
-    protected _activeDesignerPath: Ref<string | undefined> = ref<string>();
+    protected readonly _activeDesignerPath: Ref<string | undefined> = ref<string>();
     /** 所有的设计器状态数据 */
     readonly allDesignerState: ShallowReactive<Record<string, DesignerState>> = shallowReactive<Record<string, DesignerState>>({});
     /** 设计器插入组件的信息 */
     readonly insertion: Insertion;
     // /** 捕捉线(多选组件时的矩形线条) */
     // protected readonly _snapLine: Ref<SnapLine | undefined> = ref<SnapLine>();
+    /** 是否显示Block编辑对话框 */
+    protected readonly _showBlockEditorDialog: Ref<boolean> = ref<boolean>(false);
+    /** 是否显示Event编辑对话框 */
+    protected readonly _showEventEditorDialog: Ref<boolean> = ref<boolean>(false);
 
     constructor(props: Partial<DesignerEngineProps>) {
         this.props = { ...defaultProps, ...props };
@@ -97,6 +101,26 @@ class DesignerEngine {
     set activeDesignerPath(value: string | undefined) {
         if (value && !this.allDesignerState[value]) value = undefined;
         this._activeDesignerPath.value = value;
+    }
+
+    /** 是否显示Block编辑对话框 */
+    get showBlockEditorDialog(): boolean {
+        return this._showBlockEditorDialog.value;
+    }
+
+    /** 是否显示Block编辑对话框 */
+    set showBlockEditorDialog(value: boolean) {
+        this._showBlockEditorDialog.value = value;
+    }
+
+    /** 是否显示Event编辑对话框 */
+    get showEventEditorDialog(): boolean {
+        return this._showEventEditorDialog.value;
+    }
+
+    /** 是否显示Event编辑对话框 */
+    set showEventEditorDialog(value: boolean) {
+        this._showEventEditorDialog.value = value;
     }
 
     /** 当前活动的设计器状态数据 */

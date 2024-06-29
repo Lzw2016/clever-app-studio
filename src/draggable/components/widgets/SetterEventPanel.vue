@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { computed, reactive, ref } from "vue";
-import { Grid, GridColumn, Modal, Option, OptionGroup, Select } from '@opentiny/vue'
+import { computed, reactive } from "vue";
+import { Grid, GridColumn, Option, OptionGroup, Select } from '@opentiny/vue'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faCode, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { innerEvents } from "@/draggable/Constant";
@@ -11,7 +11,6 @@ import { EventGroup, EventInfo, EventPanel, ListenerInfo } from "@/draggable/typ
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
-import EventEditor from "@/draggable/components/widgets/EventEditor.vue";
 
 // 定义组件选项
 defineOptions({
@@ -33,26 +32,16 @@ const props = withDefaults(defineProps<SetterEventPanelProps>(), {});
 
 // 定义 State 类型
 interface SetterEventPanelState {
-    /** 显示事件编辑器对话框 */
-    showEventEditorDialog: boolean;
 }
 
 // state 属性
-const state = reactive<SetterEventPanelState>({
-    showEventEditorDialog: false,
-});
+const state = reactive<SetterEventPanelState>({});
 // 内部数据
 const data = {};
-// 事件编辑器组件
-const eventEditor = ref<InstanceType<typeof EventEditor> | undefined>();
 // 当前选择组件支持的事件分组
 const eventGroups = computed<Array<EventGroup>>(() => getEventGroups(props.eventPanel, props.designerState.selectNode));
 // 所有的事件监听器
 const allListener = computed<Array<ListenerInfo>>(() => getAllListener(eventGroups.value, props.designerState.selectNode));
-
-function getEventTitle(event) {
-    // event
-}
 
 /** 获取当前渲染节点支持的事件 */
 function getEventGroups(eventPanel: EventPanel, node?: RuntimeNode): Array<EventGroup> {
@@ -129,7 +118,7 @@ function getAllEventName(groups: Array<EventGroup>): Set<string> {
 }
 
 function showEventEditorDialog() {
-    state.showEventEditorDialog = true;
+    props.designerEngine.showEventEditorDialog = true;
 }
 </script>
 
@@ -197,19 +186,6 @@ function showEventEditorDialog() {
     <div class="event-panel-none" v-else>
         已选中多个节点
     </div>
-    <Modal
-        class="event-modal"
-        v-model="state.showEventEditorDialog"
-        height="80%"
-        width="60%"
-        min-height="350px"
-        min-width="500px"
-        :esc-closable="false"
-        :resize="false"
-        title="编辑事件代码"
-    >
-        <EventEditor ref="eventEditor" />
-    </Modal>
 </template>
 
 <style scoped>
