@@ -735,7 +735,7 @@ interface RuntimeNodeToDesignNodeOps {
 }
 
 /**
- * 将 RuntimeNode 装换成 DesignNode
+ * 将 RuntimeNode 转换成 DesignNode
  */
 function runtimeNodeToDesignNode(runtimeNode: RuntimeNode, ops: RuntimeNodeToDesignNodeOps = {}): DesignNode {
     const {
@@ -844,6 +844,52 @@ function _tplToDesignNode(tpl: RuntimeNode['tpl']): DesignNode['tpl'] | undefine
     }
 }
 
+interface TreeNode<T = any> {
+    /** 节点ID */
+    readonly id: string;
+    /** 节点标题 */
+    readonly label: string;
+    /** 子节点 */
+    children?: Array<TreeNode>;
+    /** 当前节点是否是插槽 */
+    readonly isSlot: boolean;
+    /** 节点数据 */
+    readonly data?: T;
+}
+
+/**
+ * 将 RuntimeNode 转换成 DesignNode
+ */
+function runtimeNodeToTreeNode(runtimeNode: RuntimeNode): Array<TreeNode<RuntimeNode>> {
+    const rootNodes: Array<TreeNode<RuntimeNode>> = [];
+    const flatNodes: Map<string, TreeNode<RuntimeNode>> = new Map<string, TreeNode<RuntimeNode>>();
+    deepTraverseNodes(
+        runtimeNode,
+        (current, isSlot, parent) => {
+            const node: TreeNode<RuntimeNode> = { id: current.id, label: current.type, isSlot: isSlot, data: current };
+            flatNodes.set(node.id, node);
+            if (!parent) {
+                // 不存在父节点(根节点)
+                rootNodes.push(node);
+                return;
+            }
+            // 存在父节点
+            const parentNode = flatNodes.get(parent.id);
+            if (!parentNode) {
+                console.error("未知错误: parentNode 不能为空");
+                return;
+            }
+            if (!parentNode.children) parentNode.children = [];
+            parentNode.children.push(node);
+        },
+    );
+    return rootNodes;
+}
+
+export type {
+    TreeNode,
+}
+
 export {
     createFunction,
     createComponentParam,
@@ -865,4 +911,5 @@ export {
     expTransform,
     renderTpl,
     runtimeNodeToDesignNode,
+    runtimeNodeToTreeNode,
 }

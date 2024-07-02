@@ -4,6 +4,8 @@ import { TabItem, Tabs } from "@opentiny/vue";
 import type { editor } from "monaco-editor";
 import MonacoEditor, { MonacoType } from "@/components/MonacoEditor.vue";
 import SplitPane from "@/components/SplitPane.vue";
+import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { DesignerState } from "@/draggable/models/DesignerState";
 
 // 定义组件选项
 defineOptions({
@@ -12,7 +14,10 @@ defineOptions({
 
 // 定义 Props 类型
 interface BlockEditorProps {
-
+    /** 设计器引擎 */
+    designerEngine: DesignerEngine;
+    /** 设计器状态数据 */
+    designerState?: DesignerState;
 }
 
 // 读取组件 props 属性

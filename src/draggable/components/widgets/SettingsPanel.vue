@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from "vue";
-import { TabItem, Tabs } from "@opentiny/vue";
+import { computed, reactive, ref, watch } from "vue";
+import { Modal, TabItem, Tabs } from "@opentiny/vue";
 import { IconX } from "@tabler/icons-vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 import SetterPropsPanel from "@/draggable/components/widgets/SetterPropsPanel.vue";
 import SetterEventPanel from "@/draggable/components/widgets/SetterEventPanel.vue";
 import SetterStylePanel from "@/draggable/components/widgets/SetterStylePanel.vue";
+import EventEditor from "@/draggable/components/widgets/EventEditor.vue";
+import BlockEditor from "@/draggable/components/widgets/BlockEditor.vue";
 
 // 定义组件选项
 defineOptions({
@@ -32,6 +34,10 @@ const data = {
         advanced: "高级",
     },
 };
+// 事件编辑器组件
+const blockEditorRef = ref<InstanceType<typeof BlockEditor> | undefined>();
+// 事件编辑器组件
+const eventEditorRef = ref<InstanceType<typeof EventEditor> | undefined>();
 // 当前活动的设计器状态数据
 const designerState = computed(() => props.designerEngine.activeDesignerState);
 // 存在选中的节点
@@ -174,6 +180,40 @@ function existsSetter(meta?: ComponentMeta) {
                 vue指令设置
             </TabItem>
         </Tabs>
+        <Modal
+            class="block-modal"
+            v-model="designerEngine.showBlockEditorDialog"
+            height="80%"
+            width="60%"
+            min-height="350px"
+            min-width="500px"
+            :esc-closable="true"
+            :resize="false"
+            title="编辑页面代码"
+        >
+            <BlockEditor
+                ref="blockEditorRef"
+                :designer-engine="designerEngine"
+                :designer-state="designerState"
+            />
+        </Modal>
+        <Modal
+            class="event-modal"
+            v-model="designerEngine.showEventEditorDialog"
+            height="80%"
+            width="60%"
+            min-height="350px"
+            min-width="500px"
+            :esc-closable="true"
+            :resize="false"
+            title="编辑事件代码"
+        >
+            <EventEditor
+                ref="eventEditorRef"
+                :designer-engine="designerEngine"
+                :designer-state="designerState"
+            />
+        </Modal>
     </div>
 </template>
 

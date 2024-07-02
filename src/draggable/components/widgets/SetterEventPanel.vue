@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import lodash from "lodash";
 import { computed, reactive } from "vue";
 import { Grid, GridColumn, Option, OptionGroup, Select } from '@opentiny/vue'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faCode, faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { innerEvents } from "@/draggable/Constant";
-import { toElementEventName } from "@/draggable/utils/HtmlTag";
-import { parseFun } from "@/draggable/utils/Utils";
-import { EventGroup, EventInfo, EventPanel, ListenerInfo } from "@/draggable/types/ComponentMeta";
-import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { EventGroup, EventPanel, ListenerInfo } from "@/draggable/types/ComponentMeta";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
+import { getAllListener, getEventGroups, getEventTitle } from "@/draggable/utils/EventUtils";
 
 // 定义组件选项
 defineOptions({
@@ -42,80 +38,6 @@ const data = {};
 const eventGroups = computed<Array<EventGroup>>(() => getEventGroups(props.eventPanel, props.designerState.selectNode));
 // 所有的事件监听器
 const allListener = computed<Array<ListenerInfo>>(() => getAllListener(eventGroups.value, props.designerState.selectNode));
-
-/** 获取当前渲染节点支持的事件 */
-function getEventGroups(eventPanel: EventPanel, node?: RuntimeNode): Array<EventGroup> {
-    const array: Array<EventGroup> = [];
-    // 获取所有的事件
-    if (eventPanel.groups) array.push(...lodash.cloneDeep(eventPanel.groups));
-    const allName = getAllEventName(array);
-    const { includeInnerEvents, excludeInnerEvents } = eventPanel;
-    let innerGroup: Array<string> = [];
-    if (includeInnerEvents === true) {
-        innerGroup = innerEvents.map(group => group.title);
-    } else if (includeInnerEvents) {
-        innerGroup = [...includeInnerEvents];
-    }
-    if (excludeInnerEvents) {
-        innerGroup = innerGroup.filter(group => !excludeInnerEvents.includes(group));
-    }
-    for (let innerEvent of innerEvents) {
-        if (!innerGroup.includes(innerEvent.title)) continue;
-        const { title, disabled } = innerEvent;
-        const group: EventGroup = { title, disabled, items: [] };
-        for (let item of innerEvent.items) {
-            if (!allName.has(item.name)) group.items.push(lodash.cloneDeep(item));
-        }
-        if (group.items.length > 0) {
-            array.push(group);
-        }
-    }
-    // 已经监听了的事件，设置成禁用状态
-    if (node?.listeners) {
-        const listenerEvents: Array<string> = [];
-        for (let eventName in node.listeners) {
-            listenerEvents.push(toElementEventName(eventName));
-        }
-        for (let listenerEvent of listenerEvents) {
-            array.forEach(group => group.items.forEach(item => {
-                item.disabled = listenerEvents.includes(item.name);
-            }));
-        }
-    }
-    return array;
-}
-
-/** 获取当前渲染节点所有监听的事件 */
-function getAllListener(eventGroups: Array<EventGroup>, node?: RuntimeNode): Array<ListenerInfo> {
-    if (!node) return [];
-    const eventMap = new Map<string, EventInfo>();
-    eventGroups.forEach(group => group.items.forEach(item => eventMap.set(item.name, item)));
-    const array: Array<ListenerInfo> = [];
-    for (let eventName in node.listeners) {
-        const listener = node.listeners[eventName];
-        if (!listener) continue;
-        eventName = toElementEventName(eventName);
-        const listenerInfo: ListenerInfo = {
-            eventName: eventName,
-            funInfo: parseFun(listener.handler),
-            modifiers: listener.modifiers,
-            funMeta: eventMap.get(eventName),
-        };
-        array.push(listenerInfo);
-    }
-    return array;
-}
-
-/** 获取所有的事件名称 */
-function getAllEventName(groups: Array<EventGroup>): Set<string> {
-    const allName = new Set<string>();
-    for (let group of groups) {
-        for (let item of group.items) {
-            allName.add(item.name);
-        }
-    }
-    return allName;
-}
 
 function showEventEditorDialog() {
     props.designerEngine.showEventEditorDialog = true;
@@ -161,10 +83,10 @@ function showEventEditorDialog() {
             <GridColumn field="event" title="已绑定事件" width="auto">
                 <template #default="data">
                     <div>
-                        {{ data.row.eventName }}-{{ data.row.funMeta?.title }}
+                        {{ getEventTitle(data.row) }}
                     </div>
                     <div class="event-binds-name" @click="showEventEditorDialog">
-                        {{ data.row.funInfo?.name }}
+                        {{ data.row.funInfo?.name ?? '[anonymous]' }}
                     </div>
                 </template>
             </GridColumn>

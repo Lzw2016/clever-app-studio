@@ -1,11 +1,19 @@
 <script setup lang="ts">
-import { reactive } from "vue";
-import { Input, Tree } from "@opentiny/vue";
+import { computed, shallowReactive, watch } from "vue";
+import { Input, Option, OptionGroup, Select, Tree } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import type { editor } from "monaco-editor";
+import { hasValue, noValue } from "@/utils/Typeof";
 import MonacoEditor, { MonacoType } from "@/components/MonacoEditor.vue";
 import SplitPane from "@/components/SplitPane.vue";
+import { RuntimeBlock, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { DesignerState } from "@/draggable/models/DesignerState";
+import { runtimeNodeToTreeNode, TreeNode } from "@/draggable/utils/BlockPropsTransform";
+import { ComponentMeta, EventGroup, ListenerInfo } from "@/draggable/types/ComponentMeta";
+import { getAllListener, getEventGroups, getEventTitle, getNodeComponentMeta } from "@/draggable/utils/EventUtils";
+import { funToString } from "@/draggable/utils/Utils";
 
 // 定义组件选项
 defineOptions({
@@ -14,7 +22,10 @@ defineOptions({
 
 // 定义 Props 类型
 interface EventEditorProps {
-
+    /** 设计器引擎 */
+    designerEngine: DesignerEngine;
+    /** 设计器状态数据 */
+    designerState?: DesignerState;
 }
 
 // 读取组件 props 属性
@@ -22,89 +33,82 @@ const props = withDefaults(defineProps<EventEditorProps>(), {});
 
 // 定义 State 类型
 interface EventEditorState {
-
+    /** 当前选中的大纲树数据节点key */
+    selectRuntimeNode?: RuntimeNode;
+    /** 当前选择的监听事件 */
+    selectListener?: ListenerInfo;
 }
 
 // state 属性
-const state = reactive<EventEditorState>({
-    show: false,
+const state = shallowReactive<EventEditorState>({
+    selectRuntimeNode: undefined,
+    selectListener: undefined,
 });
 // 内部数据
 const data = {
-    aaa: [
-        {
-            id: '1',
-            label: '数据 1',
-            children: [
-                { id: '1-1', label: '数据 1-1', children: [{ id: '1-1-1', label: '数据 1-1-1' }] },
-                { id: '1-2', label: '数据 1-2' }
-            ]
-        },
-        {
-            id: '2',
-            label: '数据 2',
-            children: [
-                { id: '2-1', label: '数据 2-1' },
-                { id: '2-2', label: '数据 2-2' }
-            ]
-        },
-        {
-            id: '3',
-            label: '数据 3',
-            children: [{ id: '3-1', label: '数据 3-1' }]
-        },
-        {id: '4',label: '数据 4'},
-        {id: '5',label: '数据 5'},
-        {id: '6',label: '数据 6'},
-        {id: '7',label: '数据 7'},
-        {id: '8',label: '数据 8'},
-        {id: '9',label: '数据 9'},
-        {id: '10',label: '数据 10'},
-        {id: '11',label: '数据 11'},
-        {id: '12',label: '数据 12'},
-        {id: '13',label: '数据 13'},
-        {id: '14',label: '数据 14'},
-        {id: '15',label: '数据 15'},
-        {id: '16',label: '数据 16'},
-        {id: '17',label: '数据 17'},
-        {id: '18',label: '数据 18'},
-        {id: '19',label: '数据 19'},
-        {id: '20',label: '数据 20'},
-        {id: '21',label: '数据 21'},
-        {id: '22',label: '数据 22'},
-        {id: '23',label: '数据 23'},
-        {id: '24',label: '数据 24'},
-        {id: '25',label: '数据 25'},
-        {id: '26',label: '数据 26'},
-        {id: '27',label: '数据 27'},
-        {id: '28',label: '数据 28'},
-        {id: '29',label: '数据 29'},
-        {id: '30',label: '数据 30'},
-        {id: '31',label: '数据 31'},
-        {id: '32',label: '数据 32'},
-        {id: '33',label: '数据 33'},
-        {id: '34',label: '数据 34'},
-        {id: '35',label: '数据 35'},
-        {id: '36',label: '数据 36'},
-        {id: '37',label: '数据 37'},
-        {id: '38',label: '数据 38'},
-        {id: '39',label: '数据 39'},
-        {id: '40',label: '数据 40'},
-        {id: '41',label: '数据 41'},
-        {id: '42',label: '数据 42'},
-    ],
+    monacoEditor: undefined as (editor.IStandaloneCodeEditor | undefined),
 };
+// 大纲树数据节点
+const outlineTreeNodes = computed<Array<TreeNode<RuntimeNode>>>(() => getOutlineTreeNodes(props.designerState?.blockInstance?.globalContext?.runtimeBlock));
+// 当前选择组件支持的事件分组
+const eventGroups = computed<Array<EventGroup>>(() => {
+    const componentMeta = getNodeComponentMeta(props.designerEngine.componentManage, state.selectRuntimeNode)
+    if (!componentMeta?.setter?.events) return [];
+    return getEventGroups(componentMeta.setter.events, state.selectRuntimeNode);
+});
+// 所有的事件监听器
+const allListener = computed<Array<ListenerInfo>>(() => getAllListener(eventGroups.value, state.selectRuntimeNode));
+
+watch(() => state.selectListener, listenerInfo => {
+    console.log("listenerInfo", listenerInfo);
+    if (!data.monacoEditor) return;
+    if (listenerInfo?.funInfo) {
+        const funInfo = { ...listenerInfo.funInfo };
+        if (!funInfo.name) funInfo.name = "anonymous";
+        data.monacoEditor.setValue(funToString(funInfo));
+    } else {
+        data.monacoEditor.setValue('');
+    }
+});
+
+function getOutlineTreeNodes(runtimeBlock?: RuntimeBlock): Array<TreeNode<RuntimeNode>> {
+    if (!runtimeBlock) return [];
+    return runtimeNodeToTreeNode(runtimeBlock);
+}
 
 function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
+    data.monacoEditor = editor;
+    // editor.addAction({
+    //     id: 'saveCode',
+    //     label: '保存代码',
+    //     keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
+    //     run: function () {
+    //     },
+    // });
+}
 
+function selectOutlineNodeChange(data: TreeNode<RuntimeNode>, currentNode: any) {
+    state.selectRuntimeNode = data.data;
+    state.selectListener = undefined;
+}
+
+function selectListenerChange(listenerInfo: ListenerInfo) {
+    // TODO 保存代码
+    state.selectListener = listenerInfo;
+}
+
+function getSelectComponentMeta(): ComponentMeta | undefined {
+    return;
 }
 
 interface EventEditorExpose {
-
+    /** 设置选中大纲树节点 */
+    setSelectNode(nodeId: string, eventName: string): void;
 }
 
 defineExpose<EventEditorExpose>({
-
+    setSelectNode(nodeId: string, eventName: string): void {
+    },
 });
 </script>
 
@@ -128,14 +132,16 @@ defineExpose<EventEditorExpose>({
                 </div>
                 <Tree
                     class="flex-item-fill"
-                    :data="data.aaa"
+                    :data="outlineTreeNodes"
                     :show-line="false"
                     :default-expand-all="true"
                     :highlight-current="true"
                     :expand-on-click-node="false"
                     size="small"
+                    :indent="12"
+                    :current-node-key="state.selectRuntimeNode?.id"
+                    @current-change="selectOutlineNodeChange"
                 />
-                <!--current-node-key-->
             </div>
         </template>
         <template #twoPane="slotProps">
@@ -145,7 +151,7 @@ defineExpose<EventEditorExpose>({
                 class="none-select"
                 layout="H"
                 fixed-pane="one"
-                :fixed-pane-def-size="200"
+                :fixed-pane-def-size="220"
                 :fixed-pane-min-size="150"
                 :fixed-pane-max-size="300"
                 :one-collapse="false"
@@ -162,27 +168,59 @@ defineExpose<EventEditorExpose>({
                             <div class="flex-item-fill" style="padding-right: 8px;overflow: hidden;">
                                 <Input size="mini" placeholder="过滤事件" style="min-width: 60px;max-width: 150px;"/>
                             </div>
-                            <div class="flex-item-fixed" />
+                            <div class="flex-item-fixed"/>
                             <div class="flex-item-fixed panel-tools-button" title="新增">
-                                <FontAwesomeIcon :icon="faPlus"/>
+                                <Select
+                                    :filterable="false"
+                                    :top-create="false"
+                                    :is-drop-inherit-width="true"
+                                    :drop-style="{
+                                        width: '240px',
+                                        height: '500px',
+                                        'min-height': '500px',
+                                    }"
+                                >
+                                    <template #reference>
+                                        <FontAwesomeIcon :icon="faPlus"/>
+                                    </template>
+                                    <OptionGroup v-for="group in eventGroups" :key="group.title" :label="group.title" :disabled="group.disabled ?? false">
+                                        <Option v-for="item in group.items" :key="item.name" :value="item.name" :disabled="item.disabled ?? false">
+                                            <div class="text-ellipsis" style="max-width: 260px;">
+                                                {{ item.name }}-{{ item.title }}
+                                            </div>
+                                            <!-- {{ item.disabled ? '(已监听)' : '' }} -->
+                                        </Option>
+                                    </OptionGroup>
+                                </Select>
                             </div>
                             <div class="flex-item-fixed panel-tools-button" title="删除">
                                 <FontAwesomeIcon :icon="faTrashCan"/>
                             </div>
                         </div>
                         <div class="flex-item-fill">
-                            <div v-for="item in data.aaa" class="event-item">
-                                <span>{{ item.label }}</span>
+                            <div
+                                v-for="item in allListener"
+                                :class="{
+                                    'text-ellipsis': true,
+                                    'event-item': true,
+                                    'event-item-active': state.selectListener === item,
+                                }"
+                                @click="selectListenerChange(item)"
+                            >
+                                <span>
+                                    {{ getEventTitle(item) }}
+                                </span>
                             </div>
                         </div>
                     </div>
                 </template>
                 <template #twoPane="slotProps">
                     <div v-bind="slotProps" class="flex-column-container" style="height: 100%;overflow: hidden;">
-                        <div class="flex-item-fixed editor-tips">
+                        <div v-show="hasValue(state.selectListener)" class="flex-item-fixed editor-tips">
                             111
                         </div>
                         <MonacoEditor
+                            v-show="hasValue(state.selectListener)"
                             class="flex-item-fill"
                             height="20px"
                             theme="idea-light"
@@ -190,15 +228,18 @@ defineExpose<EventEditorExpose>({
                             :options="{ contextmenu: false }"
                             :onMount="initEditor"
                         />
-                        <div class="flex-item-fixed editor-doc flex-row-container">
-                            <div class="flex-item-fixed" style="border-right: 1px solid #e1e1e1;">
-                                <div>示例1</div>
-                                <div>示例2</div>
-                                <div>示例3</div>
+                        <div v-show="hasValue(state.selectListener)" class="flex-item-fixed editor-doc flex-row-container">
+                            <div class="flex-item-fixed" style="border-right: 1px solid #e1e1e1;min-width: 150px;max-width: 300px;">
+                                <div class="text-ellipsis">示例1</div>
+                                <div class="text-ellipsis">示例2</div>
+                                <div class="text-ellipsis">示例3</div>
                             </div>
                             <div class="flex-item-fill">
 
                             </div>
+                        </div>
+                        <div v-show="noValue(state.selectListener)" class="flex-item-fill">
+                            选择事件
                         </div>
                     </div>
                 </template>
@@ -279,10 +320,14 @@ defineExpose<EventEditorExpose>({
 
 .event-item:hover {
     background-color: #f2f5fc;
-    cursor: unset;
+    cursor: pointer;
 }
 
-.event-item.active {
+.event-item-active {
+    background-color: #e9edfa;
+}
+
+.event-item-active:hover {
     background-color: #e9edfa;
 }
 
@@ -294,5 +339,11 @@ defineExpose<EventEditorExpose>({
 .editor-doc {
     height: 100px;
     border-top: 1px solid #c2c2c2;
+}
+
+.text-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 </style>

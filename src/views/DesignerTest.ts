@@ -176,6 +176,15 @@ const designerTest = defineDesignBlock({
             },
             listeners: {
                 onClick: 'addSpan',
+                onMousedown: function () {
+                    console.log("onMousedown");
+                },
+                onMouseleave: function () {
+                    console.log("onMouseleave");
+                },
+                onContextmenu: function (event) {
+                    console.log("onContextmenu", event);
+                },
             },
         },
     ],

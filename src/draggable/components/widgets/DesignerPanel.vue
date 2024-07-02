@@ -107,17 +107,13 @@ const isCodeTab = computed(() => state.activeTab === DesignerTab.Code);
 // 预览
 const isPreviewTab = computed(() => state.activeTab === DesignerTab.Preview);
 // 设计器容器
-const designerContainer = ref<HTMLDivElement | undefined>();
+const designerContainer = props.designerState._designerContainer;
 // 设计器组件实例
-const designerBlockInstance = ref<InstanceType<typeof RuntimeBlock> | undefined>();
+const designerBlockInstance = props.designerState._designerBlockInstance;
 // 拖拽辅助工具实例
 const auxTool = ref<InstanceType<typeof AuxTool> | undefined>();
 // 代码编辑器实例
 const codeEditorInstance = ref<Editor | undefined>();
-
-// 初始化 DesignerState 属性
-props.designerState.designerContainer = designerContainer;
-props.designerState.designerBlockInstance = designerBlockInstance;
 
 // 当前命中的路由
 const route = useRoute();

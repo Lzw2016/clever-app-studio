@@ -15,11 +15,11 @@ class DesignerState {
     /** 设计器引擎 */
     readonly designerEngine: DesignerEngine;
     /** 设计器容器 */
-    protected _designerContainer?: Ref<HTMLDivElement | undefined>;
+    readonly _designerContainer: Ref<HTMLDivElement | undefined> = ref<HTMLDivElement | undefined>();
     /** 设计器组件实例 */
-    protected _designerBlockInstance?: Ref<InstanceType<typeof RuntimeBlock> | undefined>;
+    readonly _designerBlockInstance: Ref<InstanceType<typeof RuntimeBlock> | undefined> = ref<InstanceType<typeof RuntimeBlock> | undefined>();
     /** 设计时的代码(DesignBlock源码) */
-    protected _designerBlockCode: Ref<string> = ref<string>("");
+    protected readonly _designerBlockCode: Ref<string> = ref<string>("");
     /** 设计器鼠标悬停时的虚线 */
     readonly hover: HoverDashed = new HoverDashed(this);
     /** 设计器选择节点集合 */
@@ -82,11 +82,6 @@ class DesignerState {
         return this._designerContainer?.value;
     }
 
-    /** 设计器容器 */
-    set designerContainer(designerContent: Ref<HTMLDivElement | undefined>) {
-        this._designerContainer = designerContent;
-    }
-
     /** 设计器组件实例 */
     get designerBlockInstance(): InstanceType<typeof RuntimeBlock> | undefined {
         return this._designerBlockInstance?.value;
@@ -95,11 +90,6 @@ class DesignerState {
     /** 设计器组件Block对象 */
     get blockInstance(): BlockInstance | undefined {
         return this._designerBlockInstance?.value?.blockInstance;
-    }
-
-    /** 设计器组件实例 */
-    set designerBlockInstance(designerBlockInstance: Ref<InstanceType<typeof RuntimeBlock> | undefined>) {
-        this._designerBlockInstance = designerBlockInstance;
     }
 
     /** 设计时的代码(DesignBlock源码) */

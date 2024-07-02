@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { markRaw, onMounted, onUnmounted, reactive, ref } from "vue";
-import { Modal } from "@opentiny/vue";
+import { markRaw, onMounted, onUnmounted, reactive } from "vue";
 import { globalThisPolyfill } from "@/utils/GlobalThisPolyfill";
 import { style } from "@/utils/UseType";
 import SplitPane from "@/components/SplitPane.vue";
@@ -19,8 +18,6 @@ import DragGhost from "@/draggable/components/widgets/DragGhost.vue";
 import MaterialPanel from "@/draggable/components/widgets/MaterialPanel.vue";
 import SettingsPanel from "@/draggable/components/widgets/SettingsPanel.vue";
 import WorkspaceTabs from "@/draggable/components/widgets/WorkspaceTabs.vue";
-import BlockEditor from "@/draggable/components/widgets/BlockEditor.vue";
-import EventEditor from "@/draggable/components/widgets/EventEditor.vue";
 
 // 定义组件选项
 defineOptions({
@@ -86,10 +83,6 @@ interface WorkbenchState {
 const state = reactive<WorkbenchState>({});
 // 内部数据
 const data = {};
-// 事件编辑器组件
-const blockEditorRef = ref<InstanceType<typeof BlockEditor> | undefined>();
-// 事件编辑器组件
-const eventEditorRef = ref<InstanceType<typeof EventEditor> | undefined>();
 // 设计器引擎
 const designerEngine = markRaw(new DesignerEngine({
     componentManage: props.componentManage,
@@ -221,32 +214,6 @@ onUnmounted(() => {
             <div class="flex-item-fixed box-border-l" style="width: 48px;">状态2</div>
             <div class="flex-item-fixed box-border-l" style="width: 48px;">设置</div>
         </div>
-        <Modal
-            class="block-modal"
-            v-model="designerEngine.showBlockEditorDialog"
-            height="80%"
-            width="60%"
-            min-height="350px"
-            min-width="500px"
-            :esc-closable="true"
-            :resize="false"
-            title="编辑页面代码"
-        >
-            <BlockEditor ref="blockEditorRef"/>
-        </Modal>
-        <Modal
-            class="event-modal"
-            v-model="designerEngine.showEventEditorDialog"
-            height="80%"
-            width="60%"
-            min-height="350px"
-            min-width="500px"
-            :esc-closable="true"
-            :resize="false"
-            title="编辑事件代码"
-        >
-            <EventEditor ref="eventEditorRef" />
-        </Modal>
     </div>
 </template>
 
