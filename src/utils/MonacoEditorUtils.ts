@@ -20,6 +20,9 @@ const defOptions: editor.IStandaloneEditorConstructionOptions = {
     fixedOverflowWidgets: true,
     // formatOnType: true,
     // formatOnPaste: true,
+    stickyScroll: {
+        enabled: false,
+    },
 };
 
 function keyBinding(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {

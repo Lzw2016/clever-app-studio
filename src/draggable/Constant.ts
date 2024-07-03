@@ -89,16 +89,66 @@ const innerEvents: Array<EventGroup> = [
         items: [
             {
                 title: "单击",
-                description: "鼠标单击事件",
+                description: "鼠标单击触发当前事件",
                 name: "click",
                 params: [
                     {
                         name: "event",
                         type: "MouseEvent",
-                        note: "事件对象",
+                        note: "鼠标单击事件对象",
                     },
                 ],
                 return: "void",
+                docLink: "https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/click",
+                examples: [
+                    {
+                        title: "可清除",
+                        description: "通过 clearable 属性启用一键清除选中值的功能。仅适用于单选",
+                        code: [
+                            'const customFilterMethod = (searchValue) => {',
+                            '  if (searchValue) {',
+                            '    customFilterRef.value?.state.cachedOptions.forEach((item) => {',
+                            '      item.state.visible = item.label.includes(searchValue)',
+                            '    })',
+                            '  } else {',
+                            '    customFilterRef.value?.state.cachedOptions.forEach((item) => {',
+                            '      item.state.visible = true',
+                            '    })',
+                            '  }',
+                            '}',
+                        ],
+                    },
+                    {
+                        title: "可搜索",
+                        description: "通过 filterable 属性启用搜索功能。filter-method 自定义过滤方法。 no-match-text 属性自定义与搜索条件无匹配项时显示的文字",
+                        code: [
+                            'const remoteMethod1 = (query) => {',
+                            '  if (query !== undefined) {',
+                            '    loading1.value = true',
+                            '    setTimeout(() => {',
+                            '      loading1.value = false',
+                            '      options1.value = list.value.filter((item) => {',
+                            '        return item.label.toLowerCase().includes(query.toLowerCase())',
+                            '      })',
+                            '    }, 200)',
+                            '  } else {',
+                            '    options1.value = []',
+                            '  }',
+                            '}',
+                        ],
+                    },
+                    {
+                        title: "映射字段",
+                        code: [
+                            'const onChange = (value) => {',
+                            '  Modal.message({',
+                            '    message: JSON.stringify(value),',
+                            '    status: "info"',
+                            '  })',
+                            '}',
+                        ],
+                    },
+                ],
             },
             {
                 title: "双击",
@@ -106,7 +156,45 @@ const innerEvents: Array<EventGroup> = [
             },
             {
                 title: "鼠标按钮按下",
+                // description: "在定点设备（如鼠标或触摸板）按钮在元素内按下时，会在该元素上触发",
                 name: "mousedown",
+                params: [
+                    {
+                        name: "event",
+                        type: "MouseEvent",
+                        note: "鼠标按下事件对象",
+                    },
+                    {
+                        name: "ext1",
+                        type: "Object",
+                        note: "其它数据1",
+                    },
+                    {
+                        name: "ext2",
+                        type: "Object",
+                        note: "其它数据2",
+                    },
+                    {
+                        name: "ext3",
+                        type: "Object",
+                        note: "其它数据3",
+                    },
+                ],
+                docLink: "https://developer.mozilla.org/zh-CN/docs/Web/API/Element/mousedown_event",
+                examples: [
+                    {
+                        title: "测试数据",
+                        description: "通过 text-field 设置显示文本字段，value-field设置绑定值字段",
+                        code: [
+                            'const onChange = (value) => {',
+                            '  Modal.message({',
+                            '    message: JSON.stringify(value),',
+                            '    status: "info"',
+                            '  })',
+                            '}',
+                        ],
+                    },
+                ],
             },
             {
                 title: "鼠标进入元素边界",

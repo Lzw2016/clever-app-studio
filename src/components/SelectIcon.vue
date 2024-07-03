@@ -574,7 +574,7 @@ loadIcons().finally();
 }
 
 .icons-form {
-    margin: 12px 8px 8px 8px;
+    margin: 8px;
 }
 
 .virtual-list-container {

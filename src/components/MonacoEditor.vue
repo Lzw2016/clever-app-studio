@@ -77,8 +77,8 @@ interface MonacoEditorState {
 const state = reactive<MonacoEditorState>({});
 // 内部数据
 const data = {};
-
-const model = defineModel<string | undefined>();
+// 双向绑定的 value 属性
+const value = defineModel<string | undefined>();
 
 function onBeforeMount(monaco: MonacoType) {
     registerTheme(monaco);
@@ -99,7 +99,7 @@ function onMount(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
 
 <template>
     <VueMonacoEditor
-        v-model:value="model"
+        v-model:value="value"
         v-bind="{
             defaultValue: props.defaultValue,
             language: props.language,

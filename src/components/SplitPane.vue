@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { computed, CSSProperties, reactive } from "vue";
+import { computed, CSSProperties, reactive, watch } from "vue";
 import { IconCaretDownFilled, IconCaretLeftFilled, IconCaretRightFilled, IconCaretUpFilled } from "@tabler/icons-vue";
 
 // 定义组件选项
 defineOptions({
     name: 'SplitPane',
 });
+
+type Collapsed = "" | "one" | "two";
 
 // 定义 Props 类型
 interface SplitPaneProps {
@@ -23,12 +25,18 @@ interface SplitPaneProps {
     oneCollapse?: boolean;
     /** 显示第二个面板的折叠按钮 */
     twoCollapse?: boolean;
+    /** 强制隐藏第一个面板的折叠按钮 */
+    forceHideOneCollapse?: boolean;
+    /** 强制隐藏第二个面板的折叠按钮 */
+    forceHideTwoCollapse?: boolean;
     /** 禁用拖拽 */
     disable?: boolean;
     /** 分隔拖拽区大小 */
     gutterSize?: number;
     /** 默认折叠状态，one:第一个面板折叠 , two:第二个面板折叠 */
-    defCollapsed?: "" | "one" | "two";
+    defCollapsed?: Collapsed;
+    /** 折叠状态，one:第一个面板折叠 , two:第二个面板折叠 */
+    collapsed?: Collapsed;
     /** 面板自定义样式，同时应用在 第一个面板 和 第二个面板 */
     paneStyle?: CSSProperties;
     /** 分隔线样式 */
@@ -39,16 +47,6 @@ interface SplitPaneProps {
     customTwoPane?: boolean;
 }
 
-// 自定义事件类型
-const emit = defineEmits<{
-    // 开始改变大小
-    resizeStar: [];
-    // 正在改变大小
-    resizing: [changeSize: number, newSize: number, event: MouseEvent];
-    // 改变大小结束
-    resizeEnd: [];
-}>();
-
 // 读取组件 props 属性
 const props = withDefaults(defineProps<SplitPaneProps>(), {
     layout: "H",
@@ -57,18 +55,42 @@ const props = withDefaults(defineProps<SplitPaneProps>(), {
     fixedPaneMinSize: 50,
     oneCollapse: false,
     twoCollapse: false,
+    forceHideOneCollapse: false,
+    forceHideTwoCollapse: false,
     gutterSize: 12,
     defCollapsed: "",
 });
+
+// 定义 State 类型
+interface SplitPaneState {
+    /** 第一个面板的默认大小(绝对大小) */
+    fixedSize: number;
+    /** 是否正在改变大小 */
+    resizing: boolean;
+    /** 折叠状态，one:第一个面板折叠 , two:第二个面板折叠 */
+    collapsed: Collapsed;
+}
+
 // state 属性
-const state = reactive({
+const state = reactive<SplitPaneState>({
     // 当前的绝对大小
     fixedSize: props.fixedPaneDefSize || 40,
     // 当前正在改变大小
     resizing: false,
     // 已经折叠的面板 one:第一个面板折叠 | two:第二个面板折叠 | 都没有折叠
-    collapsed: props.defCollapsed,
+    collapsed: props.collapsed ?? props.defCollapsed,
 });
+// 自定义事件类型
+const emit = defineEmits<{
+    // 开始改变大小
+    resizeStar: [];
+    // 正在改变大小
+    resizing: [changeSize: number, newSize: number, event: MouseEvent];
+    // 改变大小结束
+    resizeEnd: [];
+    // 折叠状态变化事件
+    collapsedChange: [collapsed: "" | "one" | "two"];
+}>();
 // 内部数据
 const data = {
     // 原始的光标样式
@@ -202,9 +224,14 @@ const twoCollapseStyle = computed(() => {
     }
     return style;
 });
+// 监听受控属性
+watch(() => props.collapsed, value => state.collapsed = value ?? "");
+// 折叠状态变化事件
+watch(() => state.collapsed, value => emit("collapsedChange", value));
 
 // 改变大小开始
 function gutterResizeStar(event: MouseEvent) {
+    event.preventDefault();
     if (event.button != 0) return;
     emit("resizeStar");
     state.resizing = true;
@@ -285,6 +312,23 @@ function twoCollapseClick() {
             state.collapsed = "two";
     }
 }
+
+interface SplitPaneExpose {
+    /** 折叠第一个面板 */
+    collapseOne(): void;
+
+    /** 折叠第二个面板 */
+    collapseTwo(): void;
+}
+
+defineExpose<SplitPaneExpose>({
+    collapseOne: oneCollapseClick,
+    collapseTwo: twoCollapseClick,
+});
+
+export type {
+    Collapsed,
+}
 </script>
 
 <template>
@@ -333,7 +377,7 @@ function twoCollapseClick() {
                 >
                 </div>
                 <div
-                    v-if="(props.oneCollapse && !hideOne) || hideTwo"
+                    v-if="!props.forceHideOneCollapse && ((props.oneCollapse && !hideOne) || hideTwo)"
                     class="split-gutter-button"
                     :style="oneCollapseStyle"
                     @click="oneCollapseClick"
@@ -342,7 +386,7 @@ function twoCollapseClick() {
                     <IconCaretUpFilled v-else viewBox="4 4 16 16" style="height: 12px;"/>
                 </div>
                 <div
-                    v-if="(props.twoCollapse && !hideTwo) || hideOne"
+                    v-if="!props.forceHideTwoCollapse && ((props.twoCollapse && !hideTwo) || hideOne)"
                     class="split-gutter-button"
                     :style="twoCollapseStyle"
                     @click="twoCollapseClick"

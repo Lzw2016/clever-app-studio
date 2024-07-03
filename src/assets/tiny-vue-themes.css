@@ -179,7 +179,7 @@ body .tiny-tabs .tiny-tabs__nav .tiny-tabs__item:last-child {
 body .tiny-modal {
     /*头部*/
     --ti-modal-header-padding-top: calc(var(--ti-common-size-base) * 4);
-    --ti-modal-header-padding-bottom: calc(var(--ti-common-size-base) * 1);
+    --ti-modal-header-padding-bottom: calc(var(--ti-common-size-base) * 2);
     --ti-modal-header-padding-horizontal: calc(var(--ti-common-size-base) * 4);
     --ti-modal-header-font-size: var(--ti-common-font-size-1);
     /*内容*/

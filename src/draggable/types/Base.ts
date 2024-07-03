@@ -131,6 +131,8 @@ interface FunctionMeta {
     return?: ParamVarType;
     /** 使用示例(代码片段) */
     examples?: Array<CodeExample>;
+    /** 文档连接 */
+    docLink?: string;
 }
 
 /**

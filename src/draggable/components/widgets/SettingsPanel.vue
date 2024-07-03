@@ -183,7 +183,7 @@ function existsSetter(meta?: ComponentMeta) {
         <Modal
             class="block-modal"
             v-model="designerEngine.showBlockEditorDialog"
-            height="80%"
+            height="85%"
             width="60%"
             min-height="350px"
             min-width="500px"
@@ -200,7 +200,7 @@ function existsSetter(meta?: ComponentMeta) {
         <Modal
             class="event-modal"
             v-model="designerEngine.showEventEditorDialog"
-            height="80%"
+            height="85%"
             width="60%"
             min-height="350px"
             min-width="500px"
@@ -312,5 +312,21 @@ function existsSetter(meta?: ComponentMeta) {
 
 .settings-tabs :deep(.tiny-form-item .tiny-form-item__label) {
     font-size: 12px;
+}
+
+.block-modal :deep(.tiny-modal__box .tiny-modal__body) {
+    margin-bottom: 8px;
+}
+
+.block-modal :deep(.tiny-modal__box) {
+    top: 8vh !important;
+}
+
+.event-modal :deep(.tiny-modal__box .tiny-modal__body) {
+    margin-bottom: 8px;
+}
+
+.event-modal :deep(.tiny-modal__box) {
+    top: 8vh !important;
 }
 </style>

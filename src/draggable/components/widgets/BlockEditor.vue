@@ -65,7 +65,7 @@ defineExpose<BlockEditorExpose>({});
 
 <template>
     <Tabs
-        class="block-container none-select"
+        class="block-container"
         style="height: 100%;"
         tab-style="card"
         position="left"
@@ -215,10 +215,6 @@ defineExpose<BlockEditorExpose>({});
 <style scoped>
 .block-container {
     border: 1px solid #ccc;
-}
-
-.none-select {
-    user-select: none;
 }
 
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */

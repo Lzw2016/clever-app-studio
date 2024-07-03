@@ -1,5 +1,5 @@
 import lodash from "lodash";
-import { hasValue } from "@/utils/Typeof";
+import { hasValue, isArray } from "@/utils/Typeof";
 import { FunctionInfo } from "@/draggable/types/Base";
 
 /**
@@ -100,7 +100,14 @@ function funToString(funInfo: FunctionInfo): string {
     return `${funInfo.async ? 'async ' : ''}function${funInfo.name ? (' ' + funInfo.name) : ''}(${funInfo.params.join(", ")}) {\n${indent}${funInfo.body}\n}`;
 }
 
+function codeToString(code?: string | Array<string>) {
+    if (!code) return '';
+    if (isArray(code)) return code.join("\n");
+    return code;
+}
+
 export {
     parseFun,
     funToString,
+    codeToString,
 }
