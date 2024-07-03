@@ -2,7 +2,7 @@
 import { computed, nextTick, shallowReactive, watch } from "vue";
 import { Input, Option, OptionGroup, Select, Tree } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faPlus, faTrashCan, faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronUp, faPlus, faTrashCan, faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import type { editor } from "monaco-editor";
 import { hasValue } from "@/utils/Typeof";
 import MonacoEditor, { MonacoType } from "@/components/MonacoEditor.vue";
@@ -38,6 +38,8 @@ interface EventEditorState {
     selectRuntimeNode?: RuntimeNode;
     /** 当前选择的监听事件 */
     selectListener?: ListenerInfo;
+    /** 是否显示事件文档 */
+    showListenerDoc: boolean;
     /** 当前选择的示例代码 */
     selectExample?: CodeExample;
     /** 示例代码折叠状态 */
@@ -48,6 +50,7 @@ interface EventEditorState {
 const state = shallowReactive<EventEditorState>({
     selectRuntimeNode: undefined,
     selectListener: undefined,
+    showListenerDoc: false,
     selectExample: undefined,
     exampleCollapsed: "two",
 });
@@ -260,7 +263,15 @@ defineExpose<EventEditorExpose>({
                 <template #twoPane="slotProps">
                     <div v-bind="slotProps" class="flex-column-container" style="height: 100%;overflow: hidden;">
                         <div class="flex-item-fixed panel-title">代码</div>
-                        <div v-show="existsSelectListener" class="flex-item-fixed editor-tips">
+                        <div v-show="existsSelectListener" class="flex-item-fixed doc-gutter">
+                            <span v-if="state.showListenerDoc" class="doc-gutter-button" @click="state.showListenerDoc = false">
+                               <FontAwesomeIcon :icon="faChevronUp" style="font-size: 12px;"/>
+                            </span>
+                            <span v-else class="doc-gutter-button" @click="state.showListenerDoc = true">
+                                <FontAwesomeIcon :icon="faChevronDown" style="font-size: 12px;"/>
+                            </span>
+                        </div>
+                        <div v-show="state.showListenerDoc && existsSelectListener" class="flex-item-fixed editor-tips">
                             <table class="editor-tips-table" style="width: 100%;">
                                 <tbody>
                                 <tr>
@@ -505,6 +516,30 @@ defineExpose<EventEditorExpose>({
 
 .editor-doc-link {
     color: #5e7ce0;
+}
+
+.doc-gutter {
+    height: 0;
+    overflow: hidden;
+}
+
+.doc-gutter-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    color: #252b3a;
+    cursor: pointer;
+    z-index: 1;
+    position: absolute;
+    right: 24px;
+    top: 4px;
+    /* border: 1px solid #cbcbcb; */
+}
+
+.doc-gutter-button:hover {
+    color: #5E7CE0;
 }
 
 .editor-examples {
