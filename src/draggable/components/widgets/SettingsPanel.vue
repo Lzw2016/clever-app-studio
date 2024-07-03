@@ -318,15 +318,15 @@ function existsSetter(meta?: ComponentMeta) {
     margin-bottom: 8px;
 }
 
-.block-modal :deep(.tiny-modal__box) {
-    top: 8vh !important;
+.block-modal.tiny-modal.tiny-modal__wrapper.is__visible :deep(.tiny-modal__box) {
+    top: 8vh;
 }
 
 .event-modal :deep(.tiny-modal__box .tiny-modal__body) {
     margin-bottom: 8px;
 }
 
-.event-modal :deep(.tiny-modal__box) {
-    top: 8vh !important;
+ .event-modal.tiny-modal.tiny-modal__wrapper.is__visible :deep(div.tiny-modal__box) {
+    top: 8vh;
 }
 </style>
