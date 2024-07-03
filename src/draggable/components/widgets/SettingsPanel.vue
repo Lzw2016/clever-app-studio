@@ -326,7 +326,7 @@ function existsSetter(meta?: ComponentMeta) {
     margin-bottom: 8px;
 }
 
- .event-modal.tiny-modal.tiny-modal__wrapper.is__visible :deep(div.tiny-modal__box) {
+ .event-modal.tiny-modal.tiny-modal__wrapper.is__visible :deep(.tiny-modal__box) {
     top: 8vh;
 }
 </style>
