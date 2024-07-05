@@ -15,7 +15,7 @@ const vLoading = Loading.directive;
 
 // 定义组件选项
 defineOptions({
-    name: 'SelectTablerIcon',
+    name: 'SelectIcon',
 });
 
 // 自定义事件类型

@@ -7,14 +7,16 @@ defineOptions({
     name: 'SplitPane',
 });
 
+type Layout = "H" | "V";
+type FixedPane = "one" | "two";
 type Collapsed = "" | "one" | "two";
 
 // 定义 Props 类型
 interface SplitPaneProps {
     /** 分割类型，可选值为 H(水平) 或 V(垂直)；默认值H */
-    layout?: "H" | "V";
+    layout?: Layout;
     /** 使用绝对大小的面板，可选值为 one(第一个面板) 或 two(第二个面板)；默认值“one” */
-    fixedPane?: "one" | "two";
+    fixedPane?: FixedPane;
     /** 第一个面板的默认大小(绝对大小) */
     fixedPaneDefSize?: number;
     /** 第一个面板的最小大小(绝对大小) */
@@ -89,7 +91,7 @@ const emit = defineEmits<{
     // 改变大小结束
     resizeEnd: [];
     // 折叠状态变化事件
-    collapsedChange: [collapsed: "" | "one" | "two"];
+    collapsedChange: [collapsed: Collapsed];
 }>();
 // 内部数据
 const data = {
@@ -327,6 +329,8 @@ defineExpose<SplitPaneExpose>({
 });
 
 export type {
+    Layout,
+    FixedPane,
     Collapsed,
 }
 </script>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { reactive } from "vue";
-import { TabItem, Tabs } from "@opentiny/vue";
+import { computed, reactive } from "vue";
 import type { editor } from "monaco-editor";
 import MonacoEditor, { MonacoType } from "@/components/MonacoEditor.vue";
 import SplitPane from "@/components/SplitPane.vue";
@@ -25,72 +24,152 @@ const props = withDefaults(defineProps<BlockEditorProps>(), {});
 
 // 定义 State 类型
 interface BlockEditorState {
-
+    /** 当前选中的叶签 */
+    activeTab: string;
 }
 
 // state 属性
 const state = reactive<BlockEditorState>({
-    show: false,
+    activeTab: "data",
 });
 // 内部数据
-const data = {};
+const data = {
+    monacoEditor: undefined as (editor.IStandaloneCodeEditor | undefined),
+    tabs: {
+        data: "数据",
+        computed: "计算属性",
+        watch: "侦听器",
+        methods: "函数",
+        lifeCycles: "生命周期",
+        i18n: "多语言",
+        meta: "元信息",
+        code: "页面代码",
+    },
+    tabsConfig: {
+        data: {
+            collapsed: 'one',
+            forceHideOneCollapse: false,
+            forceHideTwoCollapse: true,
+            language: "json",
+            code: "111",
+        },
+        computed: {
+            collapsed: '',
+            forceHideOneCollapse: false,
+            forceHideTwoCollapse: false,
+            language: "javascript",
+            code: "222",
+        },
+        watch: {
+            collapsed: '',
+            forceHideOneCollapse: false,
+            forceHideTwoCollapse: false,
+            language: "javascript",
+            code: "",
+        },
+        methods: {
+            collapsed: '',
+            forceHideOneCollapse: false,
+            forceHideTwoCollapse: false,
+            language: "javascript",
+            code: "",
+        },
+        lifeCycles: {
+            collapsed: '',
+            forceHideOneCollapse: false,
+            forceHideTwoCollapse: false,
+            language: "javascript",
+            code: "",
+        },
+        i18n: {
+            collapsed: 'one',
+            forceHideOneCollapse: false,
+            forceHideTwoCollapse: true,
+            language: "json",
+            code: "",
+        },
+        meta: {
+            collapsed: 'two',
+            forceHideOneCollapse: true,
+            forceHideTwoCollapse: false,
+            language: "json",
+            code: "",
+        },
+        code: {
+            collapsed: 'one',
+            forceHideOneCollapse: false,
+            forceHideTwoCollapse: true,
+            language: "javascript",
+            code: "",
+        },
+    },
+};
+// 当前选中的叶签对应的配置
+const activeTabConfig = computed<any>(() => data.tabsConfig[state.activeTab]);
+// 编辑器代码
+const monacoEditorCode = computed<string>({
+    get: () => {
+        const config = data.tabsConfig[state.activeTab];
+        if (!config) return "";
+        return config.code;
+    },
+    set: newValue => {
+        const config = data.tabsConfig[state.activeTab];
+        if (!config) return;
+        config.code = newValue;
+    },
+});
 
-function initDataEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
-
+function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
+    data.monacoEditor = editor;
 }
 
-function initComputedEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
-
+function activeTabChange(tab: string) {
+    state.activeTab = tab;
 }
 
-function initWatchEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
-
+function codeChange() {
+    console.log("codeChange");
 }
 
-function initMethodsEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
-
+function codeValidate(markers: editor.IMarker[]) {
+    console.log("codeValidate");
 }
-
-function initLifeCyclesEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
-
-}
-
 
 interface BlockEditorExpose {
-
 }
 
 defineExpose<BlockEditorExpose>({});
 </script>
 
 <template>
-    <Tabs
-        class="block-container"
-        style="height: 100%;"
-        tab-style="card"
-        position="left"
-        active-name="data"
-    >
-        <TabItem name="data" title="数据">
-            <MonacoEditor
-                height="100%"
-                theme="idea-light"
-                default-language="json"
-                :options="{ contextmenu: false }"
-                :onMount="initDataEditor"
-            />
-        </TabItem>
-        <TabItem name="computed" title="计算属性">
+    <div class="flex-row-container block-container">
+        <div class="flex-item-fixed block-tabs">
+            <div
+                v-for="(name, tab) in data.tabs"
+                :class="{
+                    'block-tabs-title': true,
+                    'block-tabs-title-active': state.activeTab===tab,
+                }"
+                @click="activeTabChange(tab)"
+            >
+                {{ name }}
+            </div>
+        </div>
+        <div class="flex-item-fill">
             <SplitPane
                 style="height: 100%;overflow: hidden;"
                 layout="H"
                 fixed-pane="one"
                 :fixed-pane-def-size="150"
                 :fixed-pane-min-size="100"
-                :fixed-pane-max-size="240"
+                :fixed-pane-max-size="300"
                 :one-collapse="false"
                 :two-collapse="false"
+                :force-hide-one-collapse="activeTabConfig?.forceHideOneCollapse"
+                :force-hide-two-collapse="activeTabConfig?.forceHideTwoCollapse"
                 :custom-two-pane="true"
+                :collapsed="activeTabConfig?.collapsed"
             >
                 <template #onePane>
 
@@ -100,158 +179,76 @@ defineExpose<BlockEditorExpose>({});
                         v-bind="slotProps"
                         height="100%"
                         theme="idea-light"
-                        default-language="javascript"
+                        v-model="monacoEditorCode"
+                        :language="activeTabConfig?.language"
+                        :save-view-state="true"
+                        :path="state.activeTab"
                         :options="{ contextmenu: false }"
-                        :onMount="initComputedEditor"
+                        :onMount="initEditor"
+                        :onChange="codeChange"
+                        :onValidate="codeValidate"
                     />
                 </template>
             </SplitPane>
-        </TabItem>
-        <TabItem name="watch" title="侦听器">
-            <SplitPane
-                style="height: 100%;overflow: hidden;"
-                layout="H"
-                fixed-pane="one"
-                :fixed-pane-def-size="150"
-                :fixed-pane-min-size="100"
-                :fixed-pane-max-size="240"
-                :one-collapse="false"
-                :two-collapse="false"
-                :custom-two-pane="true"
-            >
-                <template #onePane>
-
-                </template>
-                <template #twoPane="slotProps">
-                    <MonacoEditor
-                        v-bind="slotProps"
-                        height="100%"
-                        theme="idea-light"
-                        default-language="javascript"
-                        :options="{ contextmenu: false }"
-                        :onMount="initWatchEditor"
-                    />
-                </template>
-            </SplitPane>
-        </TabItem>
-        <TabItem name="methods" title="函数">
-            <SplitPane
-                style="height: 100%;overflow: hidden;"
-                layout="H"
-                fixed-pane="one"
-                :fixed-pane-def-size="150"
-                :fixed-pane-min-size="100"
-                :fixed-pane-max-size="240"
-                :one-collapse="false"
-                :two-collapse="false"
-                :custom-two-pane="true"
-            >
-                <template #onePane>
-
-                </template>
-                <template #twoPane="slotProps">
-                    <MonacoEditor
-                        v-bind="slotProps"
-                        height="100%"
-                        theme="idea-light"
-                        default-language="javascript"
-                        :options="{ contextmenu: false }"
-                        :onMount="initMethodsEditor"
-                    />
-                </template>
-            </SplitPane>
-        </TabItem>
-        <TabItem name="lifeCycles" title="生命周期">
-            <SplitPane
-                style="height: 100%;overflow: hidden;"
-                layout="H"
-                fixed-pane="one"
-                :fixed-pane-def-size="150"
-                :fixed-pane-min-size="100"
-                :fixed-pane-max-size="240"
-                :one-collapse="false"
-                :two-collapse="false"
-                :custom-two-pane="true"
-            >
-                <template #onePane>
-
-                </template>
-                <template #twoPane="slotProps">
-                    <MonacoEditor
-                        v-bind="slotProps"
-                        height="100%"
-                        theme="idea-light"
-                        default-language="javascript"
-                        :options="{ contextmenu: false }"
-                        :onMount="initLifeCyclesEditor"
-                    />
-                </template>
-            </SplitPane>
-        </TabItem>
-        <TabItem name="i18n" title="多语言">
-            <MonacoEditor
-                height="100%"
-                theme="idea-light"
-                default-language="json"
-                :options="{ contextmenu: false }"
-                :onMount="initDataEditor"
-            />
-        </TabItem>
-        <TabItem name="meta" title="元信息">
-
-        </TabItem>
-        <TabItem name="blockCode" title="页面代码">
-            <MonacoEditor
-                height="100%"
-                theme="idea-light"
-                default-language="json"
-                :options="{ contextmenu: false }"
-                :onMount="initDataEditor"
-            />
-        </TabItem>
-    </Tabs>
+        </div>
+    </div>
 </template>
 
 <style scoped>
 .block-container {
     border: 1px solid #ccc;
+    font-size: 12px;
+    height: 100%;
 }
 
-/* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
-.block-container :deep(.tiny-tabs__header.is-left) {
-    margin-right: 0;
+.flex-column-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
 }
 
-.block-container :deep(.tiny-tabs__header .tiny-tabs__nav) {
-    width: 80px;
+.flex-row-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
 }
 
-.block-container :deep(.tiny-tabs__header .tiny-tabs__item) {
-    padding: 0 12px;
+.flex-item-fill {
+    flex-grow: 1;
+    overflow: auto;
 }
 
-.block-container :deep(.tiny-tabs__header .tiny-tabs__item.is-left:not(.is-active)) {
-    border-left: none;
+.flex-item-fixed {
+    flex-shrink: 0;
 }
 
-.block-container :deep(.tiny-tabs__header .tiny-tabs__nav-wrap) {
+.block-tabs {
     background-color: #f5f5f6;
 }
 
-.block-container :deep(.tiny-tabs__header .tiny-tabs__item.is-left.is-active) {
+.block-tabs-title {
+    box-sizing: border-box;
+    padding: 6px 12px;
+    border-top: 1px solid #dfe1e6;
+    cursor: pointer;
+}
+
+.block-tabs-title:first-child {
+    border-top: none;
+}
+
+.block-tabs-title:last-child {
+    border-bottom: 1px solid #dfe1e6;
+}
+
+.block-tabs-title:hover {
+    color: #5e7ce0;
+}
+
+.block-tabs-title-active {
     background-color: white;
-}
-
-.block-container :deep(.tiny-tabs__header .tiny-tabs__item.is-left:last-child) {
-    border-bottom: 2px solid #dfe1e6;
-}
-
-.block-container :deep(.tiny-tabs__content) {
-    height: 100%;
-    margin: 0;
-}
-
-.block-container :deep(.tiny-tabs__content .tiny-tab-pane) {
-    height: 100%;
+    color: #5e7ce0;
+    border-left: 2px solid #5e7ce0;
+    padding-left: 10px;
 }
 </style>

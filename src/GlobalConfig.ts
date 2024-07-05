@@ -260,7 +260,7 @@ globalConfig.useExternalLib = lodash.defaults(optionalExternalLib, {
     googleIcon: true,
     tablerIcon: true,
     monacoEditor: {
-        vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.48.0/min/vs',
+        vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/vs',
     },
 } as GlobalConfig['useExternalLib']);
 
