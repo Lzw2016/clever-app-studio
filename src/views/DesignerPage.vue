@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, toRaw } from "vue";
 import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
 import { createSpan, designerTest } from "@/views/DesignerTest";
 import globalConfig from "@/GlobalConfig";
@@ -7,7 +7,8 @@ import globalConfig from "@/GlobalConfig";
 const instance = ref<InstanceType<typeof RuntimeBlock> | undefined>();
 
 function updateDesignerTest() {
-    instance.value?.blockInstance?.ops.appendItem(
+    const blockInstance = instance.value?.blockInstance;
+    blockInstance?.ops.appendItem(
         "c_000",
         createSpan({
             props: {
@@ -17,13 +18,17 @@ function updateDesignerTest() {
             },
         }),
     );
+    console.log("$data", toRaw(blockInstance?.$data));
+    if (blockInstance?.$data.str === "000") {
+        blockInstance.$data.str = "999";
+    }
 }
 </script>
 
 <template>
     <button @click="updateDesignerTest">更新</button>
     <div class="container">
-        <RuntimeBlock ref="instance" :component-manage="globalConfig.componentManage" :block="designerTest" :is-designing="true"/>
+        <RuntimeBlock ref="instance" :component-manage="globalConfig.componentManage" :block="designerTest" :is-designing="false"/>
     </div>
 </template>
 

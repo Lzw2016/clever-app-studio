@@ -1,5 +1,4 @@
-type Method =
-    'get' | 'GET'
+type Method = 'get' | 'GET'
     | 'delete' | 'DELETE'
     | 'head' | 'HEAD'
     | 'options' | 'OPTIONS'

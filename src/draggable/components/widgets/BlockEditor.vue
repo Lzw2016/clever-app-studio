@@ -51,14 +51,14 @@ const data = {
             forceHideOneCollapse: false,
             forceHideTwoCollapse: true,
             language: "json",
-            code: "111",
+            code: "",
         },
         computed: {
             collapsed: '',
             forceHideOneCollapse: false,
             forceHideTwoCollapse: false,
             language: "javascript",
-            code: "222",
+            code: "",
         },
         watch: {
             collapsed: '',
