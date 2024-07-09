@@ -1,5 +1,5 @@
 import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
-import { RuntimeComponentSlotsItem } from "@/draggable/types/RuntimeBlock";
+import { RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 
 /** 操作选项 */
 interface OpsOptions {
@@ -7,10 +7,30 @@ interface OpsOptions {
     cancelRender?: boolean;
 }
 
+interface BindListenerOptions extends OpsOptions {
+    /** 当事件监听器存在时是否强制覆盖 */
+    override?: boolean;
+}
+
 /**
  * Block支持的操作函数(基于id属性)
  */
 interface BlockOperationById {
+    /**
+     * 获取指定的节点对象(基于id属性)
+     * @param id   节点id
+     */
+    getRuntimeNodeById(id: string): RuntimeNode | undefined;
+
+    /**
+     * 绑定事件监听器(基于id属性)
+     * @param id        节点id
+     * @param event     事件名
+     * @param listener  事件回调函数
+     * @param options   操作选项
+     */
+    bindListenerById(id: string, event: string, listener: RuntimeListener, options?: BindListenerOptions): boolean;
+
     /**
      * 批量增加子节点(基于id属性)
      * @param beforeId  增加节点的位置，在指定的兄弟节点之前
@@ -309,6 +329,21 @@ interface BlockOperationById {
  * Block支持的操作函数(基于ref属性)
  */
 interface BlockOperation {
+    /**
+     * 获取指定的节点对象(基于ref属性)
+     * @param ref   节点ref
+     */
+    getRuntimeNode(ref: string): RuntimeNode | undefined;
+
+    /**
+     * 绑定事件监听器(基于ref属性)
+     * @param ref       节点ref
+     * @param event     事件名
+     * @param listener  事件回调函数
+     * @param options   操作选项
+     */
+    bindListener(ref: string, event: string, listener: RuntimeListener, options?: BindListenerOptions): boolean;
+
     /**
      * 批量增加子节点(基于ref属性)
      * @param beforeRef     增加节点的位置，在指定的兄弟节点之前
@@ -613,6 +648,7 @@ interface BlockOperation {
 
 export type {
     OpsOptions,
+    BindListenerOptions,
     BlockOperationById,
     BlockOperation,
 }

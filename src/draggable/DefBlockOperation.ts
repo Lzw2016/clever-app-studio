@@ -4,9 +4,11 @@ import { childSlotName } from "@/draggable/Constant";
 import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { ComponentInstance } from "@/draggable/types/Base";
 import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
-import { CreateConfig, RuntimeBlock, RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
-import { BlockOperation, BlockOperationById, OpsOptions } from "@/draggable/types/BlockOperation";
+import { CreateConfig, RuntimeBlock, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { BindListenerOptions, BlockOperation, BlockOperationById, OpsOptions } from "@/draggable/types/BlockOperation";
 import { blockDeepTransform, deepTraverseNodes } from "@/draggable/utils/BlockPropsTransform";
+import { withModifiers } from "vue";
+import { toPropsEventName } from "@/draggable/utils/HtmlTag";
 
 interface AllBlockOperationProps extends CreateConfig {
     /** 当前的 RuntimeBlock 对象 */
@@ -34,6 +36,11 @@ enum InsertPosition {
 /** 操作选项默认值 */
 const defOptions: OpsOptions = {
     cancelRender: false,
+};
+
+const defBindListenerOptions: BindListenerOptions = {
+    cancelRender: false,
+    override: false,
 };
 
 /**
@@ -418,6 +425,36 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         return removeNodes;
     }
 
+    protected bindListenerByNode(node: RuntimeNode, event: string, listener: RuntimeListener, options: BindListenerOptions) {
+        event = toPropsEventName(event);
+        if (node.__bindListeners?.[event] && !options.override) return;
+        const instance = this.props.instance;
+        let handler = listener.handler.bind(instance);
+        if (isArray(listener.modifiers) && listener.modifiers.length > 0) {
+            handler = withModifiers(handler, listener.modifiers);
+        }
+        // TODO 新事件要与设计时一致
+        // node.listeners[event] =
+        // globalContext.runtimeBlock.methods =
+        // instance.methods =
+        if (noValue(node.__bindListeners)) node.__bindListeners = {};
+        node.__bindListeners[event] = handler;
+        // 重新渲染组件
+        if (!options.cancelRender) this.props.instance.$forceUpdate();
+    }
+
+    getRuntimeNodeById(id: string): RuntimeNode | undefined {
+        const node = this.props.allNode[id];
+        if (!node) return;
+        return node;
+    }
+
+    bindListenerById(id: string, event: string, listener: RuntimeListener, options: BindListenerOptions = defBindListenerOptions): boolean {
+        const node = this.getRuntimeNodeById(id);
+        if (!node) return false;
+        this.bindListenerByNode(node, event, listener, options);
+        return true;
+    }
 
     beforeAddItemsById(beforeId: string, items: Array<ComponentSlotsItem>, options: OpsOptions = defOptions): Array<RuntimeComponentSlotsItem> {
         return this.addNodesById(this.getParentNodeById(beforeId), childSlotName, InsertPosition.before, beforeId, items, options);
@@ -575,6 +612,19 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
 
     removeChildrenById(id: string, options: OpsOptions = defOptions): Array<RuntimeComponentSlotsItem> {
         return this.removeChildrenNode(this.getNodeById(id), options);
+    }
+
+    bindListener(ref: string, event: string, listener: RuntimeListener, options: BindListenerOptions = defBindListenerOptions): boolean {
+        const node = this.getRuntimeNode(ref);
+        if (!node) return false;
+        this.bindListenerByNode(node, event, listener, options);
+        return true;
+    }
+
+    getRuntimeNode(ref: string): RuntimeNode | undefined {
+        const id = this.props.refId[ref];
+        if (!id) return;
+        return this.getNodeById(id);
     }
 
     beforeAddItems(beforeRef: string, items: ComponentSlotsItem[], options: OpsOptions = defOptions): Array<RuntimeComponentSlotsItem> {

@@ -137,7 +137,7 @@ interface ApplyStyleOptions<R = any> {
  */
 function applyStyle<T = any, R = any>(props: StyleSetterProps, state: StyleSetterState, styleProperty: string, value: T, options?: ApplyStyleOptions<R>): boolean {
     const { designerState, blockInstance, nodes } = props;
-    console.log("applyStyle styleProperty", `${styleProperty}=${value}`);
+    // console.log("applyStyle styleProperty", `${styleProperty}=${value}`);
     let res = false;
     if (!nodes) return res;
     if (isFunction(options?.transform)) value = options?.transform(value) as any;
@@ -210,7 +210,7 @@ function batchApplyStyle(props: StyleSetterProps, state: StyleSetterState, style
  */
 function applyClass(props: StyleSetterProps, pClass?: string, options?: ApplyStyleOptions<string>) {
     const { designerState, blockInstance, nodes } = props;
-    console.log("applyClass", `class=${pClass}`);
+    // console.log("applyClass", `class=${pClass}`);
     let res = false;
     if (!nodes) return res;
     for (let node of nodes) {

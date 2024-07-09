@@ -23,10 +23,39 @@ function updateDesignerTest() {
         blockInstance.$data.str = "999";
     }
 }
+
+function addEventBind() {
+    const blockInstance = instance.value?.blockInstance;
+    const runtimeNode = blockInstance?.ops.getRuntimeNode("c_000");
+    if (blockInstance?.globalContext.runtimeBlock?.methods && runtimeNode?.__bindListeners && !runtimeNode.__bindListeners.onClick) {
+        function dynamic_click_01() {
+            console.log("@@@");
+            if (blockInstance) blockInstance.$data.str = new Date().getTime();
+        }
+
+        runtimeNode.__bindListeners.onClick = dynamic_click_01;
+        // runtimeNode.listeners.click
+        // blockInstance.globalContext.runtimeBlock.methods.dynamic_click_01
+        // blockInstance.dynamic_click_01 = blockInstance.globalContext.runtimeBlock.methods.dynamic_click_01;
+        blockInstance.$forceUpdate();
+        console.log("事件绑定成功");
+    }
+}
+
+function addEventBind_2() {
+    const blockInstance = instance.value?.blockInstance;
+    blockInstance?.ops.bindListener("c_000", "click", {
+        handler: () => {
+            console.log("###");
+            if (blockInstance) blockInstance.$data.str = new Date().getTime();
+        },
+    });
+}
 </script>
 
 <template>
-    <button @click="updateDesignerTest">更新</button>
+    <button class="space" @click="updateDesignerTest">更新</button>
+    <button class="space" @click="addEventBind_2">动态事件绑定</button>
     <div class="container">
         <RuntimeBlock ref="instance" :component-manage="globalConfig.componentManage" :block="designerTest" :is-designing="false"/>
     </div>
@@ -39,5 +68,9 @@ function updateDesignerTest() {
     width: calc(100% - 48px);
     user-select: none;
     border: 1px solid #ccc;
+}
+
+.space {
+    margin: 0 8px;
 }
 </style>

@@ -141,7 +141,7 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any
 function forceUpdateBlock(designerState: DesignerState, blockInstance: BlockInstance, nodes: Array<RuntimeNode>, disableReRender?: boolean, recalcAuxToolPosition?: boolean) {
     if (!disableReRender) {
         blockInstance.$forceUpdate();
-        console.log("blockInstance $forceUpdate");
+        // console.log("blockInstance $forceUpdate");
         // 重新计算辅助工具的位置(更新属性有可能改变渲染节点的大小和位置)
         if (recalcAuxToolPosition) {
             blockInstance.$nextTick(() => {
