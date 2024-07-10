@@ -371,9 +371,7 @@ defineExpose<EventEditorExpose>({
                             <template #onePane="slotProps">
                                 <div v-bind="slotProps" class="flex-column-container">
                                     <div class="flex-item-fixed fun-modifiers flex-row-container" style="align-items: center;">
-                                        <div class="flex-item-fixed">
-                                            事件修饰符
-                                        </div>
+                                        <div class="flex-item-fixed">修饰符</div>
                                         <a
                                             class="flex-item-fixed modifiers-doc-link"
                                             target="_blank"
