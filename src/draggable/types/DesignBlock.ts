@@ -1,6 +1,6 @@
 import { CSSProperties, WatchCallback, WatchOptions } from "vue";
 import { RouteParams } from "vue-router";
-import { AnyFunction, ComponentInstance, ErrorCapturedHook, FunctionConfig, HtmlTag, I18N } from "@/draggable/types/Base";
+import { AnyFunction, ComponentInstance, ErrorCapturedHook, FunctionConfig, HtmlTag, I18N, ModifierGuardsKeys } from "@/draggable/types/Base";
 
 // -------------------------------------------------------------------------------------------------------------------
 // 组件
@@ -125,11 +125,11 @@ interface BaseDirectives {
 interface ListenerFunctionConfig {
     handler: AnyFunction<ComponentInstance> | FunctionConfig | string;
     /** 事件修饰符 */
-    modifiers?: Array<string>;
+    modifiers?: Array<ModifierGuardsKeys | string>;
 }
 
 /** 组件 listeners(事件监听函数) */
-type ComponentListener = AnyFunction<ComponentInstance> | (FunctionConfig & { modifiers?: Array<string>; }) | ListenerFunctionConfig | string;
+type ComponentListener = AnyFunction<ComponentInstance> | (FunctionConfig & { modifiers?: Array<ModifierGuardsKeys | string>; }) | ListenerFunctionConfig | string;
 
 /** 组件插槽类型 */
 type ComponentSlotsItem = DesignNode | Omit<DesignBlock, "meta" | "i18n"> | string;

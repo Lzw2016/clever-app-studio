@@ -49,7 +49,7 @@ const lambdaFunPattern = /^(async\s*)?(\(?[\w\s_$,]*\)?)\s*=>([\s\S]*)$/;
  * </pre>
  * @param fun 函数对象
  */
-function parseFun(fun: Function): FunctionInfo | undefined {
+function parseFun(fun: Function | string): FunctionInfo | undefined {
     const code = lodash.trim(fun.toString());
     let match = code.match(funPattern);
     let async: string;
@@ -100,6 +100,21 @@ function funToString(funInfo: FunctionInfo): string {
     return `${funInfo.async ? 'async ' : ''}function${funInfo.name ? (' ' + funInfo.name) : ''}(${funInfo.params.join(", ")}) {\n${indent}${funInfo.body}\n}`;
 }
 
+/**
+ * 将 funInfo 还原成函数对象
+ * @param funInfo 函数信息
+ */
+function createFun(funInfo: FunctionInfo): Function {
+    if (funInfo.name) {
+        return new Function([funToString(funInfo), `return ${funInfo.name};`].join("\n"))();
+    } else {
+        return new Function(`return ${funToString(funInfo)}`)();
+    }
+}
+
+/**
+ * 将一行或者代码合并成一个代码块字符串
+ */
 function codeToString(code?: string | Array<string>) {
     if (!code) return '';
     if (isArray(code)) return code.join("\n");
@@ -109,5 +124,6 @@ function codeToString(code?: string | Array<string>) {
 export {
     parseFun,
     funToString,
+    createFun,
     codeToString,
 }

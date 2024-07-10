@@ -18,7 +18,7 @@ import { ComponentMeta } from "@/draggable/types/ComponentMeta";
  * 根据 FunctionConfig 动态创建函数对象
  */
 function createFunction(functionConfig: FunctionConfig): AnyFunction {
-    const constructor = (functionConfig.async) ? AsyncFunction : Function;
+    const constructor = functionConfig.async ? AsyncFunction : Function;
     const params = noValue(functionConfig.params) ? [] : isArray(functionConfig.params) ? functionConfig.params : [functionConfig.params];
     return constructor(...params, functionConfig.code ?? "");
 }
@@ -484,11 +484,12 @@ function deepBindThis(cmpNode: RuntimeNode, instance: any) {
     cmpNode.__bindListeners = {};
     for (let name in listeners) {
         const listener = listeners[name];
+        let handler = listener.handler.bind(instance);
         // 应用事件修饰符
         if (isArray(listener.modifiers) && listener.modifiers.length > 0) {
-            listener.handler = withModifiers(listener.handler.bind(instance), listener.modifiers);
+            handler = withModifiers(handler, listener.modifiers);
         }
-        cmpNode.__bindListeners[name] = listener.handler.bind(instance);
+        cmpNode.__bindListeners[name] = handler;
     }
     // 递归处理 slots
     for (let name in slots) {

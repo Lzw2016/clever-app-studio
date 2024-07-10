@@ -44,12 +44,21 @@ function addEventBind() {
 
 function addEventBind_2() {
     const blockInstance = instance.value?.blockInstance;
+
+    function dynamic_click_01() {
+        // @ts-ignore
+        console.log("###", this);
+        if (blockInstance) blockInstance.$data.str = new Date().getTime();
+    }
+
     blockInstance?.ops.bindListener("c_000", "click", {
-        handler: () => {
-            console.log("###");
-            if (blockInstance) blockInstance.$data.str = new Date().getTime();
-        },
-    });
+        // handler: function () {
+        //     console.log("###", this);
+        //     if (blockInstance) blockInstance.$data.str = new Date().getTime();
+        // },
+        handler: dynamic_click_01,
+        modifiers: ["ctrl"],
+    }, { override: false });
 }
 </script>
 

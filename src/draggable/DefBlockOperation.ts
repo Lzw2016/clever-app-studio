@@ -425,18 +425,38 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         return removeNodes;
     }
 
+    /**
+     * 动态增加事件监听
+     * @param node      目标节点
+     * @param event     事件名称
+     * @param listener  事件处理函数
+     * @param options   操作选项
+     */
     protected bindListenerByNode(node: RuntimeNode, event: string, listener: RuntimeListener, options: BindListenerOptions) {
         event = toPropsEventName(event);
-        if (node.__bindListeners?.[event] && !options.override) return;
-        const instance = this.props.instance;
+        // 判断是否需要覆盖函数
+        if (node.listeners[event]?.handler
+            && Function.prototype.toString.call(node.listeners[event].handler) === Function.prototype.toString.call(listener.handler)
+            && !options.override) {
+            return;
+        }
+        const { instance, runtimeBlock } = this.props;
+        // 包装 handler
         let handler = listener.handler.bind(instance);
         if (isArray(listener.modifiers) && listener.modifiers.length > 0) {
             handler = withModifiers(handler, listener.modifiers);
         }
-        // TODO 新事件要与设计时一致
-        // node.listeners[event] =
-        // globalContext.runtimeBlock.methods =
-        // instance.methods =
+        // 维护“RuntimeNode 与 vue组件实例”对象属性
+        node.listeners[event] = listener;
+        if (!['anonymous', 'handler'].includes(listener.handler.name)) {
+            const method = runtimeBlock.methods[listener.handler.name];
+            if (method) {
+                console.warn(`函数被覆盖，name=${listener.handler.name}`, method);
+            }
+            runtimeBlock.methods[listener.handler.name] = listener.handler;
+            instance[listener.handler.name] = handler;
+        }
+        // 设置事件监听函数
         if (noValue(node.__bindListeners)) node.__bindListeners = {};
         node.__bindListeners[event] = handler;
         // 重新渲染组件

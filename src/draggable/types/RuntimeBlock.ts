@@ -73,7 +73,7 @@ interface RuntimeBlock extends RuntimeNode {
     readonly data: Record<string, any>;
     /** 计算数据 */
     readonly computed: Record<string, AnyFunction>;
-    // /** 计算数据(已绑定 this 指针的 lifeCycles 函数) */
+    // /** 计算数据(已绑定 this 指针的 computed 函数) */
     // __bindComputed?: Record<string, AnyFunction>;
     /** 数据监听器(数据更改时的回调) */
     readonly watch: Record<string, RuntimeBlockWatchItem>;

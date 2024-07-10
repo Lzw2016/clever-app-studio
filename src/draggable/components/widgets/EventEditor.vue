@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, nextTick, shallowReactive, watch } from "vue";
-import { Input, Option, OptionGroup, Select, Tree } from "@opentiny/vue";
+import { computed, getCurrentInstance, nextTick, shallowReactive, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faChevronDown, faChevronUp, faPlus, faTrashCan, faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import { Checkbox, CheckboxGroup, Input, Option, OptionGroup, Select, Tree } from "@opentiny/vue";
 import type { editor } from "monaco-editor";
 import { hasValue } from "@/utils/Typeof";
 import MonacoEditor, { MonacoType } from "@/components/MonacoEditor.vue";
@@ -13,13 +13,16 @@ import { DesignerState } from "@/draggable/models/DesignerState";
 import { runtimeNodeToTreeNode, TreeNode } from "@/draggable/utils/BlockPropsTransform";
 import { CodeExample } from "@/draggable/types/Base";
 import { ComponentMeta, EventGroup, ListenerInfo } from "@/draggable/types/ComponentMeta";
-import { codeToString, funToString } from "@/draggable/utils/Utils";
+import { codeToString, funToString } from "@/draggable/utils/FunctionUtils";
 import { getAllListener, getEventGroups, getEventTitle, getNodeComponentMeta } from "@/draggable/utils/EventUtils";
 
 // 定义组件选项
 defineOptions({
     name: 'EventEditor',
 });
+
+// 当前组件对象
+const instance = getCurrentInstance();
 
 // 定义 Props 类型
 interface EventEditorProps {
@@ -34,6 +37,8 @@ const props = withDefaults(defineProps<EventEditorProps>(), {});
 
 // 定义 State 类型
 interface EventEditorState {
+    /** 强制组件更新的响应式变量 */
+    forceUpdateVar: number,
     /** 当前选中的大纲树节点 */
     selectRuntimeNode?: RuntimeNode;
     /** 当前选择的监听事件 */
@@ -48,6 +53,7 @@ interface EventEditorState {
 
 // state 属性
 const state = shallowReactive<EventEditorState>({
+    forceUpdateVar: 0,
     selectRuntimeNode: undefined,
     selectListener: undefined,
     showListenerDoc: false,
@@ -58,6 +64,19 @@ const state = shallowReactive<EventEditorState>({
 const data = {
     monacoEditor: undefined as (editor.IStandaloneCodeEditor | undefined),
     lastExampleCollapsed: state.exampleCollapsed,
+    modifiers: [
+        { label: 'stop', text: 'stop', title: '阻止事件继续传播' },
+        { label: 'prevent', text: 'prevent', title: '阻止默认事件行为' },
+        { label: 'self', text: 'self', title: '只有当事件是在该元素本身触发时才会调用事件处理函数' },
+        { label: 'exact', text: 'exact', title: '精确控制触发事件所需的系统修饰符的组合' },
+        { label: 'ctrl', text: 'ctrl', title: 'ctrl键被按下时才会调用事件处理函数' },
+        { label: 'shift', text: 'shift', title: 'shift键被按下时才会调用事件处理函数' },
+        { label: 'alt', text: 'alt', title: 'alt键被按下时才会调用事件处理函数' },
+        { label: 'meta', text: 'meta', title: 'cmd键被按下时才会调用事件处理函数' },
+        { label: 'left', text: 'left', title: '鼠标左键点击时才会调用事件处理函数' },
+        { label: 'middle', text: 'middle', title: '鼠标中键点击时才会调用事件处理函数' },
+        { label: 'right', text: 'right', title: '鼠标右键点击时才会调用事件处理函数' },
+    ],
 };
 // 大纲树数据节点
 const outlineTreeNodes = computed<Array<TreeNode<RuntimeNode>>>(() => getOutlineTreeNodes(props.designerState?.blockInstance?.globalContext?.runtimeBlock));
@@ -75,6 +94,24 @@ const existsSelectRuntimeNode = computed<boolean>(() => hasValue(state.selectRun
 const existsSelectListener = computed<boolean>(() => hasValue(state.selectListener));
 // 存在示例代码
 const existsExampleCode = computed<boolean>(() => hasValue(state.selectListener?.funMeta?.examples) && state.selectListener.funMeta.examples.length > 0);
+// 函数修饰符值
+const modifiers = computed<Array<string>>({
+    get: () => {
+        // 读取“响应式变量”值
+        state.forceUpdateVar;
+        if (state.selectListener?.modifiers) {
+            return [...state.selectListener.modifiers];
+        }
+        return [];
+    },
+    set: (newValue: Array<any>) => {
+        if (state.selectListener?.modifiers) {
+            state.selectListener.modifiers.length = 0;
+            state.selectListener.modifiers.push(...newValue);
+            state.forceUpdateVar++;
+        }
+    },
+});
 
 // 选中事件变化
 watch(() => state.selectListener, listenerInfo => {
@@ -283,7 +320,8 @@ defineExpose<EventEditorExpose>({
                                             </span>
                                             <a
                                                 v-if="hasValue(state.selectListener?.funMeta?.docLink)"
-                                                class="editor-doc-link" target="_blank"
+                                                class="editor-doc-link"
+                                                target="_blank"
                                                 title="查看文档"
                                                 :href="state.selectListener?.funMeta?.docLink"
                                             >
@@ -331,14 +369,38 @@ defineExpose<EventEditorExpose>({
                             @collapsedChange="exampleCollapsedChange"
                         >
                             <template #onePane="slotProps">
-                                <MonacoEditor
-                                    v-bind="slotProps"
-                                    height="20px"
-                                    theme="idea-light"
-                                    default-language="javascript"
-                                    :options="{ contextmenu: false }"
-                                    :onMount="initEditor"
-                                />
+                                <div v-bind="slotProps" class="flex-column-container">
+                                    <div class="flex-item-fixed fun-modifiers flex-row-container" style="align-items: center;">
+                                        <div class="flex-item-fixed">
+                                            事件修饰符
+                                        </div>
+                                        <a
+                                            class="flex-item-fixed modifiers-doc-link"
+                                            target="_blank"
+                                            title="查看文档"
+                                            href="https://cn.vuejs.org/guide/essentials/event-handling.html#event-modifiers"
+                                        >
+                                            <FontAwesomeIcon :icon="faUpRightFromSquare"/>
+                                        </a>
+                                        <CheckboxGroup class="flex-item-fill" type="checkbox" size="mini" v-model="modifiers">
+                                            <Checkbox
+                                                class="modifiers-item"
+                                                v-for="item in data.modifiers"
+                                                :label="item.label"
+                                                :text="item.text"
+                                                :title="item.title"
+                                            />
+                                        </CheckboxGroup>
+                                    </div>
+                                    <MonacoEditor
+                                        class="flex-item-fill"
+                                        height="100%"
+                                        theme="idea-light"
+                                        default-language="javascript"
+                                        :options="{ contextmenu: false }"
+                                        :onMount="initEditor"
+                                    />
+                                </div>
                             </template>
                             <template #twoPane="slotProps">
                                 <div v-bind="slotProps" class="editor-examples flex-column-container">
@@ -540,6 +602,25 @@ defineExpose<EventEditorExpose>({
 
 .doc-gutter-button:hover {
     color: #5E7CE0;
+}
+
+.fun-modifiers {
+    padding: 8px 0 8px 16px;
+    font-size: 12px;
+    border-bottom: 1px solid #cbcbcb;
+}
+
+.modifiers-item {
+    /* width: 64px; */
+    margin-right: 16px;
+}
+
+.modifiers-doc-link {
+    display: flex;
+    align-items: center;
+    color: #5e7ce0;
+    margin-left: 2px;
+    margin-right: 16px;
 }
 
 .editor-examples {

@@ -1,7 +1,7 @@
 import lodash from "lodash";
 import { innerEvents } from "@/draggable/Constant";
 import { toElementEventName } from "@/draggable/utils/HtmlTag";
-import { parseFun } from "@/draggable/utils/Utils";
+import { parseFun } from "@/draggable/utils/FunctionUtils";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentMeta, EventGroup, EventInfo, EventPanel, ListenerInfo } from "@/draggable/types/ComponentMeta";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
