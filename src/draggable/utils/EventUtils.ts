@@ -63,6 +63,7 @@ function getAllListener(eventGroups: Array<EventGroup>, node?: RuntimeNode): Arr
             funInfo: parseFun(listener.handler),
             modifiers: listener.modifiers,
             funMeta: eventMap.get(eventName),
+            rawListener: listener,
         };
         array.push(listenerInfo);
     }

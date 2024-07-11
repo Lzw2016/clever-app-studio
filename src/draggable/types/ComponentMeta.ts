@@ -1,7 +1,7 @@
 import { ComponentPublicInstance, VNode } from "vue";
 import { ComponentSlotMeta, FunctionInfo, FunctionMeta, I18N, ModifierGuardsKeys, VueComponent } from "@/draggable/types/Base";
 import { BaseDirectives, BaseProps, ComponentListener, DesignNode } from "@/draggable/types/DesignBlock";
-import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { BlockInstance, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
 
 /** 监听属性值变化逻辑配置 */
@@ -200,6 +200,8 @@ interface ListenerInfo {
     modifiers?: Array<ModifierGuardsKeys>;
     /** 函数元数据 */
     funMeta?: FunctionMeta;
+    /** RuntimeNode中原始的listener值 */
+    readonly rawListener: RuntimeListener;
 }
 
 /** 事件分组 */

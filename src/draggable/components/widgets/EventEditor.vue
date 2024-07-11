@@ -109,7 +109,16 @@ const modifiers = computed<Array<string>>({
         if (!state.selectListener.modifiers) state.selectListener.modifiers = [];
         state.selectListener.modifiers.length = 0;
         state.selectListener.modifiers.push(...newValue);
+        // 同步modifiers数据到RuntimeNode
+        if (state.selectListener.rawListener.modifiers) {
+            state.selectListener.rawListener.modifiers.length = 0;
+            state.selectListener.rawListener.modifiers.push(...newValue);
+        } else {
+            state.selectListener.rawListener.modifiers = state.selectListener.modifiers;
+        }
+        // state.selectListener.rawListener.modifiers =
         state.forceUpdateVar++;
+        // state.selectRuntimeNode?.listeners[state.selectListener.eventName]
     },
 });
 
