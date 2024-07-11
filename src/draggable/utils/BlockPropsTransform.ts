@@ -1,5 +1,5 @@
-import { createVNode, Fragment, withModifiers } from "vue";
 import lodash from "lodash";
+import { createVNode, Fragment, withModifiers } from "vue";
 import { hasValue, isArray, isFun, isObj, isStr, noValue } from "@/utils/Typeof";
 import { AsyncFunction } from "@/utils/UseType";
 import { calcExpression } from "@/utils/Expression";
@@ -731,111 +731,148 @@ function renderTpl(tpl: string[], props: Record<string, any>, instance: any, run
 // }
 
 interface RuntimeNodeToDesignNodeOps {
-    /** 保持ref属性值 */
+    /** 保持RuntimeNode 的 ref属性值 */
     keepRef?: boolean;
 }
 
 /**
  * 将 RuntimeNode 转换成 DesignNode
  */
-function runtimeNodeToDesignNode(runtimeNode: RuntimeNode, ops: RuntimeNodeToDesignNodeOps = {}): DesignNode {
+function runtimeNodeToDesignNode(runtimeNode: RuntimeNode, parent?: RuntimeNode, blockNode?: RuntimeBlock, ops?: RuntimeNodeToDesignNodeOps): DesignNode {
     const {
         __designNode,
-        type,
-        ref,
-        props,
-        listeners,
-        directives,
-        slots,
-        items,
-        tpl,
         block,
-        data,
-        computed,
-        watch,
-        methods,
-        lifeCycles,
-        meta,
-        i18n,
+        type,
+        ref: runtimeRef,
+        props: runtimeProps,
+        listeners: runtimeListeners,
+        directives: runtimeDirectives,
+        slots: runtimeSlots,
+        items: runtimeItems,
+        tpl: runtimeTpl,
+        data: runtimeData,
+        computed: runtimeComputed,
+        watch: runtimeWatch,
+        methods: runtimeMethods,
+        lifeCycles: runtimeLifeCycles,
+        meta: runtimeMeta,
+        i18n: runtimeI18n,
     } = runtimeNode as RuntimeBlock;
-    const designNode: DesignNode = { block: block, type: type };
-    if (ops.keepRef) designNode.ref = ref;
-    if (Object.keys(props).length > 0) {
-        // TODO 优化 props 的处理，识别哪些props是在父节点 defaults 中定义的
-        designNode.props = lodash.cloneDeep(props);
-    }
-    if (Object.keys(listeners).length > 0) designNode.listeners = lodash.cloneDeep(listeners);
-    if (Object.keys(directives).length > 0) designNode.directives = lodash.cloneDeep(directives);
-    if (__designNode?.defaults) designNode.defaults = __designNode.defaults;
-    if (designNode.props) {
-        delete designNode.props[htmlExtAttr.componentType];
-        delete designNode.props[htmlExtAttr.nodeId];
-        delete designNode.props[htmlExtAttr.nodeRef];
-        delete designNode.props[htmlExtAttr.nodeParentId];
-        delete designNode.props[htmlExtAttr.placeholderName];
-        delete designNode.props[htmlExtAttr.slotName];
-        if (Object.keys(designNode.props).length <= 0) delete designNode.props;
-    }
-    // 递归处理 slots
-    if (Object.keys(slots).length > 0) {
-        designNode.slots = {};
-        for (let name in slots) {
-            const slot = slots[name];
-            if (slot.length <= 0) continue;
-            const slotTmp = _slotsOrItemsToDesignNode(slot);
-            if (slotTmp) designNode.slots[name] = slotTmp;
+    if (block) blockNode = runtimeNode as RuntimeBlock;
+    // const {
+    //     props: designProps,
+    //     slots: designSlots,
+    //     items: designItems,
+    //     ...designOther
+    // } = __designNode as DesignBlock;
+    const designNode: DesignNode = { type: type };
+    if (ops?.keepRef) designNode.ref = runtimeRef;
+    // 处理 props
+    if (Object.keys(runtimeProps).length > 0) {
+        const props = _propsToDesignNode(lodash.cloneDeep(runtimeProps));
+        if (props && Object.keys(props).length > 0) {
+            designNode.props = props;
         }
     }
-    // 递归处理 items
-    if (items.length > 0) {
-        const itemsTmp = _slotsOrItemsToDesignNode(items);
-        if (itemsTmp) designNode.items = itemsTmp;
+    // 处理 listeners
+    if (Object.keys(runtimeListeners).length > 0) {
+        const listeners = _listenersToDesignNode(lodash.cloneDeep(runtimeListeners));
+        if (listeners && Object.keys(listeners).length > 0) {
+            designNode.listeners = listeners;
+        }
     }
-    if (tpl) {
-        const tplTmp = _tplToDesignNode(tpl);
-        if (tplTmp) designNode.tpl = tplTmp;
+    // 处理 directives
+    if (Object.keys(runtimeDirectives).length > 0) {
+        const directives = lodash.cloneDeep(runtimeDirectives);
+        if (directives && Object.keys(directives).length > 0) {
+            designNode.directives = directives;
+        }
+    }
+    // 处理 slots
+    if (Object.keys(runtimeSlots).length > 0) {
+        designNode.slots = {};
+        for (let name in runtimeSlots) {
+            const slotArr = runtimeSlots[name];
+            if (slotArr.length <= 0) continue;
+            const slots = _slotsOrItemsToDesignNode(slotArr, runtimeNode, blockNode, ops);
+            if (slots) {
+                designNode.slots[name] = slots
+            }
+        }
+        if (Object.keys(designNode.slots).length <= 0) {
+            delete designNode.slots;
+        }
+    }
+    // 处理 items
+    if (runtimeItems.length > 0) {
+        const items = _slotsOrItemsToDesignNode(runtimeItems, runtimeNode, blockNode, ops);
+        if (items || (isArray(items) && items.length > 0)) {
+            designNode.items = items;
+        }
+    }
+    // 处理 tpl
+    if (runtimeTpl) {
+        const tpl = _tplToDesignNode(runtimeTpl);
+        if (tpl || (isArray(tpl) && tpl.length > 0)) {
+            designNode.tpl = tpl;
+        }
     }
     // 处理 DesignBlock
     if (block) {
         const designBlock = designNode as DesignBlock;
-        if (Object.keys(data).length > 0) {
-            // TODO 生成代码时需要读取原始的 data
-            // const __designBlock = __designNode as DesignBlock;
-            // designBlock.data = lodash.cloneDeep(__designBlock.data);
-            designBlock.data = lodash.cloneDeep(data);
+        designBlock.block = true;
+        // 处理 data
+        if (Object.keys(runtimeData).length > 0) {
+            designBlock.data = lodash.cloneDeep(runtimeData);
         }
-        if (Object.keys(computed).length > 0) designBlock.computed = lodash.cloneDeep(computed);
-        if (Object.keys(watch).length > 0) designBlock.watch = lodash.cloneDeep(watch);
-        if (Object.keys(methods).length > 0) designBlock.methods = lodash.cloneDeep(methods);
-        if (Object.keys(lifeCycles).length > 0) designBlock.lifeCycles = lodash.cloneDeep(lifeCycles);
-        if (meta && Object.keys(meta).length > 0) designBlock.meta = meta;
-        if (i18n && Object.keys(i18n).length > 0) designBlock.i18n = i18n;
-    } else {
-        delete designNode.block;
+        // 处理 computed
+        if (Object.keys(runtimeComputed).length > 0) {
+            designBlock.computed = lodash.cloneDeep(runtimeComputed);
+        }
+        // 处理 watch
+        if (Object.keys(runtimeWatch).length > 0) {
+            designBlock.watch = lodash.cloneDeep(runtimeWatch);
+        }
+        // 处理 methods
+        if (Object.keys(runtimeMethods).length > 0) {
+            designBlock.methods = lodash.cloneDeep(runtimeMethods);
+        }
+        // 处理 lifeCycles
+        if (Object.keys(runtimeLifeCycles).length > 0) {
+            designBlock.lifeCycles = lodash.cloneDeep<any>(runtimeLifeCycles);
+        }
+        // 处理 meta
+        if (runtimeMeta && Object.keys(runtimeMeta).length > 0) {
+            designBlock.meta = lodash.cloneDeep(runtimeMeta);
+        }
+        // 处理 i18n
+        if (Object.keys(runtimeI18n).length > 0) {
+            designBlock.i18n = lodash.cloneDeep(runtimeI18n);
+        }
     }
     return designNode;
 }
 
 // runtimeNodeToDesignNode 处理 slots 或者 items
-function _slotsOrItemsToDesignNode(itemsOrSlots: Array<RuntimeComponentSlotsItem>): Array<ComponentSlotsItem> | ComponentSlotsItem | undefined {
+function _slotsOrItemsToDesignNode(itemsOrSlots: Array<RuntimeComponentSlotsItem>, runtimeNode: RuntimeNode, blockNode?: RuntimeBlock, ops?: RuntimeNodeToDesignNodeOps): Array<ComponentSlotsItem> | ComponentSlotsItem | undefined {
     if (itemsOrSlots.length == 1) {
-        return _slotOrItemToDesignNode(itemsOrSlots[0]);
+        return _slotOrItemToDesignNode(itemsOrSlots[0], runtimeNode, blockNode, ops);
     } else if (itemsOrSlots.length > 1) {
-        return itemsOrSlots.map(itemOrSlot => _slotOrItemToDesignNode(itemOrSlot)).filter(item => hasValue(item));
+        return itemsOrSlots.map(itemOrSlot => _slotOrItemToDesignNode(itemOrSlot, runtimeNode, blockNode, ops)).filter(item => hasValue(item));
     }
 }
 
 // runtimeNodeToDesignNode 处理 slot 或者 item
-function _slotOrItemToDesignNode(itemOrSlot: RuntimeComponentSlotsItem): ComponentSlotsItem | undefined {
+function _slotOrItemToDesignNode(itemOrSlot: RuntimeComponentSlotsItem, runtimeNode: RuntimeNode, blockNode?: RuntimeBlock, ops?: RuntimeNodeToDesignNodeOps): ComponentSlotsItem | undefined {
     if (isStr(itemOrSlot)) {
         return itemOrSlot;
     } else if (isObj(itemOrSlot)) {
-        return runtimeNodeToDesignNode(itemOrSlot);
+        return runtimeNodeToDesignNode(itemOrSlot, runtimeNode, blockNode, ops);
     }
 }
 
 // runtimeNodeToDesignNode 处理 tpl
-function _tplToDesignNode(tpl: RuntimeNode['tpl']): DesignNode['tpl'] | undefined {
+function _tplToDesignNode(tpl: RuntimeNode['tpl']): DesignNode['tpl'] {
     if (!tpl) return;
     if (isStr(tpl)) return tpl;
     if (tpl.length === 1) {
@@ -843,6 +880,51 @@ function _tplToDesignNode(tpl: RuntimeNode['tpl']): DesignNode['tpl'] | undefine
     } else if (tpl.length > 1) {
         return tpl;
     }
+}
+
+// runtimeNodeToDesignNode 处理 props
+function _propsToDesignNode(props: RuntimeNode['props']): DesignNode['props'] {
+    const res: DesignNode['props'] = {};
+    for (let key in props) {
+        if ([
+            htmlExtAttr.componentType,
+            htmlExtAttr.nodeId,
+            htmlExtAttr.nodeRef,
+            htmlExtAttr.nodeParentId,
+            htmlExtAttr.placeholderName,
+            htmlExtAttr.slotName,
+        ].includes(key)) {
+            continue;
+        }
+        let value = props[key];
+        // 读取props属性原始值
+        if (value?.[configRawValueName]) {
+            value = value[configRawValueName];
+        }
+        // 保存属性
+        res[key] = value;
+    }
+    return res;
+}
+
+// runtimeNodeToDesignNode 处理 listeners
+function _listenersToDesignNode(listeners: RuntimeNode['listeners'], blockNode?: RuntimeBlock): DesignNode['listeners'] {
+    const res: DesignNode['listeners'] = {};
+    for (let key in listeners) {
+        const { handler, modifiers } = listeners[key];
+        let handlerOrFunName: any = handler;
+        // 如果不是匿名函数 & RuntimeBlock.methods中存在同名函数 TODO 调试确认
+        if (handler.name && !["anonymous"].includes(handler.name) && isFun(blockNode?.methods[handler.name])) {
+            handlerOrFunName = handler.name;
+        }
+        // 保存属性
+        if (noValue(modifiers) || modifiers.length <= 0) {
+            res[key] = handlerOrFunName;
+        } else {
+            res[key] = { handler: handlerOrFunName, modifiers };
+        }
+    }
+    return res;
 }
 
 interface TreeNode<T = any> {

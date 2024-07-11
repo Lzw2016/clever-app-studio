@@ -173,7 +173,7 @@ interface ComponentParam {
     type: HtmlTag | string;
     /** 组件属性 */
     props?: BaseProps;
-    /** 子节点 */
+    /** 子节点(createVNode函数的children参数) */
     children?: Array<any>;
     /** 是否转换成函数形式 */
     isFunction?: boolean;

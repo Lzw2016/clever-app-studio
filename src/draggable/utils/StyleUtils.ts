@@ -123,7 +123,7 @@ interface ApplyStyleOptions<R = any> {
     disableReRender?: boolean;
     /** 更新样式后不需要重新计算辅助工具的位置 */
     cancelCalcAuxToolPosition?: boolean;
-    /** 更新multipleValues值 */
+    /** 更新multipleValues值 TODO 似乎没有用 */
     multipleValuesUpdate?: (multipleValues: boolean) => void;
 }
 

@@ -1,4 +1,6 @@
-import { computed, ComputedRef, markRaw, Ref, ref, ShallowReactive, shallowReactive } from "vue";
+import { computed, ComputedRef, markRaw, Ref, ref, ShallowReactive, shallowReactive, watch } from "vue";
+import { isFun } from "@/utils/Typeof";
+import { funToString, parseFun } from "@/draggable/utils/FunctionUtils";
 import { runtimeNodeToDesignNode } from "@/draggable/utils/BlockPropsTransform";
 import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
@@ -58,6 +60,18 @@ class DesignerState {
 
     constructor(designerEngine: DesignerEngine) {
         this.designerEngine = designerEngine;
+        this.setGlobalVar();
+    }
+
+    protected setGlobalVar() {
+        watch(this._designerBlockInstance, value => {
+            if (this.designerEngine.activeDesignerState !== this) return;
+            window.__crb = value;
+        });
+        watch(this._selectNode, value => {
+            if (this.designerEngine.activeDesignerState !== this) return;
+            window.__crn = value;
+        });
     }
 
     /**
@@ -131,11 +145,27 @@ class DesignerState {
         if (blockInstance?.globalContext.runtimeBlock) {
             const designNode = runtimeNodeToDesignNode(
                 blockInstance.globalContext.runtimeBlock,
+                undefined,
+                undefined,
                 {
                     keepRef: true,
                 },
             );
-            code = JSON.stringify(designNode, null, 4);
+            console.log("designNode", designNode);
+            code = JSON.stringify(
+                designNode,
+                (key, value) => {
+                    if (isFun(value)) {
+                        const functionInfo = parseFun(value);
+                        if (functionInfo) {
+                            functionInfo.name = undefined;
+                            return funToString(functionInfo);
+                        }
+                    }
+                    return value;
+                },
+                4
+            );
         }
         this._designerBlockCode.value = code;
         return code;

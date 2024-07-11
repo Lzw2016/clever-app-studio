@@ -1,6 +1,6 @@
 import { CSSProperties, WatchCallback, WatchOptions } from "vue";
 import { RouteParams } from "vue-router";
-import { AnyFunction, ComponentInstance, ErrorCapturedHook, FunctionConfig, HtmlTag, I18N, ModifierGuardsKeys } from "@/draggable/types/Base";
+import { AnyFunction, ComponentInstance, ComponentParam, ErrorCapturedHook, FunctionConfig, HtmlTag, I18N, ModifierGuardsKeys } from "@/draggable/types/Base";
 
 // -------------------------------------------------------------------------------------------------------------------
 // 组件
@@ -15,6 +15,11 @@ interface BaseProps {
 
     [name: string]: any;
 }
+
+/**
+ * BaseProps特殊值: 表示有一个组件值的 props
+ */
+type PropComponentValue = ComponentParam;
 
 /** 组件基础事件 */
 interface BaseEvent {

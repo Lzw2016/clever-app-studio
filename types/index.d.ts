@@ -155,5 +155,9 @@ declare const APP_INFO: Readonly<AppInfo>;
 declare const cp: any;
 /** 当前打开的Dialog指针 */
 declare const cw: any;
+/** 设计器模式下当前选中的 RuntimeBlock */
+declare const __crb: any;
+/** 设计器模式下当前选中的 RuntimeNode */
+declare const __crn: any;
 /** 全局配置 */
 declare const globalConfig: GlobalConfig;

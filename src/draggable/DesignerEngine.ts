@@ -1,4 +1,4 @@
-import { markRaw, ref, Ref, shallowReactive, ShallowReactive } from "vue";
+import { markRaw, ref, Ref, shallowReactive, ShallowReactive, watch } from "vue";
 import { EventBus } from "@/draggable/EventBus";
 import { DesignerDriver, DesignerDriverConstructor } from "@/draggable/DesignerDriver";
 import { DesignerEffect, DesignerEffectConstructor } from "@/draggable/DesignerEffect";
@@ -65,6 +65,25 @@ class DesignerEngine {
         this.cursor = new Cursor(this);
         this.draggingCmpMetas = new DraggingCmpMetas(this);
         this.insertion = new Insertion(this);
+        this.setGlobalVar();
+    }
+
+    protected setGlobalVar() {
+        watch(this._activeDesignerPath, value => {
+            let setUndefined = true;
+            if (value) {
+                const designerState = this.allDesignerState[value];
+                if (designerState) {
+                    setUndefined = false;
+                    window.__crb = designerState.designerBlockInstance;
+                    window.__crn = designerState.selectNode;
+                }
+            }
+            if (setUndefined) {
+                window.__crb = undefined;
+                window.__crn = undefined;
+            }
+        });
     }
 
     /** 组件管理器 */

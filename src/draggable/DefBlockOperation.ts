@@ -450,7 +450,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         node.listeners[event] = listener;
         if (!['anonymous', 'handler'].includes(listener.handler.name)) {
             const method = runtimeBlock.methods[listener.handler.name];
-            if (method) {
+            if (method && !options.override) {
                 console.warn(`函数被覆盖，name=${listener.handler.name}`, method);
             }
             runtimeBlock.methods[listener.handler.name] = listener.handler;
