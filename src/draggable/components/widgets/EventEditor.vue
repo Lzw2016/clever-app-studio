@@ -116,9 +116,7 @@ const modifiers = computed<Array<string>>({
         } else {
             state.selectListener.rawListener.modifiers = state.selectListener.modifiers;
         }
-        // state.selectListener.rawListener.modifiers =
         state.forceUpdateVar++;
-        // state.selectRuntimeNode?.listeners[state.selectListener.eventName]
     },
 });
 
