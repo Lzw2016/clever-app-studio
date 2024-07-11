@@ -105,11 +105,11 @@ const modifiers = computed<Array<string>>({
         return [];
     },
     set: (newValue: Array<any>) => {
-        if (state.selectListener?.modifiers) {
-            state.selectListener.modifiers.length = 0;
-            state.selectListener.modifiers.push(...newValue);
-            state.forceUpdateVar++;
-        }
+        if (!state.selectListener) return;
+        if (!state.selectListener.modifiers) state.selectListener.modifiers = [];
+        state.selectListener.modifiers.length = 0;
+        state.selectListener.modifiers.push(...newValue);
+        state.forceUpdateVar++;
     },
 });
 

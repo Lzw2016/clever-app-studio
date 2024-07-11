@@ -776,7 +776,7 @@ function runtimeNodeToDesignNode(runtimeNode: RuntimeNode, parent?: RuntimeNode,
     }
     // 处理 listeners
     if (Object.keys(runtimeListeners).length > 0) {
-        const listeners = _listenersToDesignNode(lodash.cloneDeep(runtimeListeners));
+        const listeners = _listenersToDesignNode(lodash.cloneDeep(runtimeListeners), blockNode);
         if (listeners && Object.keys(listeners).length > 0) {
             designNode.listeners = listeners;
         }
@@ -913,7 +913,7 @@ function _listenersToDesignNode(listeners: RuntimeNode['listeners'], blockNode?:
     for (let key in listeners) {
         const { handler, modifiers } = listeners[key];
         let handlerOrFunName: any = handler;
-        // 如果不是匿名函数 & RuntimeBlock.methods中存在同名函数 TODO 调试确认
+        // 如果不是匿名函数 & RuntimeBlock.methods中存在同名函数
         if (handler.name && !["anonymous"].includes(handler.name) && isFun(blockNode?.methods[handler.name])) {
             handlerOrFunName = handler.name;
         }

@@ -1,5 +1,5 @@
 import lodash from "lodash";
-import { hasValue, isArray } from "@/utils/Typeof";
+import { hasValue, isArray, isFun } from "@/utils/Typeof";
 import { FunctionInfo } from "@/draggable/types/Base";
 
 /**
@@ -85,6 +85,7 @@ function parseFun(fun: Function | string): FunctionInfo | undefined {
         params: lodash.trim(params).length > 0 ? params.split(",").map(name => lodash.trim(name)) : [],
         body: body,
         lambda: lambda,
+        funName: isFun(fun) ? fun.name : undefined,
     };
 }
 

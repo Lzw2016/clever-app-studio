@@ -149,6 +149,8 @@ interface FunctionInfo {
     body: string;
     /** 是否是 lambda 形式的函数 */
     lambda: boolean;
+    /** Function对象的name属性值 */
+    funName?: string;
 }
 
 /** 组件插槽元信息 */
