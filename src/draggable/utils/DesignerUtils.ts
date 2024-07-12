@@ -507,7 +507,14 @@ function designNodeToJsonString(node: DesignNode): string {
  * 将 DesignNode 对象转换成 json5 字符串代码
  */
 function designNodeToJson5String(node: DesignNode): string {
-    return JSON5.stringify(node, _funToString, 4);
+    return JSON5.stringify(
+        node,
+        {
+            replacer: _funToString,
+            space: 4,
+            quote: '"',
+        },
+    );
 }
 
 function _funToString(key: any, value: any): any {
