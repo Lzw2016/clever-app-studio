@@ -377,7 +377,23 @@ function runtimeNodeToDesignNode(runtimeNode: RuntimeNode, parent?: RuntimeNode,
             designBlock.i18n = lodash.cloneDeep(runtimeI18n);
         }
     }
-    return designNode;
+    // 定义 DesignNode 返回对象的属性顺序
+    const propsSort = ["block", "type", "ref", "defaults", "props", "directives", "data", "computed", "watch", "listeners", "slots", "items", "tpl", "lifeCycles", "methods", "i18n", "meta"];
+    const res: any = propsSort.reduce(
+        (result: any, key: string) => {
+            const value = designNode[key];
+            if (hasValue(value)) {
+                result[key] = value;
+            }
+            return result;
+        },
+        {},
+    );
+    for (let key in designNode) {
+        if (propsSort.includes(key)) continue;
+        res[key] = designNode[key];
+    }
+    return res;
 }
 
 // runtimeNodeToDesignNode 处理 slots 或者 items
