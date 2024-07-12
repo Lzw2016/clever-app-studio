@@ -1,7 +1,7 @@
 import { computed, ComputedRef, markRaw, Ref, ref, ShallowReactive, shallowReactive, watch } from "vue";
 import { isFun } from "@/utils/Typeof";
 import { funToString, parseFun } from "@/draggable/utils/FunctionUtils";
-import { runtimeNodeToDesignNode } from "@/draggable/utils/BlockPropsTransform";
+import { runtimeNodeToDesignNode } from "@/draggable/utils/DesignerUtils";
 import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 import { DesignerEngine } from "@/draggable/DesignerEngine";

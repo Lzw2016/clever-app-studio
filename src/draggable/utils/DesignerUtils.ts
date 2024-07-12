@@ -1,11 +1,12 @@
 import lodash from "lodash";
 import { isVNode, VNode, VNodeChild } from "vue";
-import { isArray, isObj, noValue } from "@/utils/Typeof";
-import { childSlotName } from "@/draggable/Constant";
+import { hasValue, isArray, isFun, isObj, isStr, noValue } from "@/utils/Typeof";
+import { childSlotName, configRawValueName } from "@/draggable/Constant";
 import { ComponentParam } from "@/draggable/types/Base";
-import { RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { RuntimeBlock, RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentMeta, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
-import { DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
+import { ComponentSlotsItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
+import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 
 /**
  * 定义一个 DesignBlock 对象，仅仅是为了类型声明，无任何处理逻辑
@@ -168,9 +169,289 @@ function _deepTraverseChild(child: VNodeChild | string, callback: TraverseVNode,
     }
 }
 
+/** 遍历 RuntimeNode 的回调函数 */
+type TraverseNode = (current: RuntimeNode, isSlot: boolean, parent?: RuntimeNode, currentBlock?: RuntimeBlock) => void;
+
+/**
+ * 深度递归 RuntimeNode 遍历所有的 node(包含slot)
+ * @param node          node
+ * @param callback      遍历时的回调函数
+ * @param isSlot        当前 node 是否时插槽
+ * @param parentNode    当前 node 的父节点
+ * @param currentBlock  当前的 node 所属的 RuntimeBlock 对象
+ */
+function deepTraverseNodes(node: RuntimeNode, callback: TraverseNode, isSlot: boolean = false, parentNode?: RuntimeNode, currentBlock?: RuntimeBlock): void {
+    const { items, slots } = node;
+    callback(node, isSlot, parentNode, currentBlock);
+    const runtimeBlock = node as RuntimeBlock;
+    const newCurrentBlock = runtimeBlock.block ? runtimeBlock : currentBlock;
+    // 递归 slots
+    for (let name in slots) {
+        const slot = slots[name];
+        if (slot.length <= 0) continue;
+        _deepBlockSlotsOrItems(slot, callback, true, node, newCurrentBlock);
+    }
+    // 递归 items
+    if (items && items.length > 0) {
+        _deepBlockSlotsOrItems(items, callback, false, node, newCurrentBlock);
+    }
+}
+
+// deepTraverseNodes 处理 slots 或者 items
+function _deepBlockSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, callback: TraverseNode, isSlot: boolean, parentNode: RuntimeNode, currentBlock?: RuntimeBlock) {
+    for (let cmpNode of cmpNodes) {
+        const node = cmpNode as RuntimeNode;
+        if (isObj(node) && !isArray(node)) {
+            deepTraverseNodes(node, callback, isSlot, parentNode, currentBlock);
+        }
+    }
+}
+
+interface RuntimeNodeToDesignNodeOps {
+    /** 保持RuntimeNode 的 ref属性值 */
+    keepRef?: boolean;
+}
+
+/**
+ * 将 RuntimeNode 转换成 DesignNode
+ */
+function runtimeNodeToDesignNode(runtimeNode: RuntimeNode, parent?: RuntimeNode, blockNode?: RuntimeBlock, ops?: RuntimeNodeToDesignNodeOps): DesignNode {
+    const {
+        __designNode,
+        block,
+        type,
+        ref: runtimeRef,
+        props: runtimeProps,
+        listeners: runtimeListeners,
+        directives: runtimeDirectives,
+        slots: runtimeSlots,
+        items: runtimeItems,
+        tpl: runtimeTpl,
+        data: runtimeData,
+        computed: runtimeComputed,
+        watch: runtimeWatch,
+        methods: runtimeMethods,
+        lifeCycles: runtimeLifeCycles,
+        meta: runtimeMeta,
+        i18n: runtimeI18n,
+    } = runtimeNode as RuntimeBlock;
+    if (block) blockNode = runtimeNode as RuntimeBlock;
+    // const {
+    //     props: designProps,
+    //     slots: designSlots,
+    //     items: designItems,
+    //     ...designOther
+    // } = __designNode as DesignBlock;
+    const designNode: DesignNode = { type: type };
+    if (ops?.keepRef) designNode.ref = runtimeRef;
+    // 处理 props
+    if (Object.keys(runtimeProps).length > 0) {
+        const props = _propsToDesignNode(lodash.cloneDeep(runtimeProps));
+        if (props && Object.keys(props).length > 0) {
+            designNode.props = props;
+        }
+    }
+    // 处理 listeners
+    if (Object.keys(runtimeListeners).length > 0) {
+        const listeners = _listenersToDesignNode(lodash.cloneDeep(runtimeListeners), blockNode);
+        if (listeners && Object.keys(listeners).length > 0) {
+            designNode.listeners = listeners;
+        }
+    }
+    // 处理 directives
+    if (Object.keys(runtimeDirectives).length > 0) {
+        const directives = lodash.cloneDeep(runtimeDirectives);
+        if (directives && Object.keys(directives).length > 0) {
+            designNode.directives = directives;
+        }
+    }
+    // 处理 slots
+    if (Object.keys(runtimeSlots).length > 0) {
+        designNode.slots = {};
+        for (let name in runtimeSlots) {
+            const slotArr = runtimeSlots[name];
+            if (slotArr.length <= 0) continue;
+            const slots = _slotsOrItemsToDesignNode(slotArr, runtimeNode, blockNode, ops);
+            if (slots) {
+                designNode.slots[name] = slots
+            }
+        }
+        if (Object.keys(designNode.slots).length <= 0) {
+            delete designNode.slots;
+        }
+    }
+    // 处理 items
+    if (runtimeItems.length > 0) {
+        const items = _slotsOrItemsToDesignNode(runtimeItems, runtimeNode, blockNode, ops);
+        if (items || (isArray(items) && items.length > 0)) {
+            designNode.items = items;
+        }
+    }
+    // 处理 tpl
+    if (runtimeTpl) {
+        const tpl = _tplToDesignNode(runtimeTpl);
+        if (tpl || (isArray(tpl) && tpl.length > 0)) {
+            designNode.tpl = tpl;
+        }
+    }
+    // 处理 DesignBlock
+    if (block) {
+        const designBlock = designNode as DesignBlock;
+        designBlock.block = true;
+        // 处理 data
+        if (Object.keys(runtimeData).length > 0) {
+            designBlock.data = lodash.cloneDeep(runtimeData);
+        }
+        // 处理 computed
+        if (Object.keys(runtimeComputed).length > 0) {
+            designBlock.computed = lodash.cloneDeep(runtimeComputed);
+        }
+        // 处理 watch
+        if (Object.keys(runtimeWatch).length > 0) {
+            designBlock.watch = lodash.cloneDeep(runtimeWatch);
+        }
+        // 处理 methods
+        if (Object.keys(runtimeMethods).length > 0) {
+            designBlock.methods = lodash.cloneDeep(runtimeMethods);
+        }
+        // 处理 lifeCycles
+        if (Object.keys(runtimeLifeCycles).length > 0) {
+            designBlock.lifeCycles = lodash.cloneDeep<any>(runtimeLifeCycles);
+        }
+        // 处理 meta
+        if (runtimeMeta && Object.keys(runtimeMeta).length > 0) {
+            designBlock.meta = lodash.cloneDeep(runtimeMeta);
+        }
+        // 处理 i18n
+        if (Object.keys(runtimeI18n).length > 0) {
+            designBlock.i18n = lodash.cloneDeep(runtimeI18n);
+        }
+    }
+    return designNode;
+}
+
+// runtimeNodeToDesignNode 处理 slots 或者 items
+function _slotsOrItemsToDesignNode(itemsOrSlots: Array<RuntimeComponentSlotsItem>, runtimeNode: RuntimeNode, blockNode?: RuntimeBlock, ops?: RuntimeNodeToDesignNodeOps): Array<ComponentSlotsItem> | ComponentSlotsItem | undefined {
+    if (itemsOrSlots.length == 1) {
+        return _slotOrItemToDesignNode(itemsOrSlots[0], runtimeNode, blockNode, ops);
+    } else if (itemsOrSlots.length > 1) {
+        return itemsOrSlots.map(itemOrSlot => _slotOrItemToDesignNode(itemOrSlot, runtimeNode, blockNode, ops)).filter(item => hasValue(item));
+    }
+}
+
+// runtimeNodeToDesignNode 处理 slot 或者 item
+function _slotOrItemToDesignNode(itemOrSlot: RuntimeComponentSlotsItem, runtimeNode: RuntimeNode, blockNode?: RuntimeBlock, ops?: RuntimeNodeToDesignNodeOps): ComponentSlotsItem | undefined {
+    if (isStr(itemOrSlot)) {
+        return itemOrSlot;
+    } else if (isObj(itemOrSlot)) {
+        return runtimeNodeToDesignNode(itemOrSlot, runtimeNode, blockNode, ops);
+    }
+}
+
+// runtimeNodeToDesignNode 处理 tpl
+function _tplToDesignNode(tpl: RuntimeNode['tpl']): DesignNode['tpl'] {
+    if (!tpl) return;
+    if (isStr(tpl)) return tpl;
+    if (tpl.length === 1) {
+        return tpl[0];
+    } else if (tpl.length > 1) {
+        return tpl;
+    }
+}
+
+// runtimeNodeToDesignNode 处理 props
+function _propsToDesignNode(props: RuntimeNode['props']): DesignNode['props'] {
+    const res: DesignNode['props'] = {};
+    for (let key in props) {
+        if ([
+            htmlExtAttr.componentType,
+            htmlExtAttr.nodeId,
+            htmlExtAttr.nodeRef,
+            htmlExtAttr.nodeParentId,
+            htmlExtAttr.placeholderName,
+            htmlExtAttr.slotName,
+        ].includes(key)) {
+            continue;
+        }
+        let value = props[key];
+        // 读取props属性原始值
+        if (value?.[configRawValueName]) {
+            value = value[configRawValueName];
+        }
+        // 保存属性
+        res[key] = value;
+    }
+    return res;
+}
+
+// runtimeNodeToDesignNode 处理 listeners
+function _listenersToDesignNode(listeners: RuntimeNode['listeners'], blockNode?: RuntimeBlock): DesignNode['listeners'] {
+    const res: DesignNode['listeners'] = {};
+    for (let key in listeners) {
+        const { handler, modifiers } = listeners[key];
+        let handlerOrFunName: any = handler;
+        // 如果不是匿名函数 & RuntimeBlock.methods中存在同名函数
+        if (handler.name && !["anonymous"].includes(handler.name) && isFun(blockNode?.methods[handler.name])) {
+            handlerOrFunName = handler.name;
+        }
+        // 保存属性
+        if (noValue(modifiers) || modifiers.length <= 0) {
+            res[key] = handlerOrFunName;
+        } else {
+            res[key] = { handler: handlerOrFunName, modifiers };
+        }
+    }
+    return res;
+}
+
+interface TreeNode<T = any> {
+    /** 节点ID */
+    readonly id: string;
+    /** 节点标题 */
+    readonly label: string;
+    /** 子节点 */
+    children?: Array<TreeNode>;
+    /** 当前节点是否是插槽 */
+    readonly isSlot: boolean;
+    /** 节点数据 */
+    readonly data?: T;
+}
+
+/**
+ * 将 RuntimeNode 转换成 DesignNode
+ */
+function runtimeNodeToTreeNode(runtimeNode: RuntimeNode): Array<TreeNode<RuntimeNode>> {
+    const rootNodes: Array<TreeNode<RuntimeNode>> = [];
+    const flatNodes: Map<string, TreeNode<RuntimeNode>> = new Map<string, TreeNode<RuntimeNode>>();
+    deepTraverseNodes(
+        runtimeNode,
+        (current, isSlot, parent) => {
+            const node: TreeNode<RuntimeNode> = { id: current.id, label: current.type, isSlot: isSlot, data: current };
+            flatNodes.set(node.id, node);
+            if (!parent) {
+                // 不存在父节点(根节点)
+                rootNodes.push(node);
+                return;
+            }
+            // 存在父节点
+            const parentNode = flatNodes.get(parent.id);
+            if (!parentNode) {
+                console.error("未知错误: parentNode 不能为空");
+                return;
+            }
+            if (!parentNode.children) parentNode.children = [];
+            parentNode.children.push(node);
+        },
+    );
+    return rootNodes;
+}
+
 export type  {
     NodePosition,
     TraverseVNode,
+    TraverseNode,
+    RuntimeNodeToDesignNodeOps,
+    TreeNode,
 }
 
 export {
@@ -180,4 +461,7 @@ export {
     getChildNodePosition,
     getMaterialMetaTabAllTypes,
     deepTraverseVNode,
+    deepTraverseNodes,
+    runtimeNodeToDesignNode,
+    runtimeNodeToTreeNode,
 }

@@ -10,7 +10,7 @@ import SplitPane, { Collapsed } from "@/components/SplitPane.vue";
 import { RuntimeBlock, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
-import { runtimeNodeToTreeNode, TreeNode } from "@/draggable/utils/BlockPropsTransform";
+import { runtimeNodeToTreeNode, TreeNode } from "@/draggable/utils/DesignerUtils";
 import { CodeExample } from "@/draggable/types/Base";
 import { ComponentMeta, EventGroup, ListenerInfo } from "@/draggable/types/ComponentMeta";
 import { codeToString, funToString } from "@/draggable/utils/FunctionUtils";

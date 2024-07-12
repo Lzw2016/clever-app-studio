@@ -50,7 +50,7 @@ const lambdaFunPattern = /^(async\s*)?(\(?[\w\s_$,]*\)?)\s*=>([\s\S]*)$/;
  * @param fun 函数对象
  */
 function parseFun(fun: Function | string): FunctionInfo | undefined {
-    const code = lodash.trim(fun.toString());
+    const code = lodash.trim(isFun(fun) ? Function.prototype.toString.call(fun) : (fun ?? "").toString());
     let match = code.match(funPattern);
     let async: string;
     let name: string | undefined;
@@ -85,7 +85,7 @@ function parseFun(fun: Function | string): FunctionInfo | undefined {
         params: lodash.trim(params).length > 0 ? params.split(",").map(name => lodash.trim(name)) : [],
         body: body,
         lambda: lambda,
-        funName: isFun(fun) ? fun.name : undefined,
+        funName: isFun(fun) ? fun.name : name,
     };
 }
 

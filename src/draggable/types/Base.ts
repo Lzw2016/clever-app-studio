@@ -68,7 +68,7 @@ interface FunctionConfig {
     /** 函数参数名 */
     params?: Array<string> | string;
     /** 函数代码 */
-    code: string;
+    code: Array<string> | string;
 }
 
 /** 通用函数 */

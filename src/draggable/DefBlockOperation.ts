@@ -6,7 +6,8 @@ import { ComponentInstance } from "@/draggable/types/Base";
 import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
 import { CreateConfig, RuntimeBlock, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { BindListenerOptions, BlockOperation, BlockOperationById, OpsOptions } from "@/draggable/types/BlockOperation";
-import { blockDeepTransform, deepTraverseNodes } from "@/draggable/utils/BlockPropsTransform";
+import { deepTraverseNodes } from "@/draggable/utils/DesignerUtils";
+import { blockDeepTransform } from "@/draggable/utils/BlockPropsTransform";
 import { withModifiers } from "vue";
 import { toPropsEventName } from "@/draggable/utils/HtmlTag";
 

@@ -7,7 +7,8 @@ import { DefComponentManage } from "@/draggable/DefComponentManage";
 import { BaseDirectives, DesignBlock } from "@/draggable/types/DesignBlock";
 import { BlockInstance, Context, CreateConfig, GlobalContext, RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { parseHtml } from "@/draggable/utils/HtmlTag";
-import { blockDeepTransform, deepBindThis, deepExtractBlock, deepTraverseNodes, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
+import { deepTraverseNodes } from "@/draggable/utils/DesignerUtils";
+import { blockDeepTransform, deepBindThis, deepExtractBlock, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
 import { AllBlockOperation } from "@/draggable/DefBlockOperation";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
 

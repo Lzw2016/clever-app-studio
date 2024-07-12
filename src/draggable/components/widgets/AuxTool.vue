@@ -2,8 +2,7 @@
 import { computed, CSSProperties } from "vue";
 import { IconArrowDown, IconArrowUp, IconChevronLeft, IconCopy, IconEraser, IconSettings, IconTrash, IconX } from "@tabler/icons-vue";
 import { isObj } from "@/utils/Typeof";
-import { runtimeNodeToDesignNode } from "@/draggable/utils/BlockPropsTransform";
-import { getChildNodePosition, NodePosition } from "@/draggable/utils/DesignerUtils";
+import { getChildNodePosition, NodePosition, runtimeNodeToDesignNode } from "@/draggable/utils/DesignerUtils";
 import { calcAuxToolPosition } from "@/draggable/utils/PositionCalc";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
