@@ -52,8 +52,6 @@ interface DesignerPanelState {
     layout: DesignerLayout;
     /** 当前活动页 */
     activeTab: DesignerTab;
-    /** 设计时的代码(DesignBlock源码) */
-    designerBlockCode: string;
     /** 代码编辑器是否已经加载 */
     codeEditorLoaded: boolean;
     /** 代码编辑器配置 */
@@ -66,7 +64,6 @@ const state = reactive<DesignerPanelState>({
     cursorMode: DesignerCursorMode.DragDrop,
     layout: DesignerLayout.PC,
     activeTab: DesignerTab.Designer,
-    designerBlockCode: "",
     codeEditorLoaded: false,
     codeEditorOptions: {
         mode: {
@@ -122,10 +119,7 @@ const route = useRoute();
 onMounted(() => {
     calcDesignerBlockStyle();
 });
-// watch(() => props.designerState.blockInstance, () => {
-//     state.designerBlockCode = props.designerState.generateDesignBlockCode();
-//     // console.log("designerBlockCode", state.designerBlockCode);
-// });
+
 // 设计器容器大小变化时
 useResizeObserver(designerContainer, entries => {
     const preRect = data.designerContainerPreRect;
@@ -252,7 +246,7 @@ console.log("pageId", route.params.pageId)
                 title="源码"
                 @click="()=> {
                     if(state.activeTab!==DesignerTab.Code) {
-                        state.designerBlockCode = props.designerState.generateDesignBlockCode();
+                        props.designerState.generateDesignBlockCode().finally();
                     }
                     state.activeTab=DesignerTab.Code;
                     state.codeEditorLoaded = true;
@@ -282,7 +276,7 @@ console.log("pageId", route.params.pageId)
             </div>
             <div v-if="state.codeEditorLoaded" v-show="isCodeTab" class="designer-code">
                 <Codemirror
-                    v-model:value="state.designerBlockCode"
+                    :value="props.designerState.designerBlockCode"
                     :options="state.codeEditorOptions"
                     @ready="cm => codeEditorInstance=cm"
                 />

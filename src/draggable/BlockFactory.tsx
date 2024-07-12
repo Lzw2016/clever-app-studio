@@ -7,7 +7,7 @@ import { DefComponentManage } from "@/draggable/DefComponentManage";
 import { BaseDirectives, DesignBlock } from "@/draggable/types/DesignBlock";
 import { BlockInstance, Context, CreateConfig, GlobalContext, RenderErrType, RuntimeBlock, RuntimeBlockNode, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { parseHtml } from "@/draggable/utils/HtmlTag";
-import { deepTraverseNodes } from "@/draggable/utils/DesignerUtils";
+import { deepTraverseRuntimeNode } from "@/draggable/utils/DesignerUtils";
 import { blockDeepTransform, deepBindThis, deepExtractBlock, expTransform, propsTransform, renderTpl } from "@/draggable/utils/BlockPropsTransform";
 import { AllBlockOperation } from "@/draggable/DefBlockOperation";
 import BlockRenderError from "@/draggable/components/BlockRenderError.vue";
@@ -54,7 +54,7 @@ function createBlockComponent(block: DesignBlock, config: CreateConfig = defConf
     // 递归初始化 allBlock
     deepExtractBlock(runtimeBlock, globalContext.allBlock);
     // 递归初始化 allNode nodeParent refId
-    deepTraverseNodes(
+    deepTraverseRuntimeNode(
         runtimeBlock,
         (current, isSlot, parent, currentBlock) => {
             globalContext.allNode[current.id] = current;

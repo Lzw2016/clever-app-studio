@@ -5,7 +5,7 @@ import { designerContent } from "@/draggable/Constant";
 import { htmlExtAttr, useHtmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { calcAuxToolPosition, calcNodeToCursorDistance } from "@/draggable/utils/PositionCalc";
 import { existsPlaceholder } from "@/draggable/utils/ComponentMetaUtils";
-import { deepTraverseNodes } from "@/draggable/utils/DesignerUtils";
+import { deepTraverseRuntimeNode } from "@/draggable/utils/DesignerUtils";
 import { NodeToCursorDistance, PointDirection } from "@/draggable/types/Designer";
 import { MouseMoveEvent } from "@/draggable/events/cursor/MouseMoveEvent";
 import { MouseClickEvent } from "@/draggable/events/cursor/MouseClickEvent";
@@ -97,7 +97,7 @@ class AuxToolEffect extends DesignerEffect {
             for (let id of ids) {
                 const runtimeNode = blockInstance.globalContext.allNode[id];
                 if (!runtimeNode) continue;
-                deepTraverseNodes(runtimeNode, current => allIds.add(current.id));
+                deepTraverseRuntimeNode(runtimeNode, current => allIds.add(current.id));
             }
             return allIds.has(nodeId);
         }

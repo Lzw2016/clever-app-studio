@@ -188,6 +188,9 @@ export default defineConfig(env => {
                         if (id.includes('/monaco-editor/') || id.includes('@guolao/vue-monaco-editor')) {
                             return 'monaco-editor';
                         }
+                        if (id.includes('/prettier/')) {
+                            return 'prettier';
+                        }
                     },
                 },
             },

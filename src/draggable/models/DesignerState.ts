@@ -1,7 +1,5 @@
 import { computed, ComputedRef, markRaw, Ref, ref, ShallowReactive, shallowReactive, watch } from "vue";
-import { isFun } from "@/utils/Typeof";
-import { funToString, parseFun } from "@/draggable/utils/FunctionUtils";
-import { runtimeNodeToDesignNode } from "@/draggable/utils/DesignerUtils";
+import { designNodeToJson5String, formatDesignNodeFunction, runtimeNodeToDesignNode } from "@/draggable/utils/DesignerUtils";
 import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
@@ -139,7 +137,7 @@ class DesignerState {
     /**
      * 生成DesignBlock源码
      */
-    generateDesignBlockCode(): string {
+    async generateDesignBlockCode(): Promise<string> {
         let code = "";
         const blockInstance = this.blockInstance;
         if (blockInstance?.globalContext.runtimeBlock) {
@@ -151,23 +149,12 @@ class DesignerState {
                     keepRef: true,
                 },
             );
-            console.log("designNode", designNode);
-            code = JSON.stringify(
-                designNode,
-                (key, value) => {
-                    if (isFun(value)) {
-                        const functionInfo = parseFun(value);
-                        if (functionInfo) {
-                            functionInfo.name = undefined;
-                            return funToString(functionInfo);
-                        }
-                    }
-                    return value;
-                },
-                4
-            );
+            // console.log("designNode", designNode);
+            await formatDesignNodeFunction(designNode);
+            // code = designNodeToJsonString(designNode);
+            code = designNodeToJson5String(designNode);
+            this._designerBlockCode.value = code;
         }
-        this._designerBlockCode.value = code;
         return code;
     }
 }

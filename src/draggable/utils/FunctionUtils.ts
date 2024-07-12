@@ -1,6 +1,7 @@
 import lodash from "lodash";
 import { hasValue, isArray, isFun } from "@/utils/Typeof";
-import { FunctionInfo } from "@/draggable/types/Base";
+import { AnyFunction, FunctionConfig, FunctionInfo } from "@/draggable/types/Base";
+import { formatJavascript } from "@/draggable/utils/CodeFormat";
 
 /**
  * 解析函数的正则(非lambda函数)
@@ -114,6 +115,35 @@ function createFun(funInfo: FunctionInfo): Function {
 }
 
 /**
+ * 把 Function 装换成 FunctionConfig 并格式化函数代码
+ * @param fun Function
+ */
+async function toConfigAndFormat(fun: AnyFunction): Promise<FunctionConfig | undefined> {
+    const funInfo = parseFun(fun);
+    if (!funInfo) return;
+    const funConfig: FunctionConfig = {
+        async: funInfo.async,
+        params: funInfo.params,
+        code: funInfo.body,
+    }
+    let code: string | undefined;
+    try {
+        code = await formatJavascript(funInfo.body);
+    } catch (e) {
+        console.warn("代码格式化失败", e);
+    }
+    if (code) {
+        const codeLines = code.split("\n");
+        if (codeLines.length > 1) {
+            funConfig.code = codeLines;
+        } else {
+            funConfig.code = codeLines[0] ?? "";
+        }
+    }
+    return funConfig;
+}
+
+/**
  * 将一行或者代码合并成一个代码块字符串
  */
 function codeToString(code?: string | Array<string>) {
@@ -126,5 +156,6 @@ export {
     parseFun,
     funToString,
     createFun,
+    toConfigAndFormat,
     codeToString,
 }

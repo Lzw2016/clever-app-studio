@@ -1,4 +1,5 @@
 import lodash from "lodash";
+import JSON5 from "json5";
 import { isVNode, VNode, VNodeChild } from "vue";
 import { hasValue, isArray, isFun, isObj, isStr, noValue } from "@/utils/Typeof";
 import { childSlotName, configRawValueName } from "@/draggable/Constant";
@@ -7,6 +8,7 @@ import { RuntimeBlock, RuntimeComponentSlotsItem, RuntimeNode } from "@/draggabl
 import { ComponentMeta, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 import { ComponentSlotsItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
 import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
+import { toConfigAndFormat } from "@/draggable/utils/FunctionUtils";
 
 /**
  * 定义一个 DesignBlock 对象，仅仅是为了类型声明，无任何处理逻辑
@@ -170,17 +172,17 @@ function _deepTraverseChild(child: VNodeChild | string, callback: TraverseVNode,
 }
 
 /** 遍历 RuntimeNode 的回调函数 */
-type TraverseNode = (current: RuntimeNode, isSlot: boolean, parent?: RuntimeNode, currentBlock?: RuntimeBlock) => void;
+type TraverseRuntimeNode = (current: RuntimeNode, isSlot: boolean, parent?: RuntimeNode, currentBlock?: RuntimeBlock) => void;
 
 /**
  * 深度递归 RuntimeNode 遍历所有的 node(包含slot)
- * @param node          node
+ * @param node          RuntimeNode
  * @param callback      遍历时的回调函数
  * @param isSlot        当前 node 是否时插槽
  * @param parentNode    当前 node 的父节点
  * @param currentBlock  当前的 node 所属的 RuntimeBlock 对象
  */
-function deepTraverseNodes(node: RuntimeNode, callback: TraverseNode, isSlot: boolean = false, parentNode?: RuntimeNode, currentBlock?: RuntimeBlock): void {
+function deepTraverseRuntimeNode(node: RuntimeNode, callback: TraverseRuntimeNode, isSlot: boolean = false, parentNode?: RuntimeNode, currentBlock?: RuntimeBlock): void {
     const { items, slots } = node;
     callback(node, isSlot, parentNode, currentBlock);
     const runtimeBlock = node as RuntimeBlock;
@@ -189,20 +191,68 @@ function deepTraverseNodes(node: RuntimeNode, callback: TraverseNode, isSlot: bo
     for (let name in slots) {
         const slot = slots[name];
         if (slot.length <= 0) continue;
-        _deepBlockSlotsOrItems(slot, callback, true, node, newCurrentBlock);
+        _deepRuntimeBlockSlotsOrItems(slot, callback, true, node, newCurrentBlock);
     }
     // 递归 items
     if (items && items.length > 0) {
-        _deepBlockSlotsOrItems(items, callback, false, node, newCurrentBlock);
+        _deepRuntimeBlockSlotsOrItems(items, callback, false, node, newCurrentBlock);
     }
 }
 
-// deepTraverseNodes 处理 slots 或者 items
-function _deepBlockSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, callback: TraverseNode, isSlot: boolean, parentNode: RuntimeNode, currentBlock?: RuntimeBlock) {
+// deepTraverseRuntimeNode 处理 slots 或者 items
+function _deepRuntimeBlockSlotsOrItems(cmpNodes: Array<RuntimeComponentSlotsItem>, callback: TraverseRuntimeNode, isSlot: boolean, parentNode: RuntimeNode, currentBlock?: RuntimeBlock) {
     for (let cmpNode of cmpNodes) {
         const node = cmpNode as RuntimeNode;
         if (isObj(node) && !isArray(node)) {
-            deepTraverseNodes(node, callback, isSlot, parentNode, currentBlock);
+            deepTraverseRuntimeNode(node, callback, isSlot, parentNode, currentBlock);
+        }
+    }
+}
+
+/** 遍历 DesignNode 的回调函数 */
+type TraverseDesignNode = (current: DesignNode, isSlot: boolean, parent?: DesignNode, currentBlock?: DesignBlock) => void;
+
+/**
+ * 深度递归 DesignNode 遍历所有的 node(包含slot)
+ * @param node          DesignNode
+ * @param callback      遍历时的回调函数
+ * @param isSlot        当前 node 是否时插槽
+ * @param parentNode    当前 node 的父节点
+ * @param currentBlock  当前的 node 所属的 DesignBlock 对象
+ */
+function deepTraverseDesignNode(node: DesignNode, callback: TraverseDesignNode, isSlot: boolean = false, parentNode?: DesignNode, currentBlock?: DesignBlock): void {
+    const { items, slots } = node;
+    callback(node, isSlot, parentNode, currentBlock);
+    const designBlock = node as DesignBlock;
+    const newCurrentBlock = designBlock.block ? designBlock : currentBlock;
+    // 递归 slots
+    if (slots) {
+        for (let name in slots) {
+            const slot = slots[name];
+            if (!isArray(slot)) {
+                _deepDesignBlockSlotsOrItems([slot], callback, true, node, newCurrentBlock);
+                continue;
+            }
+            if (slot.length <= 0) continue;
+            _deepDesignBlockSlotsOrItems(slot, callback, true, node, newCurrentBlock);
+        }
+    }
+    // 递归 items
+    if (items) {
+        if (isArray(items)) {
+            if (items.length > 0) _deepDesignBlockSlotsOrItems(items, callback, false, node, newCurrentBlock);
+        } else {
+            _deepDesignBlockSlotsOrItems([items], callback, false, node, newCurrentBlock);
+        }
+    }
+}
+
+// deepTraverseDesignNode 处理 slots 或者 items
+function _deepDesignBlockSlotsOrItems(cmpNodes: Array<ComponentSlotsItem>, callback: TraverseDesignNode, isSlot: boolean, parentNode: DesignNode, currentBlock?: DesignBlock) {
+    for (let cmpNode of cmpNodes) {
+        const node = cmpNode as DesignNode;
+        if (isObj(node) && !isArray(node)) {
+            deepTraverseDesignNode(node, callback, isSlot, parentNode, currentBlock);
         }
     }
 }
@@ -217,7 +267,7 @@ interface RuntimeNodeToDesignNodeOps {
  */
 function runtimeNodeToDesignNode(runtimeNode: RuntimeNode, parent?: RuntimeNode, blockNode?: RuntimeBlock, ops?: RuntimeNodeToDesignNodeOps): DesignNode {
     const {
-        __designNode,
+        // __designNode,
         block,
         type,
         ref: runtimeRef,
@@ -423,7 +473,7 @@ interface TreeNode<T = any> {
 function runtimeNodeToTreeNode(runtimeNode: RuntimeNode): Array<TreeNode<RuntimeNode>> {
     const rootNodes: Array<TreeNode<RuntimeNode>> = [];
     const flatNodes: Map<string, TreeNode<RuntimeNode>> = new Map<string, TreeNode<RuntimeNode>>();
-    deepTraverseNodes(
+    deepTraverseRuntimeNode(
         runtimeNode,
         (current, isSlot, parent) => {
             const node: TreeNode<RuntimeNode> = { id: current.id, label: current.type, isSlot: isSlot, data: current };
@@ -446,10 +496,92 @@ function runtimeNodeToTreeNode(runtimeNode: RuntimeNode): Array<TreeNode<Runtime
     return rootNodes;
 }
 
+/**
+ * 将 DesignNode 对象转换成 json 字符串代码
+ */
+function designNodeToJsonString(node: DesignNode): string {
+    return JSON.stringify(node, _funToString, 4);
+}
+
+/**
+ * 将 DesignNode 对象转换成 json5 字符串代码
+ */
+function designNodeToJson5String(node: DesignNode): string {
+    return JSON5.stringify(node, _funToString, 4);
+}
+
+function _funToString(key: any, value: any): any {
+    if (isFun(value)) {
+        return Function.prototype.toString.call(value);
+    }
+    return value;
+}
+
+/**
+ * 将 DesignNode 对象转换成 js 字符串代码
+ */
+function designNodeToJsString(node: DesignNode): string {
+    // TODO 未实现
+    return '';
+}
+
+/**
+ * 将 DesignNode 及其所有子节点的函数属性值转换成 FunctionConfig 对象(这个方法会改变DesignNode属性值)
+ * @param node DesignNode
+ */
+async function formatDesignNodeFunction(node: DesignNode) {
+    const flatNodes: Array<DesignNode> = [];
+    deepTraverseDesignNode(node, current => flatNodes.push(current));
+    for (let node of flatNodes) {
+        await _mapObjToConfigAndFormat(node.listeners);
+        const designBlock = node as DesignBlock;
+        if (designBlock.block) {
+            await _mapObjToConfigAndFormat(designBlock.computed);
+            await _mapObjToConfigAndFormat(designBlock.watch);
+            await _mapObjToConfigAndFormat(designBlock.methods);
+            await _mapObjToConfigAndFormat(designBlock.lifeCycles);
+        }
+    }
+}
+
+async function _mapObjToConfigAndFormat(map?: Record<string, any>) {
+    if (!map) return;
+    const newMap: Record<string, any> = {};
+    for (let key in map) {
+        const fun = map[key];
+        if (isFun(fun)) {
+            const funConfig = await toConfigAndFormat(fun);
+            if (funConfig) newMap[key] = funConfig;
+        } else if (isArray(fun)) {
+            newMap[key] = fun.map(async item => {
+                let res: any;
+                if (isFun(item)) {
+                    res = await toConfigAndFormat(item);
+                } else if (isObj(item)) {
+                    if (isFun(item.handler)) {
+                        const funConfig = await toConfigAndFormat(item.handler);
+                        if (funConfig) item.handler = funConfig;
+                    }
+                }
+                return res || item;
+            });
+        } else if (isObj(fun)) {
+            if (isFun(fun.handler)) {
+                const funConfig = await toConfigAndFormat(fun.handler);
+                if (funConfig) fun.handler = funConfig;
+            }
+        }
+    }
+    for (let key in newMap) {
+        map[key] = newMap[key];
+    }
+}
+
+
 export type  {
     NodePosition,
     TraverseVNode,
-    TraverseNode,
+    TraverseRuntimeNode,
     RuntimeNodeToDesignNodeOps,
     TreeNode,
 }
@@ -461,7 +593,12 @@ export {
     getChildNodePosition,
     getMaterialMetaTabAllTypes,
     deepTraverseVNode,
-    deepTraverseNodes,
+    deepTraverseRuntimeNode,
+    deepTraverseDesignNode,
     runtimeNodeToDesignNode,
     runtimeNodeToTreeNode,
+    designNodeToJsonString,
+    designNodeToJson5String,
+    designNodeToJsString,
+    formatDesignNodeFunction,
 }

@@ -6,7 +6,7 @@ import { ComponentInstance } from "@/draggable/types/Base";
 import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
 import { CreateConfig, RuntimeBlock, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { BindListenerOptions, BlockOperation, BlockOperationById, OpsOptions } from "@/draggable/types/BlockOperation";
-import { deepTraverseNodes } from "@/draggable/utils/DesignerUtils";
+import { deepTraverseRuntimeNode } from "@/draggable/utils/DesignerUtils";
 import { blockDeepTransform } from "@/draggable/utils/BlockPropsTransform";
 import { withModifiers } from "vue";
 import { toPropsEventName } from "@/draggable/utils/HtmlTag";
@@ -130,7 +130,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                 runtimeNode = blockDeepTransform(node, this.props, this.props.runtimeBlock, parent);
                 if (this.props.isDesigning) runtimeNode.props[htmlExtAttr.slotName] = slotName || childSlotName;
                 // 维护属性 allNode nodeParent refId nodeRefVueRef
-                deepTraverseNodes(
+                deepTraverseRuntimeNode(
                     runtimeNode,
                     (current, isSlot, parentNode, currentBlock) => {
                         this.props.allNode[current.id] = current;
@@ -230,7 +230,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
             const refs: Array<string> = [node.ref];
             const parentIds: Array<string> = [];
             if (node.items.length > 0 || Object.keys(node.slots).length > 0) parentIds.push(node.id);
-            deepTraverseNodes(
+            deepTraverseRuntimeNode(
                 node,
                 (current) => {
                     delAllIds.push(current.id);
@@ -282,7 +282,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
             const runtimeNode = this.props.allNode[id];
             if (!runtimeNode) continue;
             moveIds.push(id);
-            deepTraverseNodes(runtimeNode, current => {
+            deepTraverseRuntimeNode(runtimeNode, current => {
                 if (nodeIds.includes(current.id)) return;
                 childrenIds.add(current.id);
             });
