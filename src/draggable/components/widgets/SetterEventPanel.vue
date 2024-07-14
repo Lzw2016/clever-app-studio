@@ -76,8 +76,8 @@ function removeListener(listenerInfo: ListenerInfo) {
 </script>
 
 <template>
-    <div class="event-panel" v-if="props.designerState.singleSelection && eventGroups.length>0">
-        <div class="event-tools">
+    <div class="event-panel flex-column-container" v-if="props.designerState.singleSelection && eventGroups.length>0">
+        <div class="event-tools flex-item-fixed">
             <Select
                 :filterable="false"
                 :top-create="false"
@@ -100,38 +100,40 @@ function removeListener(listenerInfo: ListenerInfo) {
                 </OptionGroup>
             </Select>
         </div>
-        <Grid
-            class="event-binds"
-            :resizable="false"
-            :fit="true"
-            :auto-resize="true"
-            :stripe="true"
-            :border="true"
-            size="mini"
-            :data="allListener"
-        >
-            <GridColumn type="index" title="#" :width="30"/>
-            <GridColumn field="event" title="已绑定事件" width="auto">
-                <template #default="data">
-                    <div class="event-bind-title">
-                        {{ getEventTitle(data.row) }}
-                    </div>
-                    <div class="event-binds-name" @click="showEventEditorDialog(data.row)">
-                        {{ data.row.funInfo?.name ?? '[anonymous]' }}
-                    </div>
-                </template>
-            </GridColumn>
-            <GridColumn field="action" title="操作" :width="65" :align="'center'">
-                <template #default="data">
-                    <span class="event-binds-action" title="编辑代码" @click="showEventEditorDialog(data.row)">
-                        <FontAwesomeIcon :icon="faCode"/>
-                    </span>
-                    <span class="event-binds-action" title="删除" @click="removeListener(data.row)">
-                        <FontAwesomeIcon :icon="faTrashCan"/>
-                    </span>
-                </template>
-            </GridColumn>
-        </Grid>
+        <div class="event-binds flex-item-fill">
+            <Grid
+                height="auto"
+                :resizable="false"
+                :fit="true"
+                :auto-resize="true"
+                :stripe="true"
+                :border="false"
+                size="mini"
+                :data="allListener"
+            >
+                <GridColumn type="index" title="#" :width="30"/>
+                <GridColumn field="event" title="已绑定事件" width="auto">
+                    <template #default="data">
+                        <div class="event-bind-title">
+                            {{ getEventTitle(data.row) }}
+                        </div>
+                        <div class="event-binds-name" @click="showEventEditorDialog(data.row)">
+                            {{ data.row.funInfo?.name ?? '[anonymous]' }}
+                        </div>
+                    </template>
+                </GridColumn>
+                <GridColumn field="action" title="操作" :width="65" :align="'center'">
+                    <template #default="data">
+                        <span class="event-binds-action" title="编辑代码" @click="showEventEditorDialog(data.row)">
+                            <FontAwesomeIcon :icon="faCode"/>
+                        </span>
+                        <span class="event-binds-action" title="删除" @click="removeListener(data.row)">
+                            <FontAwesomeIcon :icon="faTrashCan"/>
+                        </span>
+                    </template>
+                </GridColumn>
+            </Grid>
+        </div>
     </div>
     <div class="event-panel-none" v-else-if="eventGroups.length<=0">
         组件未配置事件
@@ -145,6 +147,21 @@ function removeListener(listenerInfo: ListenerInfo) {
 .event-panel {
     width: 100%;
     height: 100%;
+}
+
+.flex-column-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.flex-item-fill {
+    flex-grow: 1;
+    overflow: auto;
+}
+
+.flex-item-fixed {
+    flex-shrink: 0;
 }
 
 .event-panel-none {
@@ -179,7 +196,9 @@ function removeListener(listenerInfo: ListenerInfo) {
 }
 
 .event-binds {
-    padding: 0 4px 8px 4px;
+    overflow: hidden;
+    box-sizing: border-box;
+    border-top: 1px solid #dfe1e6;
 }
 
 .event-binds-name {
