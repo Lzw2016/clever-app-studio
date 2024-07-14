@@ -5,6 +5,7 @@ import MonacoEditor, { MonacoType } from "@/components/MonacoEditor.vue";
 import SplitPane from "@/components/SplitPane.vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
+import { runtimeNodeToJsCode } from "@/draggable/utils/DesignerUtils";
 
 // 定义组件选项
 defineOptions({
@@ -38,6 +39,16 @@ const state = reactive<BlockEditorState>({
 // 内部数据
 const data = {
     monacoEditor: undefined as (editor.IStandaloneCodeEditor | undefined),
+    tabsEnum: {
+        data: "data",
+        computed: "computed",
+        watch: "watch",
+        methods: "methods",
+        lifeCycles: "lifeCycles",
+        i18n: "i18n",
+        meta: "meta",
+        code: "code",
+    },
     tabs: {
         data: "数据",
         computed: "计算属性",
@@ -148,10 +159,10 @@ watch(
             const [oldActiveTab, oldShow] = oldValue;
         }
         // console.log("oldValue", oldValue);
-        if (show && activeTab === "code") {
-            props.designerState?.generateDesignBlockCode().then(code => {
-                // console.log("code", code)
-                data.tabsConfig.code.code = "var a = " + code;
+        if (show && activeTab === data.tabsEnum.code) {
+            const runtimeNode = props.designerState?.blockInstance?.globalContext?.runtimeBlock;
+            runtimeNodeToJsCode(runtimeNode).then(code => {
+                data.tabsConfig.code.code = code;
                 state.forceUpdateEditor++;
             });
         }

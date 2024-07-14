@@ -545,7 +545,12 @@ function _funToString(key: any, value: any): any {
  */
 function designNodeToJsString(node: DesignNode): string {
     // TODO 未实现
-    return '';
+    return [
+        `const blockPage = ${designNodeToJson5String(node)};`,
+        '',
+        'export { blockPage };',
+        'export default blockPage;'
+    ].join("\n");
 }
 
 /**
@@ -600,6 +605,60 @@ async function _mapObjToConfigAndFormat(map?: Record<string, any>) {
     }
 }
 
+/**
+ * 将 RuntimeNode 转换成 json 代码
+ * @param runtimeNode RuntimeNode对象
+ */
+async function runtimeNodeToJsonCode(runtimeNode?: RuntimeNode): Promise<string> {
+    if (!runtimeNode) return "";
+    const designNode = runtimeNodeToDesignNode(
+        runtimeNode,
+        undefined,
+        undefined,
+        {
+            keepRef: true,
+        },
+    );
+    await formatDesignNodeFunction(designNode);
+    return designNodeToJsonString(designNode);
+}
+
+/**
+ * 将 RuntimeNode 转换成 json5 代码
+ * @param runtimeNode RuntimeNode对象
+ */
+async function runtimeNodeToJson5Code(runtimeNode?: RuntimeNode): Promise<string> {
+    if (!runtimeNode) return "";
+    const designNode = runtimeNodeToDesignNode(
+        runtimeNode,
+        undefined,
+        undefined,
+        {
+            keepRef: true,
+        },
+    );
+    await formatDesignNodeFunction(designNode);
+    return designNodeToJson5String(designNode);
+}
+
+/**
+ * 将 RuntimeNode 转换成 js 代码
+ * @param runtimeNode RuntimeNode对象
+ */
+async function runtimeNodeToJsCode(runtimeNode?: RuntimeNode): Promise<string> {
+    if (!runtimeNode) return "";
+    const designNode = runtimeNodeToDesignNode(
+        runtimeNode,
+        undefined,
+        undefined,
+        {
+            keepRef: true,
+        },
+    );
+    await formatDesignNodeFunction(designNode);
+    return designNodeToJsString(designNode);
+}
+
 export type  {
     NodePosition,
     TraverseVNode,
@@ -623,4 +682,7 @@ export {
     designNodeToJson5String,
     designNodeToJsString,
     formatDesignNodeFunction,
+    runtimeNodeToJsonCode,
+    runtimeNodeToJson5Code,
+    runtimeNodeToJsCode,
 }

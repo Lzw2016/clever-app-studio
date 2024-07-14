@@ -1,5 +1,5 @@
 import { computed, ComputedRef, markRaw, Ref, ref, ShallowReactive, shallowReactive, watch } from "vue";
-import { designNodeToJson5String, formatDesignNodeFunction, runtimeNodeToDesignNode } from "@/draggable/utils/DesignerUtils";
+import { runtimeNodeToJson5Code } from "@/draggable/utils/DesignerUtils";
 import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
@@ -141,20 +141,9 @@ class DesignerState {
         let code = "";
         const blockInstance = this.blockInstance;
         if (blockInstance?.globalContext.runtimeBlock) {
-            const designNode = runtimeNodeToDesignNode(
-                blockInstance.globalContext.runtimeBlock,
-                undefined,
-                undefined,
-                {
-                    keepRef: true,
-                },
-            );
-            // console.log("designNode", designNode);
-            await formatDesignNodeFunction(designNode);
-            // code = designNodeToJsonString(designNode);
-            code = designNodeToJson5String(designNode);
-            this._designerBlockCode.value = code;
+            code = await runtimeNodeToJson5Code(blockInstance.globalContext.runtimeBlock);
         }
+        this._designerBlockCode.value = code;
         return code;
     }
 }
