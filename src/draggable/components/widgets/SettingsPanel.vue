@@ -98,14 +98,20 @@ function existsSetter(meta?: ComponentMeta) {
         || (meta.setter.advanced && meta.setter.advanced.groups.length > 0);
 }
 
+function onShowEventEditorDialogEvent(event: ShowEventEditorDialogEvent) {
+    props.designerEngine.showEventEditorDialog = true;
+    const data = event.data;
+    if (data.nodeId) {
+        eventEditorRef.value?.setSelectNode(data.nodeId, data.eventName);
+    }
+}
+
 onBeforeMount(() => {
-    props.designerEngine.eventbus.subscribe(ShowEventEditorDialogEvent, event => {
-        console.log("event", event);
-    });
+    props.designerEngine.eventbus.subscribe(ShowEventEditorDialogEvent, onShowEventEditorDialogEvent);
 });
 
 onUnmounted(() => {
-    props.designerEngine.eventbus.unsubscribeAll(ShowEventEditorDialogEvent);
+    props.designerEngine.eventbus.unsubscribe(ShowEventEditorDialogEvent, onShowEventEditorDialogEvent);
 });
 </script>
 

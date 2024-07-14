@@ -47,7 +47,6 @@ function showEventEditorDialog(listenerInfo: ListenerInfo) {
         nodeId,
         eventName,
     }));
-    props.designerEngine.showEventEditorDialog = true;
 }
 </script>
 

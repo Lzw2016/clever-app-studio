@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, nextTick, shallowReactive, watch } from "vue";
+import { computed, getCurrentInstance, nextTick, ref, shallowReactive, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faChevronDown, faChevronUp, faPlus, faTrashCan, faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { Checkbox, CheckboxGroup, Input, Option, OptionGroup, Select, Tree } from "@opentiny/vue";
@@ -78,6 +78,8 @@ const data = {
         { label: 'right', text: 'right', title: '鼠标右键点击时才会调用事件处理函数' },
     ],
 };
+// 大纲树组件实例
+const outlineTreeRef = ref<InstanceType<typeof Tree> | undefined>();
 // 大纲树数据节点
 const outlineTreeNodes = computed<Array<TreeNode<RuntimeNode>>>(() => getOutlineTreeNodes(props.designerState?.blockInstance?.globalContext?.runtimeBlock));
 // 当前选择组件支持的事件分组
@@ -194,14 +196,27 @@ function getSelectComponentMeta(): ComponentMeta | undefined {
     return;
 }
 
+function setSelectNode(nodeId: string, eventName: string) {
+    if (!outlineTreeRef.value) return;
+    outlineTreeRef.value?.setCurrentKey(nodeId);
+    const node = outlineTreeRef.value?.getNode(nodeId);
+    state.selectRuntimeNode = node?.data?.data;
+    nextTick(() => {
+        if (allListener.value.length > 0) {
+            selectListenerChange(allListener.value.find(item => item.eventName === eventName));
+        } else {
+            state.selectListener = undefined;
+        }
+    });
+}
+
 interface EventEditorExpose {
     /** 设置选中大纲树节点 */
     setSelectNode(nodeId: string, eventName: string): void;
 }
 
 defineExpose<EventEditorExpose>({
-    setSelectNode(nodeId: string, eventName: string): void {
-    },
+    setSelectNode,
 });
 </script>
 
@@ -222,7 +237,9 @@ defineExpose<EventEditorExpose>({
             <div class="flex-column-container" style="height: 100%;">
                 <div class="flex-item-fixed panel-title">大纲树</div>
                 <Tree
+                    ref="outlineTreeRef"
                     class="flex-item-fill"
+                    node-key="id"
                     :data="outlineTreeNodes"
                     :show-line="false"
                     :default-expand-all="true"
