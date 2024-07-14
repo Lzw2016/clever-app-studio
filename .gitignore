@@ -20,7 +20,6 @@ report.html
 
 # Editor directories and files
 .DS_Store
-.idea
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json

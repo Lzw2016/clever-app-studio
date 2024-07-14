@@ -477,6 +477,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         // 移除事件
         for (let name of [eventOnName, eventName]) {
             const listener = node.listeners[name];
+            delete node.listeners[name];
             // 维护“RuntimeNode 与 vue组件实例”对象属性
             if (listener && !['anonymous', 'handler'].includes(listener.handler?.name)) {
                 delete runtimeBlock.methods[listener.handler.name];

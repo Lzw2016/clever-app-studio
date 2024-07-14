@@ -164,19 +164,14 @@ function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
 
 function selectOutlineNodeChange(data: TreeNode<RuntimeNode>, currentNode: any) {
     state.selectRuntimeNode = data.data;
-    nextTick(() => {
-        if (allListener.value.length > 0) {
-            selectListenerChange(allListener.value[0]);
-        } else {
-            state.selectListener = undefined;
-        }
-    });
+    nextTick(() => selectListenerChange(allListener.value?.[0]));
 }
 
-function selectListenerChange(listenerInfo: ListenerInfo) {
+function selectListenerChange(listenerInfo?: ListenerInfo) {
     state.selectListener = listenerInfo;
+    if (!listenerInfo) return;
     nextTick(() => {
-        if (listenerInfo.funMeta?.examples && listenerInfo.funMeta.examples.length > 0) {
+        if (listenerInfo?.funMeta?.examples && listenerInfo.funMeta.examples.length > 0) {
             state.selectExample = listenerInfo.funMeta.examples[0];
         } else {
             state.selectExample = undefined;
@@ -201,13 +196,7 @@ function setSelectNode(nodeId: string, eventName: string) {
     outlineTreeRef.value?.setCurrentKey(nodeId);
     const node = outlineTreeRef.value?.getNode(nodeId);
     state.selectRuntimeNode = node?.data?.data;
-    nextTick(() => {
-        if (allListener.value.length > 0) {
-            selectListenerChange(allListener.value.find(item => item.eventName === eventName));
-        } else {
-            state.selectListener = undefined;
-        }
-    });
+    nextTick(() => selectListenerChange(allListener.value?.find(item => item.eventName === eventName)));
 }
 
 interface EventEditorExpose {

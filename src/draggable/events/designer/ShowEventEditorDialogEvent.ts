@@ -2,9 +2,9 @@ import { DesignerEvent } from "@/draggable/types/Designer";
 
 interface ShowEventEditorDialogData {
     /** RuntimeNode 的 id 属性 */
-    nodeId?: string;
+    readonly nodeId?: string;
     /** 事件名称 */
-    eventName: string;
+    readonly eventName: string;
 }
 
 class ShowEventEditorDialogEvent implements DesignerEvent<ShowEventEditorDialogData> {

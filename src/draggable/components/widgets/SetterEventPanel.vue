@@ -29,16 +29,28 @@ const props = withDefaults(defineProps<SetterEventPanelProps>(), {});
 
 // 定义 State 类型
 interface SetterEventPanelState {
+    /** 强制组件更新的响应式变量 */
+    forceUpdateForRemoveListener: number,
 }
 
 // state 属性
-const state = reactive<SetterEventPanelState>({});
+const state = reactive<SetterEventPanelState>({
+    forceUpdateForRemoveListener: 0,
+});
 // 内部数据
 const data = {};
 // 当前选择组件支持的事件分组
-const eventGroups = computed<Array<EventGroup>>(() => getEventGroups(props.eventPanel, props.designerState.selectNode));
+const eventGroups = computed<Array<EventGroup>>(() => {
+    // 读取“响应式变量”值
+    state.forceUpdateForRemoveListener;
+    return getEventGroups(props.eventPanel, props.designerState.selectNode);
+});
 // 所有的事件监听器
-const allListener = computed<Array<ListenerInfo>>(() => getAllListener(eventGroups.value, props.designerState.selectNode));
+const allListener = computed<Array<ListenerInfo>>(() => {
+    // 读取“响应式变量”值
+    state.forceUpdateForRemoveListener;
+    return getAllListener(eventGroups.value, props.designerState.selectNode);
+});
 
 function showEventEditorDialog(listenerInfo: ListenerInfo) {
     const eventName = listenerInfo.eventName;
@@ -47,6 +59,14 @@ function showEventEditorDialog(listenerInfo: ListenerInfo) {
         nodeId,
         eventName,
     }));
+}
+
+function removeListener(listenerInfo: ListenerInfo) {
+    const node = props.designerState.selectNode;
+    const blockInstance = props.designerState.blockInstance;
+    if (!node || !blockInstance) return;
+    blockInstance.ops.removeListener(node.ref, listenerInfo.eventName);
+    state.forceUpdateForRemoveListener++;
 }
 </script>
 
@@ -101,7 +121,7 @@ function showEventEditorDialog(listenerInfo: ListenerInfo) {
                     <span class="event-binds-action" title="编辑代码" @click="showEventEditorDialog(data.row)">
                         <FontAwesomeIcon :icon="faCode"/>
                     </span>
-                    <span class="event-binds-action" title="删除">
+                    <span class="event-binds-action" title="删除" @click="removeListener(data.row)">
                         <FontAwesomeIcon :icon="faTrashCan"/>
                     </span>
                 </template>
