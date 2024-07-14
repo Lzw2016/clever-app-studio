@@ -66,6 +66,7 @@ const designerTest = defineDesignBlock({
     items: [
         {
             // block: true,
+            ref: "b_001",
             type: "button",
             items: "新增",
             listeners: {

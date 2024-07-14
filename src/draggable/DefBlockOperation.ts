@@ -9,7 +9,7 @@ import { BindListenerOptions, BlockOperation, BlockOperationById, OpsOptions } f
 import { deepTraverseRuntimeNode } from "@/draggable/utils/DesignerUtils";
 import { blockDeepTransform } from "@/draggable/utils/BlockPropsTransform";
 import { withModifiers } from "vue";
-import { toPropsEventName } from "@/draggable/utils/HtmlTag";
+import { toElementEventName, toPropsEventName } from "@/draggable/utils/HtmlTag";
 
 interface AllBlockOperationProps extends CreateConfig {
     /** 当前的 RuntimeBlock 对象 */
@@ -464,6 +464,31 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         if (!options.cancelRender) this.props.instance.$forceUpdate();
     }
 
+    /**
+     * 移除事件监听器
+     * @param node      目标节点
+     * @param event     事件名称
+     * @param options   操作选项
+     */
+    protected removeListenerByNode(node: RuntimeNode, event: string, options: BindListenerOptions) {
+        const eventOnName = toPropsEventName(event);
+        const eventName = toElementEventName(event);
+        const { instance, runtimeBlock } = this.props;
+        // 移除事件
+        for (let name of [eventOnName, eventName]) {
+            const listener = node.listeners[name];
+            // 维护“RuntimeNode 与 vue组件实例”对象属性
+            if (listener && !['anonymous', 'handler'].includes(listener.handler?.name)) {
+                delete runtimeBlock.methods[listener.handler.name];
+                delete instance[listener.handler.name];
+            }
+            // 设置事件监听函数
+            if (node.__bindListeners) delete node.__bindListeners[name];
+        }
+        // 重新渲染组件
+        if (!options.cancelRender) this.props.instance.$forceUpdate();
+    }
+
     getRuntimeNodeById(id: string): RuntimeNode | undefined {
         const node = this.props.allNode[id];
         if (!node) return;
@@ -474,6 +499,13 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         const node = this.getRuntimeNodeById(id);
         if (!node) return false;
         this.bindListenerByNode(node, event, listener, options);
+        return true;
+    }
+
+    removeListenerById(id: string, event: string, options: OpsOptions = defOptions): boolean {
+        const node = this.getRuntimeNodeById(id);
+        if (!node) return false;
+        this.removeListenerByNode(node, event, options);
         return true;
     }
 
@@ -639,6 +671,13 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         const node = this.getRuntimeNode(ref);
         if (!node) return false;
         this.bindListenerByNode(node, event, listener, options);
+        return true;
+    }
+
+    removeListener(ref: string, event: string, options: OpsOptions = defOptions): boolean {
+        const node = this.getRuntimeNode(ref);
+        if (!node) return false;
+        this.removeListenerByNode(node, event, options);
         return true;
     }
 

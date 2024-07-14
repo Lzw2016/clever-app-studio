@@ -32,6 +32,14 @@ interface BlockOperationById {
     bindListenerById(id: string, event: string, listener: RuntimeListener, options?: BindListenerOptions): boolean;
 
     /**
+     * 移除事件监听器(基于id属性)
+     * @param id        节点id
+     * @param event     事件名
+     * @param options   操作选项
+     */
+    removeListenerById(id: string, event: string, options?: OpsOptions): boolean;
+
+    /**
      * 批量增加子节点(基于id属性)
      * @param beforeId  增加节点的位置，在指定的兄弟节点之前
      * @param items     增加的节点集合
@@ -343,6 +351,14 @@ interface BlockOperation {
      * @param options   操作选项
      */
     bindListener(ref: string, event: string, listener: RuntimeListener, options?: BindListenerOptions): boolean;
+
+    /**
+     * 移除事件监听器(基于ref属性)
+     * @param ref       节点ref
+     * @param event     事件名
+     * @param options   操作选项
+     */
+    removeListener(ref: string, event: string, options?: OpsOptions): boolean;
 
     /**
      * 批量增加子节点(基于ref属性)

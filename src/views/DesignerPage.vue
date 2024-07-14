@@ -60,11 +60,18 @@ function addEventBind_2() {
         modifiers: ["ctrl"],
     }, { override: false });
 }
+
+function removeListener() {
+    const blockInstance = instance.value?.blockInstance;
+    blockInstance?.ops.removeListener("b_001", "click");
+    // blockInstance?.ops.removeListener("b_001", "onClick");
+}
 </script>
 
 <template>
     <button class="space" @click="updateDesignerTest">更新</button>
     <button class="space" @click="addEventBind_2">动态事件绑定</button>
+    <button class="space" @click="removeListener">动态移除事件</button>
     <div class="container">
         <RuntimeBlock ref="instance" :component-manage="globalConfig.componentManage" :block="designerTest" :is-designing="false"/>
     </div>

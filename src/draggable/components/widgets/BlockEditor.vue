@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive } from "vue";
+import { computed, reactive, watch } from "vue";
 import type { editor } from "monaco-editor";
 import MonacoEditor, { MonacoType } from "@/components/MonacoEditor.vue";
 import SplitPane from "@/components/SplitPane.vue";
@@ -26,11 +26,14 @@ const props = withDefaults(defineProps<BlockEditorProps>(), {});
 interface BlockEditorState {
     /** 当前选中的叶签 */
     activeTab: string;
+    /** 强制组件更新的响应式变量 */
+    forceUpdateEditor: number;
 }
 
 // state 属性
 const state = reactive<BlockEditorState>({
     activeTab: "data",
+    forceUpdateEditor: 0,
 });
 // 内部数据
 const data = {
@@ -109,6 +112,8 @@ const activeTabConfig = computed<any>(() => data.tabsConfig[state.activeTab]);
 // 编辑器代码
 const monacoEditorCode = computed<string>({
     get: () => {
+        // 读取“响应式变量”值
+        state.forceUpdateEditor;
         const config = data.tabsConfig[state.activeTab];
         if (!config) return "";
         return config.code;
@@ -135,6 +140,26 @@ function codeChange() {
 function codeValidate(markers: editor.IMarker[]) {
     console.log("codeValidate");
 }
+
+watch(
+    () => [state.activeTab, props.designerEngine.showBlockEditorDialog],
+    ([activeTab, show], oldValue) => {
+        if (oldValue) {
+            const [oldActiveTab, oldShow] = oldValue;
+        }
+        // console.log("oldValue", oldValue);
+        if (show && activeTab === "code") {
+            props.designerState?.generateDesignBlockCode().then(code => {
+                // console.log("code", code)
+                data.tabsConfig.code.code = "var a = " + code;
+                state.forceUpdateEditor++;
+            });
+        }
+    },
+    {
+        immediate: true,
+    },
+);
 
 interface BlockEditorExpose {
 }

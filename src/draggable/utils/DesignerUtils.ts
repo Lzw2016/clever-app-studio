@@ -600,7 +600,6 @@ async function _mapObjToConfigAndFormat(map?: Record<string, any>) {
     }
 }
 
-
 export type  {
     NodePosition,
     TraverseVNode,
