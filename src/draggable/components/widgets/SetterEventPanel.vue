@@ -6,6 +6,7 @@ import { faCode, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { EventGroup, EventPanel, ListenerInfo } from "@/draggable/types/ComponentMeta";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
+import { ShowEventEditorDialogEvent } from "@/draggable/events/designer/ShowEventEditorDialogEvent";
 import { getAllListener, getEventGroups, getEventTitle } from "@/draggable/utils/EventUtils";
 
 // 定义组件选项
@@ -39,7 +40,13 @@ const eventGroups = computed<Array<EventGroup>>(() => getEventGroups(props.event
 // 所有的事件监听器
 const allListener = computed<Array<ListenerInfo>>(() => getAllListener(eventGroups.value, props.designerState.selectNode));
 
-function showEventEditorDialog() {
+function showEventEditorDialog(listenerInfo: ListenerInfo) {
+    const eventName = listenerInfo.eventName;
+    const nodeId = props.designerState.selectNode?.id;
+    props.designerEngine.eventbus.dispatch(new ShowEventEditorDialogEvent({
+        nodeId,
+        eventName,
+    }));
     props.designerEngine.showEventEditorDialog = true;
 }
 </script>
@@ -82,17 +89,17 @@ function showEventEditorDialog() {
             <GridColumn type="index" title="#" :width="30"/>
             <GridColumn field="event" title="已绑定事件" width="auto">
                 <template #default="data">
-                    <div>
+                    <div class="event-bind-title">
                         {{ getEventTitle(data.row) }}
                     </div>
-                    <div class="event-binds-name" @click="showEventEditorDialog">
+                    <div class="event-binds-name" @click="showEventEditorDialog(data.row)">
                         {{ data.row.funInfo?.name ?? '[anonymous]' }}
                     </div>
                 </template>
             </GridColumn>
             <GridColumn field="action" title="操作" :width="65" :align="'center'">
                 <template #default="data">
-                    <span class="event-binds-action" title="编辑代码" @click="showEventEditorDialog">
+                    <span class="event-binds-action" title="编辑代码" @click="showEventEditorDialog(data.row)">
                         <FontAwesomeIcon :icon="faCode"/>
                     </span>
                     <span class="event-binds-action" title="删除">
@@ -154,6 +161,12 @@ function showEventEditorDialog() {
 .event-binds-name {
     color: #1476ff;
     cursor: pointer;
+}
+
+.event-bind-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .event-binds-action {

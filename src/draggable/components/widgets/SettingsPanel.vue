@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { computed, onBeforeMount, onUnmounted, reactive, ref, watch } from "vue";
 import { Modal, TabItem, Tabs } from "@opentiny/vue";
 import { IconX } from "@tabler/icons-vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
+import { ShowEventEditorDialogEvent } from "@/draggable/events/designer/ShowEventEditorDialogEvent";
 import SetterPropsPanel from "@/draggable/components/widgets/SetterPropsPanel.vue";
 import SetterEventPanel from "@/draggable/components/widgets/SetterEventPanel.vue";
 import SetterStylePanel from "@/draggable/components/widgets/SetterStylePanel.vue";
@@ -96,6 +97,16 @@ function existsSetter(meta?: ComponentMeta) {
         // || (meta.setter.style && meta.setter.style.groups.length > 0)
         || (meta.setter.advanced && meta.setter.advanced.groups.length > 0);
 }
+
+onBeforeMount(() => {
+    props.designerEngine.eventbus.subscribe(ShowEventEditorDialogEvent, event => {
+        console.log("event", event);
+    });
+});
+
+onUnmounted(() => {
+    props.designerEngine.eventbus.unsubscribeAll(ShowEventEditorDialogEvent);
+});
 </script>
 
 <template>
@@ -326,7 +337,7 @@ function existsSetter(meta?: ComponentMeta) {
     margin-bottom: 8px;
 }
 
- .event-modal.tiny-modal.tiny-modal__wrapper.is__visible :deep(.tiny-modal__box) {
+.event-modal.tiny-modal.tiny-modal__wrapper.is__visible :deep(.tiny-modal__box) {
     top: 8vh;
 }
 </style>
