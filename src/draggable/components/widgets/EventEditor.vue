@@ -38,7 +38,9 @@ const props = withDefaults(defineProps<EventEditorProps>(), {});
 // 定义 State 类型
 interface EventEditorState {
     /** 强制组件更新的响应式变量 */
-    forceUpdateVar: number,
+    forceUpdateForModifiers: number,
+    /** 强制组件更新的响应式变量 */
+    forceUpdateForAllListener: number,
     /** 当前选中的大纲树节点 */
     selectRuntimeNode?: RuntimeNode;
     /** 当前选择的监听事件 */
@@ -53,7 +55,8 @@ interface EventEditorState {
 
 // state 属性
 const state = shallowReactive<EventEditorState>({
-    forceUpdateVar: 0,
+    forceUpdateForModifiers: 0,
+    forceUpdateForAllListener: 0,
     selectRuntimeNode: undefined,
     selectListener: undefined,
     showListenerDoc: false,
@@ -89,7 +92,11 @@ const eventGroups = computed<Array<EventGroup>>(() => {
     return getEventGroups(componentMeta.setter.events, state.selectRuntimeNode);
 });
 // 所有的事件监听器
-const allListener = computed<Array<ListenerInfo>>(() => getAllListener(eventGroups.value, state.selectRuntimeNode));
+const allListener = computed<Array<ListenerInfo>>(() => {
+    // 读取“响应式变量”值
+    state.forceUpdateForAllListener;
+    return getAllListener(eventGroups.value, state.selectRuntimeNode);
+});
 // 存在选中的纲树节点
 const existsSelectRuntimeNode = computed<boolean>(() => hasValue(state.selectRuntimeNode));
 // 存在选中的监听事件
@@ -100,7 +107,7 @@ const existsExampleCode = computed<boolean>(() => hasValue(state.selectListener?
 const modifiers = computed<Array<string>>({
     get: () => {
         // 读取“响应式变量”值
-        state.forceUpdateVar;
+        state.forceUpdateForModifiers;
         if (state.selectListener?.modifiers) {
             return [...state.selectListener.modifiers];
         }
@@ -118,7 +125,7 @@ const modifiers = computed<Array<string>>({
         } else {
             state.selectListener.rawListener.modifiers = state.selectListener.modifiers;
         }
-        state.forceUpdateVar++;
+        state.forceUpdateForModifiers++;
     },
 });
 
@@ -199,13 +206,26 @@ function setSelectNode(nodeId: string, eventName: string) {
     nextTick(() => selectListenerChange(allListener.value?.find(item => item.eventName === eventName)));
 }
 
+function recalcAllListener(nodeId: string, eventName: string) {
+    const { selectRuntimeNode, selectListener } = state;
+    if (!selectRuntimeNode || selectRuntimeNode.id !== nodeId) return;
+    state.forceUpdateForAllListener++;
+    if (selectListener?.eventName === eventName) {
+        nextTick(() => selectListenerChange(allListener.value?.find(item => item.eventName === eventName)));
+    }
+}
+
 interface EventEditorExpose {
     /** 设置选中大纲树节点 */
     setSelectNode(nodeId: string, eventName: string): void;
+
+    /** 当 RuntimeNode 事件发生变化时，重新计算 allListener、selectListener 等属性 */
+    recalcAllListener(nodeId: string, eventName: string): void;
 }
 
 defineExpose<EventEditorExpose>({
     setSelectNode,
+    recalcAllListener,
 });
 </script>
 

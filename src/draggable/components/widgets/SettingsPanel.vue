@@ -5,6 +5,7 @@ import { IconX } from "@tabler/icons-vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 import { ShowEventEditorDialogEvent } from "@/draggable/events/designer/ShowEventEditorDialogEvent";
+import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
 import SetterPropsPanel from "@/draggable/components/widgets/SetterPropsPanel.vue";
 import SetterEventPanel from "@/draggable/components/widgets/SetterEventPanel.vue";
 import SetterStylePanel from "@/draggable/components/widgets/SetterStylePanel.vue";
@@ -106,12 +107,19 @@ function onShowEventEditorDialogEvent(event: ShowEventEditorDialogEvent) {
     }
 }
 
+function onRemoveListener(event: RemoveListenerEvent) {
+    const data = event.data;
+    eventEditorRef.value?.recalcAllListener(data.nodeId, data.eventName);
+}
+
 onBeforeMount(() => {
     props.designerEngine.eventbus.subscribe(ShowEventEditorDialogEvent, onShowEventEditorDialogEvent);
+    props.designerEngine.eventbus.subscribe(RemoveListenerEvent, onRemoveListener);
 });
 
 onUnmounted(() => {
     props.designerEngine.eventbus.unsubscribe(ShowEventEditorDialogEvent, onShowEventEditorDialogEvent);
+    props.designerEngine.eventbus.unsubscribe(RemoveListenerEvent, onRemoveListener);
 });
 </script>
 

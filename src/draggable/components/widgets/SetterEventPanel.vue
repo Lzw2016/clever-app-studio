@@ -7,6 +7,7 @@ import { EventGroup, EventPanel, ListenerInfo } from "@/draggable/types/Componen
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { ShowEventEditorDialogEvent } from "@/draggable/events/designer/ShowEventEditorDialogEvent";
+import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
 import { getAllListener, getEventGroups, getEventTitle } from "@/draggable/utils/EventUtils";
 
 // 定义组件选项
@@ -67,6 +68,10 @@ function removeListener(listenerInfo: ListenerInfo) {
     if (!node || !blockInstance) return;
     blockInstance.ops.removeListener(node.ref, listenerInfo.eventName);
     state.forceUpdateForRemoveListener++;
+    props.designerEngine.eventbus.dispatch(new RemoveListenerEvent({
+        nodeId: node.id,
+        eventName: listenerInfo.eventName,
+    }));
 }
 </script>
 
