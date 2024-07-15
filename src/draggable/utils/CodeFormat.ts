@@ -7,7 +7,7 @@ async function formatJavascript(source: string, options?: Options): Promise<stri
     // 参考 https://www.prettier.cn/playground/
     const code = await prettier.format(source, {
         parser: 'babel',
-        printWidth: 800,
+        printWidth: 8000,
         tabWidth: 4,
         singleQuote: true,
         plugins: [Estree, Babel],

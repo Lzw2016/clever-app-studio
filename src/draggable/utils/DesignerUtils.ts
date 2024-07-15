@@ -543,28 +543,58 @@ function _funToString(key: any, value: any): any {
 /**
  * 将 DesignNode 对象转换成 js 字符串代码
  */
-function designNodeToJsString(node: DesignNode): string {
+async function designNodeToJsString(node: DesignNode): Promise<string> {
+    const tagStr = "__$&fun&$__";
     const json5Code = JSON5.stringify(
         node,
         {
             replacer: (key: any, value: any) => {
                 if (isFun(value)) {
-                    return `__$&fun&$__${Function.prototype.toString.call(value)}__$&fun&$__`;
+                    return tagStr + Function.prototype.toString.call(value) + tagStr;
                 }
                 return value;
             },
             space: 4,
-            quote: '"',
+            quote: "'",
         },
     );
+    const codeLines: Array<string> = [];
     const lines = json5Code.split("\n");
     for (let line of lines) {
-
+        if (!line.includes(tagStr)) {
+            codeLines.push(line);
+            continue;
+        }
+        // 使用正则表达式匹配字符串开头的空白字符
+        const blankMatch = line.match(/^\s*/);
+        const blankCount = blankMatch ? blankMatch[0].length : 0;
+        const obj = JSON5.parse(`{ ${line} }`);
+        const funNameCode = Object.entries(obj)[0] as [string, string];
+        if (!funNameCode) {
+            codeLines.push(line);
+            continue;
+        }
+        const funName = funNameCode[0];
+        let funCode = funNameCode[1];
+        funCode = funCode.substring(tagStr.length, funCode.length - tagStr.length);
+        // const formatFunCode = await formatJavascript(funCode);
+        const formatFunCode = funCode;
+        const funLines = formatFunCode.split("\n");
+        for (let idx = 0; idx < funLines.length; idx++) {
+            let funLine = funLines[idx];
+            if (idx === 0) {
+                funLine = `${funName}: ${funLine}`;
+            } else if ((idx + 1) >= funLines.length) {
+                funLine = `${funLine},`;
+            }
+            funLine = lodash.repeat(' ', blankCount) + funLine;
+            codeLines.push(funLine);
+        }
     }
-    console.log("lines", JSON.stringify(lines));
-    // TODO 未实现
+    // console.log("lines", JSON.stringify(lines));
+    console.log("codeLines", JSON.stringify(codeLines));
     return [
-        `const blockPage = ${designNodeToJson5String(node)};`,
+        `const blockPage = ${codeLines.join('\n')};`,
         '',
         'export { blockPage };',
         'export default blockPage;'
@@ -673,8 +703,7 @@ async function runtimeNodeToJsCode(runtimeNode?: RuntimeNode): Promise<string> {
             keepRef: true,
         },
     );
-    // await formatDesignNodeFunction(designNode);
-    return designNodeToJsString(designNode);
+    return await designNodeToJsString(designNode);
 }
 
 export type  {
