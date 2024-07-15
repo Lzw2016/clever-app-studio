@@ -12,7 +12,7 @@ import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { runtimeNodeToTreeNode, TreeNode } from "@/draggable/utils/DesignerUtils";
 import { CodeExample } from "@/draggable/types/Base";
-import { ComponentMeta, EventGroup, ListenerInfo } from "@/draggable/types/ComponentMeta";
+import { EventGroup, ListenerInfo } from "@/draggable/types/ComponentMeta";
 import { codeToString, funToString } from "@/draggable/utils/FunctionUtils";
 import { getAllListener, getEventGroups, getEventTitle, getNodeComponentMeta } from "@/draggable/utils/EventUtils";
 
@@ -192,10 +192,6 @@ function selectExampleChange(example: CodeExample) {
 
 function exampleCollapsedChange(collapsed) {
     state.exampleCollapsed = collapsed;
-}
-
-function getSelectComponentMeta(): ComponentMeta | undefined {
-    return;
 }
 
 function setSelectNode(nodeId: string, eventName: string) {

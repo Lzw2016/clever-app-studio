@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { computed, reactive } from "vue";
+import { computed, onBeforeMount, onUnmounted, reactive } from "vue";
 import { Grid, GridColumn, Option, OptionGroup, Select } from '@opentiny/vue'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faCode, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { randomUID } from "@/utils/IDCreate";
 import { EventGroup, EventInfo, EventPanel, ListenerInfo } from "@/draggable/types/ComponentMeta";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { ShowEventEditorDialogEvent } from "@/draggable/events/designer/ShowEventEditorDialogEvent";
 import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
 import { AddListenerEvent } from "@/draggable/events/designer/AddListenerEvent";
-import { getAllListener, getEventGroups, getEventTitle } from "@/draggable/utils/EventUtils";
 import { createFun } from "@/draggable/utils/FunctionUtils";
-import { randomUID } from "@/utils/IDCreate";
+import { getAllListener, getEventGroups, getEventTitle } from "@/draggable/utils/EventUtils";
 
 // 定义组件选项
 defineOptions({
@@ -70,7 +70,6 @@ function removeListener(listenerInfo: ListenerInfo) {
     const blockInstance = props.designerState.blockInstance;
     if (!node || !blockInstance) return;
     blockInstance.ops.removeListener(node.ref, listenerInfo.eventName);
-    state.forceUpdateForEvent++;
     props.designerEngine.eventbus.dispatch(new RemoveListenerEvent({
         nodeId: node.id,
         eventName: listenerInfo.eventName,
@@ -83,12 +82,11 @@ function addListener(eventInfo: EventInfo) {
     if (!node || !blockInstance) return;
     const handler: any = createFun({
         async: false,
-        name: randomUID(`${eventInfo.name}_`),
+        name: randomUID(`${eventInfo.name}_`, 8),
         params: (eventInfo.params ?? []).map(item => item.name),
         body: `// ${eventInfo.title}`,
         lambda: false,
     });
-    console.log("handler", handler);
     blockInstance.ops.bindListener(
         node.ref,
         eventInfo.name,
@@ -101,12 +99,25 @@ function addListener(eventInfo: EventInfo) {
             override: false,
         },
     );
-    state.forceUpdateForEvent++;
     props.designerEngine.eventbus.dispatch(new AddListenerEvent({
         nodeId: node.id,
         eventInfo: eventInfo,
     }));
 }
+
+function recalcAllListener(event: RemoveListenerEvent) {
+    state.forceUpdateForEvent++;
+}
+
+onBeforeMount(() => {
+    props.designerEngine.eventbus.subscribe(RemoveListenerEvent, recalcAllListener);
+    props.designerEngine.eventbus.subscribe(AddListenerEvent, recalcAllListener);
+});
+
+onUnmounted(() => {
+    props.designerEngine.eventbus.unsubscribe(RemoveListenerEvent, recalcAllListener);
+    props.designerEngine.eventbus.unsubscribe(AddListenerEvent, recalcAllListener);
+});
 </script>
 
 <template>
