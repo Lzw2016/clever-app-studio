@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, onUnmounted, reactive } from "vue";
+import { computed, reactive } from "vue";
 import { Grid, GridColumn, Option, OptionGroup, Select } from '@opentiny/vue'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faCode, faTrashCan } from "@fortawesome/free-solid-svg-icons";
@@ -89,14 +89,13 @@ function recalcAllListener() {
     state.forceUpdateForEvent++;
 }
 
-onBeforeMount(() => {
-    props.designerEngine.eventbus.subscribe(RemoveListenerEvent, recalcAllListener);
-    props.designerEngine.eventbus.subscribe(AddListenerEvent, recalcAllListener);
-});
+interface SetterEventPanelExpose {
+    /** 当 RuntimeNode 事件发生变化时，重新计算 allListener、selectListener 等属性 */
+    recalcAllListener(): void;
+}
 
-onUnmounted(() => {
-    props.designerEngine.eventbus.unsubscribe(RemoveListenerEvent, recalcAllListener);
-    props.designerEngine.eventbus.unsubscribe(AddListenerEvent, recalcAllListener);
+defineExpose<SetterEventPanelExpose>({
+    recalcAllListener,
 });
 </script>
 

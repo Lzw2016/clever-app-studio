@@ -37,6 +37,8 @@ const data = {
         advanced: "高级",
     },
 };
+// 事件Setter
+const setterEventPanelRef = ref<InstanceType<typeof SetterEventPanel> | undefined>();
 // 事件编辑器组件
 const blockEditorRef = ref<InstanceType<typeof BlockEditor> | undefined>();
 // 事件编辑器组件
@@ -111,12 +113,14 @@ function onShowEventEditorDialogEvent(event: ShowEventEditorDialogEvent) {
 function onRemoveListener(event: RemoveListenerEvent) {
     const data = event.data;
     eventEditorRef.value?.recalcAllListener(data.nodeId, data.eventName);
+    setterEventPanelRef.value?.recalcAllListener();
 }
 
 function onAddListener(event: AddListenerEvent) {
     props.designerEngine.showEventEditorDialog = true;
     const data = event.data;
     eventEditorRef.value?.recalcAllListener(data.nodeId, data.eventInfo.name);
+    setterEventPanelRef.value?.recalcAllListener();
     if (data.nodeId) {
         eventEditorRef.value?.$nextTick(() => {
             eventEditorRef.value?.setSelectNode(data.nodeId, data.eventInfo.name);
@@ -188,6 +192,7 @@ onUnmounted(() => {
                 :title="selectedComponentMeta.setter.events?.title || data.setterTabs.events"
             >
                 <SetterEventPanel
+                    ref="setterEventPanelRef"
                     :designer-engine="props.designerEngine"
                     :designer-state="designerState"
                     :event-panel="selectedComponentMeta.setter.events"
