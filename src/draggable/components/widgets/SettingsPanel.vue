@@ -129,6 +129,7 @@ function onAddListener(event: AddListenerEvent) {
 }
 
 onBeforeMount(() => {
+    // TODO 需要根据 DesignerState 监听事件(每个 DesignerState 的编辑更新事件需要隔离)
     props.designerEngine.eventbus.subscribe(ShowEventEditorDialogEvent, onShowEventEditorDialogEvent);
     props.designerEngine.eventbus.subscribe(RemoveListenerEvent, onRemoveListener);
     props.designerEngine.eventbus.subscribe(AddListenerEvent, onAddListener);

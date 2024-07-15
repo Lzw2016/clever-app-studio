@@ -544,6 +544,24 @@ function _funToString(key: any, value: any): any {
  * 将 DesignNode 对象转换成 js 字符串代码
  */
 function designNodeToJsString(node: DesignNode): string {
+    const json5Code = JSON5.stringify(
+        node,
+        {
+            replacer: (key: any, value: any) => {
+                if (isFun(value)) {
+                    return `__$&fun&$__${Function.prototype.toString.call(value)}__$&fun&$__`;
+                }
+                return value;
+            },
+            space: 4,
+            quote: '"',
+        },
+    );
+    const lines = json5Code.split("\n");
+    for (let line of lines) {
+
+    }
+    console.log("lines", JSON.stringify(lines));
     // TODO 未实现
     return [
         `const blockPage = ${designNodeToJson5String(node)};`,
@@ -655,7 +673,7 @@ async function runtimeNodeToJsCode(runtimeNode?: RuntimeNode): Promise<string> {
             keepRef: true,
         },
     );
-    await formatDesignNodeFunction(designNode);
+    // await formatDesignNodeFunction(designNode);
     return designNodeToJsString(designNode);
 }
 
