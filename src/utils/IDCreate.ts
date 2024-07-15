@@ -10,14 +10,15 @@ const HEX = getHex();
 
 /**
  * 基于 Math.random() 生产随机的 UID
- * @param len UID的长度(Math.random()次数)
+ * @param prefix    自定义UID前缀
+ * @param len       UID的长度(Math.random()次数)
  */
-function randomUID(len?: number): string {
+function randomUID(prefix?: string, len?: number): string {
     let str = '', num = Math.max((len || 12), 1);
     while (num--) {
         str += HEX[(Math.random() * 36) | 0];
     }
-    return str;
+    return (prefix ?? "") + str;
 }
 
 let vnodeCount = 0;

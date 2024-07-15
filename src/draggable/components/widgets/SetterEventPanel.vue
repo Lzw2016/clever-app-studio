@@ -3,12 +3,15 @@ import { computed, reactive } from "vue";
 import { Grid, GridColumn, Option, OptionGroup, Select } from '@opentiny/vue'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faCode, faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { EventGroup, EventPanel, ListenerInfo } from "@/draggable/types/ComponentMeta";
+import { EventGroup, EventInfo, EventPanel, ListenerInfo } from "@/draggable/types/ComponentMeta";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { ShowEventEditorDialogEvent } from "@/draggable/events/designer/ShowEventEditorDialogEvent";
 import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
+import { AddListenerEvent } from "@/draggable/events/designer/AddListenerEvent";
 import { getAllListener, getEventGroups, getEventTitle } from "@/draggable/utils/EventUtils";
+import { createFun } from "@/draggable/utils/FunctionUtils";
+import { randomUID } from "@/utils/IDCreate";
 
 // 定义组件选项
 defineOptions({
@@ -31,25 +34,25 @@ const props = withDefaults(defineProps<SetterEventPanelProps>(), {});
 // 定义 State 类型
 interface SetterEventPanelState {
     /** 强制组件更新的响应式变量 */
-    forceUpdateForRemoveListener: number,
+    forceUpdateForEvent: number,
 }
 
 // state 属性
 const state = reactive<SetterEventPanelState>({
-    forceUpdateForRemoveListener: 0,
+    forceUpdateForEvent: 0,
 });
 // 内部数据
 const data = {};
 // 当前选择组件支持的事件分组
 const eventGroups = computed<Array<EventGroup>>(() => {
     // 读取“响应式变量”值
-    state.forceUpdateForRemoveListener;
+    state.forceUpdateForEvent;
     return getEventGroups(props.eventPanel, props.designerState.selectNode);
 });
 // 所有的事件监听器
 const allListener = computed<Array<ListenerInfo>>(() => {
     // 读取“响应式变量”值
-    state.forceUpdateForRemoveListener;
+    state.forceUpdateForEvent;
     return getAllListener(eventGroups.value, props.designerState.selectNode);
 });
 
@@ -67,10 +70,41 @@ function removeListener(listenerInfo: ListenerInfo) {
     const blockInstance = props.designerState.blockInstance;
     if (!node || !blockInstance) return;
     blockInstance.ops.removeListener(node.ref, listenerInfo.eventName);
-    state.forceUpdateForRemoveListener++;
+    state.forceUpdateForEvent++;
     props.designerEngine.eventbus.dispatch(new RemoveListenerEvent({
         nodeId: node.id,
         eventName: listenerInfo.eventName,
+    }));
+}
+
+function addListener(eventInfo: EventInfo) {
+    const node = props.designerState.selectNode;
+    const blockInstance = props.designerState.blockInstance;
+    if (!node || !blockInstance) return;
+    const handler: any = createFun({
+        async: false,
+        name: randomUID(`${eventInfo.name}_`),
+        params: (eventInfo.params ?? []).map(item => item.name),
+        body: `// ${eventInfo.title}`,
+        lambda: false,
+    });
+    console.log("handler", handler);
+    blockInstance.ops.bindListener(
+        node.ref,
+        eventInfo.name,
+        {
+            modifiers: [],
+            handler: handler,
+        },
+        {
+            cancelRender: true,
+            override: false,
+        },
+    );
+    state.forceUpdateForEvent++;
+    props.designerEngine.eventbus.dispatch(new AddListenerEvent({
+        nodeId: node.id,
+        eventInfo: eventInfo,
     }));
 }
 </script>
@@ -91,7 +125,7 @@ function removeListener(listenerInfo: ListenerInfo) {
                     <div class="event-add">新增事件</div>
                 </template>
                 <OptionGroup v-for="group in eventGroups" :key="group.title" :label="group.title" :disabled="group.disabled ?? false">
-                    <Option v-for="item in group.items" :key="item.name" :value="item.name" :disabled="item.disabled ?? false">
+                    <Option v-for="item in group.items" :key="item.name" :value="item.name" :disabled="item.disabled ?? false" @click="addListener(item)">
                         <div class="event-title">
                             {{ item.name }}-{{ item.title }}
                         </div>

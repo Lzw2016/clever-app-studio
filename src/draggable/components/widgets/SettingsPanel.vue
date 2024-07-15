@@ -6,6 +6,7 @@ import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 import { ShowEventEditorDialogEvent } from "@/draggable/events/designer/ShowEventEditorDialogEvent";
 import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
+import { AddListenerEvent } from "@/draggable/events/designer/AddListenerEvent";
 import SetterPropsPanel from "@/draggable/components/widgets/SetterPropsPanel.vue";
 import SetterEventPanel from "@/draggable/components/widgets/SetterEventPanel.vue";
 import SetterStylePanel from "@/draggable/components/widgets/SetterStylePanel.vue";
@@ -112,14 +113,27 @@ function onRemoveListener(event: RemoveListenerEvent) {
     eventEditorRef.value?.recalcAllListener(data.nodeId, data.eventName);
 }
 
+function onAddListener(event: AddListenerEvent) {
+    props.designerEngine.showEventEditorDialog = true;
+    const data = event.data;
+    eventEditorRef.value?.recalcAllListener(data.nodeId, data.eventInfo.name);
+    if (data.nodeId) {
+        eventEditorRef.value?.$nextTick(() => {
+            eventEditorRef.value?.setSelectNode(data.nodeId, data.eventInfo.name);
+        });
+    }
+}
+
 onBeforeMount(() => {
     props.designerEngine.eventbus.subscribe(ShowEventEditorDialogEvent, onShowEventEditorDialogEvent);
     props.designerEngine.eventbus.subscribe(RemoveListenerEvent, onRemoveListener);
+    props.designerEngine.eventbus.subscribe(AddListenerEvent, onAddListener);
 });
 
 onUnmounted(() => {
     props.designerEngine.eventbus.unsubscribe(ShowEventEditorDialogEvent, onShowEventEditorDialogEvent);
     props.designerEngine.eventbus.unsubscribe(RemoveListenerEvent, onRemoveListener);
+    props.designerEngine.eventbus.unsubscribe(AddListenerEvent, onAddListener);
 });
 </script>
 
