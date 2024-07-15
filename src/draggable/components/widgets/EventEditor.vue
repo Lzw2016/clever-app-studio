@@ -15,8 +15,9 @@ import { runtimeNodeToTreeNode, TreeNode } from "@/draggable/utils/DesignerUtils
 import { CodeExample } from "@/draggable/types/Base";
 import { EventGroup, EventInfo, ListenerInfo } from "@/draggable/types/ComponentMeta";
 import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
+import { AddListenerEvent } from "@/draggable/events/designer/AddListenerEvent";
 import { codeToString, funToString } from "@/draggable/utils/FunctionUtils";
-import { getAllListener, getEventGroups, getEventTitle, getNodeComponentMeta } from "@/draggable/utils/EventUtils";
+import { addNodeListener, getAllListener, getEventGroups, getEventTitle, getNodeComponentMeta } from "@/draggable/utils/EventUtils";
 
 // 定义组件选项
 defineOptions({
@@ -244,7 +245,14 @@ function removeListener() {
 }
 
 function addListener(eventInfo: EventInfo) {
-
+    const node = state.selectRuntimeNode;
+    const blockInstance = props.designerState?.blockInstance;
+    if (!node || !blockInstance) return;
+    addNodeListener(node.ref, eventInfo, blockInstance.ops);
+    props.designerEngine.eventbus.dispatch(new AddListenerEvent({
+        nodeId: node.id,
+        eventInfo: eventInfo,
+    }));
 }
 
 function setSelectNode(nodeId: string, eventName: string) {
