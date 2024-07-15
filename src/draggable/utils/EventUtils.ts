@@ -1,10 +1,12 @@
 import lodash from "lodash";
+import { randomUID } from "@/utils/IDCreate";
 import { innerEvents } from "@/draggable/Constant";
 import { toElementEventName } from "@/draggable/utils/HtmlTag";
-import { parseFun } from "@/draggable/utils/FunctionUtils";
+import { createFun, parseFun } from "@/draggable/utils/FunctionUtils";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentMeta, EventGroup, EventInfo, EventPanel, ListenerInfo } from "@/draggable/types/ComponentMeta";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
+import { BlockOperation } from "@/draggable/types/BlockOperation";
 
 /** 获取当前渲染节点支持的事件 */
 function getEventGroups(eventPanel: EventPanel, node?: RuntimeNode): Array<EventGroup> {
@@ -92,10 +94,33 @@ function getEventTitle(item: ListenerInfo) {
     return `${item.eventName}-${item.funMeta.title}`;
 }
 
+function addNodeListener(nodeRef: string, eventInfo: EventInfo, ops: BlockOperation) {
+    const handler: any = createFun({
+        async: false,
+        name: randomUID(`${eventInfo.name}_`, 8),
+        params: (eventInfo.params ?? []).map(item => item.name),
+        body: `// ${eventInfo.title}`,
+        lambda: false,
+    });
+    ops.bindListener(
+        nodeRef,
+        eventInfo.name,
+        {
+            modifiers: [],
+            handler: handler,
+        },
+        {
+            cancelRender: true,
+            override: false,
+        },
+    );
+}
+
 export {
     getEventGroups,
     getAllListener,
     getAllEventName,
     getNodeComponentMeta,
     getEventTitle,
+    addNodeListener,
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, nextTick, ref, shallowReactive, watch } from "vue";
+import { layer } from "@layui/layer-vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faChevronDown, faChevronUp, faPlus, faTrashCan, faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { Checkbox, CheckboxGroup, Input, Option, OptionGroup, Select, Tree } from "@opentiny/vue";
@@ -12,7 +13,8 @@ import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { runtimeNodeToTreeNode, TreeNode } from "@/draggable/utils/DesignerUtils";
 import { CodeExample } from "@/draggable/types/Base";
-import { EventGroup, ListenerInfo } from "@/draggable/types/ComponentMeta";
+import { EventGroup, EventInfo, ListenerInfo } from "@/draggable/types/ComponentMeta";
+import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
 import { codeToString, funToString } from "@/draggable/utils/FunctionUtils";
 import { getAllListener, getEventGroups, getEventTitle, getNodeComponentMeta } from "@/draggable/utils/EventUtils";
 
@@ -51,6 +53,8 @@ interface EventEditorState {
     selectExample?: CodeExample;
     /** 示例代码折叠状态 */
     exampleCollapsed: Collapsed;
+    /** 过滤事件列表文本 */
+    filterEventTxt: string;
 }
 
 // state 属性
@@ -62,6 +66,7 @@ const state = shallowReactive<EventEditorState>({
     showListenerDoc: false,
     selectExample: undefined,
     exampleCollapsed: "two",
+    filterEventTxt: "",
 });
 // 内部数据
 const data = {
@@ -89,6 +94,8 @@ const outlineTreeNodes = computed<Array<TreeNode<RuntimeNode>>>(() => getOutline
 const eventGroups = computed<Array<EventGroup>>(() => {
     const componentMeta = getNodeComponentMeta(props.designerEngine.componentManage, state.selectRuntimeNode)
     if (!componentMeta?.setter?.events) return [];
+    // 读取“响应式变量”值
+    state.forceUpdateForAllListener;
     return getEventGroups(componentMeta.setter.events, state.selectRuntimeNode);
 });
 // 所有的事件监听器
@@ -97,10 +104,29 @@ const allListener = computed<Array<ListenerInfo>>(() => {
     state.forceUpdateForAllListener;
     return getAllListener(eventGroups.value, state.selectRuntimeNode);
 });
+// 显示的的事件监听器
+const showListener = computed<Array<ListenerInfo>>(() => {
+    let list = allListener.value;
+    const search = state.filterEventTxt;
+    if (search) {
+        list = list.filter(item => {
+            return item?.eventName?.includes(search)
+                || item?.funMeta?.title?.includes(search)
+                || item?.funMeta?.description?.includes(search);
+        });
+    }
+    return list;
+});
 // 存在选中的纲树节点
 const existsSelectRuntimeNode = computed<boolean>(() => hasValue(state.selectRuntimeNode));
 // 存在选中的监听事件
-const existsSelectListener = computed<boolean>(() => hasValue(state.selectListener));
+const existsSelectListener = computed<boolean>(() => {
+    let exists = hasValue(state.selectListener);
+    if (exists) {
+        exists = showListener.value.includes(state.selectListener!);
+    }
+    return exists;
+});
 // 存在示例代码
 const existsExampleCode = computed<boolean>(() => hasValue(state.selectListener?.funMeta?.examples) && state.selectListener.funMeta.examples.length > 0);
 // 函数修饰符值
@@ -194,6 +220,33 @@ function exampleCollapsedChange(collapsed) {
     state.exampleCollapsed = collapsed;
 }
 
+function removeListener() {
+    const listenerInfo = state.selectListener;
+    const node = state.selectRuntimeNode;
+    if (!listenerInfo || !node || !existsSelectListener.value) {
+        layer.msg("未选中事件函数");
+        return;
+    }
+    const blockInstance = props.designerState?.blockInstance;
+    if (!blockInstance) return;
+    // 计算自动选择位置
+    let idx = showListener.value.findIndex(item => item.eventName === listenerInfo.eventName);
+    if (showListener.value.length <= (idx + 1)) idx--;
+    idx = Math.max(0, idx);
+    // 删除事件监听
+    blockInstance.ops.removeListener(node.ref, listenerInfo.eventName);
+    // 生产事件
+    props.designerEngine.eventbus.dispatch(new RemoveListenerEvent({
+        nodeId: node.id,
+        eventName: listenerInfo.eventName,
+    }));
+    nextTick(() => selectListenerChange(showListener.value?.[idx]));
+}
+
+function addListener(eventInfo: EventInfo) {
+
+}
+
 function setSelectNode(nodeId: string, eventName: string) {
     if (!outlineTreeRef.value) return;
     outlineTreeRef.value?.setCurrentKey(nodeId);
@@ -276,7 +329,7 @@ defineExpose<EventEditorExpose>({
                         <div class="flex-item-fixed panel-title">已监听事件</div>
                         <div v-show="existsSelectRuntimeNode" class="flex-item-fixed flex-row-container panel-tools" style="align-items: center;">
                             <div class="flex-item-fill" style="padding-right: 8px;overflow: hidden;">
-                                <Input size="mini" placeholder="过滤事件" style="min-width: 60px;max-width: 150px;"/>
+                                <Input v-model="state.filterEventTxt" size="mini" placeholder="过滤事件" :clearable="true" style="min-width: 60px;max-width: 150px;"/>
                             </div>
                             <div class="flex-item-fixed"/>
                             <div class="flex-item-fixed panel-tools-button" title="新增">
@@ -295,7 +348,7 @@ defineExpose<EventEditorExpose>({
                                         <FontAwesomeIcon :icon="faPlus"/>
                                     </template>
                                     <OptionGroup v-for="group in eventGroups" :key="group.title" :label="group.title" :disabled="group.disabled ?? false">
-                                        <Option v-for="item in group.items" :key="item.name" :value="item.name" :disabled="item.disabled ?? false">
+                                        <Option v-for="item in group.items" :key="item.name" :value="item.name" :disabled="item.disabled ?? false" @click="addListener(item)">
                                             <div class="text-ellipsis" style="max-width: 260px;">
                                                 {{ item.name }}-{{ item.title }}
                                             </div>
@@ -304,13 +357,13 @@ defineExpose<EventEditorExpose>({
                                     </OptionGroup>
                                 </Select>
                             </div>
-                            <div class="flex-item-fixed panel-tools-button" title="删除">
+                            <div class="flex-item-fixed panel-tools-button" title="删除" @click="removeListener">
                                 <FontAwesomeIcon :icon="faTrashCan"/>
                             </div>
                         </div>
                         <div v-show="existsSelectRuntimeNode" class="flex-item-fill">
                             <div
-                                v-for="item in allListener"
+                                v-for="item in showListener"
                                 :class="{
                                     'text-ellipsis': true,
                                     'event-item': true,

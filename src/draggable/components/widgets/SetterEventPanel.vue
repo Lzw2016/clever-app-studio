@@ -3,15 +3,13 @@ import { computed, onBeforeMount, onUnmounted, reactive } from "vue";
 import { Grid, GridColumn, Option, OptionGroup, Select } from '@opentiny/vue'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faCode, faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { randomUID } from "@/utils/IDCreate";
 import { EventGroup, EventInfo, EventPanel, ListenerInfo } from "@/draggable/types/ComponentMeta";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { ShowEventEditorDialogEvent } from "@/draggable/events/designer/ShowEventEditorDialogEvent";
 import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
 import { AddListenerEvent } from "@/draggable/events/designer/AddListenerEvent";
-import { createFun } from "@/draggable/utils/FunctionUtils";
-import { getAllListener, getEventGroups, getEventTitle } from "@/draggable/utils/EventUtils";
+import { addNodeListener, getAllListener, getEventGroups, getEventTitle } from "@/draggable/utils/EventUtils";
 
 // 定义组件选项
 defineOptions({
@@ -80,32 +78,14 @@ function addListener(eventInfo: EventInfo) {
     const node = props.designerState.selectNode;
     const blockInstance = props.designerState.blockInstance;
     if (!node || !blockInstance) return;
-    const handler: any = createFun({
-        async: false,
-        name: randomUID(`${eventInfo.name}_`, 8),
-        params: (eventInfo.params ?? []).map(item => item.name),
-        body: `// ${eventInfo.title}`,
-        lambda: false,
-    });
-    blockInstance.ops.bindListener(
-        node.ref,
-        eventInfo.name,
-        {
-            modifiers: [],
-            handler: handler,
-        },
-        {
-            cancelRender: true,
-            override: false,
-        },
-    );
+    addNodeListener(node.ref, eventInfo, blockInstance.ops);
     props.designerEngine.eventbus.dispatch(new AddListenerEvent({
         nodeId: node.id,
         eventInfo: eventInfo,
     }));
 }
 
-function recalcAllListener(event: RemoveListenerEvent) {
+function recalcAllListener() {
     state.forceUpdateForEvent++;
 }
 
