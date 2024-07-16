@@ -7,6 +7,7 @@ import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 import { ShowEventEditorDialogEvent } from "@/draggable/events/designer/ShowEventEditorDialogEvent";
 import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
 import { AddListenerEvent } from "@/draggable/events/designer/AddListenerEvent";
+import { UpdateListenerEvent } from "@/draggable/events/designer/UpdateListenerEvent";
 import SetterPropsPanel from "@/draggable/components/widgets/SetterPropsPanel.vue";
 import SetterEventPanel from "@/draggable/components/widgets/SetterEventPanel.vue";
 import SetterStylePanel from "@/draggable/components/widgets/SetterStylePanel.vue";
@@ -128,17 +129,26 @@ function onAddListener(event: AddListenerEvent) {
     }
 }
 
+function onUpdateListener(event: UpdateListenerEvent) {
+    const data = event.data;
+    if (designerState.value?.selectNode?.id === data.nodeId) {
+        setterEventPanelRef.value?.recalcAllListener();
+    }
+}
+
 onBeforeMount(() => {
     // TODO 需要根据 DesignerState 监听事件(每个 DesignerState 的编辑更新事件需要隔离)
     props.designerEngine.eventbus.subscribe(ShowEventEditorDialogEvent, onShowEventEditorDialogEvent);
     props.designerEngine.eventbus.subscribe(RemoveListenerEvent, onRemoveListener);
     props.designerEngine.eventbus.subscribe(AddListenerEvent, onAddListener);
+    props.designerEngine.eventbus.subscribe(UpdateListenerEvent, onUpdateListener);
 });
 
 onUnmounted(() => {
     props.designerEngine.eventbus.unsubscribe(ShowEventEditorDialogEvent, onShowEventEditorDialogEvent);
     props.designerEngine.eventbus.unsubscribe(RemoveListenerEvent, onRemoveListener);
     props.designerEngine.eventbus.unsubscribe(AddListenerEvent, onAddListener);
+    props.designerEngine.eventbus.unsubscribe(UpdateListenerEvent, onUpdateListener);
 });
 </script>
 

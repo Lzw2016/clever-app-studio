@@ -141,9 +141,9 @@ defineExpose<SetterEventPanelExpose>({
                         <div class="event-bind-title">
                             {{ getEventTitle(data.row) }}
                         </div>
-                        <div class="event-binds-name" @click="showEventEditorDialog(data.row)">
+                        <span class="event-binds-name" @click="showEventEditorDialog(data.row)">
                             {{ data.row.funInfo?.name ?? '[anonymous]' }}
-                        </div>
+                        </span>
                     </template>
                 </GridColumn>
                 <GridColumn field="action" title="操作" :width="65" :align="'center'">

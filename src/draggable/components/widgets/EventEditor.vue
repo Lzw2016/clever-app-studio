@@ -18,6 +18,7 @@ import { CodeExample } from "@/draggable/types/Base";
 import { EventGroup, EventInfo, ListenerInfo } from "@/draggable/types/ComponentMeta";
 import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
 import { AddListenerEvent } from "@/draggable/events/designer/AddListenerEvent";
+import { UpdateListenerEvent } from "@/draggable/events/designer/UpdateListenerEvent";
 import { codeToString, createFun, funToString, parseFun } from "@/draggable/utils/FunctionUtils";
 import { addNodeListener, getAllListener, getEventGroups, getEventTitle, getNodeComponentMeta } from "@/draggable/utils/EventUtils";
 
@@ -324,7 +325,11 @@ function updateListener() {
             override: true,
         },
     );
-    // TODO 发送函数更新事件
+    // 生产事件
+    props.designerEngine.eventbus.dispatch(new UpdateListenerEvent({
+        nodeId: node.id,
+        eventName: listener.eventName,
+    }));
 }
 
 function setSelectNode(nodeId: string, eventName: string) {
