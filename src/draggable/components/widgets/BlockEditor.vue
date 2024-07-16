@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
+import { layer } from "@layui/layer-vue";
 import type { editor } from "monaco-editor";
 import MonacoEditor, { MonacoType } from "@/components/MonacoEditor.vue";
 import SplitPane from "@/components/SplitPane.vue";
@@ -159,11 +160,15 @@ watch(
             const [oldActiveTab, oldShow] = oldValue;
         }
         // console.log("oldValue", oldValue);
+        // TODO 更新
         if (show && activeTab === data.tabsEnum.code) {
             const runtimeNode = props.designerState?.blockInstance?.globalContext?.runtimeBlock;
             runtimeNodeToJsCode(runtimeNode).then(code => {
                 data.tabsConfig.code.code = code;
                 state.forceUpdateEditor++;
+            }).catch(err => {
+                layer.msg("代码生成失败!");
+                console.warn(err);
             });
         }
     },

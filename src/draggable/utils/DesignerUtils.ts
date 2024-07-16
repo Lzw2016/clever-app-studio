@@ -8,7 +8,8 @@ import { RuntimeBlock, RuntimeComponentSlotsItem, RuntimeNode } from "@/draggabl
 import { ComponentMeta, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 import { ComponentSlotsItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
 import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
-import { toConfigAndFormat } from "@/draggable/utils/FunctionUtils";
+import { formatJavascript } from "@/draggable/utils/CodeFormat";
+import { parseFun, toConfigAndFormat } from "@/draggable/utils/FunctionUtils";
 
 /**
  * 定义一个 DesignBlock 对象，仅仅是为了类型声明，无任何处理逻辑
@@ -577,22 +578,28 @@ async function designNodeToJsString(node: DesignNode): Promise<string> {
         const funName = funNameCode[0];
         let funCode = funNameCode[1];
         funCode = funCode.substring(tagStr.length, funCode.length - tagStr.length);
-        // const formatFunCode = await formatJavascript(funCode);
-        const formatFunCode = funCode;
-        const funLines = formatFunCode.split("\n");
-        for (let idx = 0; idx < funLines.length; idx++) {
-            let funLine = funLines[idx];
-            if (idx === 0) {
-                funLine = `${funName}: ${funLine}`;
-            } else if ((idx + 1) >= funLines.length) {
-                funLine = `${funLine},`;
-            }
-            funLine = lodash.repeat(' ', blankCount) + funLine;
-            codeLines.push(funLine);
+        const funInfo = parseFun(funCode);
+        if (!funInfo) {
+            throw new Error(`解析js函数代码失败: \n${funCode}`);
         }
+        if (funInfo.name === funName) {
+            codeLines.push(
+                lodash.repeat(' ', blankCount) +
+                (funInfo.async ? 'async ' : '') +
+                `${funName}(${funInfo.params.join(", ")}) {`
+            );
+        } else if (funInfo.lambda) {
+            codeLines.push(lodash.repeat(' ', blankCount) + `${funName}: (${funInfo.params.join(", ")}) => {`);
+        } else {
+            codeLines.push(lodash.repeat(' ', blankCount) + `${funName}: function(${funInfo.params.join(", ")}) {`);
+        }
+        const funBody = await formatJavascript(funInfo.body);
+        const funBodyLines = funBody.split("\n");
+        for (let funBodyLine of funBodyLines) {
+            codeLines.push(lodash.repeat(' ', blankCount + 4) + funBodyLine);
+        }
+        codeLines.push(lodash.repeat(' ', blankCount) + "},");
     }
-    // console.log("lines", JSON.stringify(lines));
-    console.log("codeLines", JSON.stringify(codeLines));
     return [
         `const blockPage = ${codeLines.join('\n')};`,
         '',
