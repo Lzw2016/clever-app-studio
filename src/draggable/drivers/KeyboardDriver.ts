@@ -1,6 +1,6 @@
-import { DesignerDriver } from "@/draggable/DesignerDriver";
-import hotkeys, { HotkeysEvent } from "hotkeys-js";
 import lodash from "lodash";
+import hotkeys, { HotkeysEvent } from "hotkeys-js";
+import { DesignerDriver } from "@/draggable/DesignerDriver";
 import { ShortcutKeyEvent } from "@/draggable/events/keyboard/ShortcutKeyEvent";
 
 const rawFilter = hotkeys.filter;
