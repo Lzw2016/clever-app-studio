@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import lodash from "lodash";
 import { computed, getCurrentInstance, nextTick, ref, shallowReactive, watch } from "vue";
 import { layer } from "@layui/layer-vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -6,6 +7,7 @@ import { faChevronDown, faChevronUp, faPlus, faTrashCan, faUpRightFromSquare } f
 import { Checkbox, CheckboxGroup, Input, Option, OptionGroup, Select, Tree } from "@opentiny/vue";
 import type { editor } from "monaco-editor";
 import { hasValue } from "@/utils/Typeof";
+import { randomUID } from "@/utils/IDCreate";
 import MonacoEditor, { MonacoType } from "@/components/MonacoEditor.vue";
 import SplitPane, { Collapsed } from "@/components/SplitPane.vue";
 import { RuntimeBlock, RuntimeNode } from "@/draggable/types/RuntimeBlock";
@@ -16,7 +18,7 @@ import { CodeExample } from "@/draggable/types/Base";
 import { EventGroup, EventInfo, ListenerInfo } from "@/draggable/types/ComponentMeta";
 import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
 import { AddListenerEvent } from "@/draggable/events/designer/AddListenerEvent";
-import { codeToString, funToString } from "@/draggable/utils/FunctionUtils";
+import { codeToString, createFun, funToString, parseFun } from "@/draggable/utils/FunctionUtils";
 import { addNodeListener, getAllListener, getEventGroups, getEventTitle, getNodeComponentMeta } from "@/draggable/utils/EventUtils";
 
 // 定义组件选项
@@ -187,13 +189,20 @@ function getOutlineTreeNodes(runtimeBlock?: RuntimeBlock): Array<TreeNode<Runtim
 
 function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
     data.monacoEditor = editor;
-    // editor.addAction({
-    //     id: 'saveCode',
-    //     label: '保存代码',
-    //     keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
-    //     run: function () {
-    //     },
-    // });
+    editor.addAction({
+        id: 'saveCode',
+        label: '保存代码',
+        keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
+        run: function () {
+            try {
+                updateListener();
+                layer.msg("保存成功", { time: 800 });
+            } catch (err) {
+                layer.msg("保存失败");
+                console.warn(err);
+            }
+        },
+    });
 }
 
 function selectOutlineNodeChange(data: TreeNode<RuntimeNode>, currentNode: any) {
@@ -253,6 +262,48 @@ function addListener(eventInfo: EventInfo) {
         nodeId: node.id,
         eventInfo: eventInfo,
     }));
+}
+
+function updateListener() {
+    const node = state.selectRuntimeNode;
+    const listener = state.selectListener;
+    const blockInstance = props.designerState?.blockInstance;
+    if (!node || !listener || !blockInstance) {
+        throw new Error("函数代码保存失败: 未选择渲染节点");
+    }
+    const editor = data.monacoEditor;
+    if (!editor) return;
+    const funCode = lodash.trim(editor.getValue());
+    // 解析函数
+    const funInfo = funCode.length > 0 ? parseFun(funCode) : {
+        async: false,
+        name: randomUID(`${listener.eventName}_`, 8),
+        params: (listener.funMeta?.params ?? []).map(item => item.name),
+        body: `// ${listener.funMeta?.title ?? ''}`,
+        lambda: false,
+    };
+    if (!funInfo) {
+        throw new Error(`函数代码语法错误: ${funCode}`);
+    }
+    let fun: any;
+    try {
+        fun = createFun(funInfo);
+    } catch (err) {
+        throw new Error(`函数代码语法错误: ${funInfo.body}`, { cause: err });
+    }
+    blockInstance.ops.bindListener(
+        node.ref,
+        listener.eventName,
+        {
+            handler: fun,
+            modifiers: listener.modifiers,
+        },
+        {
+            cancelRender: false,
+            override: true,
+        },
+    );
+    // TODO 发送函数更新事件
 }
 
 function setSelectNode(nodeId: string, eventName: string) {
