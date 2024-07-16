@@ -8,6 +8,13 @@ hotkeys.filter = function (event) {
     if (['Control', 'Shift', 'Alt', 'Meta'].includes(event.key)) {
         return true;
     }
+    const pressedFnKey = event.ctrlKey || event.altKey || event.metaKey;
+    const target = event.target as Element;
+    // 属于 monaco 编辑器
+    if (pressedFnKey && target?.className?.includes('monaco-mouse-cursor-text')) {
+        return true;
+    }
+    // 默认的过滤规则 https://github.com/jaywcjlove/hotkeys-js/blob/master/README-zh.md#filter
     return rawFilter(event);
 }
 

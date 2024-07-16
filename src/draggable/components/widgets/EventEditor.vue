@@ -88,6 +88,7 @@ const data = {
         { label: 'middle', text: 'middle', title: '鼠标中键点击时才会调用事件处理函数' },
         { label: 'right', text: 'right', title: '鼠标右键点击时才会调用事件处理函数' },
     ],
+    startEditValue: "",
 };
 // 大纲树组件实例
 const outlineTreeRef = ref<InstanceType<typeof Tree> | undefined>();
@@ -203,6 +204,22 @@ function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
             }
         },
     });
+    // 获取焦点
+    editor.onDidFocusEditorText(() => data.startEditValue = editor.getValue());
+    // 丢失焦点
+    editor.onDidBlurEditorText(() => {
+        const oldValue = data.startEditValue;
+        const value = editor.getValue();
+        data.startEditValue = "";
+        if (lodash.trim(oldValue) === lodash.trim(value)) {
+            return;
+        }
+        try {
+            updateListener();
+        } catch (err) {
+            console.warn(err);
+        }
+    });
 }
 
 function selectOutlineNodeChange(data: TreeNode<RuntimeNode>, currentNode: any) {
@@ -274,6 +291,10 @@ function updateListener() {
     const editor = data.monacoEditor;
     if (!editor) return;
     const funCode = lodash.trim(editor.getValue());
+    const oldFunCode = lodash.trim(Function.prototype.toString.call(listener.rawListener.handler));
+    if (funCode === oldFunCode) {
+        return;
+    }
     // 解析函数
     const funInfo = funCode.length > 0 ? parseFun(funCode) : {
         async: false,
