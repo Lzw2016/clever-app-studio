@@ -514,18 +514,20 @@ function runtimeNodeToTreeNode(runtimeNode: RuntimeNode): Array<TreeNode<Runtime
 }
 
 /**
- * 将 DesignNode 对象转换成 json 字符串代码
+ * 将 js 对象转换成 json 字符串代码
  */
-function designNodeToJsonString(node: DesignNode): string {
-    return JSON.stringify(node, _funToString, 4);
+function jsonStringify(obj: any): string {
+    if (noValue(obj)) return "";
+    return JSON.stringify(obj, _funToString, 4);
 }
 
 /**
- * 将 DesignNode 对象转换成 json5 字符串代码
+ * 将 js 对象转换成 json5 字符串代码
  */
-function designNodeToJson5String(node: DesignNode): string {
+function json5Stringify(obj: any): string {
+    if (noValue(obj)) return "";
     return JSON5.stringify(
-        node,
+        obj,
         {
             replacer: _funToString,
             space: 4,
@@ -542,9 +544,9 @@ function _funToString(key: any, value: any): any {
 }
 
 /**
- * 将 DesignNode 对象转换成 js 字符串代码
+ * 将 js 对象转换成 js 字符串代码
  */
-async function designNodeToJsString(node: DesignNode): Promise<string> {
+async function jsStringify(node: DesignNode): Promise<string> {
     const tagStr = "__$&fun&$__";
     const json5Code = JSON5.stringify(
         node,
@@ -675,7 +677,7 @@ async function runtimeNodeToJsonCode(runtimeNode?: RuntimeNode): Promise<string>
         },
     );
     await formatDesignNodeFunction(designNode);
-    return designNodeToJsonString(designNode);
+    return jsonStringify(designNode);
 }
 
 /**
@@ -693,7 +695,7 @@ async function runtimeNodeToJson5Code(runtimeNode?: RuntimeNode): Promise<string
         },
     );
     await formatDesignNodeFunction(designNode);
-    return designNodeToJson5String(designNode);
+    return json5Stringify(designNode);
 }
 
 /**
@@ -710,7 +712,7 @@ async function runtimeNodeToJsCode(runtimeNode?: RuntimeNode): Promise<string> {
             keepRef: true,
         },
     );
-    return await designNodeToJsString(designNode);
+    return await jsStringify(designNode);
 }
 
 export type  {
@@ -732,9 +734,9 @@ export {
     deepTraverseDesignNode,
     runtimeNodeToDesignNode,
     runtimeNodeToTreeNode,
-    designNodeToJsonString,
-    designNodeToJson5String,
-    designNodeToJsString,
+    jsonStringify,
+    json5Stringify,
+    jsStringify,
     formatDesignNodeFunction,
     runtimeNodeToJsonCode,
     runtimeNodeToJson5Code,

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import lodash from "lodash";
 import { computed, reactive, watch } from "vue";
 import { layer } from "@layui/layer-vue";
 import type { editor } from "monaco-editor";
@@ -6,7 +7,7 @@ import MonacoEditor, { MonacoType } from "@/components/MonacoEditor.vue";
 import SplitPane from "@/components/SplitPane.vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
-import { runtimeNodeToJsCode } from "@/draggable/utils/DesignerUtils";
+import { jsonStringify, runtimeNodeToJsCode } from "@/draggable/utils/DesignerUtils";
 
 // 定义组件选项
 defineOptions({
@@ -118,6 +119,7 @@ const data = {
             code: "",
         },
     },
+    startEditValue: "",
 };
 // 当前选中的叶签对应的配置
 const activeTabConfig = computed<any>(() => data.tabsConfig[state.activeTab]);
@@ -139,18 +141,46 @@ const monacoEditorCode = computed<string>({
 
 function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
     data.monacoEditor = editor;
+    editor.addAction({
+        id: 'saveCode',
+        label: '保存代码',
+        keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
+        run: function () {
+            try {
+                // TODO 更新内容
+                layer.msg("保存成功", { time: 800 });
+            } catch (err) {
+                layer.msg("保存失败");
+                console.warn(err);
+            }
+        },
+    });
+    // 获取焦点
+    editor.onDidFocusEditorText(() => data.startEditValue = editor.getValue());
+    // 丢失焦点
+    editor.onDidBlurEditorText(() => {
+        const oldValue = data.startEditValue;
+        const value = editor.getValue();
+        data.startEditValue = "";
+        if (lodash.trim(oldValue) === lodash.trim(value)) {
+            return;
+        }
+        try {
+            // TODO 更新内容
+        } catch (err) {
+            console.warn(err);
+        }
+    });
 }
 
 function activeTabChange(tab: string) {
     state.activeTab = tab;
 }
 
-function codeChange() {
-    console.log("codeChange");
+function codeChange(code: string) {
 }
 
 function codeValidate(markers: editor.IMarker[]) {
-    console.log("codeValidate");
 }
 
 watch(
@@ -159,11 +189,34 @@ watch(
         if (oldValue) {
             const [oldActiveTab, oldShow] = oldValue;
         }
-        // console.log("oldValue", oldValue);
-        // TODO 更新
-        if (show && activeTab === data.tabsEnum.code) {
-            const runtimeNode = props.designerState?.blockInstance?.globalContext?.runtimeBlock;
-            runtimeNodeToJsCode(runtimeNode).then(code => {
+        if (!show) return;
+        const blockInstance = props.designerState?.blockInstance;
+        const runtimeBlock = blockInstance?.globalContext?.runtimeBlock;
+        if (activeTab === data.tabsEnum.data) {
+            // 显示 数据
+            data.tabsConfig.data.code = jsonStringify(runtimeBlock?.data);
+            state.forceUpdateEditor++;
+        } else if (activeTab === data.tabsEnum.computed) {
+            // 显示 计算属性
+
+        } else if (activeTab === data.tabsEnum.watch) {
+            // 显示 侦听器
+
+        } else if (activeTab === data.tabsEnum.methods) {
+            // 显示 函数
+
+        } else if (activeTab === data.tabsEnum.lifeCycles) {
+            // 显示 生命周期
+
+        } else if (activeTab === data.tabsEnum.i18n) {
+            // 显示 多语言
+
+        } else if (activeTab === data.tabsEnum.meta) {
+            // 显示 元信息
+
+        } else if (activeTab === data.tabsEnum.code) {
+            // 显示 页面代码
+            runtimeNodeToJsCode(runtimeBlock).then(code => {
                 data.tabsConfig.code.code = code;
                 state.forceUpdateEditor++;
             }).catch(err => {
