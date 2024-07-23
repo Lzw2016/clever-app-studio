@@ -57,6 +57,21 @@ const designerTest = defineDesignBlock({
         refs: [],
         str: "",
     },
+    computed: {
+        c_count_x2: (oldValue, block) => {
+            return (block.$data.count ?? 0) * 2;
+        },
+        c_count_x5: (oldValue, block) => {
+            return (block.$data.count ?? 0) * 5;
+        },
+        c_str_suffix: function (oldValue, block) {
+            return `${block.$data.str ?? ''}_AAA`;
+        },
+        c_str_prefix: function (oldValue, block) {
+            return `AAA_${block.$data.str ?? ''}`;
+        },
+    },
+    watch: {},
     props: {
         style: {
             height: '100%',

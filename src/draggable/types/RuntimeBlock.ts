@@ -1,5 +1,5 @@
 import { WatchCallback, WatchOptions } from "vue";
-import { AnyFunction, ComponentInstance, I18N, ModifierGuardsKeys, VueComponent } from "@/draggable/types/Base";
+import { AnyFunction, ComponentInstance, I18N, ModifierGuardsKeys, VueComponent, WrapperAnyFunction } from "@/draggable/types/Base";
 import { BaseDirectives, BlockMeta, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
 import { BlockOperation, BlockOperationById } from "@/draggable/types/BlockOperation";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
@@ -72,9 +72,7 @@ interface RuntimeBlock extends RuntimeNode {
     /** 数据 */
     readonly data: Record<string, any>;
     /** 计算数据 */
-    readonly computed: Record<string, AnyFunction>;
-    // /** 计算数据(已绑定 this 指针的 computed 函数) */
-    // __bindComputed?: Record<string, AnyFunction>;
+    readonly computed: Record<string, WrapperAnyFunction>;
     /** 数据监听器(数据更改时的回调) */
     readonly watch: Record<string, RuntimeBlockWatchItem>;
     // /** 数据监听器(已绑定 this 指针的 watch 函数) */

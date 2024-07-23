@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import lodash from "lodash";
 import { computed, reactive, watch } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faPlus, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { layer } from "@layui/layer-vue";
 import type { editor } from "monaco-editor";
 import MonacoEditor, { MonacoType } from "@/components/MonacoEditor.vue";
@@ -8,6 +10,7 @@ import SplitPane from "@/components/SplitPane.vue";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { jsonStringify, runtimeNodeToJsCode } from "@/draggable/utils/DesignerUtils";
+import { funToString, parseFun } from "@/draggable/utils/FunctionUtils";
 
 // 定义组件选项
 defineOptions({
@@ -27,16 +30,22 @@ const props = withDefaults(defineProps<BlockEditorProps>(), {});
 
 // 定义 State 类型
 interface BlockEditorState {
-    /** 当前选中的叶签 */
-    activeTab: string;
     /** 强制组件更新的响应式变量 */
     forceUpdateEditor: number;
+    /** 当前选中的叶签 */
+    activeTab: string;
+    /** 当前的计算属性列表 */
+    computedList: Array<string>;
+    /** 当前选中的计算属性 */
+    selectComputed?: string;
 }
 
 // state 属性
 const state = reactive<BlockEditorState>({
-    activeTab: "data",
     forceUpdateEditor: 0,
+    activeTab: "data",
+    computedList: [],
+    selectComputed: undefined,
 });
 // 内部数据
 const data = {
@@ -68,6 +77,7 @@ const data = {
             forceHideTwoCollapse: true,
             language: "json",
             code: "",
+            showEditor: true,
         },
         computed: {
             collapsed: '',
@@ -75,6 +85,7 @@ const data = {
             forceHideTwoCollapse: false,
             language: "javascript",
             code: "",
+            showEditor: true,
         },
         watch: {
             collapsed: '',
@@ -82,6 +93,7 @@ const data = {
             forceHideTwoCollapse: false,
             language: "javascript",
             code: "",
+            showEditor: true,
         },
         methods: {
             collapsed: '',
@@ -89,6 +101,7 @@ const data = {
             forceHideTwoCollapse: false,
             language: "javascript",
             code: "",
+            showEditor: true,
         },
         lifeCycles: {
             collapsed: '',
@@ -96,6 +109,7 @@ const data = {
             forceHideTwoCollapse: false,
             language: "javascript",
             code: "",
+            showEditor: true,
         },
         i18n: {
             collapsed: 'one',
@@ -103,6 +117,7 @@ const data = {
             forceHideTwoCollapse: true,
             language: "json",
             code: "",
+            showEditor: true,
         },
         meta: {
             collapsed: 'two',
@@ -110,6 +125,7 @@ const data = {
             forceHideTwoCollapse: false,
             language: "json",
             code: "",
+            showEditor: true,
         },
         code: {
             collapsed: 'one',
@@ -117,12 +133,17 @@ const data = {
             forceHideTwoCollapse: true,
             language: "javascript",
             code: "",
+            showEditor: true,
         },
     },
     startEditValue: "",
 };
 // 当前选中的叶签对应的配置
-const activeTabConfig = computed<any>(() => data.tabsConfig[state.activeTab]);
+const activeTabConfig = computed<any>(() => {
+    // // 读取“响应式变量”值
+    // state.forceUpdateEditor;
+    return data.tabsConfig[state.activeTab];
+});
 // 编辑器代码
 const monacoEditorCode = computed<string>({
     get: () => {
@@ -138,6 +159,24 @@ const monacoEditorCode = computed<string>({
         config.code = newValue;
     },
 });
+const showComputed = computed<boolean>(() => state.activeTab === data.tabsEnum.computed);
+const showWatch = computed<boolean>(() => state.activeTab === data.tabsEnum.watch);
+const showMethods = computed<boolean>(() => state.activeTab === data.tabsEnum.methods);
+const showLifeCycles = computed<boolean>(() => state.activeTab === data.tabsEnum.lifeCycles);
+const showI18n = computed<boolean>(() => state.activeTab === data.tabsEnum.i18n);
+const showMeta = computed<boolean>(() => state.activeTab === data.tabsEnum.meta);
+const showCode = computed<boolean>(() => state.activeTab === data.tabsEnum.code);
+
+// const selectComputedCode = computed<string>(() => {
+//     if (!state.selectComputed) return '';
+//     const computed = props.designerState?.blockInstance?.globalContext?.runtimeBlock?.computed;
+//     if (!computed) return '';
+//     const selectComputed = computed[state.selectComputed];
+//     const funInfo = parseFun(selectComputed);
+//     if (!funInfo) return '';
+//     if (!funInfo.name) funInfo.name = "anonymous";
+//     return funToString(funInfo);
+// });
 
 function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
     data.monacoEditor = editor;
@@ -177,6 +216,10 @@ function activeTabChange(tab: string) {
     state.activeTab = tab;
 }
 
+function computedChange(computed: string) {
+    state.selectComputed = computed;
+}
+
 function codeChange(code: string) {
 }
 
@@ -198,7 +241,16 @@ watch(
             state.forceUpdateEditor++;
         } else if (activeTab === data.tabsEnum.computed) {
             // 显示 计算属性
-
+            state.computedList.length = 0;
+            if (runtimeBlock?.computed) {
+                for (let name in runtimeBlock.computed) {
+                    state.computedList.push(name);
+                }
+            }
+            if (state.computedList.length > 0 && (!state.selectComputed || !state.computedList.includes(state.selectComputed))) {
+                state.selectComputed = state.computedList[0];
+            }
+            state.forceUpdateEditor++;
         } else if (activeTab === data.tabsEnum.watch) {
             // 显示 侦听器
 
@@ -229,6 +281,19 @@ watch(
         immediate: true,
     },
 );
+
+watch(() => state.selectComputed, selected => {
+    if (!showComputed.value) return;
+    if (!selected) return;
+    const computed = props.designerState?.blockInstance?.globalContext?.runtimeBlock?.computed;
+    if (!computed) return;
+    const selectComputed = computed[selected].__raw_fun;
+    const funInfo = parseFun(selectComputed);
+    if (!funInfo) return;
+    if (!funInfo.name) funInfo.name = selected ?? "anonymous";
+    data.tabsConfig.computed.code = funToString(funInfo);
+    state.forceUpdateEditor++;
+});
 
 interface BlockEditorExpose {
 }
@@ -262,14 +327,39 @@ defineExpose<BlockEditorExpose>({});
                 :two-collapse="false"
                 :force-hide-one-collapse="activeTabConfig?.forceHideOneCollapse"
                 :force-hide-two-collapse="activeTabConfig?.forceHideTwoCollapse"
+                :custom-one-pane="true"
                 :custom-two-pane="true"
                 :collapsed="activeTabConfig?.collapsed"
             >
-                <template #onePane>
-
+                <template #onePane="slotProps">
+                    <div v-bind="slotProps" class="flex-column-container" style="height: 100%;overflow: hidden;">
+                        <div v-show="showComputed" class="flex-item-fixed flex-row-container panel-tools" style="align-items: center;">
+                            <div class="flex-item-fill"/>
+                            <div class="flex-item-fixed panel-tools-button" title="新增" @click="">
+                                <FontAwesomeIcon :icon="faPlus"/>
+                            </div>
+                            <div class="flex-item-fixed panel-tools-button" title="删除" @click="">
+                                <FontAwesomeIcon :icon="faTrashCan"/>
+                            </div>
+                        </div>
+                        <div v-show="showComputed" class="flex-item-fill">
+                            <div
+                                v-for="item in state.computedList"
+                                :class="{
+                                    'text-ellipsis': true,
+                                    'block-item': true,
+                                    'block-item-active': state.selectComputed === item,
+                                }"
+                                @click="computedChange(item)"
+                            >
+                                {{ item }}
+                            </div>
+                        </div>
+                    </div>
                 </template>
                 <template #twoPane="slotProps">
                     <MonacoEditor
+                        v-show="activeTabConfig?.showEditor"
                         v-bind="slotProps"
                         height="100%"
                         theme="idea-light"
@@ -316,6 +406,12 @@ defineExpose<BlockEditorExpose>({});
     flex-shrink: 0;
 }
 
+.text-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .block-tabs {
     background-color: #f5f5f6;
 }
@@ -344,5 +440,50 @@ defineExpose<BlockEditorExpose>({});
     color: #5e7ce0;
     border-left: 2px solid #5e7ce0;
     padding-left: 10px;
+}
+
+.panel-tools {
+    padding: 4px 8px;
+    border-bottom: 1px solid #e1e1e1;
+    overflow: hidden;
+}
+
+.panel-tools-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+    color: #252b3a;
+    cursor: pointer;
+}
+
+.panel-tools-button:hover {
+    color: #5E7CE0;
+}
+
+.panel-tools-button:last-child {
+    margin-right: 0;
+}
+
+.block-item {
+    padding: 6px 4px;
+    border-bottom: 1px solid #e1e1e1;
+    color: #252b3a;
+    font-size: 12px;
+}
+
+.block-item:hover {
+    background-color: #f2f5fc;
+    cursor: pointer;
+}
+
+.block-item-active {
+    background-color: #e9edfa;
+}
+
+.block-item-active:hover {
+    background-color: #e9edfa;
 }
 </style>

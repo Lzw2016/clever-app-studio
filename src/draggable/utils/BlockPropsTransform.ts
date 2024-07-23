@@ -9,7 +9,7 @@ import { childSlotName, configRawValueName, defPlaceholder } from "@/draggable/C
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { codeToString } from "@/draggable/utils/FunctionUtils";
-import { AnyFunction, ComponentParam, FunctionConfig, FunctionParam } from "@/draggable/types/Base";
+import { AnyFunction, ComponentParam, FunctionConfig, FunctionParam, WrapperAnyFunction } from "@/draggable/types/Base";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { BlockWatchItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
 import { CreateConfig, RenderErrType, RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
@@ -159,7 +159,7 @@ function lifeCyclesTransform(lifeCycles: DesignBlock['lifeCycles'], methods: Rec
 /**
  * 处理 Block 的 computed 属性，使它符合 vue 组件的规范
  */
-function computedTransform(computed: DesignBlock['computed'], methods: Record<string, any>): Record<string, Function> {
+function computedTransform(computed: DesignBlock['computed'], methods: Record<string, any>): Record<string, WrapperAnyFunction> {
     const vueComputed: any = {};
     if (!computed) return vueComputed;
     for (let name in computed) {
@@ -179,6 +179,7 @@ function computedTransform(computed: DesignBlock['computed'], methods: Record<st
         vueComputed[name] = function (instance: any, oldValue: any) {
             return fun!.call(instance, oldValue, instance);
         };
+        vueComputed[name].__raw_fun = fun;
     }
     return vueComputed;
 }

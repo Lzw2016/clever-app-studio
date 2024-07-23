@@ -304,7 +304,7 @@ function runtimeNodeToDesignNode(runtimeNode: RuntimeNode, parent?: RuntimeNode,
     }
     // 处理 listeners
     if (Object.keys(runtimeListeners).length > 0) {
-        const listeners = _listenersToDesignNode(lodash.cloneDeep(runtimeListeners), blockNode);
+        const listeners = _listenersToDesignNode(runtimeListeners, blockNode);
         if (listeners && Object.keys(listeners).length > 0) {
             designNode.listeners = listeners;
         }
@@ -355,7 +355,10 @@ function runtimeNodeToDesignNode(runtimeNode: RuntimeNode, parent?: RuntimeNode,
         }
         // 处理 computed
         if (Object.keys(runtimeComputed).length > 0) {
-            designBlock.computed = lodash.cloneDeep(runtimeComputed);
+            const computed = _computedToDesignNode(runtimeComputed, blockNode);
+            if (computed && Object.keys(computed).length > 0) {
+                designBlock.computed = computed;
+            }
         }
         // 处理 watch
         if (Object.keys(runtimeWatch).length > 0) {
@@ -467,6 +470,22 @@ function _listenersToDesignNode(listeners: RuntimeNode['listeners'], blockNode?:
         } else {
             res[key] = { handler: handlerOrFunName, modifiers };
         }
+    }
+    return res;
+}
+
+// runtimeNodeToDesignNode 处理 computed
+function _computedToDesignNode(computed: RuntimeBlock['computed'], blockNode?: RuntimeBlock): DesignBlock['computed'] {
+    const res: DesignNode['computed'] = {};
+    for (let key in computed) {
+        const fun = computed[key];
+        const rawFun = fun.__raw_fun ?? fun;
+        let funOrFunName: any = rawFun;
+        // 如果不是匿名函数 & RuntimeBlock.methods中存在同名函数
+        if (rawFun.name && !["anonymous"].includes(rawFun.name) && isFun(blockNode?.methods[rawFun.name])) {
+            funOrFunName = rawFun.name;
+        }
+        res[key] = funOrFunName;
     }
     return res;
 }

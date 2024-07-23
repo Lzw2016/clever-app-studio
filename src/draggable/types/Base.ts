@@ -74,6 +74,14 @@ interface FunctionConfig {
 /** 通用函数 */
 type AnyFunction<T = any, R = any> = (this: T, ...args: any[]) => R;
 
+/** 经过包装了的通用函数(通常是函数参数、返回值、this指针的修改) */
+interface WrapperAnyFunction<T = any, R = any> {
+    (this: T, ...args: any[]): R;
+
+    /** 原函数 */
+    __raw_fun: Function;
+}
+
 /** 代码示例 */
 interface CodeExample {
     /** 示例标题 */
@@ -200,6 +208,7 @@ export type {
     I18N,
     FunctionConfig,
     AnyFunction,
+    WrapperAnyFunction,
     CodeExample,
     ParamVarType,
     ParamMeta,
