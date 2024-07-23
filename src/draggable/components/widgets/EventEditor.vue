@@ -419,6 +419,7 @@ defineExpose<EventEditorExpose>({
                             <div class="flex-item-fixed"/>
                             <div class="flex-item-fixed panel-tools-button" title="新增">
                                 <Select
+                                    popper-class="unmax-height"
                                     :filterable="false"
                                     :top-create="false"
                                     :is-drop-inherit-width="true"

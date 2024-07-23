@@ -206,15 +206,15 @@ body .tiny-modal > .tiny-modal__box > .tiny-modal__body > .tiny-modal__content {
     overflow: hidden;
 }
 
-/* select */
-body .tiny-select-dropdown.tiny-popper > .tiny-scrollbar {
+
+/* select下拉选择 */
+body .tiny-select-dropdown.tiny-popper.unmax-height > .tiny-scrollbar {
     height: 100%;
 }
 
-body .tiny-select-dropdown.tiny-popper > .tiny-scrollbar > .tiny-select-dropdown__wrap.tiny-scrollbar__wrap {
+body .tiny-select-dropdown.tiny-popper.unmax-height > .tiny-scrollbar > .tiny-select-dropdown__wrap.tiny-scrollbar__wrap {
     height: 100%;
     max-height: unset;
-    /*width: ;*/
 }
 
 

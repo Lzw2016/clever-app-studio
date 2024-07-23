@@ -103,6 +103,7 @@ defineExpose<SetterEventPanelExpose>({
     <div class="event-panel flex-column-container" v-if="props.designerState.singleSelection && eventGroups.length>0">
         <div class="event-tools flex-item-fixed">
             <Select
+                popper-class="unmax-height"
                 :filterable="false"
                 :top-create="false"
                 :is-drop-inherit-width="true"
