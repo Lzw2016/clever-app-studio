@@ -1,6 +1,6 @@
 import lodash from "lodash";
 import { computed, markRaw, useAttrs, watch } from "vue";
-import { isFunction, noValue } from "@/utils/Typeof";
+import { isFunction, isStr, noValue } from "@/utils/Typeof";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
@@ -37,6 +37,17 @@ const toNumber: ValueTransform<number> = value => {
         value = undefined;
     }
     return value;
+};
+
+/** setter值转换成props bind表达式(不包含“{{”和“}}”) */
+const toBindExpContent: ValueTransform<string> = value => {
+    if (noValue(value)) return "";
+    if (!isStr(value)) return "";
+    const bindStr = lodash.trim(value);
+    if (bindStr.startsWith("{{") && bindStr.endsWith("}}")) {
+        return lodash.trim(bindStr.substring(2, bindStr.length - 2));
+    }
+    return "";
 };
 
 /**
@@ -221,6 +232,7 @@ export {
     toStr,
     toBool,
     toNumber,
+    toBindExpContent,
     getDefState,
     getValue,
     applyValue,

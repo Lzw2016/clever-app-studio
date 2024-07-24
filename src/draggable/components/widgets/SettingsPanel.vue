@@ -162,7 +162,7 @@ onUnmounted(() => {
             </div>
         </div>
         <div v-if="!existsSelection" class="settings-panel flex-column-container">
-            <div class="flex-item-fill settings-panel-empty">请在左侧画布选中节点</div>
+            <div class="flex-item-fill settings-panel-empty">请在画布选中节点</div>
         </div>
         <div v-else-if="multipleSelection" class="settings-panel flex-column-container">
             <div class="flex-item-fill settings-panel-empty">选中的节点类型不一致</div>

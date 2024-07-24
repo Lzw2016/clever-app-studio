@@ -56,6 +56,81 @@ const designerTest = defineDesignBlock({
         count: 0,
         refs: [],
         str: "",
+        test01: "自定义文本",
+        test02: {
+            "success": true,
+            "msg": "查询成功",
+            "data": [
+                {
+                    "role_id": "176707",
+                    "role_code": "JXADMIN",
+                    "role_name": "嘉兴工厂-管理员",
+                    "is_enable": "0001",
+                    "create_by": "316357343811993609",
+                    "create_at": "2024-03-04 09:37:33",
+                    "update_by": "316357343811993608",
+                    "update_at": "2024-04-02 14:35:20"
+                },
+                {
+                    "role_id": "177838",
+                    "role_code": "suppeAdmin",
+                    "role_name": "超级管理员",
+                    "is_enable": "0001",
+                    "create_by": "316357343811993608",
+                    "create_at": "2024-04-11 15:57:10",
+                    "update_by": "316357343811993608",
+                    "update_at": "2024-04-11 15:57:10"
+                },
+                {
+                    "role_id": "178520",
+                    "role_code": "OMS角色",
+                    "role_name": "OMS角色",
+                    "is_enable": "0001",
+                    "create_by": "316357343811993608",
+                    "create_at": "2024-07-01 11:17:39",
+                    "update_by": "316357343811993608",
+                    "update_at": "2024-07-01 11:17:39"
+                },
+                {
+                    "role_id": "303369569513766929",
+                    "role_code": "test001",
+                    "role_name": "系统测试1",
+                    "is_enable": "0001",
+                    "create_by": "316357343811993609",
+                    "create_at": "2024-02-23 13:41:09",
+                    "update_by": "316357343811993608",
+                    "update_at": "2024-04-10 14:24:24"
+                },
+                {
+                    "role_id": "314882675145965569",
+                    "role_code": "admin22",
+                    "role_name": "管理员222",
+                    "is_enable": "0001",
+                    "create_by": "121105249166426113",
+                    "create_at": "2023-03-11 10:55:40",
+                    "update_by": "316357343811993608",
+                    "update_at": "2024-04-02 14:35:54"
+                },
+                {
+                    "role_id": "337454652725919762",
+                    "role_code": "001",
+                    "role_name": "入库制单员",
+                    "is_enable": "0001",
+                    "create_by": "316357343811993608",
+                    "create_at": "2024-04-10 14:22:09",
+                    "update_by": "316357343811993608",
+                    "update_at": "2024-04-10 14:22:09"
+                }
+            ],
+            "pagination": {
+                "total": "6",
+                "size": "50",
+                "current": "1",
+                "firstRowNum": "1",
+                "lastRowNum": "6",
+                "eds": null
+            }
+        },
     },
     computed: {
         c_count_x2: (oldValue, block) => {
@@ -88,8 +163,6 @@ const designerTest = defineDesignBlock({
                 onClick: 'addSpan',
             },
         },
-        // function () {
-        // },
         {
             type: "button",
             items: "删除",

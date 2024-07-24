@@ -100,7 +100,7 @@ interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
     labelTips?: string;
     /** 被设置的属性名称 */
     propsName?: string;
-    /** TODO 启用数据绑定(默认启用) */
+    /** 启用数据绑定，绑定 propsName 属性，仅当 propsName 存在时有效(默认启用) */
     enableBind?: boolean;
     /** 从组件节点读取属性值 */
     getPropsValue?: SetterProps['getPropsValue'];

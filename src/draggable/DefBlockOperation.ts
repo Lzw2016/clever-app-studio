@@ -22,7 +22,7 @@ interface AllBlockOperationProps extends CreateConfig {
     readonly nodeParent: Record<string, RuntimeNode>;
     /** ref属性与id属性的映射 | RuntimeNode.ref -> RuntimeNode.id */
     readonly refId: Record<string, string>;
-    /** 渲染节点的ref与所属Block实例的ref之间的映射 | RuntimeNode.ref -> allBlock.ref */
+    /** 渲染节点的ref与所属Block实例的ref之间的映射 | RuntimeNode.ref -> RuntimeBlock.ref */
     readonly nodeRefVueRef: Record<string, string>;
 }
 

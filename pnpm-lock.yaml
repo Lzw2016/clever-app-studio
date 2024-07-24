@@ -32,9 +32,6 @@ importers:
       '@opentiny/vue':
         specifier: 3.17.0
         version: 3.17.0(echarts@5.5.0)
-      '@opentiny/vue-icon':
-        specifier: 3.17.0
-        version: 3.17.0
       '@opentiny/vue-locale':
         specifier: 3.17.0
         version: 3.17.0
@@ -3314,6 +3311,17 @@ packages:
       '@vue/composition-api':
         optional: true
 
+  vue-demi@0.14.9:
+    resolution: {integrity: sha512-dC1TJMODGM8lxhP6wLToncaDPPNB3biVxxRDuNCYpuXwi70ou7NsGd97KVTJ2omepGId429JZt8oaZKeXbqxwg==}
+    engines: {node: '>=12'}
+    hasBin: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+
   vue-draggable-plus@0.4.1:
     resolution: {integrity: sha512-KNi+c482OQUZTZ2kXIGc41fEwknkNF+LlngjBr5TVtBLNvpX2dmwRJJ3J7dy5dGcijXb7V1j+mhqce4iHOoi6Q==}
     peerDependencies:
@@ -4374,7 +4382,7 @@ snapshots:
       '@monaco-editor/loader': 1.4.0(monaco-editor@0.50.0)
       monaco-editor: 0.50.0
       vue: 3.4.31(typescript@5.5.3)
-      vue-demi: 0.14.8(vue@3.4.31(typescript@5.5.3))
+      vue-demi: 0.14.9(vue@3.4.31(typescript@5.5.3))
 
   '@intlify/core-base@9.13.1':
     dependencies:
@@ -8149,6 +8157,10 @@ snapshots:
       vue: 3.4.31(typescript@5.5.3)
 
   vue-demi@0.14.8(vue@3.4.31(typescript@5.5.3)):
+    dependencies:
+      vue: 3.4.31(typescript@5.5.3)
+
+  vue-demi@0.14.9(vue@3.4.31(typescript@5.5.3)):
     dependencies:
       vue: 3.4.31(typescript@5.5.3)
 

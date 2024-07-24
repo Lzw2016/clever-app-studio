@@ -13,7 +13,7 @@ import SplitPane, { Collapsed } from "@/components/SplitPane.vue";
 import { RuntimeBlock, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
-import { runtimeNodeToTreeNode, TreeNode } from "@/draggable/utils/DesignerUtils";
+import { OutlineTreeNode, runtimeNodeToTreeNode } from "@/draggable/utils/DesignerUtils";
 import { CodeExample } from "@/draggable/types/Base";
 import { EventGroup, EventInfo, ListenerInfo } from "@/draggable/types/ComponentMeta";
 import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
@@ -94,7 +94,7 @@ const data = {
 // 大纲树组件实例
 const outlineTreeRef = ref<InstanceType<typeof Tree> | undefined>();
 // 大纲树数据节点
-const outlineTreeNodes = computed<Array<TreeNode<RuntimeNode>>>(() => getOutlineTreeNodes(props.designerState?.blockInstance?.globalContext?.runtimeBlock));
+const outlineTreeNodes = computed<Array<OutlineTreeNode<RuntimeNode>>>(() => getOutlineTreeNodes(props.designerState?.blockInstance?.globalContext?.runtimeBlock));
 // 当前选择组件支持的事件分组
 const eventGroups = computed<Array<EventGroup>>(() => {
     const componentMeta = getNodeComponentMeta(props.designerEngine.componentManage, state.selectRuntimeNode)
@@ -184,7 +184,7 @@ watch(existsExampleCode, value => {
     }
 });
 
-function getOutlineTreeNodes(runtimeBlock?: RuntimeBlock): Array<TreeNode<RuntimeNode>> {
+function getOutlineTreeNodes(runtimeBlock?: RuntimeBlock): Array<OutlineTreeNode<RuntimeNode>> {
     if (!runtimeBlock) return [];
     return runtimeNodeToTreeNode(runtimeBlock);
 }
@@ -223,7 +223,7 @@ function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
     });
 }
 
-function selectOutlineNodeChange(data: TreeNode<RuntimeNode>, currentNode: any) {
+function selectOutlineNodeChange(data: OutlineTreeNode<RuntimeNode>, currentNode: any) {
     state.selectRuntimeNode = data.data;
     nextTick(() => selectListenerChange(allListener.value?.[0]));
 }

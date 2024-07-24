@@ -4,12 +4,14 @@ import { computed, getCurrentInstance, onBeforeMount, reactive, ref, watch } fro
 import { Collapse, CollapseItem, Form, FormItem, Input, Loading, Tooltip } from "@opentiny/vue";
 import { IconBraces } from "@tabler/icons-vue";
 import { layer } from "@layui/layer-vue";
-import { isStr } from "@/utils/Typeof";
+import { hasValue, isStr, noValue } from "@/utils/Typeof";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { Setter, SetterPanel } from "@/draggable/types/ComponentMeta";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
+import BindSetter from "@/draggable/components/setter/BindSetter.vue";
+import { forceUpdateBlock } from "@/draggable/utils/SetterUtils";
 
 const vLoading = Loading.directive;
 
@@ -68,7 +70,7 @@ onBeforeMount(() => loadSetterComponent(props.setterPanel).finally());
 // 动态加载设计器表单组件
 watch(() => props.setterPanel, setterPanel => loadSetterComponent(setterPanel).finally());
 // 选中节点的ref值
-watch(()=> selectNode.value, node => resetNodeRef(node), { immediate: true });
+watch(() => selectNode.value, node => resetNodeRef(node), { immediate: true });
 
 async function loadSetterComponent(setterPanel: SetterPanel) {
     // 获取所有需要加载的组件类型
@@ -114,7 +116,7 @@ function getFormItemProps(setter: Setter) {
 }
 
 function resetNodeRef(node?: RuntimeNode) {
-    if(node) {
+    if (node) {
         state.nodeRef = node.ref;
     } else {
         state.nodeRef = undefined;
@@ -142,7 +144,7 @@ function getSetterProps(setter: Setter) {
     };
     // if (setter.watchProps) obj.watchProps = setter.watchProps;
     // if (setter.listeners) obj.listeners = setter.listeners;
-    // TODO enableBind, watchProps, listeners
+    // TODO watchProps, listeners
     return obj;
 }
 
@@ -155,6 +157,54 @@ function updateNodeRef(oldRef: string, newRef: string) {
     if (!blockInstance.ops.updateNodeRef(oldRef, newRef)) {
         layer.msg("ref值更新失败，ref值必须唯一", { time: 1500 });
     }
+}
+
+function isBound(setter: Setter): boolean {
+    const { propsName, enableBind } = setter;
+    if (enableBind === false || noValue(propsName)) return false;
+    const nodes = props.designerState.selectNodes;
+    const values = new Set<any>();
+    for (let node of nodes) {
+        values.add(node.props[propsName]);
+    }
+    if (values.size !== 1) return false;
+    const propsValue = values.values().next().value;
+    if (!isStr(propsValue)) return false;
+    const bindStr = lodash.trim(propsValue);
+    return bindStr.startsWith("{{") && bindStr.endsWith("}}");
+}
+
+/**
+ * @param setter    Setter值
+ * @param isBound   当前节点是否是bind状态
+ */
+function toggleBind(setter: Setter, isBound: boolean) {
+    const { propsName } = setter;
+    if (noValue(propsName)) return;
+    const nodes = props.designerState.selectNodes;
+    for (let node of nodes) {
+        if (!node.__tmp_bind_props) node.__tmp_bind_props = {};
+        if (!node.__tmp_unbind_props) node.__tmp_unbind_props = {};
+        if (isBound) {
+            // 当前是bind，切换成unbind
+            const propsValue = node.props[propsName];
+            if (isStr(propsValue)) {
+                const bindStr = lodash.trim(propsValue);
+                if (bindStr.startsWith("{{") && bindStr.endsWith("}}")) {
+                    node.__tmp_bind_props[propsName] = bindStr;
+                }
+            }
+            node.props[propsName] = node.__tmp_unbind_props[propsName];
+        } else {
+            // 当前是unbind，切换成bind
+            node.__tmp_unbind_props[propsName] = node.props[propsName];
+            node.props[propsName] = node.__tmp_bind_props[propsName] ?? "{{  }}";
+        }
+    }
+    instance?.proxy?.$forceUpdate();
+    const blockInstance = props.designerState.blockInstance;
+    if (!blockInstance) return;
+    forceUpdateBlock(props.designerState, blockInstance, nodes, false, true);
 }
 </script>
 
@@ -216,9 +266,23 @@ function updateNodeRef(oldRef: string, newRef: string) {
                         </template>
                         <div class="flex-row-container" style="align-items: center;">
                             <div class="flex-item-fill flex-row-container" style="align-items: center;">
-                                <component v-if="!state.loading" :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
+                                <template v-if="!state.loading">
+                                    <component v-if="isBound(item)" :is="BindSetter" v-bind="getSetterProps(item)"/>
+                                    <component v-else :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
+                                </template>
                             </div>
-                            <span v-if="item.enableBind !== false" class="flex-item-fixed flex-row-container flex-center setter-button" title="使用数据绑定">
+                            <span
+                                v-if="item.enableBind !== false && hasValue(item.propsName)"
+                                :class="{
+                                    'flex-item-fixed': true,
+                                    'flex-row-container': true,
+                                    'flex-center': true,
+                                    'setter-button': true,
+                                    'setter-button-active': isBound(item),
+                                }"
+                                title="使用数据绑定"
+                                @click="toggleBind(item, isBound(item))"
+                            >
                                 <IconBraces :size="16" stroke-width="2"/>
                             </span>
                             <span v-else class="setter-button-placeholder"/>
@@ -279,6 +343,11 @@ function updateNodeRef(oldRef: string, newRef: string) {
 }
 
 .setter-button:hover {
+    background-color: #006cff;
+    color: #fff;
+}
+
+.setter-button-active {
     background-color: #006cff;
     color: #fff;
 }

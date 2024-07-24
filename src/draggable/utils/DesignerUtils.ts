@@ -490,13 +490,13 @@ function _computedToDesignNode(computed: RuntimeBlock['computed'], blockNode?: R
     return res;
 }
 
-interface TreeNode<T = any> {
+interface OutlineTreeNode<T = any> {
     /** 节点ID */
     readonly id: string;
     /** 节点标题 */
     readonly label: string;
     /** 子节点 */
-    children?: Array<TreeNode>;
+    children?: Array<OutlineTreeNode<T>>;
     /** 当前节点是否是插槽 */
     readonly isSlot: boolean;
     /** 节点数据 */
@@ -504,15 +504,15 @@ interface TreeNode<T = any> {
 }
 
 /**
- * 将 RuntimeNode 转换成 DesignNode
+ * 获取 RuntimeNode 的节点大纲
  */
-function runtimeNodeToTreeNode(runtimeNode: RuntimeNode): Array<TreeNode<RuntimeNode>> {
-    const rootNodes: Array<TreeNode<RuntimeNode>> = [];
-    const flatNodes: Map<string, TreeNode<RuntimeNode>> = new Map<string, TreeNode<RuntimeNode>>();
+function runtimeNodeToTreeNode(runtimeNode: RuntimeNode): Array<OutlineTreeNode<RuntimeNode>> {
+    const rootNodes: Array<OutlineTreeNode<RuntimeNode>> = [];
+    const flatNodes: Map<string, OutlineTreeNode<RuntimeNode>> = new Map<string, OutlineTreeNode<RuntimeNode>>();
     deepTraverseRuntimeNode(
         runtimeNode,
         (current, isSlot, parent) => {
-            const node: TreeNode<RuntimeNode> = { id: current.id, label: current.type, isSlot: isSlot, data: current };
+            const node: OutlineTreeNode<RuntimeNode> = { id: current.id, label: current.type, isSlot: isSlot, data: current };
             flatNodes.set(node.id, node);
             if (!parent) {
                 // 不存在父节点(根节点)
@@ -734,12 +734,92 @@ async function runtimeNodeToJsCode(runtimeNode?: RuntimeNode): Promise<string> {
     return await jsStringify(designNode);
 }
 
+interface BindTreeNode {
+    /** 节点ID */
+    readonly id: string;
+    /** 节点标题 */
+    readonly label: string;
+    /** 子节点 */
+    children?: Array<BindTreeNode>;
+    /** bind表达式内容 */
+    readonly bindExpContent: string;
+}
+
+/**
+ * 获取 RuntimeBlock 的 props 绑定表达式的数据树
+ */
+function getBindTreeNode(block?: RuntimeBlock): Array<BindTreeNode> {
+    const data: BindTreeNode = {
+        id: "data",
+        label: "数据",
+        children: [],
+        bindExpContent: "",
+    };
+    const computed: BindTreeNode = {
+        id: "computed",
+        label: "计算属性",
+        children: [],
+        bindExpContent: "",
+    };
+    // 可自定义应用属性
+    const res: Array<BindTreeNode> = [data, computed];
+    if (!block) return res;
+    _dataToBindTreeNode(block.data, data).forEach(node => data.children?.push(node));
+    _computedToBindTreeNode(block.computed, computed).forEach(node => computed.children?.push(node));
+    return res;
+}
+
+function _dataToBindTreeNode(data: any, parentNode?: BindTreeNode): Array<BindTreeNode> {
+    const res: Array<BindTreeNode> = [];
+    if (isArray(data)) {
+        const idPrefix = parentNode?.id ? (parentNode.id + '.') : '';
+        const bindExpContentPrefix = parentNode?.bindExpContent ?? '$data';
+        for (let idx = 0; idx < data.length; idx++) {
+            const node: BindTreeNode = {
+                id: idPrefix + idx,
+                label: `[${idx}]`,
+                bindExpContent: `${bindExpContentPrefix}[${idx}]`,
+            }
+            node.children = _dataToBindTreeNode(data[idx], node);
+            res.push(node);
+        }
+    } else if (isObj(data)) {
+        const idPrefix = parentNode?.id ? (parentNode.id + '.') : '';
+        const bindExpContentPrefix = parentNode?.bindExpContent ? (parentNode.bindExpContent + '.') : '';
+        for (let key of Object.keys(data)) {
+            const node: BindTreeNode = {
+                id: idPrefix + key,
+                label: key,
+                bindExpContent: bindExpContentPrefix + key,
+            }
+            node.children = _dataToBindTreeNode(data[key], node);
+            res.push(node);
+        }
+    }
+    return res;
+}
+
+function _computedToBindTreeNode(computed: any, parentNode?: BindTreeNode): Array<BindTreeNode> {
+    const res: Array<BindTreeNode> = [];
+    const idPrefix = parentNode?.id ? (parentNode.id + '.') : '';
+    const bindExpContentPrefix = parentNode?.bindExpContent ? (parentNode.bindExpContent + '.') : '';
+    for (let key of Object.keys(computed)) {
+        res.push({
+            id: idPrefix + key,
+            label: key,
+            bindExpContent: bindExpContentPrefix + key,
+        });
+    }
+    return res;
+}
+
 export type  {
     NodePosition,
     TraverseVNode,
     TraverseRuntimeNode,
     RuntimeNodeToDesignNodeOps,
-    TreeNode,
+    OutlineTreeNode,
+    BindTreeNode,
 }
 
 export {
@@ -760,4 +840,5 @@ export {
     runtimeNodeToJsonCode,
     runtimeNodeToJson5Code,
     runtimeNodeToJsCode,
+    getBindTreeNode,
 }

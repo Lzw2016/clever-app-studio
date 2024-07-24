@@ -1,5 +1,6 @@
 import lodash from "lodash";
 import hotkeys, { HotkeysEvent } from "hotkeys-js";
+import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { DesignerDriver } from "@/draggable/DesignerDriver";
 import { ShortcutKeyEvent } from "@/draggable/events/keyboard/ShortcutKeyEvent";
 
@@ -10,6 +11,11 @@ hotkeys.filter = function (event) {
     }
     const pressedFnKey = event.ctrlKey || event.altKey || event.metaKey;
     const target = event.target as Element;
+    // 属于设计器节点
+    const node = target.closest(`[${htmlExtAttr.nodeId}]`);
+    if (node) {
+        return true;
+    }
     // 属于 monaco 编辑器
     if (pressedFnKey && target?.className?.includes('monaco-mouse-cursor-text')) {
         return true;

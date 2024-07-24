@@ -42,6 +42,10 @@ interface RuntimeNode {
     __raw_props_style: any;
     /** 原始的 class 属性 */
     __raw_props_class?: string;
+    /** 暂存绑定的props值，用于从 unbind 恢复成 bind 状态时，恢复属性值 */
+    __tmp_bind_props?: Record<string, string>;
+    /** 暂存非绑定的props值，用于从 bind 恢复成 unbind 状态时，恢复属性值 */
+    __tmp_unbind_props?: Record<string, any>;
     /** 监听的事件(原函数) */
     readonly listeners: Record<string, RuntimeListener>;
     /** 监听的事件(已绑定 this 指针的 listeners 函数) */
@@ -152,7 +156,7 @@ interface GlobalContext extends CreateConfig {
     readonly nodeParent: Record<string, RuntimeNode>;
     /** ref属性与id属性的映射 | RuntimeNode.ref -> RuntimeNode.id */
     readonly refId: Record<string, string>;
-    /** 渲染节点的ref与所属Block实例的ref之间的映射 | RuntimeNode.ref -> allBlock.ref */
+    /** 渲染节点的ref与所属Block实例的ref之间的映射 | RuntimeNode.ref -> RuntimeBlock.ref */
     readonly nodeRefVueRef: Record<string, string>;
 }
 
