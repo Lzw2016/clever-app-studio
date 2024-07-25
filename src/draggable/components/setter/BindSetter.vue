@@ -86,6 +86,7 @@ defineExpose<SetterExpose>({
     </Input>
     <Modal
         v-if="state.showModal"
+        class="bind-modal"
         v-model="state.showModal"
         width="500px"
         :esc-closable="true"
@@ -121,5 +122,11 @@ defineExpose<SetterExpose>({
     max-height: 800px;
     overflow: auto;
     margin: 8px 6px 16px 0;
+}
+
+/* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
+
+.bind-modal.tiny-modal.tiny-modal__wrapper.is__visible :deep(.tiny-modal__box) {
+    top: 8vh;
 }
 </style>
