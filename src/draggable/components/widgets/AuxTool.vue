@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, CSSProperties } from "vue";
-import { IconArrowDown, IconArrowUp, IconChevronLeft, IconCopy, IconEraser, IconSettings, IconTrash, IconX } from "@tabler/icons-vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faArrowDown, faArrowUp, faChevronLeft, faClone, faEraser, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { isObj } from "@/utils/Typeof";
 import { getChildNodePosition, NodePosition, runtimeNodeToDesignNode } from "@/draggable/utils/DesignerUtils";
 import { calcAuxToolPosition } from "@/draggable/utils/PositionCalc";
@@ -30,7 +31,6 @@ const props = withDefaults(defineProps<AuxToolProps>(), {});
 // const state = reactive({});
 // 内部数据
 // const data = {};
-
 const isDragging = computed(() => props.designerEngine.cursor.isDragging());
 const hover = computed(() => props.designerState.hover);
 const hoverIsTop = computed(() => isTop(props.designerState.hover.position));
@@ -268,11 +268,11 @@ function delNode(nodeId?: string) {
                 }"
             >
                 <span style="font-size: 12px;">{{ selection.componentMeta.name }}</span>
-                <span class="mark-top-button" title="设置">
-                    <IconSettings stroke="1.6" :size="16"/>
-                </span>
+                <!-- <span class="mark-top-button" title="设置">-->
+                <!--     <FontAwesomeIcon :icon="faGear" :fixed-width="true" style="font-size: 14px;"/>-->
+                <!-- </span>-->
                 <span class="mark-top-button" title="取消选择" @click="cancelSelection(selection.nodeId)">
-                    <IconX stroke="1.6" :size="16"/>
+                    <FontAwesomeIcon :icon="faXmark" :fixed-width="true" style="font-size: 14px;"/>
                 </span>
             </div>
             <div
@@ -283,22 +283,22 @@ function delNode(nodeId?: string) {
                 }"
             >
                 <span v-if="selection.parentId" class="mark-bottom-button" title="选择父级" @click="selectParent(selection)">
-                    <IconChevronLeft stroke="1.6" :size="16"/>
+                    <FontAwesomeIcon :icon="faChevronLeft" :fixed-width="true" style="font-size: 12px;"/>
                 </span>
                 <span v-if="showMoveUp(selection)" class="mark-bottom-button" title="向前移动" @click="moveNode(selection, true)">
-                    <IconArrowUp stroke="1.6" :size="16"/>
+                    <FontAwesomeIcon :icon="faArrowUp" :fixed-width="true" style="font-size: 12px;"/>
                 </span>
                 <span v-if="showMoveDown(selection)" class="mark-bottom-button" title="向后移动" @click="moveNode(selection, false)">
-                    <IconArrowDown stroke="1.6" :size="16"/>
+                    <FontAwesomeIcon :icon="faArrowDown" :fixed-width="true" style="font-size: 12px;"/>
                 </span>
                 <span v-if="selection.parentId" class="mark-bottom-button" title="复制" @click="copyNode(selection)">
-                    <IconCopy stroke="1.6" :size="16"/>
+                    <FontAwesomeIcon :icon="faClone" :fixed-width="true" style="font-size: 12px;"/>
                 </span>
                 <span class="mark-bottom-button" title="清空内容" @click="clearChild(selection)">
-                    <IconEraser stroke="1.6" :size="16"/>
+                    <FontAwesomeIcon :icon="faEraser" :fixed-width="true" style="font-size: 12px;"/>
                 </span>
                 <span v-if="selection.parentId" class="mark-bottom-button" title="删除" @click="delNode(selection.nodeId)">
-                    <IconTrash stroke="1.6" :size="16"/>
+                    <FontAwesomeIcon :icon="faTrash" :fixed-width="true" style="font-size: 12px;"/>
                 </span>
             </div>
         </div>
@@ -447,6 +447,7 @@ function delNode(nodeId?: string) {
     cursor: pointer;
     height: 16px;
     padding: 0 2px;
+    line-height: 16px;
 }
 
 .aux-cover-rect-dragging {

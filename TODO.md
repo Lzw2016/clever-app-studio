@@ -44,7 +44,7 @@
 [  ] 32.集成扩展图标库 lucide、Emoji(优先级底)
 [OK] 33.完成 FontawesomeSetting.vue、GoogleIconSetting.vue 参考 TablerIconSetting.vue
 [OK] 34.完成 IconSetter.vue 组件
-[  ] 35.在项目中只使用 fontawesome 图标库，需要替换 tabler-icons 图标库的使用(优先级底)
+[OK] 35.在项目中只使用 fontawesome 图标库，需要替换 tabler-icons 图标库的使用(优先级底)
 [OK] 36.完成组件“样式”配置面板
 [OK] 37.完成组件“事件”配置面板
 [  ] 38.完成组件“高级”配置面板

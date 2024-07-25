@@ -2,7 +2,7 @@
 import lodash from "lodash";
 import { computed, getCurrentInstance, onBeforeMount, reactive, ref, watch } from "vue";
 import { Collapse, CollapseItem, Form, FormItem, Input, Loading, Tooltip } from "@opentiny/vue";
-import { IconBraces } from "@tabler/icons-vue";
+import Braces from "@/assets/images/braces.svg?component";
 import { layer } from "@layui/layer-vue";
 import { hasValue, isStr, noValue } from "@/utils/Typeof";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
@@ -283,7 +283,7 @@ function toggleBind(setter: Setter, isBound: boolean) {
                                 title="使用数据绑定"
                                 @click="toggleBind(item, isBound(item))"
                             >
-                                <IconBraces :size="16" stroke-width="2"/>
+                                <Braces stroke-width="1.8"/>
                             </span>
                             <span v-else class="setter-button-placeholder"/>
                         </div>
@@ -336,7 +336,7 @@ function toggleBind(setter: Setter, isBound: boolean) {
 
 .setter-button {
     margin-left: 4px;
-    width: 24px;
+    width: 16px;
     height: 24px;
     padding: 0 4px;
     cursor: pointer;

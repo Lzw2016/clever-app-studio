@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeMount, onUnmounted, reactive, ref, watch } from "vue";
 import { Modal, TabItem, Tabs } from "@opentiny/vue";
-import { IconX } from "@tabler/icons-vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 import { ShowEventEditorDialogEvent } from "@/draggable/events/designer/ShowEventEditorDialogEvent";
@@ -158,7 +159,7 @@ onUnmounted(() => {
             <div class="flex-item-fixed settings-panel-title-name">组件配置</div>
             <div class="flex-item-fill"/>
             <div class="settings-panel-close">
-                <IconX :size="18"/>
+                <FontAwesomeIcon :icon="faXmark" :fixed-width="true"/>
             </div>
         </div>
         <div v-if="!existsSelection" class="settings-panel flex-column-container">
@@ -303,6 +304,7 @@ onUnmounted(() => {
     justify-content: center;
     color: #666666;
     cursor: pointer;
+    font-size: 16px;
 }
 
 .settings-panel-close:hover {

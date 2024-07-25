@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, CSSProperties, onMounted, reactive, ref } from "vue";
+import { computed, CSSProperties, onMounted, reactive, ref, watch } from "vue";
 import { RouteParams, useRoute } from "vue-router";
 import { ResizeObserverEntry, useResizeObserver } from '@vueuse/core'
-import { IconArrowBackUp, IconArrowForwardUp, IconArrowsMove, IconClick, IconCode, IconDeviceLaptop, IconDeviceMobile, IconDevices, IconPalette, IconPlayerPlay } from "@tabler/icons-vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faArrowPointer, faArrowRotateLeft, faArrowRotateRight, faArrowsUpDownLeftRight, faCode, faLaptop, faMobileScreen, faPalette, faPlay } from "@fortawesome/free-solid-svg-icons";
 import "codemirror/mode/javascript/javascript";
 import "codemirror/addon/fold/foldgutter.css";
 import "codemirror/addon/fold/foldcode";
@@ -94,8 +95,8 @@ const isSelectionCursor = computed(() => state.cursorMode === DesignerCursorMode
 const isPCLayout = computed(() => state.layout === DesignerLayout.PC);
 // 移动端布局
 const isMobileLayout = computed(() => state.layout === DesignerLayout.Mobile);
-// 响应式布局
-const isResponsiveLayout = computed(() => state.layout === DesignerLayout.Responsive);
+// // 响应式布局
+// const isResponsiveLayout = computed(() => state.layout === DesignerLayout.Responsive);
 // 设计器
 const isDesignerTab = computed(() => state.activeTab === DesignerTab.Designer);
 // 源码
@@ -145,6 +146,9 @@ useResizeObserver(designerContainer, entries => {
     });
 });
 
+// RuntimeBlock 组件创建时
+watch(designerBlockInstance, () => calcDesignerBlockStyle());
+
 // 计算设计器组件的样式
 function calcDesignerBlockStyle() {
     if (!designerContainer.value || !designerBlockInstance.value) return;
@@ -179,14 +183,14 @@ console.log("pageId", route.params.pageId)
                 :class="{'designer-tool-button-disabled': !canRevoke}"
                 title="撤销"
             >
-                <IconArrowBackUp :size="22" stroke-width="1.5"/>
+                <FontAwesomeIcon :icon="faArrowRotateLeft" :fixed-width="true"/>
             </div>
             <div
                 class="flex-item-fixed designer-tool-button designer-tool-button-last"
                 :class="{'designer-tool-button-disabled': !canBackRevoke}"
                 title="反撤销"
             >
-                <IconArrowForwardUp :size="22" stroke-width="1.5"/>
+                <FontAwesomeIcon :icon="faArrowRotateRight" :fixed-width="true"/>
             </div>
             <div style="width: 16px;"/>
             <div
@@ -195,7 +199,7 @@ console.log("pageId", route.params.pageId)
                 title="拖拽"
                 @click="state.cursorMode=DesignerCursorMode.DragDrop"
             >
-                <IconArrowsMove :size="22" stroke-width="1.5" viewBox="-1 -1 26 26"/>
+                <FontAwesomeIcon :icon="faArrowsUpDownLeftRight" :fixed-width="true"/>
             </div>
             <div
                 class="flex-item-fixed designer-tool-button designer-tool-button-last"
@@ -203,7 +207,7 @@ console.log("pageId", route.params.pageId)
                 title="自由选择"
                 @click="state.cursorMode=DesignerCursorMode.Selection"
             >
-                <IconClick :size="22" stroke-width="1.5" viewBox="-1 -1 26 26"/>
+                <FontAwesomeIcon :icon="faArrowPointer" :fixed-width="true"/>
             </div>
             <div style="width: 16px;"/>
             <div
@@ -212,7 +216,7 @@ console.log("pageId", route.params.pageId)
                 title="PC布局"
                 @click="state.layout=DesignerLayout.PC"
             >
-                <IconDeviceLaptop :size="22" stroke-width="1.5" viewBox="-1 -1 26 26"/>
+                <FontAwesomeIcon :icon="faLaptop" :fixed-width="true"/>
             </div>
             <div
                 class="flex-item-fixed designer-tool-button"
@@ -220,15 +224,8 @@ console.log("pageId", route.params.pageId)
                 title="移动端布局"
                 @click="state.layout=DesignerLayout.Mobile"
             >
-                <IconDeviceMobile :size="22" stroke-width="1.5" viewBox="-1 -1 26 26"/>
-            </div>
-            <div
-                class="flex-item-fixed designer-tool-button designer-tool-button-last"
-                :class="{'designer-tool-button-active': isResponsiveLayout}"
-                title="响应式布局"
-                @click="state.layout=DesignerLayout.Responsive"
-            >
-                <IconDevices :size="22" stroke-width="1.5" viewBox="-1 -1 26 26"/>
+                <FontAwesomeIcon :icon="faMobileScreen" :fixed-width="true"/>
+
             </div>
             <div class="flex-item-fill"/>
             <div
@@ -237,7 +234,7 @@ console.log("pageId", route.params.pageId)
                 title="设计器"
                 @click="state.activeTab=DesignerTab.Designer"
             >
-                <IconPalette :size="22" stroke-width="1.5" viewBox="-1 -1 26 26"/>
+                <FontAwesomeIcon :icon="faPalette" :fixed-width="true"/>
             </div>
             <div
                 class="flex-item-fixed designer-tool-button"
@@ -251,7 +248,7 @@ console.log("pageId", route.params.pageId)
                     state.codeEditorLoaded = true;
                 }"
             >
-                <IconCode :size="22" stroke-width="1.5" viewBox="-1 -1 26 26"/>
+                <FontAwesomeIcon :icon="faCode" :fixed-width="true"/>
             </div>
             <div
                 class="flex-item-fixed designer-tool-button designer-tool-button-last"
@@ -259,7 +256,7 @@ console.log("pageId", route.params.pageId)
                 title="预览"
                 @click="state.activeTab=DesignerTab.Preview"
             >
-                <IconPlayerPlay :size="22" stroke-width="1.5" viewBox="-1 -1 26 26"/>
+                <FontAwesomeIcon :icon="faPlay" :fixed-width="true"/>
             </div>
         </div>
         <div class="flex-item-fill">
@@ -269,7 +266,7 @@ console.log("pageId", route.params.pageId)
                     ref="designerBlockInstance"
                     :style="state.designerBlockStyle"
                     :component-manage="props.designerEngine.componentManage"
-                    :block="props.designPageMate?.designBlock"
+                    :block="props.designPageMate.designBlock"
                     :is-designing="true"
                 />
                 <AuxTool ref="auxTool" :designer-engine="props.designerEngine" :designerState="props.designerState"/>
@@ -324,10 +321,14 @@ console.log("pageId", route.params.pageId)
     height: 32px;
     align-items: center;
     background-color: #eeeeee;
-    padding: 4px 12px;
+    padding: 0 12px;
+    box-sizing: border-box;
 }
 
 .designer-tool-button {
+    width: 22px;
+    height: 22px;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -337,6 +338,10 @@ console.log("pageId", route.params.pageId)
     border-radius: 2px;
     border: 1px solid #d9d9d9;
     border-right: none;
+}
+
+.designer-tool-button > svg {
+    font-size: 14px;
 }
 
 .designer-tool-button-last {

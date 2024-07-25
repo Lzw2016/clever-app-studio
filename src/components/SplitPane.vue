@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, CSSProperties, reactive, watch } from "vue";
-import { IconCaretDownFilled, IconCaretLeftFilled, IconCaretRightFilled, IconCaretUpFilled } from "@tabler/icons-vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faCaretDown, faCaretLeft, faCaretRight, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 
 // 定义组件选项
 defineOptions({
@@ -386,8 +387,7 @@ export type {
                     :style="oneCollapseStyle"
                     @click="oneCollapseClick"
                 >
-                    <IconCaretLeftFilled v-if="horizontal" viewBox="4 4 16 16" style="width: 12px;"/>
-                    <IconCaretUpFilled v-else viewBox="4 4 16 16" style="height: 12px;"/>
+                    <FontAwesomeIcon :icon="horizontal ? faCaretLeft : faCaretUp"/>
                 </div>
                 <div
                     v-if="!props.forceHideTwoCollapse && ((props.twoCollapse && !hideTwo) || hideOne)"
@@ -395,8 +395,7 @@ export type {
                     :style="twoCollapseStyle"
                     @click="twoCollapseClick"
                 >
-                    <IconCaretRightFilled v-if="horizontal" viewBox="4 4 16 16" style="width: 12px;"/>
-                    <IconCaretDownFilled v-else viewBox="4 4 16 16" style="height: 12px;"/>
+                    <FontAwesomeIcon :icon="horizontal ? faCaretRight : faCaretDown"/>
                 </div>
             </div>
         </slot>

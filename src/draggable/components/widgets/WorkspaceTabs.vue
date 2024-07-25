@@ -108,7 +108,7 @@ function showMatchedPage(route: RouteLocationNormalizedLoaded) {
     }
     const pageInfo: PageInfo = {
         path: path,
-        title: `${meta.title ?? ''}`,
+        title: lodash.toString(meta.title || '加载中...'),
         loading: false,
         lastActiveTime: Date.now(),
         component: markRaw(component),
@@ -199,7 +199,7 @@ function setPageLoadError(path: string, err: Error) {
             :name="page.path"
             :title="page.title"
         >
-            <!-- <template v-if="true" #title>加载中...</template>-->
+            <!-- <template v-if="page.loading" #title>加载中...</template>-->
             <!-- <Skeleton :loading="page.loading" :animated="true" :rows="8"/>-->
             <component
                 v-loading="page.loading"

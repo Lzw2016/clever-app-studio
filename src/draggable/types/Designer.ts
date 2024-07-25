@@ -81,8 +81,8 @@ enum DesignerLayout {
     PC = 'pc',
     /** 移动端 */
     Mobile = 'mobile',
-    /** 响应式布局 */
-    Responsive = 'responsive',
+    // /** 响应式布局 */
+    // Responsive = 'responsive',
 }
 
 /** 设计器叶签类型 */

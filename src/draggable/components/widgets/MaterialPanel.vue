@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
 import { Collapse, CollapseItem, Loading, Notify, Search, TabItem, Tabs } from "@opentiny/vue";
-import { IconCalendarPlus, IconX } from "@tabler/icons-vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 import { getMaterialMetaTabAllTypes } from "@/draggable/utils/DesignerUtils";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
@@ -113,7 +115,7 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
             <div class="flex-item-fixed material-panel-title-name">组件库</div>
             <div class="flex-item-fill"/>
             <div class="material-panel-close">
-                <IconX :size="18"/>
+                <FontAwesomeIcon :icon="faXmark" :fixed-width="true"/>
             </div>
         </div>
         <div class="flex-row-container flex-center flex-item-fixed" style="margin-bottom: 4px;">
@@ -154,7 +156,7 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
                             :data-component-type="meta.type"
                         >
                             <div class="material-item-icon flex-item-fixed">
-                                <IconCalendarPlus :size="20"/>
+                                <FontAwesomeIcon :icon="faCalendarPlus" :fixed-width="true"/>
                             </div>
                             <div class="material-item-name flex-item-fill">
                                 {{ meta.name }}
@@ -192,6 +194,7 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
     justify-content: center;
     color: #666666;
     cursor: pointer;
+    font-size: 16px;
 }
 
 .material-panel-close:hover {

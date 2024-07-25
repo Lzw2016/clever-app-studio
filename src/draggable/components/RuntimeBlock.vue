@@ -13,6 +13,12 @@ defineOptions({
     name: 'RuntimeBlock',
 });
 
+// 自定义事件类型
+const emit = defineEmits<{
+    /** block组件创建成功 */
+    blockCreated: [component: any];
+}>();
+
 // 定义 Props 类型
 interface RuntimeBlockProps {
     /** 组件管理器实例 */
@@ -92,6 +98,7 @@ async function createComponent() {
             // 动态创建 block 组件
             data.component = createBlockComponent(props.block, config);
             state.blockCreated = true;
+            emit("blockCreated", data.component);
         } catch (reason: any) {
             state.loadErr = reason;
         } finally {
@@ -100,6 +107,7 @@ async function createComponent() {
     } else {
         data.component = createBlockComponent(props.block, config);
         state.blockCreated = true;
+        emit("blockCreated", data.component);
     }
 }
 
