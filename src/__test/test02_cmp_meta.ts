@@ -145,6 +145,6 @@ const componentMeta = defineComponentMeta({
         default: true,
     },
     i18n: {
-        "zh-CN": {},
+        "zhCN": {},
     },
 });

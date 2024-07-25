@@ -194,10 +194,10 @@ const page = defineBlock({
         },
     },
     i18n: {
-        "zh-CN": {
+        "zhCN": {
             "aaa": "中文",
         },
-        "en-US": {
+        "enUS": {
             "aaa": "英文",
         },
     },

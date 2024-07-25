@@ -1,18 +1,16 @@
 import { createI18n } from "vue-i18n";
 import TinyLocale from "@opentiny/vue-locale";
 import type { InitI18nOption } from "@opentiny/vue-locale/src/vue3";
-import { usePrimeVue } from "primevue/config";
-import PrimeVueZhCN from "./primevue/zh-CN.json";
-import AntDesignZhCN from 'ant-design-vue/es/locale/zh_CN';
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
+import "dayjs/locale/en";
 
 /** 国际化(语言) */
 enum Language {
     /** 中文 */
-    zhCN = 'zh-CN',
+    zhCN = 'zhCN',
     /** 英文 */
-    enUS = 'en-US',
+    enUS = 'enUS',
 }
 
 /** 语言字符串名称 */
@@ -21,24 +19,26 @@ type LanguageName = (typeof Language)[keyof typeof Language];
 /** 多语言词条 */
 type I18N = Partial<Record<LanguageName, Record<string, any>>>;
 
-// primevue的多语言，文件下载地址：https://github.com/primefaces/primelocale
-const primeVueLocale: Partial<Record<LanguageName, any>> = {
-    "zh-CN": PrimeVueZhCN["zh-CN"],
-};
-
-// ant-design-vue的多语言 https://antdv.com/docs/vue/i18n-cn
-const antDesignLocale: Partial<Record<LanguageName, any>> = {
-    "zh-CN": AntDesignZhCN,
+/** 语言类型与框架映射 */
+const LanguageMapping: Record<LanguageName, { dayjs: string, tiny: string }> = {
+    zhCN: {
+        dayjs: "zh-cn",
+        tiny: "zhCN",
+    },
+    enUS: {
+        dayjs: "en",
+        tiny: "enUS",
+    },
 };
 
 /**
  * 初始化i18n
- * TODO 参数使用枚举 Language.zhCN
  */
-function initI18n(locale: string = "zhCN") {
-    dayjs.locale("zh-cn");
+function initI18n(locale: Language = Language.zhCN) {
+    const language = LanguageMapping[locale];
+    dayjs.locale(language.dayjs);
     const option: InitI18nOption = {
-        i18n: { locale: locale },
+        i18n: { locale: language.tiny },
         createI18n: createI18n,
         messages: {
             zhCN: {},
@@ -53,9 +53,9 @@ function initI18n(locale: string = "zhCN") {
  * @param locale 语言类型
  */
 function switchLocale(locale: Language = Language.zhCN) {
-    // 设置 PrimeVue 的语言
-    const primevue = usePrimeVue();
-    primevue.config.locale = primeVueLocale[locale];
+    const language = LanguageMapping[locale];
+    dayjs.locale(language.dayjs);
+
 }
 
 export type {
@@ -65,8 +65,7 @@ export type {
 
 export {
     Language,
-    primeVueLocale,
-    antDesignLocale,
+    LanguageMapping,
     initI18n,
     switchLocale,
 };

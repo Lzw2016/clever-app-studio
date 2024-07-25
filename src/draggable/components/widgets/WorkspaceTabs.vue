@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import lodash from "lodash";
 import { computed, markRaw, onMounted, reactive, watch } from "vue";
-import { RouteComponent, RouteLocationNormalizedLoaded, RouterView, useRoute, useRouter } from "vue-router";
-import { Notify, TabItem, Tabs } from "@opentiny/vue"
-import ProgressSpinner from 'primevue/progressspinner';
-import Skeleton from 'primevue/skeleton';
+import { RouteComponent, RouteLocationNormalizedLoaded, RouteParamsGeneric, RouterView, useRoute, useRouter } from "vue-router";
+import { Loading, Notify, TabItem, Tabs } from "@opentiny/vue"
 import Sortable from "sortablejs";
 import { isAsyncFunction } from "@/utils/Typeof";
 import PageNotFound from "@/components/PageNotFound.vue";
 import PageLoadError from "@/components/PageLoadError.vue";
-import { LoadDesignPageMate } from "@/draggable/types/DesignBlock";
+import { DesignPageMate, LoadDesignPageMate } from "@/draggable/types/DesignBlock";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
+
+const vLoading = Loading.directive;
+const tabDropPlugin = Sortable;
 
 // 定义组件选项
 defineOptions({
@@ -35,7 +36,21 @@ interface PageInfo {
     /** 页面组件 */
     component: RouteComponent;
     /** 页面组件属性 */
-    props: Record<string, any>;
+    props: {
+        /** 路由 fullPath */
+        path: string;
+        /** 路由参数 */
+        routeParams: RouteParamsGeneric;
+        /** 错误信息 */
+        error?: Error;
+        /** 设计器引擎 */
+        designerEngine?: any;
+        /** 设计器状态数据 */
+        designerState?: any;
+        /** 设计页面元数据 */
+        designPageMate?: DesignPageMate;
+        // [key: string]: any;
+    };
 }
 
 // 读取组件 props 属性
@@ -117,7 +132,7 @@ function showMatchedPage(route: RouteLocationNormalizedLoaded) {
             if (!existsPage) return;
             existsPage.title = designPageMate.title;
             existsPage.loading = false;
-            existsPage.props.designPageMate = designPageMate;
+            existsPage.props.designPageMate = markRaw(designPageMate);
         }).catch(err => setPageLoadError(path, err));
     }
     // 新增页面
@@ -173,7 +188,7 @@ function setPageLoadError(path: string, err: Error) {
         class="workspace-tabs"
         v-model="state.activeTab"
         tab-style="card"
-        :drop-config="{ plugin: Sortable }"
+        :drop-config="{ plugin: tabDropPlugin }"
         :with-close="true"
         @close="closePage"
         @click="clickPage"
@@ -184,14 +199,16 @@ function setPageLoadError(path: string, err: Error) {
             :name="page.path"
             :title="page.title"
         >
-            <template v-if="page.loading" #title>
-                <Skeleton width="60px" height="11px"/>
-            </template>
-            <div v-if="page.loading" class="workspace-page-loading">
-                <ProgressSpinner style="width: 56px; height: 56px;z-index: 1;" strokeWidth="4"/>
-                <div style="color: #517ce0;font-size: 14px;margin-top: 4px;z-index: 1;">加载中...</div>
-            </div>
-            <component v-else :is="page.component" v-bind="page.props"/>
+            <!-- <template v-if="true" #title>加载中...</template>-->
+            <!-- <Skeleton :loading="page.loading" :animated="true" :rows="8"/>-->
+            <component
+                v-loading="page.loading"
+                tiny-loading__text="加载中..."
+                tiny-loading__background="rgba(0, 0, 0, 0.25)"
+                :class="{ 'workspace-page-loading': page.loading }"
+                :is="page.component"
+                v-bind="page.props"
+            />
         </TabItem>
     </Tabs>
 </template>
@@ -207,12 +224,6 @@ function setPageLoadError(path: string, err: Error) {
 
 .workspace-page-loading {
     height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #0000002d;
 }
 
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */

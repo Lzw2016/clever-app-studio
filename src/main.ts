@@ -1,16 +1,15 @@
 import { createApp, readonly } from "vue";
 import { createRouter, createWebHashHistory } from "vue-router";
-import { createPinia } from "pinia";
 import App from "@/App.vue";
+import { createPinia } from "pinia";
+import { initI18n } from "@/i18n";
 import { clearDraggableHtmlAttr, deepTraverseEach, disableEvent, focus } from "@/draggable/directives";
 import { initRouter } from "@/routers";
-import { initI18n } from "@/i18n";
 import { registerComponent } from "@/draggable/register/RegisterComponent";
 import { registerComponentMeta } from "@/draggable/register/RegisterComponentMeta";
 import { registerSetterComponent } from "@/draggable/register/RegisterSetterComponent";
-import { usePrimeVue } from "@/components/UsePrimeVue";
-import "@/components/UseLayer";
 import globalConfig from "@/GlobalConfig";
+import "@/components/UseLayer";
 import "@/assets/tiny-vue-themes.css";
 
 window['APP_INFO'] = readonly(__APP_INFO__);
@@ -23,6 +22,7 @@ window['APP_INFO'] = readonly(__APP_INFO__);
     app.use(pinia);
     // i18n
     const i18n = initI18n();
+    console.log("i18n",i18n)
     app.use(i18n);
     // 自定义指令
     app.directive("focus", focus);
@@ -30,7 +30,7 @@ window['APP_INFO'] = readonly(__APP_INFO__);
     app.directive("clear-draggable-html-attr", clearDraggableHtmlAttr);
     app.directive("deep-traverse-each", deepTraverseEach);
     // 配置组件库
-    usePrimeVue(app);
+    // usePrimeVue(app);
     // 注册组件、组件元信息、组件设置器、
     registerComponent(globalConfig.componentManage);
     registerComponentMeta(globalConfig.componentManage);

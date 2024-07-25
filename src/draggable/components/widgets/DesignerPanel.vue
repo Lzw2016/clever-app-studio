@@ -18,7 +18,6 @@ import { DesignPageMate } from "@/draggable/types/DesignBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
 import AuxTool from "@/draggable/components/widgets/AuxTool.vue";
-import { designerTest } from "@/views/DesignerTest";
 
 // 定义组件选项
 defineOptions({
@@ -33,10 +32,10 @@ interface DesignerPanelProps {
     routeParams: RouteParams;
     /** 设计器引擎 */
     designerEngine: DesignerEngine;
-    /** 设计页面元数据 */
-    designPageMate?: DesignPageMate;
     /** 设计器状态数据 */
     designerState: DesignerState;
+    /** 设计页面元数据 */
+    designPageMate?: DesignPageMate;
 }
 
 // 读取组件 props 属性
@@ -266,10 +265,11 @@ console.log("pageId", route.params.pageId)
         <div class="flex-item-fill">
             <div v-show="isDesignerTab" ref="designerContainer" class="designer-content">
                 <RuntimeBlock
+                    v-if="props.designPageMate?.designBlock"
                     ref="designerBlockInstance"
                     :style="state.designerBlockStyle"
                     :component-manage="props.designerEngine.componentManage"
-                    :block="designerTest"
+                    :block="props.designPageMate?.designBlock"
                     :is-designing="true"
                 />
                 <AuxTool ref="auxTool" :designer-engine="props.designerEngine" :designerState="props.designerState"/>
