@@ -3,7 +3,7 @@ import { computed, CSSProperties, onMounted, reactive, ref, watch } from "vue";
 import { RouteParams, useRoute } from "vue-router";
 import { ResizeObserverEntry, useResizeObserver } from '@vueuse/core'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faArrowPointer, faArrowRotateLeft, faArrowRotateRight, faArrowsUpDownLeftRight, faCode, faLaptop, faMobileScreen, faPalette, faPlay } from "@fortawesome/free-solid-svg-icons";
+import { faArrowPointer, faArrowRotateLeft, faArrowRotateRight, faArrowsRotate, faArrowsUpDownLeftRight, faCircleInfo, faCode, faFloppyDisk, faLaptop, faMobileScreen, faPalette, faPlay, faReply } from "@fortawesome/free-solid-svg-icons";
 import "codemirror/mode/javascript/javascript";
 import "codemirror/addon/fold/foldgutter.css";
 import "codemirror/addon/fold/foldcode";
@@ -178,11 +178,23 @@ console.log("pageId", route.params.pageId)
 <template>
     <div class="designer-layout flex-column-container">
         <div class="flex-item-fixed flex-row-container designer-tool box-border-b">
+            <div class="flex-item-fixed designer-tool-button" title="保存">
+                <FontAwesomeIcon :icon="faFloppyDisk" :fixed-width="true"/>
+            </div>
+            <div class="flex-item-fixed designer-tool-button" title="还原">
+                <FontAwesomeIcon :icon="faReply" :fixed-width="true"/>
+            </div>
+            <div class="flex-item-fixed designer-tool-button" title="刷新">
+                <FontAwesomeIcon :icon="faArrowsRotate" :fixed-width="true"/>
+            </div>
+            <div class="flex-item-fixed designer-tool-button designer-tool-button-last" title="页面信息">
+                <FontAwesomeIcon :icon="faCircleInfo" :fixed-width="true"/>
+            </div>
+            <div style="width: 16px;"/>
             <div
                 class="flex-item-fixed designer-tool-button"
                 :class="{'designer-tool-button-disabled': !canRevoke}"
                 title="撤销"
-                style="display: none;"
             >
                 <FontAwesomeIcon :icon="faArrowRotateLeft" :fixed-width="true"/>
             </div>
@@ -190,7 +202,6 @@ console.log("pageId", route.params.pageId)
                 class="flex-item-fixed designer-tool-button designer-tool-button-last"
                 :class="{'designer-tool-button-disabled': !canBackRevoke}"
                 title="反撤销"
-                style="display: none;"
             >
                 <FontAwesomeIcon :icon="faArrowRotateRight" :fixed-width="true"/>
             </div>
@@ -213,13 +224,12 @@ console.log("pageId", route.params.pageId)
             >
                 <FontAwesomeIcon :icon="faArrowPointer" :fixed-width="true"/>
             </div>
-            <div style="width: 16px;"/>
+            <div style="width: 16px; display: none;"/>
             <div
                 class="flex-item-fixed designer-tool-button"
                 :class="{'designer-tool-button-active': isPCLayout}"
                 title="PC布局"
                 @click="state.layout=DesignerLayout.PC"
-                style="display: none;"
             >
                 <FontAwesomeIcon :icon="faLaptop" :fixed-width="true"/>
             </div>
@@ -228,10 +238,8 @@ console.log("pageId", route.params.pageId)
                 :class="{'designer-tool-button-active': isMobileLayout}"
                 title="移动端布局"
                 @click="state.layout=DesignerLayout.Mobile"
-                style="display: none;"
             >
                 <FontAwesomeIcon :icon="faMobileScreen" :fixed-width="true"/>
-
             </div>
             <div class="flex-item-fill"/>
             <div
@@ -327,7 +335,7 @@ console.log("pageId", route.params.pageId)
     height: 28px;
     align-items: center;
     background-color: #eeeeee;
-    padding: 0 12px;
+    padding: 0 8px;
     box-sizing: border-box;
 }
 

@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { markRaw, onMounted, onUnmounted, reactive } from "vue";
+import { Dropdown, DropdownItem, DropdownMenu, UserHead } from "@opentiny/vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faArrowRightFromBracket, faLanguage, faUserLarge } from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { globalThisPolyfill } from "@/utils/GlobalThisPolyfill";
 import { style } from "@/utils/UseType";
 import SplitPane from "@/components/SplitPane.vue";
@@ -28,6 +32,8 @@ import ListTree from "@/assets/images/list-tree.svg?component";
 import History from "@/assets/images/history.svg?component";
 import Database from "@/assets/images/database.svg?component";
 import BookMarked from "@/assets/images/book-marked.svg?component";
+import KeySvg from "@/assets/images/key.svg?component";
+import LogoSvg from "@/assets/images/logo.svg?component";
 
 // 定义组件选项
 defineOptions({
@@ -40,12 +46,12 @@ interface StudioLayoutProps {
     componentManage: ComponentManage;
     /** 物料配置 */
     materialMetaTabs: Array<MaterialMetaTab>;
-    /** 顶部导航栏高度，单位(px) */
-    topNavHeight?: number;
-    /** 顶部工具栏高度，单位(px) */
-    topToolsHeight?: number;
-    /** 底部工具栏高度，单位(px) */
-    bottomToolsHeight?: number;
+    /** 顶部导航栏高度 */
+    topNavHeight?: string;
+    /** 顶部工具栏高度 */
+    topToolsHeight?: string;
+    /** 底部工具栏高度 */
+    bottomToolsHeight?: string;
     /** 左侧面板初始宽度，单位(px) */
     leftPanelDefWidth?: number;
     /** 左侧面板最小宽度，单位(px) */
@@ -68,9 +74,9 @@ interface StudioLayoutProps {
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<StudioLayoutProps>(), {
-    topNavHeight: 32,
-    topToolsHeight: 22,
-    bottomToolsHeight: 22,
+    topNavHeight: "32px",
+    topToolsHeight: "22px",
+    bottomToolsHeight: "22px",
 
     leftPanelDefWidth: 250,
     leftPanelMinWidth: 150,
@@ -121,21 +127,55 @@ onUnmounted(() => {
     <DragGhost :designer-engine="designerEngine"/>
     <div class="studio-layout flex-column-container box-border">
         <div
-            class="flex-item-fixed flex-row-container"
+            class="flex-item-fixed flex-row-container top-menus"
             :style="style({ height: props.topNavHeight })"
         >
-            <div class="flex-item-fixed box-border-r" style="width: 128px;">Logo</div>
-            <div class="flex-item-fixed box-border-r" style="width: 48px;">功能</div>
-            <div class="flex-item-fixed box-border-r" style="width: 48px;">功能</div>
+            <div class="flex-item-fixed flex-row-container" style="align-items: center;">
+                <LogoSvg style="width: 22px; height: 22px;"/>
+                <div style="font-size: 16px; font-weight: bold; margin-left: 4px; color: #1296db;">DevX</div>
+            </div>
             <div class="flex-item-fill"></div>
-            <div class="flex-item-fixed box-border-l" style="width: 48px;">用户</div>
-            <div class="flex-item-fixed box-border-l" style="width: 48px;">设置</div>
-            <div class="flex-item-fixed box-border-l" style="width: 48px;">文档</div>
-            <div class="flex-item-fixed box-border-l" style="width: 48px;">语言</div>
+            <Dropdown class="flex-item-fixed" :show-icon="true" trigger="hover">
+                <div class="flex-row-container" style="align-items: center;">
+                    <FontAwesomeIcon :icon="faLanguage" :fixed-width="true" style="font-size: 18px; color: #183153"/>
+                    <div style="margin-left: 4px;">多语言</div>
+                </div>
+                <template #dropdown>
+                    <DropdownMenu>
+                        <DropdownItem>中文(zh-CN)</DropdownItem>
+                        <DropdownItem>英文(en-US)</DropdownItem>
+                    </DropdownMenu>
+                </template>
+            </Dropdown>
+            <div class="flex-item-fixed" style="width: 16px;"></div>
+            <Dropdown class="flex-item-fixed" :show-icon="false" trigger="hover">
+                <div class="flex-row-container user-info-menu">
+                    <UserHead class="flex-item-fixed user-icon" type="icon" :min="true" :round="true">
+                        <FontAwesomeIcon :icon="faUserLarge" :fixed-width="true"/>
+                    </UserHead>
+                    <div class="flex-item-fill user-name">管理员</div>
+                </div>
+                <template #dropdown>
+                    <DropdownMenu>
+                        <DropdownItem>
+                            <FontAwesomeIcon :icon="faUser" :fixed-width="true"/>
+                            用户设置
+                        </DropdownItem>
+                        <DropdownItem>
+                            <KeySvg stroke-width="1.8" style="width: 12px; height: 12px;margin: 0 2px;"/>
+                            重置密码
+                        </DropdownItem>
+                        <DropdownItem>
+                            <FontAwesomeIcon :icon="faArrowRightFromBracket" :fixed-width="true"/>
+                            退出登录
+                        </DropdownItem>
+                    </DropdownMenu>
+                </template>
+            </Dropdown>
         </div>
         <div
             class="flex-item-fixed flex-row-container box-border-t"
-            :style="style({ height: props.topToolsHeight })"
+            :style="style({ height: props.topToolsHeight, display: 'none' })"
         >
             <div class="flex-item-fixed box-border-r" style="width: 128px;">当前叶签信息</div>
             <div class="flex-item-fill"></div>
@@ -231,12 +271,10 @@ onUnmounted(() => {
                     <History/>
                 </div>
                 <div class="flex-item-fill"></div>
-                <div class="flex-item-fixed right-tools-button" style="height: 32px">
-
-                </div>
+                <div class="flex-item-fixed right-tools-button" style="display: none;"></div>
             </div>
         </div>
-        <div class="flex-item-fixed flex-row-container" :style="style({ height: props.bottomToolsHeight })">
+        <div class="flex-item-fixed flex-row-container" :style="style({ height: props.bottomToolsHeight, display: 'none' })">
             <div class="flex-item-fixed box-border-r" style="width: 48px;">指示1</div>
             <div class="flex-item-fixed box-border-r" style="width: 48px;">指示2</div>
             <div class="flex-item-fill"></div>
@@ -303,6 +341,25 @@ onUnmounted(() => {
 .box-border-tb {
     border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
+}
+
+.top-menus {
+    align-items: center;
+    margin: 0 8px;
+}
+
+.user-info-menu {
+    align-items: center;
+}
+
+.user-icon > :deep(div) {
+    height: 24px;
+    width: 24px;
+    line-height: 24px;
+}
+
+.user-name {
+    margin-left: 4px;
 }
 
 .left-tools {
@@ -373,5 +430,9 @@ onUnmounted(() => {
 
 .block-modal :deep(.tiny-modal__box .tiny-modal__body .tiny-modal__content) {
     padding: 8px 0 16px 0;
+}
+
+.top-menus :deep(.tiny-dropdown) {
+    color: unset;
 }
 </style>
