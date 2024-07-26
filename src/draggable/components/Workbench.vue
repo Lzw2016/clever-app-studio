@@ -18,6 +18,16 @@ import DragGhost from "@/draggable/components/widgets/DragGhost.vue";
 import MaterialPanel from "@/draggable/components/widgets/MaterialPanel.vue";
 import SettingsPanel from "@/draggable/components/widgets/SettingsPanel.vue";
 import WorkspaceTabs from "@/draggable/components/widgets/WorkspaceTabs.vue";
+import FolderClosed from "@/assets/images/folder-closed.svg?component";
+import Puzzle from "@/assets/images/puzzle.svg?component";
+import UnPlug from "@/assets/images/unplug.svg?component";
+import Settings from "@/assets/images/settings.svg?component";
+import CircleHelp from "@/assets/images/circle-help.svg?component";
+import TableProperties from "@/assets/images/table-properties.svg?component";
+import ListTree from "@/assets/images/list-tree.svg?component";
+import History from "@/assets/images/history.svg?component";
+import Database from "@/assets/images/database.svg?component";
+import BookMarked from "@/assets/images/book-marked.svg?component";
 
 // 定义组件选项
 defineOptions({
@@ -117,9 +127,7 @@ onUnmounted(() => {
             <div class="flex-item-fixed box-border-r" style="width: 128px;">Logo</div>
             <div class="flex-item-fixed box-border-r" style="width: 48px;">功能</div>
             <div class="flex-item-fixed box-border-r" style="width: 48px;">功能</div>
-            <div class="flex-item-fill">
-                Ctrl={{ designerEngine.onlyPressedCtrl }}
-            </div>
+            <div class="flex-item-fill"></div>
             <div class="flex-item-fixed box-border-l" style="width: 48px;">用户</div>
             <div class="flex-item-fixed box-border-l" style="width: 48px;">设置</div>
             <div class="flex-item-fixed box-border-l" style="width: 48px;">文档</div>
@@ -135,14 +143,31 @@ onUnmounted(() => {
             <div class="flex-item-fixed box-border-l" style="width: 48px;">功能</div>
         </div>
         <div class="flex-item-fill flex-row-container box-border">
-            <div class="flex-item-fixed flex-column-container" style="height: 100%;width: 32px;">
-                <div class="flex-item-fixed box-border-b" style="height: 32px">组件</div>
-                <div class="flex-item-fixed box-border-b" style="height: 32px">页面</div>
-                <div class="flex-item-fixed box-border-b" style="height: 32px">接口</div>
+            <div class="flex-item-fixed flex-column-container left-tools">
+                <div class="flex-item-fixed" style="height: 8px;"></div>
+                <div class="flex-item-fixed left-tools-button" title="页面">
+                    <FolderClosed/>
+                </div>
+                <div class="flex-item-fixed left-tools-button" title="物料">
+                    <Puzzle/>
+                </div>
+                <div class="flex-item-fixed left-tools-button" title="字典">
+                    <BookMarked/>
+                </div>
+                <div class="flex-item-fixed left-tools-button" title="接口">
+                    <UnPlug/>
+                </div>
+                <div class="flex-item-fixed left-tools-button" title="数据库">
+                    <Database/>
+                </div>
                 <div class="flex-item-fill"></div>
-                <div class="flex-item-fixed box-border-t" style="height: 32px">功能</div>
-                <div class="flex-item-fixed box-border-t" style="height: 32px">功能</div>
-                <div class="flex-item-fixed"></div>
+                <div class="flex-item-fixed left-tools-button" title="帮助">
+                    <CircleHelp/>
+                </div>
+                <div class="flex-item-fixed left-tools-button" title="设置">
+                    <Settings/>
+                </div>
+                <div class="flex-item-fixed" style="height: 8px;"></div>
             </div>
             <SplitPane
                 class="flex-item-fill box-border-lr"
@@ -195,15 +220,20 @@ onUnmounted(() => {
                     <div style="height: 800px;"></div>
                 </template>
             </SplitPane>
-            <div class="flex-item-fixed flex-column-container" style="height: 100%;width: 32px;">
-                <div class="flex-item-fixed box-border-b" style="height: 32px">属性</div>
-                <div class="flex-item-fixed box-border-b" style="height: 32px">大纲</div>
-                <div class="flex-item-fixed box-border-b" style="height: 32px">历史</div>
-                <div class="flex-item-fixed box-border-b" style="height: 32px">数据</div>
+            <div class="flex-item-fixed flex-column-container right-tools">
+                <div class="flex-item-fixed right-tools-button" title="属性">
+                    <TableProperties/>
+                </div>
+                <div class="flex-item-fixed right-tools-button" title="大纲">
+                    <ListTree/>
+                </div>
+                <div class="flex-item-fixed right-tools-button" title="历史">
+                    <History/>
+                </div>
                 <div class="flex-item-fill"></div>
-                <div class="flex-item-fixed box-border-t" style="height: 32px">功能</div>
-                <div class="flex-item-fixed box-border-t" style="height: 32px">功能</div>
-                <div class="flex-item-fixed"></div>
+                <div class="flex-item-fixed right-tools-button" style="height: 32px">
+
+                </div>
             </div>
         </div>
         <div class="flex-item-fixed flex-row-container" :style="style({ height: props.bottomToolsHeight })">
@@ -275,7 +305,72 @@ onUnmounted(() => {
     border-bottom: 1px solid #ccc;
 }
 
+.left-tools {
+    height: 100%;
+    width: 32px;
+    align-items: center;
+}
+
+.left-tools-button {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    margin: 4px 0;
+}
+
+.left-tools-button > svg {
+    stroke-width: 2;
+    width: 18px;
+    height: 18px;
+}
+
+.left-tools-button:hover {
+    background-color: #f0f0f0;
+}
+
+.left-tools-button-active {
+    color: #1476ff;
+    background-color: #f0f0f0;
+}
+
+.right-tools {
+    height: 100%;
+    width: 32px;
+    align-items: center;
+}
+
+.right-tools-button {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    margin: 4px 0;
+}
+
+.right-tools-button > svg {
+    stroke-width: 2;
+    width: 18px;
+    height: 18px;
+}
+
+.right-tools-button:hover {
+    background-color: #f0f0f0;
+}
+
+.right-tools-button-active {
+    color: #1476ff;
+    background-color: #f0f0f0;
+}
+
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
+
 .block-modal :deep(.tiny-modal__box .tiny-modal__body .tiny-modal__content) {
     padding: 8px 0 16px 0;
 }

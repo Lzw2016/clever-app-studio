@@ -182,6 +182,7 @@ console.log("pageId", route.params.pageId)
                 class="flex-item-fixed designer-tool-button"
                 :class="{'designer-tool-button-disabled': !canRevoke}"
                 title="撤销"
+                style="display: none;"
             >
                 <FontAwesomeIcon :icon="faArrowRotateLeft" :fixed-width="true"/>
             </div>
@@ -189,6 +190,7 @@ console.log("pageId", route.params.pageId)
                 class="flex-item-fixed designer-tool-button designer-tool-button-last"
                 :class="{'designer-tool-button-disabled': !canBackRevoke}"
                 title="反撤销"
+                style="display: none;"
             >
                 <FontAwesomeIcon :icon="faArrowRotateRight" :fixed-width="true"/>
             </div>
@@ -198,6 +200,7 @@ console.log("pageId", route.params.pageId)
                 :class="{'designer-tool-button-active': isDragDropCursor}"
                 title="拖拽"
                 @click="state.cursorMode=DesignerCursorMode.DragDrop"
+                style="display: none;"
             >
                 <FontAwesomeIcon :icon="faArrowsUpDownLeftRight" :fixed-width="true"/>
             </div>
@@ -206,6 +209,7 @@ console.log("pageId", route.params.pageId)
                 :class="{'designer-tool-button-active': isSelectionCursor}"
                 title="自由选择"
                 @click="state.cursorMode=DesignerCursorMode.Selection"
+                style="display: none;"
             >
                 <FontAwesomeIcon :icon="faArrowPointer" :fixed-width="true"/>
             </div>
@@ -215,6 +219,7 @@ console.log("pageId", route.params.pageId)
                 :class="{'designer-tool-button-active': isPCLayout}"
                 title="PC布局"
                 @click="state.layout=DesignerLayout.PC"
+                style="display: none;"
             >
                 <FontAwesomeIcon :icon="faLaptop" :fixed-width="true"/>
             </div>
@@ -223,6 +228,7 @@ console.log("pageId", route.params.pageId)
                 :class="{'designer-tool-button-active': isMobileLayout}"
                 title="移动端布局"
                 @click="state.layout=DesignerLayout.Mobile"
+                style="display: none;"
             >
                 <FontAwesomeIcon :icon="faMobileScreen" :fixed-width="true"/>
 
@@ -318,7 +324,7 @@ console.log("pageId", route.params.pageId)
 }
 
 .designer-tool {
-    height: 32px;
+    height: 28px;
     align-items: center;
     background-color: #eeeeee;
     padding: 0 12px;

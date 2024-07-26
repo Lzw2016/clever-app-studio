@@ -2,7 +2,6 @@
 import lodash from "lodash";
 import { computed, getCurrentInstance, onBeforeMount, reactive, ref, watch } from "vue";
 import { Collapse, CollapseItem, Form, FormItem, Input, Loading, Tooltip } from "@opentiny/vue";
-import Braces from "@/assets/images/braces.svg?component";
 import { layer } from "@layui/layer-vue";
 import { hasValue, isStr, noValue } from "@/utils/Typeof";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
@@ -12,6 +11,7 @@ import { DesignerState } from "@/draggable/models/DesignerState";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import BindSetter from "@/draggable/components/setter/BindSetter.vue";
 import { forceUpdateBlock } from "@/draggable/utils/SetterUtils";
+import Braces from "@/assets/images/braces.svg?component";
 
 const vLoading = Loading.directive;
 
@@ -283,7 +283,7 @@ function toggleBind(setter: Setter, isBound: boolean) {
                                 title="使用数据绑定"
                                 @click="toggleBind(item, isBound(item))"
                             >
-                                <Braces stroke-width="1.8"/>
+                                <Braces stroke-width="1.8" style="width: 16px; height: 16px;"/>
                             </span>
                             <span v-else class="setter-button-placeholder"/>
                         </div>
