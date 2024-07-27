@@ -5,34 +5,34 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 // 定义组件选项
 defineOptions({
-    name: 'DictPanel',
+    name: 'OutlinePanel',
 });
 
 // 定义 Props 类型
-interface DictPanelProps {
+interface OutlinePanelProps {
 }
 
 // 读取组件 props 属性
-const props = withDefaults(defineProps<DictPanelProps>(), {});
+const props = withDefaults(defineProps<OutlinePanelProps>(), {});
 
 // 定义 State 类型
-interface DictPanelState {
+interface OutlinePanelState {
 
 }
 
 // state 属性
-const state = reactive<DictPanelState>({});
+const state = reactive<OutlinePanelState>({});
 // 内部数据
 const data = {};
 
 </script>
 
 <template>
-    <div class="dict-panel flex-column-container">
-        <div class="flex-row-container flex-item-fixed dict-panel-title">
-            <div class="flex-item-fixed dict-panel-title-name">数据字典</div>
+    <div class="outline-panel flex-column-container">
+        <div class="flex-row-container flex-item-fixed outline-panel-title">
+            <div class="flex-item-fixed outline-panel-title-name">组件大纲</div>
             <div class="flex-item-fill"/>
-            <div class="dict-panel-close">
+            <div class="outline-panel-close">
                 <FontAwesomeIcon :icon="faXmark" :fixed-width="true"/>
             </div>
         </div>
@@ -43,25 +43,24 @@ const data = {};
 </template>
 
 <style scoped>
-.dict-panel {
+.outline-panel {
     height: 100%;
     width: 100%;
-    user-select: none;
 }
 
-.dict-panel-title {
+.outline-panel-title {
     background-color: #efefef;
     padding: 6px 12px;
     margin-bottom: 12px;
     border-bottom: 1px solid #e1e1e1;
 }
 
-.dict-panel-title-name {
+.outline-panel-title-name {
     font-size: 14px;
     font-weight: bold;
 }
 
-.dict-panel-close {
+.outline-panel-close {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -70,7 +69,7 @@ const data = {};
     font-size: 16px;
 }
 
-.dict-panel-close:hover {
+.outline-panel-close:hover {
     color: #333333;
 }
 

@@ -24,7 +24,9 @@ import MaterialPanel from "@/draggable/components/widgets/MaterialPanel.vue";
 import DictPanel from "@/draggable/components/widgets/DictPanel.vue";
 import APIPanel from "@/draggable/components/widgets/APIPanel.vue";
 import DatabasePanel from "@/draggable/components/widgets/DatabasePanel.vue";
-import SettingsPanel from "@/draggable/components/widgets/SettingsPanel.vue";
+import PropsPanel from "@/draggable/components/widgets/PropsPanel.vue";
+import OutlinePanel from "@/draggable/components/widgets/OutlinePanel.vue";
+import HistoryPanel from "@/draggable/components/widgets/HistoryPanel.vue";
 import WorkspaceTabs from "@/draggable/components/widgets/WorkspaceTabs.vue";
 import FolderClosed from "@/assets/images/folder-closed.svg?component";
 import Puzzle from "@/assets/images/puzzle.svg?component";
@@ -333,7 +335,9 @@ function setRightTool(rightTool?: RightTools) {
                                     <WorkspaceTabs :designer-engine="designerEngine"/>
                                 </template>
                                 <template #twoPane>
-                                    <SettingsPanel :designer-engine="designerEngine"/>
+                                    <PropsPanel v-show="isProps" :designer-engine="designerEngine"/>
+                                    <OutlinePanel v-show="isOutline"/>
+                                    <HistoryPanel v-show="isHistory"/>
                                 </template>
                             </SplitPane>
                         </template>
@@ -348,6 +352,7 @@ function setRightTool(rightTool?: RightTools) {
                     class="flex-item-fixed right-tools-button"
                     title="属性"
                     :class="{'right-tools-button-active': isProps}"
+                    @click="setRightTool(RightTools.Props)"
                 >
                     <TableProperties/>
                 </div>
@@ -355,6 +360,7 @@ function setRightTool(rightTool?: RightTools) {
                     class="flex-item-fixed right-tools-button"
                     title="大纲"
                     :class="{'right-tools-button-active': isOutline}"
+                    @click="setRightTool(RightTools.Outline)"
                 >
                     <ListTree/>
                 </div>
@@ -362,6 +368,7 @@ function setRightTool(rightTool?: RightTools) {
                     class="flex-item-fixed right-tools-button"
                     title="历史"
                     :class="{'right-tools-button-active': isHistory}"
+                    @click="setRightTool(RightTools.History)"
                 >
                     <History/>
                 </div>

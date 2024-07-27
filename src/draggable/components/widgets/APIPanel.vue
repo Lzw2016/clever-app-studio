@@ -51,13 +51,13 @@ const data = {};
 
 .api-panel-title {
     background-color: #efefef;
-    padding: 8px 12px;
-    margin-bottom: 16px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
     border-bottom: 1px solid #e1e1e1;
 }
 
 .api-panel-title-name {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
 }
 

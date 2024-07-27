@@ -17,17 +17,17 @@ import BlockEditor from "@/draggable/components/widgets/BlockEditor.vue";
 
 // 定义组件选项
 defineOptions({
-    name: 'SettingsPanel',
+    name: 'PropsPanel',
 });
 
 // 定义 Props 类型
-interface SettingsPanelProps {
+interface PropsPanelProps {
     /** 设计器引擎 */
     designerEngine: DesignerEngine;
 }
 
 // 读取组件 props 属性
-const props = withDefaults(defineProps<SettingsPanelProps>(), {});
+const props = withDefaults(defineProps<PropsPanelProps>(), {});
 // state 属性
 const state = reactive({});
 // 内部数据
@@ -156,7 +156,7 @@ onUnmounted(() => {
 <template>
     <div class="settings-panel flex-column-container">
         <div class="flex-row-container flex-item-fixed settings-panel-title">
-            <div class="flex-item-fixed settings-panel-title-name">组件配置</div>
+            <div class="flex-item-fixed settings-panel-title-name">组件属性</div>
             <div class="flex-item-fill"/>
             <div class="settings-panel-close">
                 <FontAwesomeIcon :icon="faXmark" :fixed-width="true"/>
@@ -288,13 +288,13 @@ onUnmounted(() => {
 
 .settings-panel-title {
     background-color: #efefef;
-    padding: 8px 12px;
-    margin-bottom: 16px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
     border-bottom: 1px solid #e1e1e1;
 }
 
 .settings-panel-title-name {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
 }
 
@@ -342,6 +342,11 @@ onUnmounted(() => {
 .settings-tabs :deep(.tiny-tabs__header) {
     flex-shrink: 0;
     margin-bottom: 16px;
+}
+
+.settings-tabs :deep(.tiny-tabs__header .tiny-tabs__item) {
+    height: 30px;
+    line-height: 30px;
 }
 
 .settings-tabs :deep(.tiny-tabs__nav .tiny-tabs__item .tiny-tabs__item__title) {
