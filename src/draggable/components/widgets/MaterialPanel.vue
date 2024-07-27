@@ -112,7 +112,7 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
 <template>
     <div class="material-panel flex-column-container">
         <div class="flex-row-container flex-item-fixed material-panel-title">
-            <div class="flex-item-fixed material-panel-title-name">组件库</div>
+            <div class="flex-item-fixed material-panel-title-name">组件物料</div>
             <div class="flex-item-fill"/>
             <div class="material-panel-close">
                 <FontAwesomeIcon :icon="faXmark" :fixed-width="true"/>

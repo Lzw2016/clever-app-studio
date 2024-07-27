@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { markRaw, onMounted, onUnmounted, reactive } from "vue";
+import { computed, markRaw, onMounted, onUnmounted, reactive } from "vue";
 import { Dropdown, DropdownItem, DropdownMenu, UserHead } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faArrowRightFromBracket, faLanguage, faUserLarge } from "@fortawesome/free-solid-svg-icons";
@@ -19,7 +19,11 @@ import { AuxToolEffect } from "@/draggable/effect/AuxToolEffect";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
 import { MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 import DragGhost from "@/draggable/components/widgets/DragGhost.vue";
+import PagePanel from "@/draggable/components/widgets/PagePanel.vue";
 import MaterialPanel from "@/draggable/components/widgets/MaterialPanel.vue";
+import DictPanel from "@/draggable/components/widgets/DictPanel.vue";
+import APIPanel from "@/draggable/components/widgets/APIPanel.vue";
+import DatabasePanel from "@/draggable/components/widgets/DatabasePanel.vue";
 import SettingsPanel from "@/draggable/components/widgets/SettingsPanel.vue";
 import WorkspaceTabs from "@/draggable/components/widgets/WorkspaceTabs.vue";
 import FolderClosed from "@/assets/images/folder-closed.svg?component";
@@ -91,14 +95,53 @@ const props = withDefaults(defineProps<StudioLayoutProps>(), {
     bottomPanelMaxWidth: 300,
 });
 
+enum LeftTools {
+    /** 页面 */
+    Page = "Page",
+    /** 物料 */
+    Material = "Material",
+    /** 字典 */
+    Dict = "Dict",
+    /** 接口 */
+    API = "API",
+    /** 数据库 */
+    Database = "Database",
+}
+
+enum RightTools {
+    /** 属性 */
+    Props = "Props",
+    /** 大纲 */
+    Outline = "Outline",
+    /** 历史 */
+    History = "History",
+}
+
 // 定义 State 类型
 interface WorkbenchState {
+    /** 左侧工具栏 */
+    leftTool?: LeftTools;
+    /** 右侧工具栏 */
+    rightTool?: RightTools;
 }
 
 // state 属性
-const state = reactive<WorkbenchState>({});
+const state = reactive<WorkbenchState>({
+    leftTool: LeftTools.Page,
+    rightTool: RightTools.Props,
+});
 // 内部数据
 const data = {};
+// 工具栏显示状态
+const isPage = computed(() => state.leftTool === LeftTools.Page);
+const isMaterial = computed(() => state.leftTool === LeftTools.Material);
+const isDict = computed(() => state.leftTool === LeftTools.Dict);
+const isAPI = computed(() => state.leftTool === LeftTools.API);
+const isDatabase = computed(() => state.leftTool === LeftTools.Database);
+const isProps = computed(() => state.rightTool === RightTools.Props);
+const isOutline = computed(() => state.rightTool === RightTools.Outline);
+const isHistory = computed(() => state.rightTool === RightTools.History);
+
 // 设计器引擎
 const designerEngine = markRaw(new DesignerEngine({
     componentManage: props.componentManage,
@@ -121,6 +164,14 @@ onMounted(() => {
 onUnmounted(() => {
     designerEngine.unmount();
 });
+
+function setLeftTool(leftTool?: LeftTools) {
+    state.leftTool = leftTool;
+}
+
+function setRightTool(rightTool?: RightTools) {
+    state.rightTool = rightTool;
+}
 </script>
 
 <template>
@@ -132,13 +183,16 @@ onUnmounted(() => {
         >
             <div class="flex-item-fixed flex-row-container" style="align-items: center;">
                 <LogoSvg style="width: 22px; height: 22px;"/>
-                <div style="font-size: 16px; font-weight: bold; margin-left: 4px; color: #1296db;">DevX</div>
+                <div style="font-size: 16px; font-weight: bold; margin-left: 4px; color: #1296db;">DevEase</div>
+                <!-- <div style="font-size: 12px; margin-left: 4px;">v1.0.0</div> -->
             </div>
             <div class="flex-item-fill"></div>
+            <!-- <div class="flex-item-fixed">关于</div> -->
+            <div class="flex-item-fixed" style="width: 16px;"></div>
             <Dropdown class="flex-item-fixed" :show-icon="true" trigger="hover">
                 <div class="flex-row-container" style="align-items: center;">
                     <FontAwesomeIcon :icon="faLanguage" :fixed-width="true" style="font-size: 18px; color: #183153"/>
-                    <div style="margin-left: 4px;">多语言</div>
+                    <div style="margin-left: 4px;">中文(zh-CN)</div>
                 </div>
                 <template #dropdown>
                     <DropdownMenu>
@@ -185,19 +239,44 @@ onUnmounted(() => {
         <div class="flex-item-fill flex-row-container box-border">
             <div class="flex-item-fixed flex-column-container left-tools">
                 <div class="flex-item-fixed" style="height: 8px;"></div>
-                <div class="flex-item-fixed left-tools-button" title="页面">
+                <div
+                    class="flex-item-fixed left-tools-button"
+                    :class="{'left-tools-button-active': isPage}"
+                    title="页面"
+                    @click="setLeftTool(LeftTools.Page)"
+                >
                     <FolderClosed/>
                 </div>
-                <div class="flex-item-fixed left-tools-button" title="物料">
+                <div
+                    class="flex-item-fixed left-tools-button"
+                    title="物料"
+                    :class="{'left-tools-button-active': isMaterial}"
+                    @click="setLeftTool(LeftTools.Material)"
+                >
                     <Puzzle/>
                 </div>
-                <div class="flex-item-fixed left-tools-button" title="字典">
+                <div
+                    class="flex-item-fixed left-tools-button"
+                    title="字典"
+                    :class="{'left-tools-button-active': isDict}"
+                    @click="setLeftTool(LeftTools.Dict)"
+                >
                     <BookMarked/>
                 </div>
-                <div class="flex-item-fixed left-tools-button" title="接口">
+                <div
+                    class="flex-item-fixed left-tools-button"
+                    title="接口"
+                    :class="{'left-tools-button-active': isAPI}"
+                    @click="setLeftTool(LeftTools.API)"
+                >
                     <UnPlug/>
                 </div>
-                <div class="flex-item-fixed left-tools-button" title="数据库">
+                <div
+                    class="flex-item-fixed left-tools-button"
+                    title="数据库"
+                    :class="{'left-tools-button-active': isDatabase}"
+                    @click="setLeftTool(LeftTools.Database)"
+                >
                     <Database/>
                 </div>
                 <div class="flex-item-fill"></div>
@@ -233,7 +312,11 @@ onUnmounted(() => {
                         :custom-two-pane="true"
                     >
                         <template #onePane>
-                            <MaterialPanel :designer-engine="designerEngine" :tabs="props.materialMetaTabs"/>
+                            <PagePanel v-show="isPage"/>
+                            <MaterialPanel v-show="isMaterial" :designer-engine="designerEngine" :tabs="props.materialMetaTabs"/>
+                            <DictPanel v-show="isDict"/>
+                            <APIPanel v-show="isAPI"/>
+                            <DatabasePanel v-show="isDatabase"/>
                         </template>
                         <template #twoPane="slotProps">
                             <SplitPane
@@ -261,13 +344,25 @@ onUnmounted(() => {
                 </template>
             </SplitPane>
             <div class="flex-item-fixed flex-column-container right-tools">
-                <div class="flex-item-fixed right-tools-button" title="属性">
+                <div
+                    class="flex-item-fixed right-tools-button"
+                    title="属性"
+                    :class="{'right-tools-button-active': isProps}"
+                >
                     <TableProperties/>
                 </div>
-                <div class="flex-item-fixed right-tools-button" title="大纲">
+                <div
+                    class="flex-item-fixed right-tools-button"
+                    title="大纲"
+                    :class="{'right-tools-button-active': isOutline}"
+                >
                     <ListTree/>
                 </div>
-                <div class="flex-item-fixed right-tools-button" title="历史">
+                <div
+                    class="flex-item-fixed right-tools-button"
+                    title="历史"
+                    :class="{'right-tools-button-active': isHistory}"
+                >
                     <History/>
                 </div>
                 <div class="flex-item-fill"></div>

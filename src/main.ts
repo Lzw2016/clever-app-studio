@@ -22,7 +22,7 @@ window['APP_INFO'] = readonly(__APP_INFO__);
     app.use(pinia);
     // i18n
     const i18n = initI18n();
-    console.log("i18n",i18n)
+    // console.log("i18n",i18n)
     app.use(i18n);
     // 自定义指令
     app.directive("focus", focus);
