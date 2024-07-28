@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import lodash from "lodash";
 import type { Component, CSSProperties } from "vue";
-import { computed, defineModel, getCurrentInstance, markRaw, reactive, ref } from "vue";
+import { computed, getCurrentInstance, markRaw, reactive, ref } from "vue";
 import { useResizeObserver, useVirtualList } from "@vueuse/core";
 import { Input, Loading, Modal, Notify, TabItem, Tabs } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -367,8 +367,8 @@ loadIcons().finally();
         tiny-loading__background="rgba(0, 0, 0, 0.25)"
         class="icons-modal"
         v-model="show"
-        height="60%"
         width="60%"
+        height="80%"
         min-height="350px"
         min-width="500px"
         :esc-closable="true"
@@ -647,6 +647,9 @@ loadIcons().finally();
 }
 
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
+.icons-modal.tiny-modal.tiny-modal__wrapper.is__visible :deep(.tiny-modal__box) {
+    top: 8vh;
+}
 
 .icons-modal :deep(.tiny-modal__box .tiny-modal__body) {
     height: 100%;

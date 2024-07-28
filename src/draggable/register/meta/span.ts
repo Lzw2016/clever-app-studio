@@ -1,4 +1,6 @@
+import { createVNode } from "vue";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
+import RectangleHorizontal from "@/assets/images/rectangle-horizontal.svg?component";
 
 export default defineComponentMeta({
     type: "span",
@@ -6,8 +8,7 @@ export default defineComponentMeta({
     description: "",
     version: "0.0.1",
     docLink: "",
-    icon: "",
-    // designComponent: "",
+    icon: createVNode(RectangleHorizontal, { 'stroke-width': "2.5", style: { width: "18px", height: "18px" } }, []),
     defDesignNode: {
         props: {
             style: {

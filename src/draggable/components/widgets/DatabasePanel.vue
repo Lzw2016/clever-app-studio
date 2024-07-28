@@ -2,6 +2,7 @@
 import { reactive } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { DesignerEngine } from "@/draggable/DesignerEngine";
 
 // 定义组件选项
 defineOptions({
@@ -10,6 +11,8 @@ defineOptions({
 
 // 定义 Props 类型
 interface DatabasePanelProps {
+    /** 设计器引擎 */
+    designerEngine: DesignerEngine;
 }
 
 // 读取组件 props 属性

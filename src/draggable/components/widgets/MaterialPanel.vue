@@ -3,7 +3,6 @@ import { computed, reactive } from "vue";
 import { Collapse, CollapseItem, Loading, Notify, Search, TabItem, Tabs } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 import { getMaterialMetaTabAllTypes } from "@/draggable/utils/DesignerUtils";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
@@ -51,7 +50,7 @@ const componentMetaTabs = computed<Array<ComponentMetaTab>>(() => {
 // 加载所有的组件及其元数据
 loadAllTypes(data.allTypes);
 
-// 获取所有的物理组件类型
+// 获取所有的物料组件类型
 function getAllTypes() {
     const allTypes: Array<string> = [];
     for (let tab of props.tabs) {
@@ -156,7 +155,9 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
                             :data-component-type="meta.type"
                         >
                             <div class="material-item-icon flex-item-fixed">
-                                <FontAwesomeIcon :icon="faCalendarPlus" :fixed-width="true"/>
+                                <component :is="meta.icon"/>
+                                <!-- <div v-if="meta.icon">{{ meta.icon }}</div>-->
+                                <!-- <FontAwesomeIcon v-else :icon="faCalendarPlus" :fixed-width="true"/>-->
                             </div>
                             <div class="material-item-name flex-item-fill">
                                 {{ meta.name }}

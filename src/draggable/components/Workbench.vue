@@ -129,7 +129,7 @@ interface WorkbenchState {
 
 // state 属性
 const state = reactive<WorkbenchState>({
-    leftTool: LeftTools.Page,
+    leftTool: LeftTools.Material,
     rightTool: RightTools.Props,
 });
 // 内部数据
@@ -314,11 +314,11 @@ function setRightTool(rightTool?: RightTools) {
                         :custom-two-pane="true"
                     >
                         <template #onePane>
-                            <PagePanel v-show="isPage"/>
+                            <PagePanel v-show="isPage" :designer-engine="designerEngine"/>
                             <MaterialPanel v-show="isMaterial" :designer-engine="designerEngine" :tabs="props.materialMetaTabs"/>
-                            <DictPanel v-show="isDict"/>
-                            <APIPanel v-show="isAPI"/>
-                            <DatabasePanel v-show="isDatabase"/>
+                            <DictPanel v-show="isDict" :designer-engine="designerEngine"/>
+                            <APIPanel v-show="isAPI" :designer-engine="designerEngine"/>
+                            <DatabasePanel v-show="isDatabase" :designer-engine="designerEngine"/>
                         </template>
                         <template #twoPane="slotProps">
                             <SplitPane
@@ -336,8 +336,8 @@ function setRightTool(rightTool?: RightTools) {
                                 </template>
                                 <template #twoPane>
                                     <PropsPanel v-show="isProps" :designer-engine="designerEngine"/>
-                                    <OutlinePanel v-show="isOutline"/>
-                                    <HistoryPanel v-show="isHistory"/>
+                                    <OutlinePanel v-show="isOutline" :designer-engine="designerEngine"/>
+                                    <HistoryPanel v-show="isHistory" :designer-engine="designerEngine"/>
                                 </template>
                             </SplitPane>
                         </template>
