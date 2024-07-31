@@ -1,14 +1,14 @@
 import { createVNode } from "vue";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
-import RectangleHorizontal from "@/assets/images/rectangle-horizontal.svg?component";
+import SpanSvg from "@/assets/images/span.svg?component";
 
 export default defineComponentMeta({
     type: "span",
-    name: "[span]",
+    name: "内联块",
     description: "",
     version: "0.0.1",
     docLink: "",
-    icon: createVNode(RectangleHorizontal, { 'stroke-width': "2.5", style: { width: "18px", height: "18px" } }, []),
+    icon: createVNode(SpanSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
             style: {

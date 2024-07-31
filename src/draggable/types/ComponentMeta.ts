@@ -342,7 +342,7 @@ interface ComponentMeta {
     name: string;
     /** 组件介绍描述 */
     description?: string;
-    /** 组件图标 */
+    /** 组件图标(支持自定义组件 & FontAwesome图标) */
     icon: VueComponent | string;
     /** 组件版本 */
     version?: string;

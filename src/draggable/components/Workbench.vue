@@ -183,7 +183,7 @@ function setRightTool(rightTool?: RightTools) {
             class="flex-item-fixed flex-row-container top-menus"
             :style="style({ height: props.topNavHeight })"
         >
-            <div class="flex-item-fixed flex-row-container" style="align-items: center;">
+            <div class="flex-item-fixed flex-row-container" style="align-items: center; display: none;">
                 <LogoSvg style="width: 22px; height: 22px;"/>
                 <div style="font-size: 16px; font-weight: bold; margin-left: 4px; color: #1296db;">DevEase</div>
                 <!-- <div style="font-size: 12px; margin-left: 4px;">v1.0.0</div> -->

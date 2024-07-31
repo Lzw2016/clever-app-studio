@@ -1,4 +1,6 @@
+import { createVNode } from "vue";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
+import InputSvg from "@/assets/images/input.svg?component";
 
 export default defineComponentMeta({
     type: "Input",
@@ -6,8 +8,7 @@ export default defineComponentMeta({
     description: "",
     version: "0.0.1",
     docLink: "",
-    icon: "",
-    // designComponent: "",
+    icon: createVNode(InputSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
             placeholder: "请输入",

@@ -1,6 +1,6 @@
 import { createVNode, VNode } from "vue";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
-import Button from "@/assets/images/button2.svg?component";
+import ButtonSvg from "@/assets/images/button.svg?component";
 
 export default defineComponentMeta({
     type: "Button",
@@ -8,7 +8,7 @@ export default defineComponentMeta({
     description: "",
     version: "0.0.1",
     docLink: "",
-    icon: createVNode(Button, { 'stroke-width': "2.5", style: { width: "30px", height: "30px" } }, []),
+    icon: createVNode(ButtonSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
             text: "按钮",

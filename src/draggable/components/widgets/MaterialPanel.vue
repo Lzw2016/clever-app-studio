@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { computed, reactive } from "vue";
+import lodash from "lodash";
+import { computed, createVNode, defineAsyncComponent, reactive } from "vue";
 import { Collapse, CollapseItem, Loading, Notify, Search, TabItem, Tabs } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { isStr, noValue } from "@/utils/Typeof";
+// import { sleep } from "@/utils/Utils";
 import { getMaterialMetaTabAllTypes } from "@/draggable/utils/DesignerUtils";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { ComponentMeta, ComponentMetaTab, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
+import RefreshCwOff from "@/assets/images/refresh-cw-off.svg?component";
+import RefreshCw from "@/assets/images/refresh-cw.svg?component";
+import Sparkles from "@/assets/images/sparkles.svg?component";
 
 const vLoading = Loading.directive;
 
@@ -90,13 +96,14 @@ function getAllExpandTitles(tabs: Array<MaterialMetaTab>): Record<string, Array<
 
 // 过滤所有空 groups 和 items
 function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> {
+    const componentManage = props.designerEngine.componentManage;
     const newTabs: Array<ComponentMetaTab> = [];
     for (let tab of tabs) {
         if (tab.groups.length <= 0) continue;
         const newTab: ComponentMetaTab = { ...tab, groups: [] };
         for (let group of tab.groups) {
             const metas: Array<ComponentMeta> = [];
-            group.types.map(type => props.designerEngine.componentManage.getComponentMeta(type)).forEach(meta => {
+            group.types.map(type => componentManage.getComponentMeta(type)).forEach(meta => {
                 if (meta) metas.push(meta);
             });
             const types = metas.map(meta => meta.type);
@@ -105,6 +112,27 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
         if (tab.groups.length > 0) newTabs.push(newTab);
     }
     return newTabs;
+}
+
+function getMaterialIcon(icon: any): any {
+    if (noValue(icon) || lodash.trim(icon).length <= 0) {
+        return createVNode(Sparkles, { 'stroke-width': "1.8", style: { width: "18px", height: "18px" } });
+    }
+    if (isStr(icon)) {
+        const componentManage = props.designerEngine.componentManage;
+        return defineAsyncComponent({
+            loader: async () => {
+                // await sleep(1000 * 3)
+                await componentManage.loadAsyncComponent(["FontAwesomeIcon"]);
+                const faIcon = lodash.split(icon, " ").filter(item => lodash.trim(item).length > 0);
+                return createVNode(FontAwesomeIcon, { icon: faIcon, fixedWidth: true });
+            },
+            // delay: 0,
+            loadingComponent: createVNode(RefreshCw, { class: 'loading-spinner', 'stroke-width': "1.8", style: { width: "18px", height: "18px" } }),
+            errorComponent: createVNode(RefreshCwOff, { 'stroke-width': "1.8", style: { width: "18px", height: "18px" } }),
+        });
+    }
+    return icon;
 }
 </script>
 
@@ -155,9 +183,7 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
                             :data-component-type="meta.type"
                         >
                             <div class="material-item-icon flex-item-fixed">
-                                <component :is="meta.icon"/>
-                                <!-- <div v-if="meta.icon">{{ meta.icon }}</div>-->
-                                <!-- <FontAwesomeIcon v-else :icon="faCalendarPlus" :fixed-width="true"/>-->
+                                <component :is="getMaterialIcon(meta.icon)"/>
                             </div>
                             <div class="material-item-name flex-item-fill">
                                 {{ meta.name }}
@@ -226,6 +252,19 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
 .flex-center {
     align-items: center;
     justify-content: center;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-spinner {
+    animation: spin 2s linear infinite;
 }
 
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
@@ -309,10 +348,13 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
     justify-content: center;
     font-size: 18px;
     color: #303133;
-    margin-right: 5px;
+    margin-right: 2px;
+    width: 24px;
 }
 
 .material-item-name {
+    display: flex;
+    align-items: center;
     font-size: 14px;
     overflow: hidden;
     text-overflow: ellipsis;

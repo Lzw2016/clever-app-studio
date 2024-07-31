@@ -116,7 +116,7 @@ defineExpose({
     <div>
         <div class="spacing-wrap">
             <div class="spacing-max-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="224" height="120" style="grid-area: 1 / 1 / -1 / -1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="224" height="120" style="grid-area: 1 / 1 / -1 / -1;">
                     <g>
                         <g>
                             <path
@@ -257,7 +257,7 @@ defineExpose({
                 />
             </div>
             <div class="spacing-min-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="144" height="64" style="grid-area: 1 / 1 / -1 / -1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="144" height="64" style="grid-area: 1 / 1 / -1 / -1;">
                     <g>
                         <g>
                             <path
@@ -470,6 +470,7 @@ defineExpose({
     opacity: 1;
     align-items: center;
     justify-content: center;
+    min-width: 30px;
 }
 
 .spacing-wrap .spacing-edit.is-setting {

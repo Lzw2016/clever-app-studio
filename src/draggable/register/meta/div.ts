@@ -1,14 +1,12 @@
-import { createVNode } from "vue";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
-import Square from "@/assets/images/square.svg?component";
 
 export default defineComponentMeta({
     type: "div",
-    name: "[div]",
+    name: "行级块",
     description: "",
     version: "0.0.1",
     docLink: "",
-    icon: createVNode(Square, { 'stroke-width': "2.5", style: { width: "18px", height: "18px" } }, []),
+    icon: "far square",
     defDesignNode: {
         props: {
             style: {
