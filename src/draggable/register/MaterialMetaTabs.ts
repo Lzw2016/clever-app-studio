@@ -4,7 +4,31 @@ import { MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 const materialMetaTabs: Array<MaterialMetaTab> = [
     // {
     //     title: "常用组件",
-    //     groups: [],
+    //     groups: [
+    //         {
+    //             title: "表格",
+    //             types: [
+    //                 "Button",
+    //             ],
+    //         },
+    //     ],
+    // },
+    // {
+    //     title: "业务组件",
+    //     groups: [
+    //         {
+    //             title: "表格",
+    //             types: [
+    //                 "Button",
+    //             ],
+    //         },
+    //         {
+    //             title: "表单",
+    //             types: [
+    //                 "Button",
+    //             ],
+    //         },
+    //     ],
     // },
     {
         title: "原子组件",
@@ -34,7 +58,7 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
                     "Form", "FormItem",
                     "Input", "InputNumber", "Select", "DatePicker", "TimePicker", "DropTimes", "TimeSelect",
                     "Switch", "Checkbox", "CheckboxGroup", "Radio", "RadioGroup", "Slider", "ColorPicker", "FileUpload",
-                    "AutoComplete", "Cascader", "Search", "Rate", "Transfer", "TextPopup", "IpAddress", "RichTextEditor",
+                    "AutoComplete", "Cascader", "Search", "Rate", "Transfer", "TextPopup", "IpAddress",
                 ],
             },
             {
@@ -60,23 +84,6 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
             },
         ],
     },
-    // {
-    //     title: "业务组件",
-    //     groups: [
-    //         {
-    //             title: "表格",
-    //             types: [
-    //                 "Button",
-    //             ],
-    //         },
-    //         {
-    //             title: "表单",
-    //             types: [
-    //                 "Button",
-    //             ],
-    //         },
-    //     ],
-    // },
     // {
     //     title: "原子组件",
     //     groups: [

@@ -37,9 +37,35 @@ function registerComponentMeta(componentManage: ComponentManage) {
     componentManage.registerAsyncComponentMeta("TimePicker", () => import("@/draggable/register/meta/TimePicker").then(module => module.default));
     componentManage.registerAsyncComponentMeta("DropTimes", () => import("@/draggable/register/meta/DropTimes").then(module => module.default));
     componentManage.registerAsyncComponentMeta("TimeSelect", () => import("@/draggable/register/meta/TimeSelect").then(module => module.default));
-
-
+    componentManage.registerAsyncComponentMeta("Switch", () => import("@/draggable/register/meta/Switch").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Checkbox", () => import("@/draggable/register/meta/Checkbox").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("CheckboxGroup", () => import("@/draggable/register/meta/CheckboxGroup").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Radio", () => import("@/draggable/register/meta/Radio").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("RadioGroup", () => import("@/draggable/register/meta/RadioGroup").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Slider", () => import("@/draggable/register/meta/Slider").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("ColorPicker", () => import("@/draggable/register/meta/ColorPicker").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("FileUpload", () => import("@/draggable/register/meta/FileUpload").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("AutoComplete", () => import("@/draggable/register/meta/AutoComplete").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Cascader", () => import("@/draggable/register/meta/Cascader").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Search", () => import("@/draggable/register/meta/Search").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Rate", () => import("@/draggable/register/meta/Rate").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Transfer", () => import("@/draggable/register/meta/Transfer").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("TextPopup", () => import("@/draggable/register/meta/TextPopup").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("IpAddress", () => import("@/draggable/register/meta/IpAddress").then(module => module.default));
+    // 显示
+    componentManage.registerAsyncComponentMeta("Tree", () => import("@/draggable/register/meta/Tree").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Grid", () => import("@/draggable/register/meta/Grid").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Image", () => import("@/draggable/register/meta/Image").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("QrCode", () => import("@/draggable/register/meta/QrCode").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Statistic", () => import("@/draggable/register/meta/Statistic").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Tag", () => import("@/draggable/register/meta/Tag").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("TagGroup", () => import("@/draggable/register/meta/TagGroup").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Carousel", () => import("@/draggable/register/meta/Carousel").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Collapse", () => import("@/draggable/register/meta/Collapse").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("UserHead", () => import("@/draggable/register/meta/UserHead").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Card", () => import("@/draggable/register/meta/Card").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Alert", () => import("@/draggable/register/meta/Alert").then(module => module.default));
+
 }
 
 export {
