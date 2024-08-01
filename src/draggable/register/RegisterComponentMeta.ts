@@ -8,6 +8,7 @@ function registerComponentMeta(componentManage: ComponentManage) {
     componentManage.registerAsyncComponentMeta("div", () => import("@/draggable/register/meta/div").then(module => module.default));
     componentManage.registerAsyncComponentMeta("span", () => import("@/draggable/register/meta/span").then(module => module.default));
     componentManage.registerAsyncComponentMeta("a", () => import("@/draggable/register/meta/a").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("p", () => import("@/draggable/register/meta/p").then(module => module.default));
     componentManage.registerAsyncComponentMeta("br", () => import("@/draggable/register/meta/br").then(module => module.default));
     componentManage.registerAsyncComponentMeta("hr", () => import("@/draggable/register/meta/hr").then(module => module.default));
     // 基础
@@ -65,7 +66,35 @@ function registerComponentMeta(componentManage: ComponentManage) {
     componentManage.registerAsyncComponentMeta("UserHead", () => import("@/draggable/register/meta/UserHead").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Card", () => import("@/draggable/register/meta/Card").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Alert", () => import("@/draggable/register/meta/Alert").then(module => module.default));
-
+    componentManage.registerAsyncComponentMeta("Progress", () => import("@/draggable/register/meta/Progress").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("ScrollText", () => import("@/draggable/register/meta/ScrollText").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Timeline", () => import("@/draggable/register/meta/Timeline").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("CalendarView", () => import("@/draggable/register/meta/CalendarView").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("FloatBar", () => import("@/draggable/register/meta/FloatBar").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("FilterPanel", () => import("@/draggable/register/meta/FilterPanel").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Guide", () => import("@/draggable/register/meta/Guide").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Fullscreen", () => import("@/draggable/register/meta/Fullscreen").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Wizard", () => import("@/draggable/register/meta/Wizard").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Milestone", () => import("@/draggable/register/meta/Milestone").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("BulletinBoard", () => import("@/draggable/register/meta/BulletinBoard").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Crop", () => import("@/draggable/register/meta/Crop").then(module => module.default));
+    // 导航
+    componentManage.registerAsyncComponentMeta("FallMenu", () => import("@/draggable/register/meta/FallMenu").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("NavMenu", () => import("@/draggable/register/meta/NavMenu").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("TreeMenu", () => import("@/draggable/register/meta/TreeMenu").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("ToggleMenu", () => import("@/draggable/register/meta/ToggleMenu").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Steps", () => import("@/draggable/register/meta/Steps").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Pager", () => import("@/draggable/register/meta/Pager").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Anchor", () => import("@/draggable/register/meta/Anchor").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Breadcrumb", () => import("@/draggable/register/meta/Breadcrumb").then(module => module.default));
+    // 扩展
+    componentManage.registerAsyncComponentMeta("Slot", () => import("@/draggable/register/meta/Slot").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("InfiniteScroll", () => import("@/draggable/register/meta/InfiniteScroll").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Loading", () => import("@/draggable/register/meta/Loading").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("DialogBox", () => import("@/draggable/register/meta/DialogBox").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Drawer", () => import("@/draggable/register/meta/Drawer").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Modal", () => import("@/draggable/register/meta/Modal").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Notify", () => import("@/draggable/register/meta/Notify").then(module => module.default));
 }
 
 export {
