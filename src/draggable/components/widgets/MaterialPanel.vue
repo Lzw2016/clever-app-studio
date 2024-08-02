@@ -322,6 +322,7 @@ function getMaterialIcon(icon: any): any {
 }
 
 .material-item {
+    box-sizing: border-box;
     flex-shrink: 0;
     display: flex;
     flex-direction: row;
@@ -332,7 +333,7 @@ function getMaterialIcon(icon: any): any {
     min-width: 60px;
     margin: 6px 4px;
     padding: 4px 8px;
-    border: 1px solid #edeef0;
+    border: 1px solid #dedede;
     cursor: move;
     transition: box-shadow .2s ease;
 }
