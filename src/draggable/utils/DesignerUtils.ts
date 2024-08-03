@@ -1,6 +1,6 @@
 import lodash from "lodash";
 import JSON5 from "json5";
-import { isVNode, VNode, VNodeChild } from "vue";
+import { isVNode, markRaw, VNode, VNodeChild } from "vue";
 import { hasValue, isArray, isFun, isObj, isStr, noValue } from "@/utils/Typeof";
 import { childSlotName, configRawValueName } from "@/draggable/Constant";
 import { ComponentParam } from "@/draggable/types/Base";
@@ -8,8 +8,10 @@ import { RuntimeBlock, RuntimeComponentSlotsItem, RuntimeNode } from "@/draggabl
 import { ComponentMeta, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 import { ComponentSlotsItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
 import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
+import { getComponentIcon } from "@/draggable/utils/ComponentMetaUtils";
 import { formatJavascript } from "@/draggable/utils/CodeFormat";
 import { parseFun, toConfigAndFormat } from "@/draggable/utils/FunctionUtils";
+import { ComponentManage } from "@/draggable/types/ComponentManage";
 
 /**
  * 定义一个 DesignBlock 对象，仅仅是为了类型声明，无任何处理逻辑
@@ -491,10 +493,14 @@ function _computedToDesignNode(computed: RuntimeBlock['computed'], blockNode?: R
 }
 
 interface OutlineTreeNode<T = any> {
+    /** 父节点ID */
+    readonly parentId?: string;
     /** 节点ID */
     readonly id: string;
     /** 节点标题 */
     readonly label: string;
+    /** 组件图标 */
+    readonly icon: any;
     /** 子节点 */
     children?: Array<OutlineTreeNode<T>>;
     /** 当前节点是否是插槽 */
@@ -506,13 +512,16 @@ interface OutlineTreeNode<T = any> {
 /**
  * 获取 RuntimeNode 的节点大纲
  */
-function runtimeNodeToTreeNode(runtimeNode: RuntimeNode): Array<OutlineTreeNode<RuntimeNode>> {
+function runtimeNodeToTreeNode(runtimeNode: RuntimeNode, componentManage: ComponentManage): Array<OutlineTreeNode<RuntimeNode>> {
     const rootNodes: Array<OutlineTreeNode<RuntimeNode>> = [];
     const flatNodes: Map<string, OutlineTreeNode<RuntimeNode>> = new Map<string, OutlineTreeNode<RuntimeNode>>();
     deepTraverseRuntimeNode(
         runtimeNode,
         (current, isSlot, parent) => {
-            const node: OutlineTreeNode<RuntimeNode> = { id: current.id, label: current.type, isSlot: isSlot, data: current };
+            const cmpMeta = componentManage.getComponentMeta(current.type);
+            const label = hasValue(cmpMeta) ? cmpMeta.name : current.type;
+            const icon = getComponentIcon(cmpMeta?.icon, componentManage);
+            const node: OutlineTreeNode<RuntimeNode> = { parentId: parent?.id, id: current.id, label: label, icon: markRaw(icon), isSlot: isSlot, data: current };
             flatNodes.set(node.id, node);
             if (!parent) {
                 // 不存在父节点(根节点)

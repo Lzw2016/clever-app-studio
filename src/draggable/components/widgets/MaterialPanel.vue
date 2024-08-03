@@ -1,18 +1,13 @@
 <script setup lang="ts">
-import lodash from "lodash";
-import { computed, createVNode, defineAsyncComponent, reactive } from "vue";
+import { computed, reactive } from "vue";
 import { Collapse, CollapseItem, Loading, Notify, Search, TabItem, Tabs } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { isStr, noValue } from "@/utils/Typeof";
-// import { sleep } from "@/utils/Utils";
-import { getMaterialMetaTabAllTypes } from "@/draggable/utils/DesignerUtils";
-import { isHtmlTag } from "@/draggable/utils/HtmlTag";
-import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { ComponentMeta, ComponentMetaTab, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
-import RefreshCwOff from "@/assets/images/refresh-cw-off.svg?component";
-import RefreshCw from "@/assets/images/refresh-cw.svg?component";
-import Sparkles from "@/assets/images/sparkles.svg?component";
+import { DesignerEngine } from "@/draggable/DesignerEngine";
+import { isHtmlTag } from "@/draggable/utils/HtmlTag";
+import { getComponentIcon } from "@/draggable/utils/ComponentMetaUtils";
+import { getMaterialMetaTabAllTypes } from "@/draggable/utils/DesignerUtils";
 
 const vLoading = Loading.directive;
 
@@ -113,27 +108,6 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
     }
     return newTabs;
 }
-
-function getMaterialIcon(icon: any): any {
-    if (noValue(icon) || lodash.trim(icon).length <= 0) {
-        return createVNode(Sparkles, { 'stroke-width': "1.8", style: { width: "18px", height: "18px" } });
-    }
-    if (isStr(icon)) {
-        const componentManage = props.designerEngine.componentManage;
-        return defineAsyncComponent({
-            loader: async () => {
-                // await sleep(1000 * 3)
-                await componentManage.loadAsyncComponent(["FontAwesomeIcon"]);
-                const faIcon = lodash.split(icon, " ").filter(item => lodash.trim(item).length > 0);
-                return createVNode(FontAwesomeIcon, { icon: faIcon, fixedWidth: true });
-            },
-            // delay: 0,
-            loadingComponent: createVNode(RefreshCw, { class: 'loading-spinner', 'stroke-width': "1.8", style: { width: "18px", height: "18px" } }),
-            errorComponent: createVNode(RefreshCwOff, { 'stroke-width': "1.8", style: { width: "18px", height: "18px" } }),
-        });
-    }
-    return icon;
-}
 </script>
 
 <template>
@@ -183,7 +157,7 @@ function getMaterialIcon(icon: any): any {
                             :data-component-type="meta.type"
                         >
                             <div class="material-item-icon flex-item-fixed">
-                                <component :is="getMaterialIcon(meta.icon)"/>
+                                <component :is="getComponentIcon(meta.icon, props.designerEngine.componentManage)"/>
                             </div>
                             <div class="material-item-name flex-item-fill">
                                 {{ meta.name }}
@@ -252,19 +226,6 @@ function getMaterialIcon(icon: any): any {
 .flex-center {
     align-items: center;
     justify-content: center;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.loading-spinner {
-    animation: spin 2s linear infinite;
 }
 
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */

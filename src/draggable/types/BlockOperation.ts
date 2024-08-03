@@ -1,5 +1,6 @@
 import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
 import { RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
+import { Ref } from "vue";
 
 /** 操作选项 */
 interface OpsOptions {
@@ -337,6 +338,8 @@ interface BlockOperationById {
  * Block支持的操作函数(基于ref属性)
  */
 interface BlockOperation {
+    /** 记录Block渲染节点变化的响应式变量 */
+    readonly nodeChange: Ref<number>;
     /**
      * 获取指定的节点对象(基于ref属性)
      * @param ref   节点ref

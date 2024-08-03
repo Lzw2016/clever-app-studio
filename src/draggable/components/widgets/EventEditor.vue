@@ -186,7 +186,7 @@ watch(existsExampleCode, value => {
 
 function getOutlineTreeNodes(runtimeBlock?: RuntimeBlock): Array<OutlineTreeNode<RuntimeNode>> {
     if (!runtimeBlock) return [];
-    return runtimeNodeToTreeNode(runtimeBlock);
+    return runtimeNodeToTreeNode(runtimeBlock, props.designerEngine.componentManage);
 }
 
 function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
@@ -392,7 +392,13 @@ defineExpose<EventEditorExpose>({
                     :indent="12"
                     :current-node-key="state.selectRuntimeNode?.id"
                     @current-change="selectOutlineNodeChange"
-                />
+                >
+                    <template #prefix="{ node }">
+                        <span class="cmp-icon">
+                            <component :is="node.data.icon"/>
+                        </span>
+                    </template>
+                </Tree>
             </div>
         </template>
         <template #twoPane="slotProps">
@@ -637,6 +643,16 @@ defineExpose<EventEditorExpose>({
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.cmp-icon {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #303133;
+    width: 20px;
 }
 
 .panel-title {

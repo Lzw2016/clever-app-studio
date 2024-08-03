@@ -46,6 +46,8 @@ interface RuntimeNode {
     __tmp_bind_props?: Record<string, string>;
     /** 暂存非绑定的props值，用于从 bind 恢复成 unbind 状态时，恢复属性值 */
     __tmp_unbind_props?: Record<string, any>;
+    /** 原始的 style.display 属性 */
+    __raw_props_style_display: string;
     /** 监听的事件(原函数) */
     readonly listeners: Record<string, RuntimeListener>;
     /** 监听的事件(已绑定 this 指针的 listeners 函数) */

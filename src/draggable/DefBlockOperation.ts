@@ -1,4 +1,5 @@
 import lodash from "lodash";
+import { Ref, ref, withModifiers } from "vue";
 import { hasValue, isArray, isObj, isStr, noValue } from "@/utils/Typeof";
 import { childSlotName } from "@/draggable/Constant";
 import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
@@ -8,7 +9,6 @@ import { CreateConfig, RuntimeBlock, RuntimeComponentSlotsItem, RuntimeListener,
 import { BindListenerOptions, BlockOperation, BlockOperationById, OpsOptions } from "@/draggable/types/BlockOperation";
 import { deepTraverseRuntimeNode } from "@/draggable/utils/DesignerUtils";
 import { blockDeepTransform } from "@/draggable/utils/BlockPropsTransform";
-import { withModifiers } from "vue";
 import { toElementEventName, toPropsEventName } from "@/draggable/utils/HtmlTag";
 
 interface AllBlockOperationProps extends CreateConfig {
@@ -49,6 +49,7 @@ const defBindListenerOptions: BindListenerOptions = {
  */
 class AllBlockOperation implements BlockOperation, BlockOperationById {
     private readonly props: Readonly<AllBlockOperationProps>;
+    readonly nodeChange: Ref<number> = ref<number>(0);
 
     constructor(props: AllBlockOperationProps) {
         this.props = props;
@@ -168,6 +169,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         } else {
             throw new Error(`参数position值无效，position=${position}`);
         }
+        this.nodeChange.value++;
         // 重新渲染组件
         if (!options.cancelRender) this.props.instance.$forceUpdate();
         // 返回新增的节点
@@ -248,6 +250,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
             });
             parentIds.forEach(delId => delete this.props.nodeParent[delId]);
         }
+        this.nodeChange.value++;
         // 重新渲染组件
         if (removeNodes.length > 0 && !options.cancelRender) this.props.instance.$forceUpdate();
         // 返回删除的节点
@@ -372,6 +375,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
                 this.props.nodeRefVueRef[moveId] = parentBlockRef;
             }
         }
+        this.nodeChange.value++;
         // 重新渲染组件
         if (!options.cancelRender) this.props.instance.$forceUpdate();
         return true;
@@ -420,6 +424,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
             delAllIds.length = 0;
             slot.length = 0;
         }
+        this.nodeChange.value++;
         // 重新渲染组件
         if (removeNodes.length > 0 && !options.cancelRender) this.props.instance.$forceUpdate();
         // 返回删除的节点

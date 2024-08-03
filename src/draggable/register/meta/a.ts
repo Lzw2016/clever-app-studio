@@ -14,7 +14,7 @@ export default defineComponentMeta({
             style: {
             },
         },
-        tpl: "",
+        // tpl: "连接",
     },
     slots: {},
     setter: {
