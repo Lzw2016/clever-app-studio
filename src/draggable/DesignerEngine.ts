@@ -59,6 +59,8 @@ class DesignerEngine {
     protected readonly _showBlockEditorDialog: Ref<boolean> = ref<boolean>(false);
     /** 是否显示Event编辑对话框 */
     protected readonly _showEventEditorDialog: Ref<boolean> = ref<boolean>(false);
+    /** 强制显示大纲树 */
+    protected readonly _forceShowOutline: Ref<boolean> = ref<boolean>(false);
 
     constructor(props: Partial<DesignerEngineProps>) {
         this.props = { ...defaultProps, ...props };
@@ -142,6 +144,16 @@ class DesignerEngine {
         this._showEventEditorDialog.value = value;
     }
 
+    /** 强制显示大纲树 */
+    get forceShowOutline(): boolean {
+        return this._forceShowOutline.value;
+    }
+
+    /** 强制显示大纲树 */
+    set forceShowOutline(value: boolean) {
+        this._forceShowOutline.value = value;
+    }
+    
     /** 当前活动的设计器状态数据 */
     get activeDesignerState(): DesignerState | undefined {
         const activeDesignerPath = this.activeDesignerPath;

@@ -134,15 +134,16 @@ const state = reactive<WorkbenchState>({
 });
 // 内部数据
 const data = {};
-// 工具栏显示状态
+// 左侧工具栏显示状态
 const isPage = computed(() => state.leftTool === LeftTools.Page);
 const isMaterial = computed(() => state.leftTool === LeftTools.Material);
 const isDict = computed(() => state.leftTool === LeftTools.Dict);
 const isAPI = computed(() => state.leftTool === LeftTools.API);
 const isDatabase = computed(() => state.leftTool === LeftTools.Database);
-const isProps = computed(() => state.rightTool === RightTools.Props);
-const isOutline = computed(() => state.rightTool === RightTools.Outline);
-const isHistory = computed(() => state.rightTool === RightTools.History);
+// 右侧工具栏显示状态
+const isProps = computed(() => !designerEngine.forceShowOutline && state.rightTool === RightTools.Props);
+const isOutline = computed(() => designerEngine.forceShowOutline || state.rightTool === RightTools.Outline);
+const isHistory = computed(() => !designerEngine.forceShowOutline && state.rightTool === RightTools.History);
 
 // 设计器引擎
 const designerEngine = markRaw(new DesignerEngine({
