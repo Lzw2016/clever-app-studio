@@ -37,7 +37,7 @@ class DesignerState {
                 const nodeId = selection.nodeId;
                 if (!nodeId) continue;
                 const node = blockInstance.globalContext.allNode[nodeId];
-                nodes.push(markRaw(node));
+                if(node) nodes.push(markRaw(node));
             }
         }
         return nodes;

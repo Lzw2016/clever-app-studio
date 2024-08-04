@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import lodash from "lodash";
 import { computed, CSSProperties, reactive, ref, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -105,18 +106,19 @@ function forceUpdateBlock() {
     const blockInstance = designerState.value?.blockInstance;
     if (!blockInstance) return;
     blockInstance.$forceUpdate();
-    const selections = designerState.value?.selections;
-    const nodes = designerState.value?.selectNodes;
-    if (selections && nodes) {
-        blockInstance.$nextTick(() => {
-            const nodeIds = nodes.map(node => node.id);
-            for (let selection of selections) {
-                if (selection.nodeId && nodeIds.includes(selection.nodeId)) {
-                    selection.recalcAuxToolPosition();
-                }
+    blockInstance.$nextTick(() => {
+        const selections = designerState.value?.selections;
+        const nodes = designerState.value?.selectNodes;
+        if (!selections || !nodes) return;
+        const allNode = blockInstance.globalContext.allNode;
+        lodash.remove(selections, selection => noValue(selection.nodeId) || noValue(allNode[selection.nodeId]));
+        const nodeIds = nodes.map(node => node.id);
+        for (let selection of selections) {
+            if (selection.nodeId && nodeIds.includes(selection.nodeId)) {
+                selection.recalcAuxToolPosition();
             }
-        }).finally();
-    }
+        }
+    }).finally();
 }
 
 function clickNode(node: OutlineTreeNode<RuntimeNode>) {
@@ -146,6 +148,17 @@ function delNode(node: OutlineTreeNode<RuntimeNode>) {
     designerState.value?.blockInstance?.opsById.removeById(selectNode.id, { cancelRender: true });
     forceUpdateBlock();
 }
+
+// 根节点不能拖动
+function nodeAllowDrag(node: any) {
+    const nData = node.data as OutlineTreeNode<RuntimeNode>;
+    return true;
+}
+
+// 不能放置的根节点的前面
+function nodeAllowDrop(srcNode: any, targetNode: any, type: 'prev' | 'inner' | 'next') {
+    return false;
+}
 </script>
 
 <template>
@@ -169,10 +182,18 @@ function delNode(node: OutlineTreeNode<RuntimeNode>) {
                 :expand-on-click-node="false"
                 :show-contextmenu="false"
                 :draggable="true"
+                :allow-drag="nodeAllowDrag"
+                :allow-drop="nodeAllowDrop"
                 size="small"
                 :current-node-key="state.selectNodeId"
                 @node-click="clickNode"
             >
+                <!--                @node-drop=""-->
+                <!--                @node-drag-start=""-->
+                <!--                @node-drag-enter=""-->
+                <!--                @node-drag-over=""-->
+                <!--                @node-drag-leave=""-->
+                <!--                @node-drag-end=""-->
                 <template #prefix="{ node }">
                     <span class="cmp-icon">
                         <component :is="node.data.icon"/>
