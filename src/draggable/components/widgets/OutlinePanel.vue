@@ -152,12 +152,30 @@ function delNode(node: OutlineTreeNode<RuntimeNode>) {
 // 根节点不能拖动
 function nodeAllowDrag(node: any) {
     const nData = node.data as OutlineTreeNode<RuntimeNode>;
-    return true;
+    return hasValue(nData.parentId);
 }
 
-// 不能放置的根节点的前面
+// 不能放置的根节点的前面 | TODO 有些组件内部不能放置渲染节点
 function nodeAllowDrop(srcNode: any, targetNode: any, type: 'prev' | 'inner' | 'next') {
-    return false;
+    const snData = srcNode.data as OutlineTreeNode<RuntimeNode>;
+    const tnData = targetNode.data as OutlineTreeNode<RuntimeNode>;
+    return !(noValue(tnData.parentId) && type === 'prev');
+}
+
+// 节点拖放变化
+function nodeDrop(srcNode: any, targetNode: any, dropType: 'before' | 'after' | 'inner' | 'none', event: Event) {
+    const blockInstance = designerState.value?.blockInstance;
+    if (!blockInstance) return;
+    const snData = srcNode.data as OutlineTreeNode<RuntimeNode>;
+    const tnData = targetNode.data as OutlineTreeNode<RuntimeNode>;
+    if (dropType === 'before') {
+        blockInstance.opsById.moveNodeToItemBeforeById(tnData.id, snData.id, { cancelRender: true });
+    } else if (dropType === 'after') {
+        blockInstance.opsById.moveNodeToItemAfterById(tnData.id, snData.id, { cancelRender: true });
+    } else if (dropType === 'inner' && hasValue(tnData.parentId)) {
+        blockInstance.opsById.moveNodeToItemLastById(tnData.parentId, snData.id, { cancelRender: true });
+    }
+    forceUpdateBlock();
 }
 </script>
 
@@ -187,13 +205,8 @@ function nodeAllowDrop(srcNode: any, targetNode: any, type: 'prev' | 'inner' | '
                 size="small"
                 :current-node-key="state.selectNodeId"
                 @node-click="clickNode"
+                @node-drop="nodeDrop"
             >
-                <!--                @node-drop=""-->
-                <!--                @node-drag-start=""-->
-                <!--                @node-drag-enter=""-->
-                <!--                @node-drag-over=""-->
-                <!--                @node-drag-leave=""-->
-                <!--                @node-drag-end=""-->
                 <template #prefix="{ node }">
                     <span class="cmp-icon">
                         <component :is="node.data.icon"/>
