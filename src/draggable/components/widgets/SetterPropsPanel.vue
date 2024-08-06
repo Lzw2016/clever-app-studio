@@ -5,11 +5,12 @@ import { Collapse, CollapseItem, Form, FormItem, Input, Loading, Tooltip } from 
 import { layer } from "@layui/layer-vue";
 import { hasValue, isStr, noValue } from "@/utils/Typeof";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
-import { Setter, SetterPanel } from "@/draggable/types/ComponentMeta";
+import { PropsPanel, Setter } from "@/draggable/types/ComponentMeta";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import BindSetter from "@/draggable/components/setter/BindSetter.vue";
+import VModelSetter from "@/draggable/components/setter/VModelSetter.vue";
 import { forceUpdateBlock } from "@/draggable/utils/SetterUtils";
 import Braces from "@/assets/images/braces.svg?component";
 
@@ -30,7 +31,7 @@ interface SetterPropsFormProps {
     /** 设计器状态数据 */
     designerState: DesignerState;
     /** 设置器面板 */
-    setterPanel: SetterPanel;
+    propsPanel: PropsPanel;
 }
 
 // 读取组件 props 属性
@@ -66,13 +67,13 @@ const selectNode = computed(() => {
 });
 
 // 初始化设计器表单组件
-onBeforeMount(() => loadSetterComponent(props.setterPanel).finally());
+onBeforeMount(() => loadSetterComponent(props.propsPanel).finally());
 // 动态加载设计器表单组件
-watch(() => props.setterPanel, setterPanel => loadSetterComponent(setterPanel).finally());
+watch(() => props.propsPanel, setterPanel => loadSetterComponent(setterPanel).finally());
 // 选中节点的ref值
 watch(() => selectNode.value, node => resetNodeRef(node), { immediate: true });
 
-async function loadSetterComponent(setterPanel: SetterPanel) {
+async function loadSetterComponent(setterPanel: PropsPanel) {
     // 获取所有需要加载的组件类型
     const types = new Set<string>();
     for (let setterGroup of setterPanel.groups) {
@@ -102,14 +103,14 @@ function formProps() {
         size: "mini",
         labelPosition: "left",
         labelWidth: "65px",
-        ...props.setterPanel.formProps,
+        ...props.propsPanel.formProps,
     };
     return obj;
 }
 
 function getFormItemProps(setter: Setter) {
     const obj: any = {
-        ...props.setterPanel.formItemProps,
+        ...props.propsPanel.formItemProps,
     };
     if (setter.label) obj.label = setter.label;
     return obj;
@@ -247,10 +248,27 @@ function toggleBind(setter: Setter, isBound: boolean) {
                         <span class="setter-button-placeholder"/>
                     </div>
                 </FormItem>
+                <FormItem v-if="props.propsPanel.enableVModel && hasValue(props.designerState.blockInstance)" size="mini" labelPosition="left">
+                    <template #label>
+                        <Tooltip effect="dark" placement="left" content="数据双向绑定v-model">
+                            <span class="setter-label-tips">数据绑定</span>
+                        </Tooltip>
+                    </template>
+                    <div class="flex-row-container" style="align-items: center;">
+                        <div class="flex-item-fill flex-row-container" style="align-items: center;">
+                            <VModelSetter
+                                :designer-state="props.designerState"
+                                :block-instance="props.designerState.blockInstance"
+                                :nodes="props.designerState.selectNodes"
+                            />
+                        </div>
+                        <span class="setter-button-placeholder"/>
+                    </div>
+                </FormItem>
             </CollapseItem>
             <CollapseItem
                 class="settings-items"
-                v-for="group in props.setterPanel.groups"
+                v-for="group in props.propsPanel.groups"
                 :name="group.title"
                 :title="group.title"
             >

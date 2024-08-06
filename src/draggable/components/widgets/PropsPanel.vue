@@ -138,7 +138,7 @@ function setDesignerStateRef(ref: any) {
                 <SetterPropsPanel
                     :designer-engine="props.designerEngine"
                     :designer-state="designerState"
-                    :setter-panel="selectedComponentMeta.setter.props"
+                    :props-panel="selectedComponentMeta.setter.props"
                 />
             </TabItem>
             <TabItem

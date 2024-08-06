@@ -171,13 +171,15 @@ interface FormItemProps {
 }
 
 /** 属性设置器面板 */
-interface SetterPanel {
+interface PropsPanel {
     /** 面板标题 */
     title?: string;
     /** 表单的配置 */
     formProps?: FormProps;
     /** 表单项的通用配置 */
     formItemProps?: FormItemProps;
+    /** 是否启用数据绑定(v-model) */
+    enableVModel?: boolean;
     /** 设置器分组集合 */
     groups: Array<SetterGroup>;
 }
@@ -280,13 +282,13 @@ interface StylePanel {
 /** 组件元信息 setter */
 interface ComponentSetter {
     /** 组件属性设置 */
-    props?: SetterPanel;
+    props?: PropsPanel;
     /** 组件事件绑定 */
     events?: EventPanel;
     /** 样式设置(内置的固定设置) */
     style?: StylePanel;
     /** vue指令设置(内置的固定设置) */
-    advanced?: SetterPanel;
+    advanced?: PropsPanel;
 }
 
 /** 组件节点默认配置 */
@@ -407,7 +409,7 @@ export type {
     FormProps,
     FormItemProps,
     SetterGroup,
-    SetterPanel,
+    PropsPanel,
     EventInfo,
     ListenerInfo,
     EventGroup,

@@ -55,7 +55,7 @@ const designerTest = defineDesignBlock({
     data: {
         count: 0,
         refs: [],
-        str: "",
+        str: "测试数据",
         test01: "自定义文本",
         test02: {
             "success": true,

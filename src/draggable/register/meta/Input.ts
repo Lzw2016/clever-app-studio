@@ -28,6 +28,7 @@ export default defineComponentMeta({
             formProps: {
                 labelWidth: "75px",
             },
+            enableVModel: true,
             groups: [
                 {
                     title: "常用",

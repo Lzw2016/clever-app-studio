@@ -53,8 +53,8 @@ const page = defineBlock({
                 g: "{{ this.a.b + 1 }}",
                 // 返回对象
                 h: {
-                    a: "this.a",
-                    b: "this.c",
+                    a: "{{ this.a }}",
+                    b: "{{ this.c }}",
                 },
             },
             listeners: {
