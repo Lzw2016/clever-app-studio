@@ -822,6 +822,13 @@ function _computedToBindTreeNode(computed: any, parentNode?: BindTreeNode): Arra
     return res;
 }
 
+function getVModelTreeNode(block?: RuntimeBlock): Array<BindTreeNode> {
+    const res: Array<BindTreeNode> = [];
+    if (!block) return res;
+    _dataToBindTreeNode(block.data).forEach(node => res.push(node));
+    return res;
+}
+
 export type  {
     NodePosition,
     TraverseVNode,
@@ -850,4 +857,5 @@ export {
     runtimeNodeToJson5Code,
     runtimeNodeToJsCode,
     getBindTreeNode,
+    getVModelTreeNode,
 }

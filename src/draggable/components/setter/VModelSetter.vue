@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toStr, watchNodes } from "@/draggable/utils/SetterUtils";
-import { BindTreeNode, getBindTreeNode } from "@/draggable/utils/DesignerUtils";
+import { BindTreeNode, getVModelTreeNode } from "@/draggable/utils/DesignerUtils";
 
 // 定义组件选项
 defineOptions({
@@ -62,8 +62,7 @@ function showModal() {
     }
     const blockRef = globalContext.nodeRefVueRef[node.ref];
     const block = globalContext.allBlock[blockRef];
-    // TODO 只需要data
-    state.bindTree = getBindTreeNode(block?.globalContext.runtimeBlock);
+    state.bindTree = getVModelTreeNode(block?.globalContext.runtimeBlock);
     state.showModal = true;
 }
 
