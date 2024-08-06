@@ -19,6 +19,10 @@ import { DesignPageMate } from "@/draggable/types/DesignBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
 import AuxTool from "@/draggable/components/widgets/AuxTool.vue";
+import { ShowEventEditorDialogEvent } from "@/draggable/events/designer/ShowEventEditorDialogEvent";
+import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
+import { AddListenerEvent } from "@/draggable/events/designer/AddListenerEvent";
+import { UpdateListenerEvent } from "@/draggable/events/designer/UpdateListenerEvent";
 
 // 定义组件选项
 defineOptions({
@@ -111,7 +115,6 @@ const designerBlockInstance = props.designerState._designerBlockInstance;
 const auxTool = ref<InstanceType<typeof AuxTool> | undefined>();
 // 代码编辑器实例
 const codeEditorInstance = ref<Editor | undefined>();
-
 // 当前命中的路由
 const route = useRoute();
 
@@ -171,8 +174,47 @@ function recalcAuxToolPosition() {
     props.designerState.selections.forEach(selection => selection.recalcAuxToolPosition());
 }
 
-console.log("pageId", route.params.pageId)
-// TODO 设计器设计流程: pageId -> DesignBlock对象(json/js) -> 渲染(RuntimeBlock.vue) -> 拖拽/配置 -> 更新DesignBlock对象 -> 保存DesignBlock对象历史 -> 持久化DesignBlock对象
+watch(() => props.designerState.events.showEventEditorDialog, event => onShowEventEditorDialogEvent(event));
+watch(() => props.designerState.events.removeListener, event => onRemoveListener(event));
+watch(() => props.designerState.events.addListener, event => onAddListener(event));
+watch(() => props.designerState.events.updateListener, event => onUpdateListener(event));
+
+function onShowEventEditorDialogEvent(event?: ShowEventEditorDialogEvent) {
+    const data = event?.data;
+    if (!data) return;
+    props.designerEngine.showEventEditorDialog = true;
+    if (data.nodeId) {
+        props.designerEngine.eventEditor?.setSelectNode(data.nodeId, data.eventName);
+    }
+}
+
+function onRemoveListener(event?: RemoveListenerEvent) {
+    const data = event?.data;
+    if (!data) return;
+    props.designerEngine.eventEditor?.recalcAllListener(data.nodeId, data.eventName);
+    props.designerState.setterEventPanel?.recalcAllListener();
+}
+
+function onAddListener(event?: AddListenerEvent) {
+    const data = event?.data;
+    if (!data) return;
+    props.designerEngine.showEventEditorDialog = true;
+    props.designerEngine.eventEditor?.recalcAllListener(data.nodeId, data.eventInfo.name);
+    props.designerState.setterEventPanel?.recalcAllListener();
+    if (data.nodeId) {
+        props.designerEngine.eventEditor?.$nextTick(() => {
+            props.designerEngine.eventEditor?.setSelectNode(data.nodeId, data.eventInfo.name);
+        });
+    }
+}
+
+function onUpdateListener(event?: UpdateListenerEvent) {
+    const data = event?.data;
+    if (!data) return;
+    if (props.designerState.selectNode?.id === data.nodeId) {
+        props.designerState.setterEventPanel?.recalcAllListener();
+    }
+}
 </script>
 
 <template>

@@ -264,10 +264,10 @@ function removeListener() {
     // 删除事件监听
     blockInstance.ops.removeListener(node.ref, listenerInfo.eventName);
     // 生产事件
-    props.designerEngine.eventbus.dispatch(new RemoveListenerEvent({
+    props.designerState.events.removeListener = new RemoveListenerEvent({
         nodeId: node.id,
         eventName: listenerInfo.eventName,
-    }));
+    });
     nextTick(() => selectListenerChange(showListener.value?.[idx]));
 }
 
@@ -276,10 +276,10 @@ function addListener(eventInfo: EventInfo) {
     const blockInstance = props.designerState?.blockInstance;
     if (!node || !blockInstance) return;
     addNodeListener(node.ref, eventInfo, blockInstance.ops);
-    props.designerEngine.eventbus.dispatch(new AddListenerEvent({
+    props.designerState.events.addListener = new AddListenerEvent({
         nodeId: node.id,
         eventInfo: eventInfo,
-    }));
+    });
 }
 
 function updateListener() {
@@ -326,10 +326,10 @@ function updateListener() {
         },
     );
     // 生产事件
-    props.designerEngine.eventbus.dispatch(new UpdateListenerEvent({
+    props.designerState.events.updateListener = new UpdateListenerEvent({
         nodeId: node.id,
         eventName: listener.eventName,
-    }));
+    });
 }
 
 function setSelectNode(nodeId: string, eventName: string) {

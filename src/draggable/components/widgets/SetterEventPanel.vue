@@ -57,10 +57,10 @@ const allListener = computed<Array<ListenerInfo>>(() => {
 function showEventEditorDialog(listenerInfo: ListenerInfo) {
     const eventName = listenerInfo.eventName;
     const nodeId = props.designerState.selectNode?.id;
-    props.designerEngine.eventbus.dispatch(new ShowEventEditorDialogEvent({
+    props.designerState.events.showEventEditorDialog = new ShowEventEditorDialogEvent({
         nodeId,
         eventName,
-    }));
+    });
 }
 
 function removeListener(listenerInfo: ListenerInfo) {
@@ -68,10 +68,10 @@ function removeListener(listenerInfo: ListenerInfo) {
     const blockInstance = props.designerState.blockInstance;
     if (!node || !blockInstance) return;
     blockInstance.ops.removeListener(node.ref, listenerInfo.eventName);
-    props.designerEngine.eventbus.dispatch(new RemoveListenerEvent({
+    props.designerState.events.removeListener = new RemoveListenerEvent({
         nodeId: node.id,
         eventName: listenerInfo.eventName,
-    }));
+    });
 }
 
 function addListener(eventInfo: EventInfo) {
@@ -79,10 +79,10 @@ function addListener(eventInfo: EventInfo) {
     const blockInstance = props.designerState.blockInstance;
     if (!node || !blockInstance) return;
     addNodeListener(node.ref, eventInfo, blockInstance.ops);
-    props.designerEngine.eventbus.dispatch(new AddListenerEvent({
+    props.designerState.events.addListener = new AddListenerEvent({
         nodeId: node.id,
         eventInfo: eventInfo,
-    }));
+    });
 }
 
 function recalcAllListener() {

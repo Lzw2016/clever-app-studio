@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, markRaw, onMounted, onUnmounted, reactive } from "vue";
-import { Dropdown, DropdownItem, DropdownMenu, UserHead } from "@opentiny/vue";
+import { Dropdown, DropdownItem, DropdownMenu, Modal, UserHead } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faArrowRightFromBracket, faLanguage, faUserLarge } from "@fortawesome/free-solid-svg-icons";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
@@ -28,6 +28,8 @@ import PropsPanel from "@/draggable/components/widgets/PropsPanel.vue";
 import OutlinePanel from "@/draggable/components/widgets/OutlinePanel.vue";
 import HistoryPanel from "@/draggable/components/widgets/HistoryPanel.vue";
 import WorkspaceTabs from "@/draggable/components/widgets/WorkspaceTabs.vue";
+import BlockEditor from "@/draggable/components/widgets/BlockEditor.vue";
+import EventEditor from "@/draggable/components/widgets/EventEditor.vue";
 import FolderClosed from "@/assets/images/folder-closed.svg?component";
 import Puzzle from "@/assets/images/puzzle.svg?component";
 import UnPlug from "@/assets/images/unplug.svg?component";
@@ -161,6 +163,11 @@ const designerEngine = markRaw(new DesignerEngine({
     ],
 }));
 setDesignerEngine(designerEngine);
+// Block编辑器组件实例
+const blockEditorRef = designerEngine._blockEditor;
+// Event编辑器组件实例
+const eventEditorRef = designerEngine._eventEditor;
+
 onMounted(() => {
     designerEngine.mount(document, globalThisPolyfill);
 });
@@ -386,6 +393,40 @@ function setRightTool(rightTool?: RightTools) {
             <div class="flex-item-fixed box-border-l" style="width: 48px;">设置</div>
         </div>
     </div>
+    <Modal
+        class="block-modal"
+        v-model="designerEngine.showBlockEditorDialog"
+        height="85%"
+        width="70%"
+        min-height="350px"
+        min-width="500px"
+        :esc-closable="true"
+        :resize="false"
+        title="编辑页面代码"
+    >
+        <BlockEditor
+            ref="blockEditorRef"
+            :designer-engine="designerEngine"
+            :designer-state="designerEngine.activeDesignerState"
+        />
+    </Modal>
+    <Modal
+        class="event-modal"
+        v-model="designerEngine.showEventEditorDialog"
+        height="85%"
+        width="70%"
+        min-height="350px"
+        min-width="500px"
+        :esc-closable="true"
+        :resize="false"
+        title="编辑事件代码"
+    >
+        <EventEditor
+            ref="eventEditorRef"
+            :designer-engine="designerEngine"
+            :designer-state="designerEngine.activeDesignerState"
+        />
+    </Modal>
 </template>
 
 <style scoped>
@@ -530,12 +571,23 @@ function setRightTool(rightTool?: RightTools) {
 }
 
 /* --------------------------------------------------------- 三方组件样式 --------------------------------------------------------- */
-
-.block-modal :deep(.tiny-modal__box .tiny-modal__body .tiny-modal__content) {
-    padding: 8px 0 16px 0;
-}
-
 .top-menus :deep(.tiny-dropdown) {
     color: unset;
+}
+
+.block-modal :deep(.tiny-modal__box .tiny-modal__body) {
+    margin-bottom: 8px;
+}
+
+.block-modal.tiny-modal.tiny-modal__wrapper.is__visible :deep(.tiny-modal__box) {
+    top: 8vh;
+}
+
+.event-modal :deep(.tiny-modal__box .tiny-modal__body) {
+    margin-bottom: 8px;
+}
+
+.event-modal.tiny-modal.tiny-modal__wrapper.is__visible :deep(.tiny-modal__box) {
+    top: 8vh;
 }
 </style>

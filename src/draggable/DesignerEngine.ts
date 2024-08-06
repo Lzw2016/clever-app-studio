@@ -9,6 +9,8 @@ import { Cursor } from "@/draggable/models/Cursor";
 import { DraggingCmpMetas } from "@/draggable/models/DraggingCmpMetas";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { Insertion } from "@/draggable/models/Insertion";
+import BlockEditor from "@/draggable/components/widgets/BlockEditor.vue";
+import EventEditor from "@/draggable/components/widgets/EventEditor.vue";
 
 interface DesignerEngineProps {
     /** 组件管理器 */
@@ -59,6 +61,10 @@ class DesignerEngine {
     protected readonly _showBlockEditorDialog: Ref<boolean> = ref<boolean>(false);
     /** 是否显示Event编辑对话框 */
     protected readonly _showEventEditorDialog: Ref<boolean> = ref<boolean>(false);
+    /** Block编辑器组件实例 */
+    readonly _blockEditor: Ref<InstanceType<typeof BlockEditor> | undefined> = ref<InstanceType<typeof BlockEditor> | undefined>();
+    /** Event编辑器组件实例 */
+    readonly _eventEditor: Ref<InstanceType<typeof EventEditor> | undefined> = ref<InstanceType<typeof EventEditor> | undefined>();
     /** 强制显示大纲树 */
     protected readonly _forceShowOutline: Ref<boolean> = ref<boolean>(false);
 
@@ -144,6 +150,16 @@ class DesignerEngine {
         this._showEventEditorDialog.value = value;
     }
 
+    /** Block编辑器组件实例 */
+    get blockEditor(): InstanceType<typeof BlockEditor> | undefined {
+        return this._blockEditor.value;
+    }
+
+    /** Event编辑器组件实例 */
+    get eventEditor(): InstanceType<typeof EventEditor> | undefined {
+        return this._eventEditor.value;
+    }
+
     /** 强制显示大纲树 */
     get forceShowOutline(): boolean {
         return this._forceShowOutline.value;
@@ -153,7 +169,7 @@ class DesignerEngine {
     set forceShowOutline(value: boolean) {
         this._forceShowOutline.value = value;
     }
-    
+
     /** 当前活动的设计器状态数据 */
     get activeDesignerState(): DesignerState | undefined {
         const activeDesignerPath = this.activeDesignerPath;

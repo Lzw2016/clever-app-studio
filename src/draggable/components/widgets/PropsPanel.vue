@@ -1,19 +1,13 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, onUnmounted, reactive, ref, watch } from "vue";
-import { Modal, TabItem, Tabs } from "@opentiny/vue";
+import { computed, reactive, watch } from "vue";
+import { TabItem, Tabs } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
-import { ShowEventEditorDialogEvent } from "@/draggable/events/designer/ShowEventEditorDialogEvent";
-import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
-import { AddListenerEvent } from "@/draggable/events/designer/AddListenerEvent";
-import { UpdateListenerEvent } from "@/draggable/events/designer/UpdateListenerEvent";
 import SetterPropsPanel from "@/draggable/components/widgets/SetterPropsPanel.vue";
 import SetterEventPanel from "@/draggable/components/widgets/SetterEventPanel.vue";
 import SetterStylePanel from "@/draggable/components/widgets/SetterStylePanel.vue";
-import EventEditor from "@/draggable/components/widgets/EventEditor.vue";
-import BlockEditor from "@/draggable/components/widgets/BlockEditor.vue";
 
 // 定义组件选项
 defineOptions({
@@ -39,12 +33,6 @@ const data = {
         advanced: "高级",
     },
 };
-// 事件Setter
-const setterEventPanelRef = ref<InstanceType<typeof SetterEventPanel> | undefined>();
-// 事件编辑器组件
-const blockEditorRef = ref<InstanceType<typeof BlockEditor> | undefined>();
-// 事件编辑器组件
-const eventEditorRef = ref<InstanceType<typeof EventEditor> | undefined>();
 // 当前活动的设计器状态数据
 const designerState = computed(() => props.designerEngine.activeDesignerState);
 // 存在选中的节点
@@ -104,53 +92,11 @@ function existsSetter(meta?: ComponentMeta) {
         || (meta.setter.advanced && meta.setter.advanced.groups.length > 0);
 }
 
-function onShowEventEditorDialogEvent(event: ShowEventEditorDialogEvent) {
-    props.designerEngine.showEventEditorDialog = true;
-    const data = event.data;
-    if (data.nodeId) {
-        eventEditorRef.value?.setSelectNode(data.nodeId, data.eventName);
+function setDesignerStateRef(ref: any) {
+    if (designerState.value) {
+        designerState.value._setterEventPanel.value = ref;
     }
 }
-
-function onRemoveListener(event: RemoveListenerEvent) {
-    const data = event.data;
-    eventEditorRef.value?.recalcAllListener(data.nodeId, data.eventName);
-    setterEventPanelRef.value?.recalcAllListener();
-}
-
-function onAddListener(event: AddListenerEvent) {
-    props.designerEngine.showEventEditorDialog = true;
-    const data = event.data;
-    eventEditorRef.value?.recalcAllListener(data.nodeId, data.eventInfo.name);
-    setterEventPanelRef.value?.recalcAllListener();
-    if (data.nodeId) {
-        eventEditorRef.value?.$nextTick(() => {
-            eventEditorRef.value?.setSelectNode(data.nodeId, data.eventInfo.name);
-        });
-    }
-}
-
-function onUpdateListener(event: UpdateListenerEvent) {
-    const data = event.data;
-    if (designerState.value?.selectNode?.id === data.nodeId) {
-        setterEventPanelRef.value?.recalcAllListener();
-    }
-}
-
-onBeforeMount(() => {
-    // TODO 需要根据 DesignerState 监听事件(每个 DesignerState 的编辑更新事件需要隔离)
-    props.designerEngine.eventbus.subscribe(ShowEventEditorDialogEvent, onShowEventEditorDialogEvent);
-    props.designerEngine.eventbus.subscribe(RemoveListenerEvent, onRemoveListener);
-    props.designerEngine.eventbus.subscribe(AddListenerEvent, onAddListener);
-    props.designerEngine.eventbus.subscribe(UpdateListenerEvent, onUpdateListener);
-});
-
-onUnmounted(() => {
-    props.designerEngine.eventbus.unsubscribe(ShowEventEditorDialogEvent, onShowEventEditorDialogEvent);
-    props.designerEngine.eventbus.unsubscribe(RemoveListenerEvent, onRemoveListener);
-    props.designerEngine.eventbus.unsubscribe(AddListenerEvent, onAddListener);
-    props.designerEngine.eventbus.unsubscribe(UpdateListenerEvent, onUpdateListener);
-});
 </script>
 
 <template>
@@ -204,7 +150,7 @@ onUnmounted(() => {
                 :title="selectedComponentMeta.setter.events?.title || data.setterTabs.events"
             >
                 <SetterEventPanel
-                    ref="setterEventPanelRef"
+                    :ref="setDesignerStateRef"
                     :designer-engine="props.designerEngine"
                     :designer-state="designerState"
                     :event-panel="selectedComponentMeta.setter.events"
@@ -236,40 +182,6 @@ onUnmounted(() => {
                 vue指令设置
             </TabItem>
         </Tabs>
-        <Modal
-            class="block-modal"
-            v-model="designerEngine.showBlockEditorDialog"
-            height="85%"
-            width="70%"
-            min-height="350px"
-            min-width="500px"
-            :esc-closable="true"
-            :resize="false"
-            title="编辑页面代码"
-        >
-            <BlockEditor
-                ref="blockEditorRef"
-                :designer-engine="designerEngine"
-                :designer-state="designerState"
-            />
-        </Modal>
-        <Modal
-            class="event-modal"
-            v-model="designerEngine.showEventEditorDialog"
-            height="85%"
-            width="70%"
-            min-height="350px"
-            min-width="500px"
-            :esc-closable="true"
-            :resize="false"
-            title="编辑事件代码"
-        >
-            <EventEditor
-                ref="eventEditorRef"
-                :designer-engine="designerEngine"
-                :designer-state="designerState"
-            />
-        </Modal>
     </div>
 </template>
 
@@ -374,21 +286,5 @@ onUnmounted(() => {
 
 .settings-tabs :deep(.tiny-form-item .tiny-form-item__label) {
     font-size: 12px;
-}
-
-.block-modal :deep(.tiny-modal__box .tiny-modal__body) {
-    margin-bottom: 8px;
-}
-
-.block-modal.tiny-modal.tiny-modal__wrapper.is__visible :deep(.tiny-modal__box) {
-    top: 8vh;
-}
-
-.event-modal :deep(.tiny-modal__box .tiny-modal__body) {
-    margin-bottom: 8px;
-}
-
-.event-modal.tiny-modal.tiny-modal__wrapper.is__visible :deep(.tiny-modal__box) {
-    top: 8vh;
 }
 </style>

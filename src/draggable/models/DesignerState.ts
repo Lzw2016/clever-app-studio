@@ -7,6 +7,22 @@ import { HoverDashed } from "@/draggable/models/HoverDashed";
 import { Selection } from "@/draggable/models/Selection";
 import { SetterShareState } from "@/draggable/models/SetterShareState";
 import RuntimeBlock from "@/draggable/components/RuntimeBlock.vue";
+import { ShowEventEditorDialogEvent } from "@/draggable/events/designer/ShowEventEditorDialogEvent";
+import { RemoveListenerEvent } from "@/draggable/events/designer/RemoveListenerEvent";
+import { AddListenerEvent } from "@/draggable/events/designer/AddListenerEvent";
+import { UpdateListenerEvent } from "@/draggable/events/designer/UpdateListenerEvent";
+import SetterEventPanel from "@/draggable/components/widgets/SetterEventPanel.vue";
+
+interface DesignerStateEvents {
+    /** 显示事件编辑器对话框 */
+    showEventEditorDialog?: ShowEventEditorDialogEvent;
+    /** 删除事件监听 */
+    removeListener?: RemoveListenerEvent;
+    /** 新增事件监听 */
+    addListener?: AddListenerEvent;
+    /** 更新事件监听 */
+    updateListener?: UpdateListenerEvent;
+}
 
 /**
  * 设计器状态数据
@@ -18,6 +34,9 @@ class DesignerState {
     readonly _designerContainer: Ref<HTMLDivElement | undefined> = ref<HTMLDivElement | undefined>();
     /** 设计器组件实例 */
     readonly _designerBlockInstance: Ref<InstanceType<typeof RuntimeBlock> | undefined> = ref<InstanceType<typeof RuntimeBlock> | undefined>();
+    /** 事件Setter组件实例 */
+    readonly _setterEventPanel: Ref<InstanceType<typeof SetterEventPanel> | undefined> = ref<InstanceType<typeof SetterEventPanel> | undefined>();
+
     /** 设计时的代码(DesignBlock源码) */
     protected readonly _designerBlockCode: Ref<string> = ref<string>("");
     /** 设计器鼠标悬停时的虚线 */
@@ -37,7 +56,7 @@ class DesignerState {
                 const nodeId = selection.nodeId;
                 if (!nodeId) continue;
                 const node = blockInstance.globalContext.allNode[nodeId];
-                if(node) nodes.push(markRaw(node));
+                if (node) nodes.push(markRaw(node));
             }
         }
         return nodes;
@@ -55,6 +74,8 @@ class DesignerState {
     protected readonly _selectedComponentMeta: ComputedRef<ComponentMeta | undefined> = computed<ComponentMeta | undefined>(() => this.getCurrentComponentMeta());
     /** 组件配置面板共享状态 */
     readonly setterShareState: SetterShareState = new SetterShareState(this);
+    /** 设计器事件 */
+    readonly events: ShallowReactive<DesignerStateEvents> = shallowReactive<DesignerStateEvents>({});
 
     constructor(designerEngine: DesignerEngine) {
         this.designerEngine = designerEngine;
@@ -97,6 +118,11 @@ class DesignerState {
     /** 设计器组件实例 */
     get designerBlockInstance(): InstanceType<typeof RuntimeBlock> | undefined {
         return this._designerBlockInstance?.value;
+    }
+
+    /** 事件Setter组件实例 */
+    get setterEventPanel(): InstanceType<typeof SetterEventPanel> | undefined {
+        return this._setterEventPanel.value;
     }
 
     /** 设计器组件Block对象 */
