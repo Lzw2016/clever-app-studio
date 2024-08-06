@@ -25,7 +25,7 @@ defineOptions({
 const instance = getCurrentInstance();
 
 // 定义 Props 类型
-interface SetterPropsFormProps {
+interface SetterPropsPanelProps {
     /** 设计器引擎 */
     designerEngine: DesignerEngine;
     /** 设计器状态数据 */
@@ -35,10 +35,10 @@ interface SetterPropsFormProps {
 }
 
 // 读取组件 props 属性
-const props = withDefaults(defineProps<SetterPropsFormProps>(), {});
+const props = withDefaults(defineProps<SetterPropsPanelProps>(), {});
 
 // 定义 State 类型
-interface SetterPropsFormState {
+interface SetterPropsPanelState {
     /** 加载资源中 */
     loading: boolean;
     /** 加载错误对象 */
@@ -48,8 +48,8 @@ interface SetterPropsFormState {
 }
 
 // state 属性
-const state = reactive<SetterPropsFormState>({
-    loading: true,
+const state = reactive<SetterPropsPanelState>({
+    loading: false,
     loadErr: undefined,
     nodeRef: undefined,
 });

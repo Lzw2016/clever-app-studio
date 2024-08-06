@@ -47,8 +47,6 @@ export default defineComponentMeta({
             ],
         },
         // advanced: {
-        //     title: "",
-        //     groups: [],
         // },
     },
     placeholder: {

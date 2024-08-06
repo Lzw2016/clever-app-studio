@@ -26,7 +26,6 @@ export default defineComponentMeta({
         },
         style: {},
         advanced: {
-            groups: [],
         },
     },
     placeholder: {},

@@ -399,8 +399,6 @@ export default defineComponentMeta({
             // disableSpacing: true,
         },
         advanced: {
-            title: "",
-            groups: [],
         },
     },
     placeholder: {

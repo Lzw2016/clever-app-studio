@@ -31,7 +31,6 @@ export default defineComponentMeta({
             disableBorder: true,
         },
         advanced: {
-            groups: [],
         },
     },
     placeholder: {},

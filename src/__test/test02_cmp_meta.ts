@@ -126,9 +126,6 @@ const componentMeta = defineComponentMeta({
         // vue指令设置(内置的固定设置)
         advanced: {
             title: "高级",
-            // 权限
-            // 循环
-            groups: [],
         },
     },
     placeholder: {

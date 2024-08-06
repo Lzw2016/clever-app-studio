@@ -752,6 +752,8 @@ interface BindTreeNode {
     children?: Array<BindTreeNode>;
     /** bind表达式内容 */
     readonly bindExpContent: string;
+    /** TODO 当前bind值的数据类型 */
+    // readonly dataType?: VarType;
 }
 
 /**

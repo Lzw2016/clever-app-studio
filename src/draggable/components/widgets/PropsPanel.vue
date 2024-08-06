@@ -87,9 +87,9 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
 function existsSetter(meta?: ComponentMeta) {
     if (!meta) return false;
     return (meta.setter.props && meta.setter.props.groups.length > 0)
-        || (meta.setter.events && meta.setter.events.groups.length > 0)
-        // || (meta.setter.style && meta.setter.style.groups.length > 0)
-        || (meta.setter.advanced && meta.setter.advanced.groups.length > 0);
+        || (meta.setter.events && meta.setter.events.groups.length > 0);
+        // || (meta.setter.style) TODO 判断
+        // || (meta.setter.advanced);
 }
 
 function setDesignerStateRef(ref: any) {

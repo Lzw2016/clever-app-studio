@@ -279,6 +279,18 @@ interface StylePanel {
     disableEffect?: boolean;
 }
 
+/** 高级设置器面板 */
+interface AdvancedPanel {
+    /** 面板标题 */
+    title?: string;
+    /** 禁用v-show指令设置 */
+    disableVShow?: boolean;
+    /** 禁用v-if指令设置 */
+    disableVIf?: boolean;
+    /** 禁用v-for指令设置 */
+    disableVFor?: boolean;
+}
+
 /** 组件元信息 setter */
 interface ComponentSetter {
     /** 组件属性设置 */
@@ -288,7 +300,7 @@ interface ComponentSetter {
     /** 样式设置(内置的固定设置) */
     style?: StylePanel;
     /** vue指令设置(内置的固定设置) */
-    advanced?: PropsPanel;
+    advanced?: AdvancedPanel;
 }
 
 /** 组件节点默认配置 */
@@ -419,6 +431,7 @@ export type {
     StyleSetterState,
     ComponentStyle,
     StylePanel,
+    AdvancedPanel,
     ComponentSetter,
     DefDesignNode,
     ComponentMeta,
