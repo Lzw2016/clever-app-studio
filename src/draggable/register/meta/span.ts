@@ -41,8 +41,8 @@ export default defineComponentMeta({
             groups: [],
         },
         style: {},
-        // advanced: {
-        // },
+        advanced: {
+        },
     },
     placeholder: {},
     i18n: {},

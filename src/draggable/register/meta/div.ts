@@ -46,8 +46,8 @@ export default defineComponentMeta({
                 { name: "测试B", class: "test_bbb gorgeous" },
             ],
         },
-        // advanced: {
-        // },
+        advanced: {
+        },
     },
     placeholder: {
         default: true,

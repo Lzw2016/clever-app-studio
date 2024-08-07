@@ -3,8 +3,9 @@ import { computed, reactive, watch } from "vue";
 import { TabItem, Tabs } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { isArray } from "@/utils/Typeof";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
-import { ComponentMeta } from "@/draggable/types/ComponentMeta";
+import { AdvancedPanel, ComponentMeta, EventPanel, PropsPanel, StylePanel } from "@/draggable/types/ComponentMeta";
 import SetterPropsPanel from "@/draggable/components/widgets/SetterPropsPanel.vue";
 import SetterEventPanel from "@/draggable/components/widgets/SetterEventPanel.vue";
 import SetterStylePanel from "@/draggable/components/widgets/SetterStylePanel.vue";
@@ -68,28 +69,75 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
         newMeta.setter.props.groups = meta.setter.props.groups.filter(group => group.items.length > 0);
         if (newMeta.setter.props.groups.length <= 0) delete newMeta.setter.props;
     }
-    // if (meta.setter.events && newMeta.setter.events) {
-    //     newMeta.setter.events.groups = meta.setter.events.groups.filter(group => group.items.length > 0);
-    //     if (newMeta.setter.events.groups.length <= 0) delete newMeta.setter.events;
-    // }
-    // if (meta.setter.style && newMeta.setter.style) {
-    //     newMeta.setter.style.groups = meta.setter.style.groups.filter(group => group.items.length > 0);
-    //     if (newMeta.setter.style.groups.length <= 0) delete newMeta.setter.style;
-    // }
-    // if (meta.setter.advanced && newMeta.setter.advanced) {
-    //     newMeta.setter.advanced.groups = meta.setter.advanced.groups.filter(group => group.items.length > 0);
-    //     if (newMeta.setter.advanced.groups.length <= 0) delete newMeta.setter.advanced;
-    // }
+    if (meta.setter.events && newMeta.setter.events) {
+        newMeta.setter.events.groups = meta.setter.events.groups.filter(group => group.items.length > 0);
+        if (newMeta.setter.events.groups.length <= 0) delete newMeta.setter.events;
+    }
     return newMeta;
 }
 
 // 是否存在 setter
 function existsSetter(meta?: ComponentMeta) {
     if (!meta) return false;
-    return (meta.setter.props && meta.setter.props.groups.length > 0)
-        || (meta.setter.events && meta.setter.events.groups.length > 0);
-        // || (meta.setter.style) TODO 判断
-        // || (meta.setter.advanced);
+    let count = 0;
+    count += propsSetterCount(meta.setter.props);
+    count += eventsSetterCount(meta.setter.events);
+    count += styleSetterCount(meta.setter.style);
+    count += advancedSetterCount(meta.setter.advanced);
+    return count > 0;
+}
+
+function propsSetterCount(props?: PropsPanel): number {
+    let count = 0;
+    if (!props) return count;
+    // 自带一个 ref 属性
+    count++;
+    if (props.enableVModel) count++;
+    props.groups.forEach(group => {
+        count += group.items.length;
+    });
+    return count;
+}
+
+function eventsSetterCount(events?: EventPanel): number {
+    let count = 0;
+    if (!events) return count;
+    if (events.includeInnerEvents === true) {
+        count++;
+    } else if (isArray(events.includeInnerEvents)) {
+        events.includeInnerEvents.forEach(item => {
+            if (!events.excludeInnerEvents?.includes(item)) {
+                count++;
+            }
+        });
+    }
+    events.groups.forEach(group => {
+        count += group.items.length;
+    });
+    return count;
+}
+
+function styleSetterCount(style?: StylePanel): number {
+    let count = 0;
+    if (!style) return count;
+    count += style.componentStyles?.length ?? 0;
+    if (style.disableLayout !== true) count++;
+    if (style.disableSpacing !== true) count++;
+    if (style.disableSize !== true) count++;
+    if (style.disablePosition !== true) count++;
+    if (style.disableFont !== true) count++;
+    if (style.disableBorder !== true) count++;
+    if (style.disableEffect !== true) count++;
+    return count;
+}
+
+function advancedSetterCount(advanced?: AdvancedPanel): number {
+    let count = 0;
+    if (!advanced) return count;
+    if (advanced.disableVShow !== true) count++;
+    if (advanced.disableVIf !== true) count++;
+    if (advanced.disableVFor !== true) count++;
+    return count;
 }
 
 function setDesignerStateRef(ref: any) {
@@ -128,8 +176,7 @@ function setDesignerStateRef(ref: any) {
             tab-style="button-card"
         >
             <TabItem
-                v-if="selectedComponentMeta.setter.props"
-                style="height: 100%;"
+                v-if="selectedComponentMeta.setter.props && propsSetterCount(selectedComponentMeta.setter.props) > 0"
                 key="props"
                 name="props"
                 :lazy="false"
@@ -142,8 +189,7 @@ function setDesignerStateRef(ref: any) {
                 />
             </TabItem>
             <TabItem
-                v-if="selectedComponentMeta.setter.events"
-                style="height: 100%;"
+                v-if="selectedComponentMeta.setter.events && eventsSetterCount(selectedComponentMeta.setter.events)"
                 key="events"
                 name="events"
                 :lazy="false"
@@ -157,8 +203,7 @@ function setDesignerStateRef(ref: any) {
                 />
             </TabItem>
             <TabItem
-                v-if="selectedComponentMeta.setter.style"
-                style="height: 100%;"
+                v-if="selectedComponentMeta.setter.style && styleSetterCount(selectedComponentMeta.setter.style)"
                 key="style"
                 name="style"
                 :lazy="false"
@@ -172,8 +217,7 @@ function setDesignerStateRef(ref: any) {
                 />
             </TabItem>
             <TabItem
-                v-if="selectedComponentMeta.setter.advanced"
-                style="height: 100%;"
+                v-if="selectedComponentMeta.setter.advanced && advancedSetterCount(selectedComponentMeta.setter.advanced)"
                 key="advanced"
                 name="advanced"
                 :lazy="false"
@@ -282,6 +326,10 @@ function setDesignerStateRef(ref: any) {
     flex-grow: 1;
     border-top: 1px solid #d9d9d9;
     font-size: 12px;
+}
+
+.settings-tabs > :deep(.tiny-tabs__content > .tiny-tab-pane) {
+    height: 100%;
 }
 
 .settings-tabs :deep(.tiny-form-item .tiny-form-item__label) {

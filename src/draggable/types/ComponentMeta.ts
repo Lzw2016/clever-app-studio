@@ -119,7 +119,7 @@ interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
 /** 设置器分组 */
 interface SetterGroup {
     /** 分组标题 */
-    title: string;
+    title: "常用" | "风格" | "其它" | string;
     /** 是否展开状态(默认为true) */
     expand?: boolean;
     /** 设置器集合 */
@@ -225,7 +225,7 @@ interface EventPanel {
     title?: string;
     /** 包含的内置html原生事件(true表示包含所有的内置html原生事件) */
     includeInnerEvents?: Array<InnerEventGroup> | true;
-    /** 排除的内置html原生事件 */
+    /** 排除的内置html原生事件(优先级比includeInnerEvents高) */
     excludeInnerEvents?: Array<InnerEventGroup>;
     /** 事件分组 */
     groups: Array<EventGroup>;
