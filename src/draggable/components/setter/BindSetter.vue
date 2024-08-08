@@ -3,10 +3,10 @@ import { reactive, ref } from "vue";
 import { Input, Modal, Tree } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { noValue } from "@/utils/Typeof";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toBindExpContent, toStr, ValueTransform, watchNodes } from "@/draggable/utils/SetterUtils";
 import { BindTreeNode, getBindTreeNode, getVModelTreeNode } from "@/draggable/utils/DesignerUtils";
-import { noValue } from "@/utils/Typeof";
 
 // 定义组件选项
 defineOptions({
