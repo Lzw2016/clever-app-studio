@@ -1,5 +1,5 @@
-import { ComponentPublicInstance, createVNode, defineComponent, Fragment, renderList, resolveDirective, vModelCheckbox, vModelRadio, vModelSelect, vModelText, VNode, vShow, withCtx, withDirectives } from "vue";
 import lodash from "lodash";
+import { ComponentPublicInstance, createVNode, defineComponent, Fragment, renderList, resolveDirective, vModelCheckbox, vModelRadio, vModelSelect, vModelText, VNode, vShow, withCtx, withDirectives } from "vue";
 import { hasValue, isArray, isObj, isStr, noValue } from "@/utils/Typeof";
 import { calcExpression, getKeyPathValue, setKeyPathValue } from "@/utils/Expression";
 import { innerDirectiveNames } from "@/draggable/Constant";
@@ -249,7 +249,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
         try {
             const show = expTransform(directives.show, fromInstance, fromBlock, extData);
             // 这里配置一下 show 指令参数，具有应用指令需要在 _applyDirectives 中实现
-            directives[innerDirectiveNames.inner_show] = { value: show };
+            directives[innerDirectiveNames.inner_show] = { value: !!show };
             // _setShowStyle(allProps, show);
         } catch (e) {
             return createVNode(BlockRenderError, {
@@ -453,7 +453,7 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, globalCo
         return undefined;
     }
     // 应用其他用户自定义指令
-    vnode = _applyDirectives(vnode, directives);
+    vnode = _applyDirectives(vnode, directives, runtimeNode);
     return vnode;
 }
 
@@ -509,10 +509,12 @@ function _toExtData(globalContext: GlobalContext, context: Context) {
 //     }
 // }
 
+let dynamicKey = 0;
+
 /**
  *  应用其他用户自定义指令
  */
-function _applyDirectives<Directives extends BaseDirectives = BaseDirectives>(vnode: any, directives: Directives) {
+function _applyDirectives<Directives extends BaseDirectives = BaseDirectives>(vnode: any, directives: Directives, runtimeNode: RuntimeNode) {
     const innerDirectives = ['model', 'show', 'if', 'for'];
     const useDirectives: Array<any> = [];
     for (let name in directives) {
@@ -546,7 +548,15 @@ function _applyDirectives<Directives extends BaseDirectives = BaseDirectives>(vn
         }
     }
     if (useDirectives.length > 0) {
-        vnode = withDirectives(vnode, useDirectives)
+        vnode = withDirectives(vnode, useDirectives);
+        const preDirectivesCount = runtimeNode.__directivesCount ?? 0;
+        runtimeNode.__directivesCount = useDirectives.length;
+        // 这里只是简单判断一下指令数量来确定当前渲染节点是否存在动态指令问题(严格环境下不仅需要判断指令数量，还需要判断指令的类型和顺序)
+        if (preDirectivesCount !== runtimeNode.__directivesCount) {
+            // 动态指令的bug https://github.com/vuejs/core/issues/11555
+            vnode.key = `${vnode.key ?? 'dynamic'}_${dynamicKey++}`;
+            vnode.props.key = vnode.key;
+        }
     }
     return vnode;
 }

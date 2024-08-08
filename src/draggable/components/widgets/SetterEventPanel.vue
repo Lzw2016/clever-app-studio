@@ -109,7 +109,7 @@ defineExpose<SetterEventPanelExpose>({
                 :is-drop-inherit-width="true"
                 :drop-style="{
                     height: '500px',
-                    'min-height': '500px',
+                    'min-height': '500px'
                 }"
             >
                 <template #reference>

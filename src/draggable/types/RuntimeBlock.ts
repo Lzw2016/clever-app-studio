@@ -56,6 +56,8 @@ interface RuntimeNode {
     readonly directives: BaseDirectives;
     /** 设计时的组件指令 */
     __designDirectives?: BaseDirectives;
+    /** withDirectives应用指令的数量 */
+    __directivesCount?: number;
     /** 组件插槽(default插槽其实就是children) */
     readonly slots: Record<string, Array<RuntimeComponentSlotsItem>>;
     /** 子组件集合 */

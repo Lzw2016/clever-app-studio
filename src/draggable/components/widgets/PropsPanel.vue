@@ -7,8 +7,9 @@ import { isArray } from "@/utils/Typeof";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { AdvancedPanel, ComponentMeta, EventPanel, PropsPanel, StylePanel } from "@/draggable/types/ComponentMeta";
 import SetterPropsPanel from "@/draggable/components/widgets/SetterPropsPanel.vue";
-import SetterEventPanel from "@/draggable/components/widgets/SetterEventPanel.vue";
 import SetterStylePanel from "@/draggable/components/widgets/SetterStylePanel.vue";
+import SetterEventPanel from "@/draggable/components/widgets/SetterEventPanel.vue";
+import SetterAdvancedPanel from "@/draggable/components/widgets/SetterAdvancedPanel.vue";
 
 // 定义组件选项
 defineOptions({
@@ -189,7 +190,7 @@ function setDesignerStateRef(ref: any) {
                 />
             </TabItem>
             <TabItem
-                v-if="selectedComponentMeta.setter.events && eventsSetterCount(selectedComponentMeta.setter.events)"
+                v-if="selectedComponentMeta.setter.events && eventsSetterCount(selectedComponentMeta.setter.events) > 0"
                 key="events"
                 name="events"
                 :lazy="false"
@@ -203,7 +204,7 @@ function setDesignerStateRef(ref: any) {
                 />
             </TabItem>
             <TabItem
-                v-if="selectedComponentMeta.setter.style && styleSetterCount(selectedComponentMeta.setter.style)"
+                v-if="selectedComponentMeta.setter.style && styleSetterCount(selectedComponentMeta.setter.style) > 0"
                 key="style"
                 name="style"
                 :lazy="false"
@@ -217,13 +218,18 @@ function setDesignerStateRef(ref: any) {
                 />
             </TabItem>
             <TabItem
-                v-if="selectedComponentMeta.setter.advanced && advancedSetterCount(selectedComponentMeta.setter.advanced)"
+                v-if="selectedComponentMeta.setter.advanced && advancedSetterCount(selectedComponentMeta.setter.advanced) > 0"
                 key="advanced"
                 name="advanced"
                 :lazy="false"
                 :title="selectedComponentMeta.setter.advanced?.title || data.setterTabs.advanced"
             >
-                vue指令设置
+                <SetterAdvancedPanel
+                    :designer-engine="props.designerEngine"
+                    :designer-state="designerState"
+                    :setter-state="setterState"
+                    :advanced-panel="selectedComponentMeta.setter.advanced"
+                />
             </TabItem>
         </Tabs>
     </div>

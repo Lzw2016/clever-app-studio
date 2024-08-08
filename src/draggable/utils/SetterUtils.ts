@@ -126,8 +126,7 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any
     if (!propsName && !isFunction(applyPropsValue)) return res;
     for (let node of nodes) {
         if (applyPropsValue) {
-            res = true;
-            applyPropsValue(node.props, value, node, setter);
+            res = applyPropsValue(node.props, value, node, setter) !== false;
         } else if (propsName && node.props) {
             res = res || node.props[propsName] !== value;
             node.props[propsName] = value;
@@ -222,6 +221,27 @@ function getSetterExpose<T = any>(props: SetterProps, state: SetterState, setter
     };
 }
 
+/**
+ * 更新指令值
+ * @param directiveName 指令名称
+ * @param value         指令值
+ * @param node          渲染节点
+ */
+function applyDirectivesValue(directiveName: string, value: any, node: RuntimeNode) {
+    value = lodash.trim(value);
+    let expContent = value;
+    if (expContent.startsWith("{{") && expContent.endsWith("}}")) {
+        expContent = lodash.trim(expContent.substring(2, expContent.length - 2));
+    }
+    if (expContent.length > 0) {
+        node.directives[directiveName] = value;
+        if (node.__designDirectives) node.__designDirectives[directiveName] = value;
+    } else {
+        delete node.directives[directiveName];
+        delete node.__designDirectives?.[directiveName];
+    }
+}
+
 export type {
     ValueTransform,
 }
@@ -240,4 +260,5 @@ export {
     getInputProps,
     watchNodes,
     getSetterExpose,
+    applyDirectivesValue,
 }

@@ -5,13 +5,12 @@ import { Collapse, CollapseItem, Form, FormItem, Input, Loading, Tooltip } from 
 import { layer } from "@layui/layer-vue";
 import { hasValue, isStr, noValue } from "@/utils/Typeof";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
+import { applyDirectivesValue, forceUpdateBlock } from "@/draggable/utils/SetterUtils";
 import { PropsPanel, Setter } from "@/draggable/types/ComponentMeta";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import BindSetter from "@/draggable/components/setter/BindSetter.vue";
-import VModelSetter from "@/draggable/components/setter/VModelSetter.vue";
-import { forceUpdateBlock } from "@/draggable/utils/SetterUtils";
 import Braces from "@/assets/images/braces.svg?component";
 
 const vLoading = Loading.directive;
@@ -207,6 +206,8 @@ function toggleBind(setter: Setter, isBound: boolean) {
     if (!blockInstance) return;
     forceUpdateBlock(props.designerState, blockInstance, nodes, false, true);
 }
+
+// function
 </script>
 
 <template>
@@ -256,10 +257,15 @@ function toggleBind(setter: Setter, isBound: boolean) {
                     </template>
                     <div class="flex-row-container" style="align-items: center;">
                         <div class="flex-item-fill flex-row-container" style="align-items: center;">
-                            <VModelSetter
+                            <BindSetter
                                 :designer-state="props.designerState"
                                 :block-instance="props.designerState.blockInstance"
                                 :nodes="props.designerState.selectNodes"
+                                placeholder="输入绑定变量"
+                                :contain-braces="false"
+                                :only-bind-data="true"
+                                :get-props-value="(_, node) => node.directives.model"
+                                :apply-props-value="(_, value, node) => applyDirectivesValue('model', value, node)"
                             />
                         </div>
                         <span class="setter-button-placeholder"/>
@@ -285,7 +291,15 @@ function toggleBind(setter: Setter, isBound: boolean) {
                         <div class="flex-row-container" style="align-items: center;">
                             <div class="flex-item-fill flex-row-container" style="align-items: center;">
                                 <template v-if="!state.loading">
-                                    <component v-if="isBound(item)" :is="BindSetter" v-bind="getSetterProps(item)"/>
+                                    <BindSetter
+                                        v-if="isBound(item)"
+                                        v-bind="getSetterProps(item)"
+                                        :designer-state="props.designerState"
+                                        :block-instance="props.designerState.blockInstance"
+                                        :nodes="props.designerState.selectNodes"
+                                        :contain-braces="true"
+                                        :only-bind-data="false"
+                                    />
                                     <component v-else :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
                                 </template>
                             </div>

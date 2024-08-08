@@ -23,6 +23,7 @@ class SetterShareState {
         const expandGroups: Record<string, Array<string>> = {
             props: ["内置属性"],
             style: ["渲染节点", "布局(容器)", "布局(元素)", "间距", "尺寸", "定位", "文本", "背景", "边框", "效果"],
+            advanced: ["内置指令"],
         };
         const getExpands = (groups: Array<SetterGroup>) => {
             const expands: Array<string> = [];
@@ -34,9 +35,6 @@ class SetterShareState {
             return expands;
         };
         if (meta.setter.props) expandGroups.props.push(...getExpands(meta.setter.props.groups));
-        // if (meta.setter.events) expandGroups.events = getExpands(meta.setter.events.groups);
-        // if (meta.setter.style) expandGroups.style = getExpands(meta.setter.style.groups);
-        // if (meta.setter.advanced) expandGroups.advanced = getExpands(meta.setter.advanced.groups);
         return expandGroups;
     }
 

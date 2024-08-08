@@ -53,7 +53,8 @@ const designerTest = defineDesignBlock({
     block: true,
     type: "div",
     data: {
-        count: 0,
+        count: 1,
+        count2: 0,
         refs: [],
         str: "测试数据",
         test01: "自定义文本",
@@ -254,6 +255,7 @@ const designerTest = defineDesignBlock({
             ],
         },
         {
+            ref: "test_001",
             type: "div",
             tpl: "div容器",
             props: {
@@ -262,6 +264,9 @@ const designerTest = defineDesignBlock({
                     height: "100px",
                     border: "1px solid #ccc",
                 },
+            },
+            directives: {
+                // show: "{{ count }}",
             },
             listeners: {
                 // onClick: 'addSpan',
