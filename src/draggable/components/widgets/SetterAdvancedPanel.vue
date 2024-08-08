@@ -121,8 +121,6 @@ function applyForDirective(_: any, value: any, node: RuntimeNode) {
     }
     state.forceUpdateVFor++;
 }
-
-
 </script>
 
 <template>
