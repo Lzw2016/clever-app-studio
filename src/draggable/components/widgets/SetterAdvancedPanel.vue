@@ -94,8 +94,7 @@ const vForItem = computed<string | undefined>({
     set: newValue => {
         const node = props.designerState.selectNode;
         if (!node?.directives.for) return;
-        if (node.directives.for.item) node.directives.for.item = newValue;
-        if (!node.directives.for.item) node.directives.for.item = '__item';
+        if (node.directives.for.item) node.directives.for.item = newValue || '__item';
         state.forceUpdateVFor++;
     },
 });
