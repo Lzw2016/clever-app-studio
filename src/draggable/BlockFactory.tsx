@@ -259,6 +259,8 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
                 node: child, error: e
             });
         }
+    } else {
+        delete directives[innerDirectiveNames.inner_show];
     }
     // 应用指令 - v-model
     if (directives.model) {
@@ -297,6 +299,8 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
             }
             directives[innerDirectiveNames.inner_model].fun = fun;
         }
+    } else {
+        delete directives[innerDirectiveNames.inner_model];
     }
     // 应用指令 - for
     if (directives.for) {

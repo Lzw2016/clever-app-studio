@@ -9,9 +9,9 @@ import { hasValue, noValue } from "@/utils/Typeof";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { OutlineTreeNode, runtimeNodeToTreeNode } from "@/draggable/utils/DesignerUtils";
-import { Selection } from "@/draggable/models/Selection";
-import { htmlExtAttr, useHtmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
+import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { calcAuxToolPosition } from "@/draggable/utils/PositionCalc";
+import { Selection } from "@/draggable/models/Selection";
 
 // 定义组件选项
 defineOptions({
@@ -125,16 +125,16 @@ function clickNode(node: OutlineTreeNode<RuntimeNode>) {
     const selectNode = node.data;
     if (!selectNode || !designerState.value) return;
     const designer = designerState.value.designerContainer;
-    const element = document.querySelector(`[${htmlExtAttr.nodeId}='${selectNode.id}']`);
-    if (!designer || !element) return;
+    if (!designer) return;
     const hover = designerState.value.hover;
     const selections = designerState.value.selections;
     const selection = new Selection(designerState.value);
     selection.nodeId = selectNode.id;
     selection.parentId = node.parentId;
     if (selections.some(item => item.nodeId === selection.nodeId)) return;
-    selection.componentMeta = useHtmlExtAttr.componentMeta(element, props.designerEngine.componentManage);
-    selection.position = calcAuxToolPosition(designer, element);
+    const element = document.querySelector(`[${htmlExtAttr.nodeId}='${selectNode.id}']`);
+    selection.componentMeta = props.designerEngine.componentManage.getComponentMeta(selectNode.type);
+    if (element) selection.position = calcAuxToolPosition(designer, element);
     selections.length = 0;
     selections.push(selection);
     if (hover.nodeId && selections.some(item => item.nodeId === hover.nodeId)) {

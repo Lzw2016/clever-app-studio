@@ -233,6 +233,7 @@ function applyDirectivesValue(directiveName: string, value: any, node: RuntimeNo
     if (expContent.startsWith("{{") && expContent.endsWith("}}")) {
         expContent = lodash.trim(expContent.substring(2, expContent.length - 2));
     }
+    // console.log(`[${directiveName}=${expContent}]`);
     if (expContent.length > 0) {
         node.directives[directiveName] = value;
         if (node.__designDirectives) node.__designDirectives[directiveName] = value;
