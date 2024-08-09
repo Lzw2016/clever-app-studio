@@ -9,6 +9,12 @@ defineOptions({
     name: 'APIPanel',
 });
 
+// 自定义事件类型
+const emit = defineEmits<{
+    /** 关闭当前面板 */
+    closePanel: [];
+}>();
+
 // 定义 Props 类型
 interface APIPanelProps {
     /** 设计器引擎 */
@@ -28,6 +34,9 @@ const state = reactive<APIPanelState>({});
 // 内部数据
 const data = {};
 
+function closePanel() {
+    emit("closePanel");
+}
 </script>
 
 <template>
@@ -35,7 +44,7 @@ const data = {};
         <div class="flex-row-container flex-item-fixed api-panel-title">
             <div class="flex-item-fixed api-panel-title-name">后端接口</div>
             <div class="flex-item-fill"/>
-            <div class="api-panel-close">
+            <div class="api-panel-close" @click="closePanel">
                 <FontAwesomeIcon :icon="faXmark" :fixed-width="true"/>
             </div>
         </div>

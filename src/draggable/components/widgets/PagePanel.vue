@@ -9,6 +9,12 @@ defineOptions({
     name: 'PagePanel',
 });
 
+// 自定义事件类型
+const emit = defineEmits<{
+    /** 关闭当前面板 */
+    closePanel: [];
+}>();
+
 // 定义 Props 类型
 interface PagePanelProps {
     /** 设计器引擎 */
@@ -20,7 +26,6 @@ const props = withDefaults(defineProps<PagePanelProps>(), {});
 
 // 定义 State 类型
 interface PagePanelState {
-
 }
 
 // state 属性
@@ -28,6 +33,9 @@ const state = reactive<PagePanelState>({});
 // 内部数据
 const data = {};
 
+function closePanel() {
+    emit("closePanel");
+}
 </script>
 
 <template>
@@ -35,7 +43,7 @@ const data = {};
         <div class="flex-row-container flex-item-fixed page-panel-title">
             <div class="flex-item-fixed page-panel-title-name">功能页面</div>
             <div class="flex-item-fill"/>
-            <div class="page-panel-close">
+            <div class="page-panel-close" @click="closePanel">
                 <FontAwesomeIcon :icon="faXmark" :fixed-width="true"/>
             </div>
         </div>

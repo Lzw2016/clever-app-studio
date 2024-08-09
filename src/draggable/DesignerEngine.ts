@@ -202,6 +202,8 @@ class DesignerEngine {
 
     /** 挂载当前设计器 */
     mount(container: EventContainer, window: Window): void {
+        // 先卸载
+        this.unmount();
         // console.log("DesignerEngine mount");
         // 创建设计器功能模块集合
         const drivers = this.props.drivers.map(driver => new driver(this, container, window));

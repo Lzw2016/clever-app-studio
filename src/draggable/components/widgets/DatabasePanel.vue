@@ -9,6 +9,12 @@ defineOptions({
     name: 'DatabasePanel',
 });
 
+// 自定义事件类型
+const emit = defineEmits<{
+    /** 关闭当前面板 */
+    closePanel: [];
+}>();
+
 // 定义 Props 类型
 interface DatabasePanelProps {
     /** 设计器引擎 */
@@ -28,6 +34,9 @@ const state = reactive<DatabasePanelState>({});
 // 内部数据
 const data = {};
 
+function closePanel() {
+    emit("closePanel");
+}
 </script>
 
 <template>
@@ -35,7 +44,7 @@ const data = {};
         <div class="flex-row-container flex-item-fixed database-panel-title">
             <div class="flex-item-fixed database-panel-title-name">库表结构</div>
             <div class="flex-item-fill"/>
-            <div class="database-panel-close">
+            <div class="database-panel-close" @click="closePanel">
                 <FontAwesomeIcon :icon="faXmark" :fixed-width="true"/>
             </div>
         </div>

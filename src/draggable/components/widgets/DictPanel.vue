@@ -9,6 +9,12 @@ defineOptions({
     name: 'DictPanel',
 });
 
+// 自定义事件类型
+const emit = defineEmits<{
+    /** 关闭当前面板 */
+    closePanel: [];
+}>();
+
 // 定义 Props 类型
 interface DictPanelProps {
     /** 设计器引擎 */
@@ -28,6 +34,9 @@ const state = reactive<DictPanelState>({});
 // 内部数据
 const data = {};
 
+function closePanel() {
+    emit("closePanel");
+}
 </script>
 
 <template>
@@ -35,7 +44,7 @@ const data = {};
         <div class="flex-row-container flex-item-fixed dict-panel-title">
             <div class="flex-item-fixed dict-panel-title-name">数据字典</div>
             <div class="flex-item-fill"/>
-            <div class="dict-panel-close">
+            <div class="dict-panel-close" @click="closePanel">
                 <FontAwesomeIcon :icon="faXmark" :fixed-width="true"/>
             </div>
         </div>

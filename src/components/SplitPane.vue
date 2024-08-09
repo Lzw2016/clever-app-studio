@@ -322,11 +322,15 @@ interface SplitPaneExpose {
 
     /** 折叠第二个面板 */
     collapseTwo(): void;
+
+    /** 不折叠面板 */
+    noCollapse(): void;
 }
 
 defineExpose<SplitPaneExpose>({
-    collapseOne: oneCollapseClick,
-    collapseTwo: twoCollapseClick,
+    collapseOne: () => state.collapsed = "one",
+    collapseTwo: () => state.collapsed = "two",
+    noCollapse: () => state.collapsed = "",
 });
 
 export type {

@@ -18,6 +18,12 @@ defineOptions({
     name: 'OutlinePanel',
 });
 
+// 自定义事件类型
+const emit = defineEmits<{
+    /** 关闭当前面板 */
+    closePanel: [];
+}>();
+
 // 定义 Props 类型
 interface OutlinePanelProps {
     /** 设计器引擎 */
@@ -177,6 +183,10 @@ function nodeDrop(srcNode: any, targetNode: any, dropType: 'before' | 'after' | 
     }
     forceUpdateBlock();
 }
+
+function closePanel() {
+    emit("closePanel");
+}
 </script>
 
 <template>
@@ -184,7 +194,7 @@ function nodeDrop(srcNode: any, targetNode: any, dropType: 'before' | 'after' | 
         <div class="flex-row-container flex-item-fixed outline-panel-title">
             <div class="flex-item-fixed outline-panel-title-name">组件大纲</div>
             <div class="flex-item-fill"/>
-            <div class="outline-panel-close">
+            <div class="outline-panel-close" @click="closePanel">
                 <FontAwesomeIcon :icon="faXmark" :fixed-width="true"/>
             </div>
         </div>

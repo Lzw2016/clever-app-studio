@@ -16,6 +16,12 @@ defineOptions({
     name: 'PropsPanel',
 });
 
+// 自定义事件类型
+const emit = defineEmits<{
+    /** 关闭当前面板 */
+    closePanel: [];
+}>();
+
 // 定义 Props 类型
 interface PropsPanelProps {
     /** 设计器引擎 */
@@ -146,6 +152,10 @@ function setDesignerStateRef(ref: any) {
         designerState.value._setterEventPanel.value = ref;
     }
 }
+
+function closePanel() {
+    emit("closePanel");
+}
 </script>
 
 <template>
@@ -153,7 +163,7 @@ function setDesignerStateRef(ref: any) {
         <div class="flex-row-container flex-item-fixed settings-panel-title">
             <div class="flex-item-fixed settings-panel-title-name">组件属性</div>
             <div class="flex-item-fill"/>
-            <div class="settings-panel-close">
+            <div class="settings-panel-close" @click="closePanel">
                 <FontAwesomeIcon :icon="faXmark" :fixed-width="true"/>
             </div>
         </div>

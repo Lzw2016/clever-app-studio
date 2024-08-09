@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, markRaw, onMounted, onUnmounted, reactive } from "vue";
+import { computed, markRaw, onMounted, onUnmounted, reactive, ref } from "vue";
 import { Dropdown, DropdownItem, DropdownMenu, Modal, UserHead } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faArrowRightFromBracket, faLanguage, faUserLarge } from "@fortawesome/free-solid-svg-icons";
@@ -136,6 +136,12 @@ const state = reactive<WorkbenchState>({
 });
 // 内部数据
 const data = {};
+// 上下分隔面板组件
+const upDownSplitPaneRef = ref<InstanceType<typeof SplitPane> | undefined>();
+// 外层左右分隔面板组件
+const leftRightSplitPaneRef = ref<InstanceType<typeof SplitPane> | undefined>();
+// 内层左右分隔面板组件
+const innerLeftRightSplitPaneRef = ref<InstanceType<typeof SplitPane> | undefined>();
 // 左侧工具栏显示状态
 const isPage = computed(() => state.leftTool === LeftTools.Page);
 const isMaterial = computed(() => state.leftTool === LeftTools.Material);
@@ -176,11 +182,23 @@ onUnmounted(() => {
 });
 
 function setLeftTool(leftTool?: LeftTools) {
-    state.leftTool = leftTool;
+    if (state.leftTool === leftTool) {
+        state.leftTool = undefined;
+        leftRightSplitPaneRef.value?.collapseOne();
+    } else {
+        state.leftTool = leftTool;
+        leftRightSplitPaneRef.value?.noCollapse();
+    }
 }
 
 function setRightTool(rightTool?: RightTools) {
-    state.rightTool = rightTool;
+    if (state.rightTool === rightTool) {
+        state.rightTool = undefined;
+        innerLeftRightSplitPaneRef.value?.collapseTwo();
+    } else {
+        state.rightTool = rightTool;
+        innerLeftRightSplitPaneRef.value?.noCollapse();
+    }
 }
 </script>
 
@@ -299,6 +317,7 @@ function setRightTool(rightTool?: RightTools) {
                 <div class="flex-item-fixed" style="height: 8px;"></div>
             </div>
             <SplitPane
+                ref="upDownSplitPaneRef"
                 class="flex-item-fill box-border-lr"
                 style="height: 100%;"
                 layout="V"
@@ -306,30 +325,55 @@ function setRightTool(rightTool?: RightTools) {
                 :fixed-pane-def-size="props.bottomPanelDefWidth"
                 :fixed-pane-min-size="props.bottomPanelMinWidth"
                 :fixed-pane-max-size="props.bottomPanelMaxWidth"
-                :two-collapse="true"
+                :one-collapse="false"
+                :two-collapse="false"
                 def-collapsed="two"
                 :custom-one-pane="true"
             >
                 <template #onePane="slotProps">
                     <SplitPane
+                        ref="leftRightSplitPaneRef"
                         v-bind="slotProps"
                         style="height: 100%;"
                         layout="H"
                         :fixed-pane-def-size="props.leftPanelDefWidth"
                         :fixed-pane-min-size="props.leftPanelMinWidth"
                         :fixed-pane-max-size="props.leftPanelMaxWidth"
-                        :one-collapse="true"
+                        :one-collapse="false"
+                        :two-collapse="false"
                         :custom-two-pane="true"
                     >
                         <template #onePane>
-                            <PagePanel v-show="isPage" :designer-engine="designerEngine"/>
-                            <MaterialPanel v-show="isMaterial" :designer-engine="designerEngine" :tabs="props.materialMetaTabs"/>
-                            <DictPanel v-show="isDict" :designer-engine="designerEngine"/>
-                            <APIPanel v-show="isAPI" :designer-engine="designerEngine"/>
-                            <DatabasePanel v-show="isDatabase" :designer-engine="designerEngine"/>
+                            <PagePanel
+                                v-show="isPage"
+                                :designer-engine="designerEngine"
+                                @closePanel="setLeftTool(LeftTools.Page)"
+                            />
+                            <MaterialPanel
+                                v-show="isMaterial"
+                                :designer-engine="designerEngine"
+                                :tabs="props.materialMetaTabs"
+                                @closePanel="setLeftTool(LeftTools.Material)"
+                            />
+                            <DictPanel
+                                v-show="isDict"
+                                :designer-engine="designerEngine"
+                                @closePanel="setLeftTool(LeftTools.Dict)"
+                            />
+                            <APIPanel
+                                v-show="isAPI"
+                                :designer-engine="designerEngine"
+                                @closePanel="setLeftTool(LeftTools.API)"
+                            />
+                            <DatabasePanel
+                                v-show="isDatabase"
+                                :designer-engine="designerEngine"
+                                @closePanel="setLeftTool(LeftTools.Database)"
+                            />
                         </template>
                         <template #twoPane="slotProps">
                             <SplitPane
+                                ref="innerLeftRightSplitPaneRef"
                                 v-bind="slotProps"
                                 style="height: 100%;overflow: hidden;"
                                 layout="H"
@@ -337,15 +381,28 @@ function setRightTool(rightTool?: RightTools) {
                                 :fixed-pane-def-size="props.rightPanelDefWidth"
                                 :fixed-pane-min-size="props.rightPanelMinWidth"
                                 :fixed-pane-max-size="props.rightPanelMaxWidth"
-                                :two-collapse="true"
+                                :one-collapse="false"
+                                :two-collapse="false"
                             >
                                 <template #onePane>
                                     <WorkspaceTabs :designer-engine="designerEngine"/>
                                 </template>
                                 <template #twoPane>
-                                    <PropsPanel v-show="isProps" :designer-engine="designerEngine"/>
-                                    <OutlinePanel v-show="isOutline" :designer-engine="designerEngine"/>
-                                    <HistoryPanel v-show="isHistory" :designer-engine="designerEngine"/>
+                                    <PropsPanel
+                                        v-show="isProps"
+                                        :designer-engine="designerEngine"
+                                        @closePanel="setRightTool(RightTools.Props)"
+                                    />
+                                    <OutlinePanel
+                                        v-show="isOutline"
+                                        :designer-engine="designerEngine"
+                                        @closePanel="setRightTool(RightTools.Outline)"
+                                    />
+                                    <HistoryPanel
+                                        v-show="isHistory"
+                                        :designer-engine="designerEngine"
+                                        @closePanel="setRightTool(RightTools.History)"
+                                    />
                                 </template>
                             </SplitPane>
                         </template>

@@ -16,6 +16,12 @@ defineOptions({
     name: 'MaterialPanel',
 });
 
+// 自定义事件类型
+const emit = defineEmits<{
+    /** 关闭当前面板 */
+    closePanel: [];
+}>();
+
 // 定义 Props 类型
 interface ComponentPaneProps {
     /** 设计器引擎 */
@@ -108,6 +114,10 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
     }
     return newTabs;
 }
+
+function closePanel() {
+    emit("closePanel");
+}
 </script>
 
 <template>
@@ -115,7 +125,7 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
         <div class="flex-row-container flex-item-fixed material-panel-title">
             <div class="flex-item-fixed material-panel-title-name">组件物料</div>
             <div class="flex-item-fill"/>
-            <div class="material-panel-close">
+            <div class="material-panel-close" @click="closePanel">
                 <FontAwesomeIcon :icon="faXmark" :fixed-width="true"/>
             </div>
         </div>

@@ -9,6 +9,12 @@ defineOptions({
     name: 'HistoryPanel',
 });
 
+// 自定义事件类型
+const emit = defineEmits<{
+    /** 关闭当前面板 */
+    closePanel: [];
+}>();
+
 // 定义 Props 类型
 interface HistoryPanelProps {
     /** 设计器引擎 */
@@ -28,6 +34,9 @@ const state = reactive<HistoryPanelState>({});
 // 内部数据
 const data = {};
 
+function closePanel() {
+    emit("closePanel");
+}
 </script>
 
 <template>
@@ -35,7 +44,7 @@ const data = {};
         <div class="flex-row-container flex-item-fixed history-panel-title">
             <div class="flex-item-fixed history-panel-title-name">修改历史</div>
             <div class="flex-item-fill"/>
-            <div class="history-panel-close">
+            <div class="history-panel-close" @click="closePanel">
                 <FontAwesomeIcon :icon="faXmark" :fixed-width="true"/>
             </div>
         </div>
