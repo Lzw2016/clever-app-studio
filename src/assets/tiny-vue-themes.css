@@ -1,3 +1,4 @@
+/** 定义通用的旋转动画 */
 @keyframes spin {
     from {
         transform: rotate(0deg);
@@ -9,6 +10,24 @@
 
 .loading-spinner {
     animation: spin 2s linear infinite;
+}
+
+/* 解决由于操作系统策略导致的fa图标动画问题 */
+@media (prefers-reduced-motion: reduce) {
+    body .fa-beat, body .fa-bounce, body .fa-fade, body .fa-beat-fade, body .fa-flip, body .fa-pulse, body .fa-shake, body .fa-spin, body .fa-spin-pulse {
+        -webkit-animation-name: fa-spin;
+        animation-name: fa-spin;
+        -webkit-animation-delay: var(--fa-animation-delay, 0s);
+        animation-delay: var(--fa-animation-delay, 0s);
+        -webkit-animation-direction: var(--fa-animation-direction, normal);
+        animation-direction: var(--fa-animation-direction, normal);
+        -webkit-animation-duration: var(--fa-animation-duration, 2s);
+        animation-duration: var(--fa-animation-duration, 2s);
+        -webkit-animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+        animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+        -webkit-animation-timing-function: var(--fa-animation-timing, linear);
+        animation-timing-function: var(--fa-animation-timing, linear);
+    }
 }
 
 /*
