@@ -216,8 +216,7 @@ function getSetterExpose<T = any>(props: SetterProps, state: SetterState, setter
             state.value = value;
             applyValue(props, state, setter, value);
         },
-        // 隐藏组件
-        //
+        // TODO 隐藏组件
     };
 }
 

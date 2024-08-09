@@ -78,8 +78,11 @@ class HoverDashed {
         const designerContainer = this.designerState.designerContainer
         if (!designerContainer) return;
         const node = designerContainer.querySelector(`[${htmlExtAttr.nodeId}=${this._nodeId.value}]`);
-        if (!node) return;
-        this._position.value = calcAuxToolPosition(designerContainer, node);
+        if (node) {
+            this._position.value = calcAuxToolPosition(designerContainer, node);
+        } else {
+            this._position.value = undefined;
+        }
     }
 
     /** 清除选择信息 */
