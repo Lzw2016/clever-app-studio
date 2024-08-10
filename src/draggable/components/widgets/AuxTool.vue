@@ -268,6 +268,9 @@ function delNode(nodeId?: string) {
                 }"
             >
                 <span style="font-size: 12px;">{{ selection.componentMeta.name }}</span>
+                <!-- <span class="mark-top-button" title="调试">-->
+                <!--     <FontAwesomeIcon :icon="faBug" :fixed-width="true" style="font-size: 14px;"/>-->
+                <!-- </span>-->
                 <!-- <span class="mark-top-button" title="设置">-->
                 <!--     <FontAwesomeIcon :icon="faGear" :fixed-width="true" style="font-size: 14px;"/>-->
                 <!-- </span>-->

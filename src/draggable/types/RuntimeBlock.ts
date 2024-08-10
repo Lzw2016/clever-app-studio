@@ -93,6 +93,10 @@ interface RuntimeBlock extends RuntimeNode {
     readonly lifeCycles: Record<string, AnyFunction>;
     // /** 生命周期(已绑定 this 指针的 lifeCycles 函数) */
     // __bindLifeCycles?: Record<string, AnyFunction>;
+    /** 原始的生命周期函数(errorCaptured) */
+    __raw_lifeCycles_errorCaptured?: AnyFunction;
+    /** 原始的生命周期函数(unmounted) */
+    __raw_lifeCycles_unmounted?: AnyFunction;
     /** 元信息 */
     readonly meta?: BlockMeta;
     /** 多语言词条 */

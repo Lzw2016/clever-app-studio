@@ -91,9 +91,12 @@ function createRuntimeBlockComponent(runtimeBlock: RuntimeBlock, globalContext: 
             console.warn("Block渲染失败", info);
             console.error(err);
         }
+    } else {
+        runtimeBlock.__raw_lifeCycles_errorCaptured = lifeCycles.errorCaptured;
     }
     // 组件卸载时释放资源
     const unmounted = lifeCycles.unmounted;
+    runtimeBlock.__raw_lifeCycles_unmounted = unmounted;
     lifeCycles.unmounted = function () {
         if (unmounted) unmounted.call(this);
         // 可以在这里释放组件依赖的资源

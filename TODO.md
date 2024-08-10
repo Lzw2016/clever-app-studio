@@ -51,9 +51,13 @@
 [  ] 39.注册 “@opentiny/vue” 的原子组件
 [  ] 40.封装业务表单组件 & 注册到系统中
 [OK] 41.实现设计器“属性面板”的数据绑定功能
-[  ] 42.生成代码 lifeCycles 中的 errorCaptured 和 unmounted 处理
+[OK] 42.生成代码 lifeCycles 中的 errorCaptured 和 unmounted 处理
 [OK] 41.“ctrl+e” 与 “ctrl+p” 打开的 monaco 编辑器无法复制粘贴问题(问题代码: this.preventDefault(keyboardEvent))
 [OK] 43.完成“组件物料”面板功能
 [OK] 44.完成“页面大纲”面板功能
-[  ] 45.
-[  ] 46.
+[  ] 45.设计时支持查看指定 RuntimeNode 信息
+[  ] 46.运行时支持查看指定 RuntimeNode 信息
+[  ] 47.
+[  ] 48.
+[  ] 49.
+[  ] 50.

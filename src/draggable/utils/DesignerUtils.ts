@@ -3,7 +3,7 @@ import JSON5 from "json5";
 import { isVNode, markRaw, VNode, VNodeChild } from "vue";
 import { hasValue, isArray, isFun, isObj, isStr, noValue } from "@/utils/Typeof";
 import { childSlotName, configRawValueName } from "@/draggable/Constant";
-import { ComponentParam } from "@/draggable/types/Base";
+import { AnyFunction, ComponentParam } from "@/draggable/types/Base";
 import { RuntimeBlock, RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentMeta, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 import { ComponentSlotsItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
@@ -372,7 +372,10 @@ function runtimeNodeToDesignNode(runtimeNode: RuntimeNode, parent?: RuntimeNode,
         }
         // 处理 lifeCycles
         if (Object.keys(runtimeLifeCycles).length > 0) {
-            designBlock.lifeCycles = lodash.cloneDeep<any>(runtimeLifeCycles);
+            const lifeCycles = _lifeCyclesToDesignNode(runtimeLifeCycles, blockNode);
+            if (lifeCycles && Object.keys(lifeCycles).length > 0) {
+                designBlock.lifeCycles = lifeCycles;
+            }
         }
         // 处理 meta
         if (runtimeMeta && Object.keys(runtimeMeta).length > 0) {
@@ -488,6 +491,21 @@ function _computedToDesignNode(computed: RuntimeBlock['computed'], blockNode?: R
             funOrFunName = rawFun.name;
         }
         res[key] = funOrFunName;
+    }
+    return res;
+}
+
+// runtimeNodeToDesignNode 处理 lifeCycles
+function _lifeCyclesToDesignNode(lifeCycles: RuntimeBlock['lifeCycles'], blockNode?: RuntimeBlock): DesignBlock['lifeCycles'] {
+    const res: DesignNode['lifeCycles'] = {};
+    for (let key in lifeCycles) {
+        let fun: AnyFunction | undefined = lifeCycles[key];
+        if (key === "errorCaptured") {
+            fun = blockNode?.__raw_lifeCycles_errorCaptured;
+        } else if (key === "unmounted") {
+            fun = blockNode?.__raw_lifeCycles_unmounted;
+        }
+        if (fun) res[key] = fun;
     }
     return res;
 }
