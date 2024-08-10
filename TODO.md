@@ -52,7 +52,7 @@
 [  ] 40.封装业务表单组件 & 注册到系统中
 [OK] 41.实现设计器“属性面板”的数据绑定功能
 [  ] 42.生成代码 lifeCycles 中的 errorCaptured 和 unmounted 处理
-[  ] 41.“ctrl+e” 与 “ctrl+p” 打开的 monaco 编辑器无法复制粘贴问题
+[OK] 41.“ctrl+e” 与 “ctrl+p” 打开的 monaco 编辑器无法复制粘贴问题(问题代码: this.preventDefault(keyboardEvent))
 [OK] 43.完成“组件物料”面板功能
 [OK] 44.完成“页面大纲”面板功能
 [  ] 45.

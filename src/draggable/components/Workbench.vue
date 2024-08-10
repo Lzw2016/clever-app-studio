@@ -325,8 +325,8 @@ function setRightTool(rightTool?: RightTools) {
                 :fixed-pane-def-size="props.bottomPanelDefWidth"
                 :fixed-pane-min-size="props.bottomPanelMinWidth"
                 :fixed-pane-max-size="props.bottomPanelMaxWidth"
-                :one-collapse="false"
-                :two-collapse="false"
+                :force-hide-one-collapse="true"
+                :force-hide-two-collapse="true"
                 def-collapsed="two"
                 :custom-one-pane="true"
             >
@@ -339,8 +339,8 @@ function setRightTool(rightTool?: RightTools) {
                         :fixed-pane-def-size="props.leftPanelDefWidth"
                         :fixed-pane-min-size="props.leftPanelMinWidth"
                         :fixed-pane-max-size="props.leftPanelMaxWidth"
-                        :one-collapse="false"
-                        :two-collapse="false"
+                        :force-hide-one-collapse="true"
+                        :force-hide-two-collapse="true"
                         :custom-two-pane="true"
                     >
                         <template #onePane>
@@ -381,8 +381,8 @@ function setRightTool(rightTool?: RightTools) {
                                 :fixed-pane-def-size="props.rightPanelDefWidth"
                                 :fixed-pane-min-size="props.rightPanelMinWidth"
                                 :fixed-pane-max-size="props.rightPanelMaxWidth"
-                                :one-collapse="false"
-                                :two-collapse="false"
+                                :force-hide-one-collapse="true"
+                                :force-hide-two-collapse="true"
                             >
                                 <template #onePane>
                                     <WorkspaceTabs :designer-engine="designerEngine"/>

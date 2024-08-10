@@ -11,13 +11,13 @@ hotkeys.filter = function (event) {
     }
     const pressedFnKey = event.ctrlKey || event.altKey || event.metaKey;
     const target = event.target as Element;
+    // 属于 monaco 编辑器
+    if (pressedFnKey && target?.className?.includes('monaco-mouse-cursor-text')) {
+        return true;
+    }
     // 属于设计器节点
     const node = target.closest(`[${htmlExtAttr.nodeId}]`);
     if (node) {
-        return true;
-    }
-    // 属于 monaco 编辑器
-    if (pressedFnKey && target?.className?.includes('monaco-mouse-cursor-text')) {
         return true;
     }
     // 默认的过滤规则 https://github.com/jaywcjlove/hotkeys-js/blob/master/README-zh.md#filter
@@ -80,7 +80,6 @@ class KeyboardDriver extends DesignerDriver {
         const keyup = (keyboardEvent.type === "keyup");
         const ctrl = hotkeys.ctrl || hotkeys.control;
         const shift = hotkeys.shift;
-        if (ctrl || shift) this.preventDefault(keyboardEvent);
         if (multipleKeys) {
             // 按下多个键
             this.designerEngine.onlyPressedCtrl = false;
