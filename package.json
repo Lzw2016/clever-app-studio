@@ -22,8 +22,8 @@
         "ncu": "ncu -u",
         "tsc": "tsc",
         "dev": "vite -m development",
-        "build:dev": "vue-tsc && vite build --mode development",
-        "build:pro": "vue-tsc && vite build --mode production",
+        "build:dev": "vue-tsc && node --max_old_space_size=4096 node_modules/vite/bin/vite.js build --mode development",
+        "build:pro": "vue-tsc && node --max_old_space_size=4096 node_modules/vite/bin/vite.js build --mode production",
         "build:test": "vue-tsc && vite build --mode test",
         "preview": "vite preview",
         "type:check": "vue-tsc --noEmit --skipLibCheck"
