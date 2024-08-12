@@ -28,7 +28,6 @@ const defPlaceholder: DesignNode = {
             fontSize: "12px",
             backgroundColor: "#f0f0f0",
             color: "#a7b1bd",
-            border: "1px dotted #a7b1bd",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
