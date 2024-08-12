@@ -11,20 +11,17 @@ export default defineComponentMeta({
     icon: createVNode(BrSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
-            style: {},
         },
     },
     slots: {},
     setter: {
-        props: {
-            groups: [],
-        },
-        events: {
+         events: {
+            includeInnerEvents: true,
+            excludeInnerEvents: ["表单事件"],
             groups: [],
         },
         style: {},
-        advanced: {
-        },
+        advanced: {},
     },
     placeholder: {},
     i18n: {},

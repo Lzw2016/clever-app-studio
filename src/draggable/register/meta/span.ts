@@ -13,37 +13,25 @@ export default defineComponentMeta({
         props: {
             style: {
                 display: 'inline-block',
-                width: "80px",
-                height: "40px",
-                border: "1px solid #ae3ec9",
+                width: "auto",
+                height: "auto",
+                border: "1px solid #ccc",
                 margin: "4px",
             },
         },
-        tpl: "新span",
     },
     slots: {},
     setter: {
-        props: {
-            groups: [
-                {
-                    title: "常规",
-                    items: [
-                        {
-                            cmp: "StringSetter",
-                            label: "配置A",
-                            propsName: "bbb",
-                        },
-                    ],
-                },
-            ],
-        },
         events: {
+            includeInnerEvents: true,
+            excludeInnerEvents: ["表单事件"],
             groups: [],
         },
         style: {},
-        advanced: {
-        },
+        advanced: {},
     },
-    placeholder: {},
+    placeholder: {
+        default: true,
+    },
     i18n: {},
 });

@@ -11,17 +11,40 @@ export default defineComponentMeta({
     icon: createVNode(ButtonGroupSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
+            border: true,
             data: [
-                { text: '按钮1', value: 'v_1' },
-                { text: '按钮2', value: 'v_2' },
-                { text: '按钮3', value: 'v_3' },
+                { text: '按钮1', value: 'val_1' },
+                { text: '按钮2', value: 'val_2' },
+                { text: '按钮3', value: 'val_3' },
             ],
         },
+    },
+    designDirectives: {
+        "disable-event": {},
     },
     slots: {},
     setter: {
         props: {
-            groups: [],
+            enableVModel: true,
+            groups: [
+                {
+                    title: "常用",
+                    items: [
+                        {
+                            cmp: "BoolSetter",
+                            label: "显示边框",
+                            propsName: "border",
+                            recalcAuxToolPosition: true,
+                        },
+                        {
+                            cmp: "BoolSetter",
+                            label: "朴素按钮",
+                            propsName: "plain",
+                            recalcAuxToolPosition: true,
+                        },
+                    ],
+                },
+            ],
         },
         events: {
             groups: [],
@@ -30,8 +53,7 @@ export default defineComponentMeta({
             disableFont: true,
             disableBorder: true,
         },
-        advanced: {
-        },
+        advanced: {},
     },
     placeholder: {},
     i18n: {},

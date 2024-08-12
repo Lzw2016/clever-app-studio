@@ -25,6 +25,7 @@ const defPlaceholder: DesignNode = {
             height: "100%",
             width: "100%",
             minHeight: "32px",
+            minWidth: "104px",
             fontSize: "12px",
             backgroundColor: "#f0f0f0",
             color: "#a7b1bd",

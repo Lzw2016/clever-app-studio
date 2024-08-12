@@ -40,6 +40,12 @@ const data = {
         style: "样式",
         advanced: "高级",
     },
+    setterTabsExists: {
+        props: (meta?: ComponentMeta) => propsSetterCount(meta?.setter.props) > 0,
+        events: (meta?: ComponentMeta) => eventsSetterCount(meta?.setter.events) > 0,
+        style: (meta?: ComponentMeta) => styleSetterCount(meta?.setter.style) > 0,
+        advanced: (meta?: ComponentMeta) => advancedSetterCount(meta?.setter.advanced) > 0,
+    },
 };
 // 当前活动的设计器状态数据
 const designerState = computed(() => props.designerEngine.activeDesignerState);
@@ -69,6 +75,22 @@ const setterState = computed(() => props.designerEngine.activeDesignerState?.set
 // 重新计算expandGroups(展开的组件分组)
 watch(() => selectedComponentMeta.value, () => setterState.value?.recalcExpandGroups());
 
+// 确保属性叶签能正常显示
+watch(selectedComponentMeta, meta => {
+    if (!setterState.value) return;
+    const activeTab = setterState.value.activeTab;
+    let checkExists = data.setterTabsExists[activeTab];
+    if (!checkExists || checkExists(meta)) return;
+    for (let tab in data.setterTabs) {
+        if (tab === activeTab) continue;
+        checkExists = data.setterTabsExists[tab];
+        if (checkExists && checkExists(meta)) {
+            setterState.value.activeTab = tab;
+            return;
+        }
+    }
+});
+
 // 过滤所有空 props events style advanced 中的 items
 function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
     const newMeta = { ...meta };
@@ -78,7 +100,6 @@ function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
     }
     if (meta.setter.events && newMeta.setter.events) {
         newMeta.setter.events.groups = meta.setter.events.groups.filter(group => group.items.length > 0);
-        if (newMeta.setter.events.groups.length <= 0) delete newMeta.setter.events;
     }
     return newMeta;
 }
@@ -187,7 +208,7 @@ function closePanel() {
             tab-style="button-card"
         >
             <TabItem
-                v-if="selectedComponentMeta.setter.props && propsSetterCount(selectedComponentMeta.setter.props) > 0"
+                v-if="selectedComponentMeta.setter.props && data.setterTabsExists.props(selectedComponentMeta)"
                 key="props"
                 name="props"
                 :lazy="false"
@@ -200,7 +221,7 @@ function closePanel() {
                 />
             </TabItem>
             <TabItem
-                v-if="selectedComponentMeta.setter.events && eventsSetterCount(selectedComponentMeta.setter.events) > 0"
+                v-if="selectedComponentMeta.setter.events && data.setterTabsExists.events(selectedComponentMeta)"
                 key="events"
                 name="events"
                 :lazy="false"
@@ -214,7 +235,7 @@ function closePanel() {
                 />
             </TabItem>
             <TabItem
-                v-if="selectedComponentMeta.setter.style && styleSetterCount(selectedComponentMeta.setter.style) > 0"
+                v-if="selectedComponentMeta.setter.style && data.setterTabsExists.style(selectedComponentMeta)"
                 key="style"
                 name="style"
                 :lazy="false"
@@ -228,7 +249,7 @@ function closePanel() {
                 />
             </TabItem>
             <TabItem
-                v-if="selectedComponentMeta.setter.advanced && advancedSetterCount(selectedComponentMeta.setter.advanced) > 0"
+                v-if="selectedComponentMeta.setter.advanced && data.setterTabsExists.advanced(selectedComponentMeta)"
                 key="advanced"
                 name="advanced"
                 :lazy="false"

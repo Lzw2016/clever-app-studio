@@ -10,21 +10,42 @@ export default defineComponentMeta({
     docLink: "",
     icon: createVNode(PSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
-        props: {
-            style: {},
-        },
+        props: {},
+        tpl: "文本段落",
     },
     slots: {},
     setter: {
         props: {
-            groups: [],
+            groups: [
+                {
+                    title: "常用",
+                    items: [
+                        {
+                            cmp: "StringSetter",
+                            cmpProps: {
+                                type: "textarea",
+                                resize: "vertical",
+                                rows: 16,
+                            },
+                            label: "段落内容",
+                            getPropsValue: (props, node) => node.tpl,
+                            applyPropsValue: (props, value, node) => {
+                                node.tpl.length = 0;
+                                if (value) node.tpl.push(value);
+                            },
+                            recalcAuxToolPosition: true,
+                        },
+                    ],
+                },
+            ],
         },
         events: {
+            includeInnerEvents: true,
+            excludeInnerEvents: ["表单事件"],
             groups: [],
         },
         style: {},
-        advanced: {
-        },
+        advanced: {},
     },
     placeholder: {},
     i18n: {},

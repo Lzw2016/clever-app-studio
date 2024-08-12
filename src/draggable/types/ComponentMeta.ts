@@ -51,7 +51,7 @@ interface SetterProps {
      * @param setter    当前设置器实例
      * @return 返回 false 表示不需要重新渲染 Block
      */
-    applyPropsValue?: (props: any, value: any, node: RuntimeNode, setter: ComponentPublicInstance) => void | false;
+    applyPropsValue?: (props: any, value: any, node: MakeWritable<RuntimeNode>, setter: ComponentPublicInstance) => void | false;
     /** 监听属性值变化逻辑 */
     watchProps?: Array<WatchPropsConfig>;
     /** 更新属性值后不重新渲染block */
