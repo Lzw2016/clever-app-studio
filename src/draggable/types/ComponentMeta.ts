@@ -115,6 +115,7 @@ interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
     disableReRender?: boolean;
     /** 更新属性后需要重新计算辅助工具的位置 */
     recalcAuxToolPosition?: boolean;
+    // TODO 默认值
 }
 
 /** 设置器分组 */
@@ -210,7 +211,7 @@ interface ListenerInfo {
 /** 事件分组 */
 interface EventGroup {
     /** 分组标题 */
-    title: string;
+    title: "组件事件" | string;
     /** 是否禁用 */
     disabled?: boolean;
     /** 事件元数据集合 */
