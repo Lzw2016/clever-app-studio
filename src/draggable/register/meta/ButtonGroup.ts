@@ -1,6 +1,6 @@
 import { createVNode } from "vue";
-import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 import { VarType } from "@/draggable/types/Base";
+import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 import ButtonGroupSvg from "@/assets/images/button-group.svg?component";
 
 export default defineComponentMeta({
@@ -63,14 +63,14 @@ export default defineComponentMeta({
                         //     cmp: "NumberSetter",
                         //     label: "显示更多",
                         //     labelTips: "当超过给定的按钮数量时显示更多按钮",
-                        //     propsName: "show-more",
+                        //     propsName: "showMore",
                         //     recalcAuxToolPosition: true,
                         // },
                         // {
                         //     cmp: "BoolSetter",
                         //     label: "编辑按钮",
                         //     labelTips: "是否显示编辑按钮，只有在显示更多的情况下生效",
-                        //     propsName: "show-edit",
+                        //     propsName: "showEdit",
                         //     recalcAuxToolPosition: true,
                         // },
                     ],

@@ -92,6 +92,7 @@ export {
     ButtonGroup,
     Link,
     Divider,
+    ActionMenu,
     // 布局组件
     Container,
     Layout,
@@ -114,7 +115,6 @@ export {
     Dropdown,
     DropdownMenu,
     DropdownItem,
-    ActionMenu,
     // 容器组件
     Carousel,
     CarouselItem,

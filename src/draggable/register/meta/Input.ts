@@ -307,7 +307,7 @@ export default defineComponentMeta({
                             cmp: "BoolSetter",
                             label: "自动聚焦",
                             labelTips: "原生属性，页面加载时，自动获取焦点",
-                            propsName: "禁用按钮",
+                            propsName: "autofocus",
                         },
                         {
                             cmp: "BoolSetter",
@@ -319,7 +319,7 @@ export default defineComponentMeta({
                             cmp: "NumberSetter",
                             label: "存储空间",
                             labelTips: "设置 addMemory 方法中，最大能保存条目的数量",
-                            propsName: "memory-space",
+                            propsName: "memorySpace",
                         },
                     ],
                 },
