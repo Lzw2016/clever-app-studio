@@ -13,6 +13,7 @@ function registerSetterComponent(componentManage: ComponentManage) {
     // 输入控件
     componentManage.registerAsyncComponent("SelectSetter", () => import("@/draggable/components/setter/SelectSetter.vue").then(module => module.default));
     componentManage.registerAsyncComponent("IconSetter", () => import("@/draggable/components/setter/IconSetter.vue").then(module => module.default));
+    componentManage.registerAsyncComponent("ColorSetter", () => import("@/draggable/components/setter/ColorSetter.vue").then(module => module.default));
 }
 
 export {

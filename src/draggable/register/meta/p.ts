@@ -28,7 +28,7 @@ export default defineComponentMeta({
                                 rows: 16,
                             },
                             label: "段落内容",
-                            getPropsValue: (props, node) => node.tpl,
+                            getPropsValue: (props, node) => node.tpl.join("\n"),
                             applyPropsValue: (props, value, node) => {
                                 node.tpl.length = 0;
                                 if (value) node.tpl.push(value);

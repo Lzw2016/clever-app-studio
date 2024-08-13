@@ -23,8 +23,8 @@ export default defineComponentMeta({
                     if (rootVNode !== current) return;
                     if (rootVNode.type !== "a") return;
                     const props = rootVNode.props;
-                    if (!props) return;
-                    props.href = 'javascript:void(0);';
+                    if (!props?.href) return;
+                    delete props.href;
                 },
             },
         },
@@ -93,6 +93,8 @@ export default defineComponentMeta({
             ],
         },
         events: {
+            includeInnerEvents: true,
+            excludeInnerEvents: ["表单事件"],
             groups: [],
         },
         style: {},

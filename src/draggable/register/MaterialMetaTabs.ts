@@ -42,7 +42,7 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
             {
                 title: "基础",
                 types: [
-                    "Button", "ButtonGroup", "Icon", "Link", "Divider", "ActionMenu", "Dropdown",
+                    "Text", "Button", "ButtonGroup", "Icon", "Link", "Divider", "ActionMenu", "Dropdown",
                 ],
             },
             {

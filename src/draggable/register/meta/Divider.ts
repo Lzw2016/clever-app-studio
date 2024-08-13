@@ -10,23 +10,77 @@ export default defineComponentMeta({
     docLink: "",
     icon: createVNode(HrSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
-        props: {
-            style: {
+        props: {},
+        items: [
+            {
+                type: "div",
+                tpl: "文案",
             },
-        },
+        ],
     },
     slots: {},
     setter: {
         props: {
-            groups: [],
-        },
-        events: {
-            groups: [],
+            groups: [
+                {
+                    title: "常用",
+                    items: [
+                        {
+                            cmp: "SelectSetter",
+                            cmpProps: {
+                                options: [
+                                    { value: "left", label: "左(left)" },
+                                    { value: "center", label: "中(center)" },
+                                    { value: "right", label: "右(right)" },
+                                ],
+                            },
+                            label: "文案位置",
+                            propsName: "contentPosition",
+                            defPropsValue: "center",
+                        },
+                    ],
+                },
+                {
+                    title: "风格",
+                    items: [
+                        {
+                            cmp: "SelectSetter",
+                            cmpProps: {
+                                options: [
+                                    { value: "solid", label: "实线(solid)" },
+                                    { value: "dashed", label: "虚线(dashed)" },
+                                ],
+                            },
+                            label: "样式",
+                            propsName: "borderStyle",
+                        },
+                        {
+                            cmp: "ColorSetter",
+                            label: "文案颜色",
+                            propsName: "contentColor",
+                            defPropsValue: "#252b3a",
+                        },
+                        {
+                            cmp: "ColorSetter",
+                            label: "分隔颜色",
+                            propsName: "color",
+                            defPropsValue: "#adb0b8",
+                        },
+                        {
+                            cmp: "ColorSetter",
+                            label: "背景颜色",
+                            propsName: "contentBackgroundColor",
+                            defPropsValue: "#ffffff",
+                        },
+                    ],
+                },
+            ],
         },
         style: {},
-        advanced: {
-        },
+        advanced: {},
     },
-    placeholder: {},
+    placeholder: {
+        default: true,
+    },
     i18n: {},
 });

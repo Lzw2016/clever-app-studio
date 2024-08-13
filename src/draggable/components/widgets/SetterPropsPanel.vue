@@ -196,10 +196,18 @@ function toggleBind(setter: Setter, isBound: boolean) {
                     node.__tmp_bind_props[propsName] = bindStr;
                 }
             }
-            node.props[propsName] = node.__tmp_unbind_props[propsName];
+            if (lodash.hasIn(node.__tmp_unbind_props, propsName)) {
+                node.props[propsName] = node.__tmp_unbind_props[propsName];
+            } else {
+                delete node.props[propsName];
+            }
         } else {
             // 当前是unbind，切换成bind
-            node.__tmp_unbind_props[propsName] = node.props[propsName];
+            if (lodash.hasIn(node.props, propsName)) {
+                node.__tmp_unbind_props[propsName] = node.props[propsName];
+            } else {
+                delete node.__tmp_unbind_props[propsName];
+            }
             node.props[propsName] = node.__tmp_bind_props[propsName] ?? "{{  }}";
         }
     }

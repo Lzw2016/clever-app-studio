@@ -91,7 +91,7 @@ export {
     Button,
     ButtonGroup,
     Link,
-
+    Divider,
     // 布局组件
     Container,
     Layout,
@@ -178,7 +178,6 @@ export {
     UserHead,
     Fullscreen,
     ConfigProvider,
-    Divider,
     QrCode,
     Watermark,
 }

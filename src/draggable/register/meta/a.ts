@@ -24,7 +24,7 @@ export default defineComponentMeta({
                     if (rootVNode.type !== "a") return;
                     const props = rootVNode.props;
                     if (!props) return;
-                    props.href = 'javascript:void(0);';
+                    delete props.href;
                 },
             },
         },

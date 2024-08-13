@@ -12,6 +12,7 @@ function registerComponentMeta(componentManage: ComponentManage) {
     componentManage.registerAsyncComponentMeta("br", () => import("@/draggable/register/meta/br").then(module => module.default));
     componentManage.registerAsyncComponentMeta("hr", () => import("@/draggable/register/meta/hr").then(module => module.default));
     // 基础
+    componentManage.registerAsyncComponentMeta("Text", () => import("@/draggable/register/meta/Text").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Button", () => import("@/draggable/register/meta/Button").then(module => module.default));
     componentManage.registerAsyncComponentMeta("ButtonGroup", () => import("@/draggable/register/meta/ButtonGroup").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Icon", () => import("@/draggable/register/meta/Icon").then(module => module.default));
