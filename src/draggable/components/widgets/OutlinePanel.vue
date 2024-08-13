@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { computed, CSSProperties, reactive, ref, watch } from "vue";
+import { computed, CSSProperties, ref, shallowReactive, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { faEye, faEyeSlash, faTrashCan } from "@fortawesome/free-regular-svg-icons";
@@ -35,12 +35,14 @@ const props = withDefaults(defineProps<OutlinePanelProps>(), {});
 
 // 定义 State 类型
 interface OutlinePanelState {
+    /** 大纲树节点数据 */
     outlineTreeNodes: Array<OutlineTreeNode<RuntimeNode>>;
+    /** 当前选中的节点ID */
     selectNodeId?: string;
 }
 
 // state 属性
-const state = reactive<OutlinePanelState>({
+const state = shallowReactive<OutlinePanelState>({
     outlineTreeNodes: [],
     selectNodeId: undefined,
 });
@@ -161,10 +163,17 @@ function nodeAllowDrag(node: any) {
     return hasValue(nData.parentId);
 }
 
-// 不能放置的根节点的前面 | TODO 有些组件内部不能放置渲染节点
+// 不能放置的根节点的前面
 function nodeAllowDrop(srcNode: any, targetNode: any, type: 'prev' | 'inner' | 'next') {
     const snData = srcNode.data as OutlineTreeNode<RuntimeNode>;
     const tnData = targetNode.data as OutlineTreeNode<RuntimeNode>;
+    const cmpType = tnData.data?.type;
+    if (!cmpType) return false;
+    const tnDataMeta = props.designerEngine.componentManage.getComponentMeta(cmpType);
+    if (!tnDataMeta) return false;
+    // 不能放在非容器节点里
+    if (noValue(tnDataMeta.placeholder.default) && type === "inner") return false;
+    // 不能放置的根节点的前面
     return !(noValue(tnData.parentId) && type === 'prev');
 }
 

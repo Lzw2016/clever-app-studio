@@ -47,6 +47,8 @@ interface EventEditorState {
     forceUpdateForModifiers: number,
     /** 强制组件更新的响应式变量 */
     forceUpdateForAllListener: number,
+    /** 大纲树节点数据 */
+    outlineTreeNodes: Array<OutlineTreeNode<RuntimeNode>>;
     /** 当前选中的大纲树节点 */
     selectRuntimeNode?: RuntimeNode;
     /** 当前选择的监听事件 */
@@ -65,6 +67,7 @@ interface EventEditorState {
 const state = shallowReactive<EventEditorState>({
     forceUpdateForModifiers: 0,
     forceUpdateForAllListener: 0,
+    outlineTreeNodes: [],
     selectRuntimeNode: undefined,
     selectListener: undefined,
     showListenerDoc: false,
@@ -94,7 +97,16 @@ const data = {
 // 大纲树组件实例
 const outlineTreeRef = ref<InstanceType<typeof Tree> | undefined>();
 // 大纲树数据节点
-const outlineTreeNodes = computed<Array<OutlineTreeNode<RuntimeNode>>>(() => getOutlineTreeNodes(props.designerState?.blockInstance?.globalContext?.runtimeBlock));
+watch(
+    () => [props.designerState?.blockInstance?.globalContext?.runtimeBlock, props.designerState?.blockInstance?.ops.nodeChange.value],
+    ([runtimeBlock, _]) => {
+        if (!runtimeBlock) return [];
+        state.outlineTreeNodes = getOutlineTreeNodes(runtimeBlock as RuntimeBlock);
+    },
+    {
+        immediate: true,
+    },
+);
 // 当前选择组件支持的事件分组
 const eventGroups = computed<Array<EventGroup>>(() => {
     const componentMeta = getNodeComponentMeta(props.designerEngine.componentManage, state.selectRuntimeNode)
@@ -383,7 +395,7 @@ defineExpose<EventEditorExpose>({
                     ref="outlineTreeRef"
                     class="flex-item-fill"
                     node-key="id"
-                    :data="outlineTreeNodes"
+                    :data="state.outlineTreeNodes"
                     :show-line="false"
                     :default-expand-all="true"
                     :highlight-current="true"

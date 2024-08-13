@@ -117,8 +117,8 @@ export default defineComponentMeta({
                     title: "组件事件",
                     items: [
                         {
-                            title: "change",
-                            name: "按钮组的值变化",
+                            title: "按钮组的值变化",
+                            name: "change",
                             description: "当选中按钮发生改变时触发",
                             params: [
                                 {
