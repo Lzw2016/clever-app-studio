@@ -30,12 +30,6 @@ export default defineComponentMeta({
                 {
                     title: "常用",
                     items: [
-                        {
-                            cmp: "BoolSetter",
-                            label: "是否禁用",
-                            propsName: "disabled",
-                            recalcAuxToolPosition: true,
-                        },
                         // TODO js对象输入框
                         // {
                         //     cmp: "",
@@ -57,6 +51,12 @@ export default defineComponentMeta({
                             labelTips: "按钮选中值的字段值",
                             propsName: "valueField",
                             defPropsValue: "value",
+                            recalcAuxToolPosition: true,
+                        },
+                        {
+                            cmp: "BoolSetter",
+                            label: "是否禁用",
+                            propsName: "disabled",
                             recalcAuxToolPosition: true,
                         },
                         // {

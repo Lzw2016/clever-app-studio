@@ -31,8 +31,10 @@ function registerComponent(componentManage: ComponentManage) {
     // opentiny 组件注册
     // "CascaderPanel","DropTimes","Link","Popeditor","PopUpload","CheckboxButton","RadioButton", "ColorSelectPanel",
     const openTinyTypes: Record<string, string> = {
+        // 基础
         Button: "Button",
         ButtonGroup: "ButtonGroup",
+        Link: "Link",
         // 表单组件
         Form: "Form",
         FormItem: "FormItem",

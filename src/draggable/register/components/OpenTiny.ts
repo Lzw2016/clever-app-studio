@@ -87,6 +87,11 @@ import {
 } from "@opentiny/vue";
 
 export {
+    // 基础
+    Button,
+    ButtonGroup,
+    Link,
+
     // 布局组件
     Container,
     Layout,
@@ -122,8 +127,6 @@ export {
     Split,
     // 表单组件
     Autocomplete,
-    Button,
-    ButtonGroup,
     Cascader,
     CascaderPanel,
     Checkbox,
@@ -136,7 +139,6 @@ export {
     FormItem,
     Input,
     IpAddress,
-    Link,
     Numeric,
     Popeditor,
     PopUpload,
