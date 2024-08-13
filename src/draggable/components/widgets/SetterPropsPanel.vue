@@ -126,16 +126,18 @@ function resetNodeRef(node?: RuntimeNode) {
 function getSetterProps(setter: Setter) {
     const { designerState } = props;
     const {
+        ref,
         cmp,
         cmpProps,
         label,
         labelTips,
         enableBind,
-        watchProps,
         listeners,
+        watchProps,
         ...otherCmpProps
     } = setter;
     const obj: any = {
+        ref,
         designerState: designerState,
         blockInstance: designerState.blockInstance,
         nodes: designerState.selectNodes,
@@ -271,7 +273,6 @@ function toggleBind(setter: Setter, isBound: boolean) {
                         <span class="setter-button-placeholder"/>
                     </div>
                 </FormItem>
-<!--                TODO modelValue 数据单向绑定?-->
             </CollapseItem>
             <CollapseItem
                 class="settings-items"

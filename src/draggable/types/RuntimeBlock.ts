@@ -64,6 +64,8 @@ interface RuntimeNode {
     readonly items: Array<RuntimeComponentSlotsItem>;
     /** html模版(优先级低于 items) */
     readonly tpl: Array<string>;
+    /** 当前渲染节点属性面板活动的叶签 */
+    __propsActiveTab?: string;
 }
 
 /** 区块 watch(数据监听器)(运行时) */

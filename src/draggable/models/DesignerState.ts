@@ -36,13 +36,14 @@ class DesignerState {
     readonly _designerBlockInstance: Ref<InstanceType<typeof RuntimeBlock> | undefined> = ref<InstanceType<typeof RuntimeBlock> | undefined>();
     /** 事件Setter组件实例 */
     readonly _setterEventPanel: Ref<InstanceType<typeof SetterEventPanel> | undefined> = ref<InstanceType<typeof SetterEventPanel> | undefined>();
-
     /** 设计时的代码(DesignBlock源码) */
     protected readonly _designerBlockCode: Ref<string> = ref<string>("");
     /** 设计器鼠标悬停时的虚线 */
     readonly hover: HoverDashed = new HoverDashed(this);
     /** 设计器选择节点集合 */
     readonly selections: ShallowReactive<Array<Selection>> = shallowReactive<Array<Selection>>([]);
+    /** 设计器选择的第一个节点 */
+    protected readonly _selection: ComputedRef<Selection | undefined> = computed<Selection | undefined>(() => this.selections[0]);
     /** 存在选中的节点 */
     protected readonly _existsSelection: ComputedRef<boolean> = computed<boolean>(() => this.selections.length > 0);
     /** selections 中只有一个选择项 */
@@ -133,6 +134,11 @@ class DesignerState {
     /** 设计时的代码(DesignBlock源码) */
     get designerBlockCode() {
         return this._designerBlockCode.value;
+    }
+
+    /** 设计器选择的第一个节点 */
+    get selection() {
+        return this._selection.value;
     }
 
     /** 存在选中的节点 */

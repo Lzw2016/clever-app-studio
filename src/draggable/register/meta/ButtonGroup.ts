@@ -47,14 +47,16 @@ export default defineComponentMeta({
                             cmp: "StringSetter",
                             label: "文本字段",
                             labelTips: "按钮显示文字的字段值",
-                            propsName: "text-field",
+                            propsName: "textField",
+                            defPropsValue: "text",
                             recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "StringSetter",
                             label: "值字段",
                             labelTips: "按钮选中值的字段值",
-                            propsName: "value-field",
+                            propsName: "valueField",
+                            defPropsValue: "value",
                             recalcAuxToolPosition: true,
                         },
                         // {
@@ -94,6 +96,7 @@ export default defineComponentMeta({
                             cmp: "BoolSetter",
                             label: "显示边框",
                             propsName: "border",
+                            defPropsValue: true,
                             recalcAuxToolPosition: true,
                         },
                         {

@@ -82,9 +82,16 @@ function _doGetValue(props: SetterProps, state: SetterState, transform?: ValueTr
     for (let node of nodes) {
         let value = undefined;
         if (getPropsValue) {
+            // 根据 getPropsValue 取值
             value = getPropsValue(node.props, node);
         } else if (propsName) {
-            value = node.props?.[propsName];
+            if (lodash.hasIn(node.props, propsName)) {
+                // 根据 propsName 取值
+                value = node.props?.[propsName];
+            } else {
+                // 使用默认值
+                value = props.defPropsValue;
+            }
         }
         if (isFunction(transform)) value = transform(value);
         if (noValue(value)) value = undefined;

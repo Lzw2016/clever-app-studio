@@ -43,6 +43,8 @@ interface SetterProps {
      * @param node  渲染节点
      */
     getPropsValue?: (props: any, node: RuntimeNode) => any;
+    /** 默认的属性值 */
+    defPropsValue?: any;
     /**
      * 应用属性值到组件节点
      * @param props     渲染节点的 props
@@ -99,23 +101,24 @@ interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
     label?: string;
     /** 配置项名称说明 */
     labelTips?: string;
-    /** 被设置的属性名称 */
-    propsName?: string;
-    /** 启用数据绑定，绑定 propsName 属性，仅当 propsName 存在时有效(默认启用) */
+    /** 启用数据绑定(v-model)，绑定 propsName 属性，仅当 propsName 存在时有效(默认启用) */
     enableBind?: boolean;
+    /** TODO 监听设置器的事件 */
+    listeners?: Record<keyof Event, ComponentListener>;
+    /** 被设置的属性名称 */
+    propsName?: SetterProps['propsName'];
     /** 从组件节点读取属性值 */
     getPropsValue?: SetterProps['getPropsValue'];
+    /** 默认的属性值 */
+    defPropsValue?: SetterProps['defPropsValue'];
     /** 应用属性值到组件节点 */
     applyPropsValue?: SetterProps['applyPropsValue'];
     /** TODO 监听属性值变化逻辑 */
     watchProps?: SetterProps['watchProps'];
-    /** TODO 监听设置器的事件 */
-    listeners?: Record<keyof Event, ComponentListener>;
     /** 更新属性值后不重新渲染block */
-    disableReRender?: boolean;
+    disableReRender?: SetterProps['disableReRender'];
     /** 更新属性后需要重新计算辅助工具的位置 */
-    recalcAuxToolPosition?: boolean;
-    // TODO 默认值
+    recalcAuxToolPosition?: SetterProps['recalcAuxToolPosition'];
 }
 
 /** 设置器分组 */

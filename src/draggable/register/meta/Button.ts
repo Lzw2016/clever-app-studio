@@ -150,6 +150,7 @@ export default defineComponentMeta({
                             label: "Html type",
                             labelTips: "按钮原生的 html type 属性",
                             propsName: "nativeType",
+                            defPropsValue: "button",
                             disableReRender: true,
                         },
                         {
@@ -161,6 +162,7 @@ export default defineComponentMeta({
                             label: "禁用时间",
                             labelTips: "设置按钮禁用时间，防止重复提交，单位毫秒",
                             propsName: "resetTime",
+                            defPropsValue: 1000,
                             disableReRender: true,
                         },
                     ],
@@ -168,11 +170,11 @@ export default defineComponentMeta({
             ],
         },
         events: {
+            includeInnerEvents: true,
             groups: [],
         },
         style: {},
-        advanced: {
-        },
+        advanced: {},
     },
     placeholder: {},
     i18n: {},

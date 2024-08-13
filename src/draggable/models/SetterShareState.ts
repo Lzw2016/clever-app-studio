@@ -8,8 +8,6 @@ import { ComponentMeta, SetterGroup } from "@/draggable/types/ComponentMeta";
 class SetterShareState {
     /** 设计器状态数据 */
     readonly designerState: DesignerState;
-    /** 活动的叶签 */
-    protected readonly _activeTab: Ref<string> = ref<string>("props");
     /** 展开的组件分组 */
     protected readonly _expandGroups: Ref<Record<string, Array<string>>> = ref<Record<string, Array<string>>>({});
 
@@ -36,16 +34,6 @@ class SetterShareState {
         };
         if (meta.setter.props) expandGroups.props.push(...getExpands(meta.setter.props.groups));
         return expandGroups;
-    }
-
-    /** 活动的叶签 */
-    get activeTab() {
-        return this._activeTab.value;
-    }
-
-    /** 活动的叶签 */
-    set activeTab(value: string) {
-        this._activeTab.value = value;
     }
 
     /** 展开的组件分组 */

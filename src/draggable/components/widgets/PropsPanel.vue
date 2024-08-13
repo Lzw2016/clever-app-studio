@@ -72,24 +72,38 @@ const selectedComponentMeta = computed(() => {
 // 当前活动的设计器状态数据
 const setterState = computed(() => props.designerEngine.activeDesignerState?.setterShareState);
 
+// 当前活动的叶签
+const activeTab = computed<string>({
+    get: () => {
+        const node = designerState.value?.selectNode;
+        const currentTab = node?.__propsActiveTab ?? "props";
+        return checkAndGetTab(currentTab, selectedComponentMeta.value);
+    },
+    set: newValue => {
+        const node = designerState.value?.selectNode;
+        if (node) node.__propsActiveTab = newValue;
+    },
+});
+
 // 重新计算expandGroups(展开的组件分组)
-watch(() => selectedComponentMeta.value, () => setterState.value?.recalcExpandGroups());
+watch(selectedComponentMeta, () => setterState.value?.recalcExpandGroups());
 
 // 确保属性叶签能正常显示
-watch(selectedComponentMeta, meta => {
-    if (!setterState.value) return;
-    const activeTab = setterState.value.activeTab;
-    let checkExists = data.setterTabsExists[activeTab];
-    if (!checkExists || checkExists(meta)) return;
+watch(selectedComponentMeta, meta => activeTab.value = checkAndGetTab(activeTab.value, meta));
+
+// 检查 activeTab 如果 activeTab 不存在就返回一个新的存在的 activeTab
+function checkAndGetTab(currentTab: string, meta?: ComponentMeta): string {
+    let checkExists = data.setterTabsExists[currentTab];
+    if (!checkExists || checkExists(meta)) return currentTab;
     for (let tab in data.setterTabs) {
-        if (tab === activeTab) continue;
+        if (tab === currentTab) continue;
         checkExists = data.setterTabsExists[tab];
         if (checkExists && checkExists(meta)) {
-            setterState.value.activeTab = tab;
-            return;
+            return tab;
         }
     }
-});
+    return currentTab;
+}
 
 // 过滤所有空 props events style advanced 中的 items
 function filterEmptyMeta(meta: ComponentMeta): ComponentMeta {
@@ -203,8 +217,8 @@ function closePanel() {
         <Tabs
             v-else-if="selectedComponentMeta && selectedComponentMeta.setter && setterState && designerState"
             class="flex-item-fill settings-tabs flex-column-container"
-            :active-name="setterState.activeTab"
-            v-model="setterState.activeTab"
+            :active-name="activeTab"
+            v-model="activeTab"
             tab-style="button-card"
         >
             <TabItem
