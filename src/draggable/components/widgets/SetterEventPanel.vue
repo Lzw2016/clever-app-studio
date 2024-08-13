@@ -32,7 +32,7 @@ const props = withDefaults(defineProps<SetterEventPanelProps>(), {});
 // 定义 State 类型
 interface SetterEventPanelState {
     /** 强制组件更新的响应式变量 */
-    forceUpdateForEvent: number,
+    forceUpdateForEvent: number;
 }
 
 // state 属性

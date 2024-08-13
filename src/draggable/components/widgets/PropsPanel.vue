@@ -30,8 +30,17 @@ interface PropsPanelProps {
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<PropsPanelProps>(), {});
+
 // state 属性
-const state = reactive({});
+interface PropsPanelState {
+    /** 强制组件更新的响应式变量 */
+    forceUpdateForSelectNode: number;
+}
+
+// state 属性
+const state = reactive<PropsPanelState>({
+    forceUpdateForSelectNode: 0,
+});
 // 内部数据
 const data = {
     setterTabs: {
@@ -71,25 +80,31 @@ const selectedComponentMeta = computed(() => {
 });
 // 当前活动的设计器状态数据
 const setterState = computed(() => props.designerEngine.activeDesignerState?.setterShareState);
-
 // 当前活动的叶签
 const activeTab = computed<string>({
     get: () => {
+        // 读取“响应式变量”值
+        state.forceUpdateForSelectNode;
         const node = designerState.value?.selectNode;
         const currentTab = node?.__propsActiveTab ?? "props";
-        return checkAndGetTab(currentTab, selectedComponentMeta.value);
+        const tab = checkAndGetTab(currentTab, selectedComponentMeta.value);
+        if (node) node.__propsActiveTab = tab;
+        return tab;
     },
     set: newValue => {
         const node = designerState.value?.selectNode;
-        if (node) node.__propsActiveTab = newValue;
+        if (node) {
+            node.__propsActiveTab = newValue;
+            state.forceUpdateForSelectNode++;
+        }
     },
 });
-
 // 重新计算expandGroups(展开的组件分组)
 watch(selectedComponentMeta, () => setterState.value?.recalcExpandGroups());
-
 // 确保属性叶签能正常显示
 watch(selectedComponentMeta, meta => activeTab.value = checkAndGetTab(activeTab.value, meta));
+// 选择的节点变化
+watch(() => designerState.value?.selectNode, () => state.forceUpdateForSelectNode++);
 
 // 检查 activeTab 如果 activeTab 不存在就返回一个新的存在的 activeTab
 function checkAndGetTab(currentTab: string, meta?: ComponentMeta): string {

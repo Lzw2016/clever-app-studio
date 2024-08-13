@@ -44,9 +44,9 @@ const props = withDefaults(defineProps<EventEditorProps>(), {});
 // 定义 State 类型
 interface EventEditorState {
     /** 强制组件更新的响应式变量 */
-    forceUpdateForModifiers: number,
+    forceUpdateForModifiers: number;
     /** 强制组件更新的响应式变量 */
-    forceUpdateForAllListener: number,
+    forceUpdateForAllListener: number;
     /** 大纲树节点数据 */
     outlineTreeNodes: Array<OutlineTreeNode<RuntimeNode>>;
     /** 当前选中的大纲树节点 */
