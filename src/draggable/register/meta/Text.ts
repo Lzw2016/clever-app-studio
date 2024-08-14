@@ -11,20 +11,50 @@ export default defineComponentMeta({
     icon: createVNode(TextSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
-            style: {},
+            defText: "自定义文本",
         },
+    },
+    designDirectives: {
+        "disable-event": {},
     },
     slots: {},
     setter: {
         props: {
-            groups: [],
+            groups: [
+                {
+                    title: "常用",
+                    items: [
+                        {
+                            cmp: "StringSetter",
+                            label: "文本内容",
+                            propsName: "defText",
+                            recalcAuxToolPosition: true,
+                        },
+                        {
+                            cmp: "SelectSetter",
+                            cmpProps: {
+                                options: [
+                                    { value: "span", label: "内联块(span)" },
+                                    { value: "div", label: "行级块(div)" },
+                                    { value: "p", label: "段落(p)" },
+                                ],
+                            },
+                            label: "Html标签",
+                            propsName: "tagType",
+                            defPropsValue: "span",
+                            recalcAuxToolPosition: true,
+                        },
+                    ],
+                },
+            ],
         },
         events: {
+            includeInnerEvents: true,
+            excludeInnerEvents: ["表单事件"],
             groups: [],
         },
         style: {},
-        advanced: {
-        },
+        advanced: {},
     },
     placeholder: {},
     i18n: {},

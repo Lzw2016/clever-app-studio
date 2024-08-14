@@ -40,6 +40,7 @@ export default defineComponentMeta({
                             cmp: "StringSetter",
                             label: "连接文本",
                             propsName: "value",
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "StringSetter",
@@ -50,7 +51,6 @@ export default defineComponentMeta({
                             cmp: "BoolSetter",
                             label: "是否禁用",
                             propsName: "disabled",
-                            recalcAuxToolPosition: true,
                         },
                     ],
                 },

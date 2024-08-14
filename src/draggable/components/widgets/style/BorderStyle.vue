@@ -614,7 +614,7 @@ defineExpose({
                 <div class="flex-item-fixed flex-row-container flex-center">
                     <input
                         :value="state.borderColor ?? '#000000'"
-                        @input="e => state.borderColor= e.target?.['value']"
+                        @input="e => state.borderColor = e.target?.['value']"
                         type="color"
                         title="选择边框颜色"
                         @change="e => batchApplyStyleBorderColor(props, state, getBorderColor(e.target?.['value']))"

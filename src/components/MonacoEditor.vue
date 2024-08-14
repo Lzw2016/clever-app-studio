@@ -5,7 +5,7 @@ import { editor } from "monaco-editor";
 import type * as Monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { loader, VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { hasValue, isFun, noValue } from "@/utils/Typeof";
-import { defOptions, keyBinding, registerTheme } from "@/utils/MonacoEditorUtils";
+import { keyBinding, registerTheme } from "@/utils/MonacoEditorUtils";
 
 export type MonacoType = typeof Monaco;
 loader.config({
@@ -232,7 +232,7 @@ function createModelUri(monaco: MonacoType, path: string) {
             onMount: onMount,
             onChange: props.onChange,
             onValidate: props.onValidate,
-            ...dynamicProps,
+            ...dynamicProps
         }"
     />
 </template>

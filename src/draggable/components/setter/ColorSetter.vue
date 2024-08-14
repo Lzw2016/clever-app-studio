@@ -35,6 +35,11 @@ const inputProps = getInputProps(state);
 // 监听 nodes 变化
 watchNodes(props, state, toStr);
 
+function clearValue() {
+    state.value = undefined;
+    applyValue(props, state, setter, undefined);
+}
+
 // 定义组件公开内容
 defineExpose<SetterExpose>({
     ...getSetterExpose(props, state, setter.value, toStr),
@@ -46,7 +51,8 @@ defineExpose<SetterExpose>({
         <input
             class="color-input"
             type="color"
-            v-model="state.value"
+            :value="state.value ?? '#000000'"
+            @input="e => state.value = e.target?.['value']"
             v-bind="inputProps"
             @change="event => applyValue(props, state, setter, event.target?.['value'])"
         />
@@ -55,7 +61,7 @@ defineExpose<SetterExpose>({
             v-show="state.value"
             class="button-clear"
             :icon="faXmark" title="清除文本颜色"
-            @click="applyValue(props, state, setter, undefined)"
+            @click="clearValue"
         />
     </div>
 </template>

@@ -11,11 +11,12 @@ export default defineComponentMeta({
     docLink: "",
     icon: createVNode(HrSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
-        props: {},
         items: [
             {
-                type: "div",
-                tpl: "文案",
+                type: "Text",
+                props: {
+                    defText: "分割线",
+                },
             },
         ],
     },
@@ -34,8 +35,10 @@ export default defineComponentMeta({
                                 if (value) {
                                     blockInstance.opsForDesign.setPlaceholder(node.id, "default");
                                     const item: ComponentSlotsItem = {
-                                        type: "div",
-                                        tpl: "文案",
+                                        type: "Text",
+                                        props: {
+                                            defText: "分割线",
+                                        },
                                     };
                                     blockInstance.opsById.appendItemById(node.id, item, { cancelRender: true });
                                 } else {
