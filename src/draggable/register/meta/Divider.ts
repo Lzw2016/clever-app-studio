@@ -1,4 +1,5 @@
 import { createVNode } from "vue";
+import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 import HrSvg from "@/assets/images/hr.svg?component";
 
@@ -25,6 +26,23 @@ export default defineComponentMeta({
                 {
                     title: "常用",
                     items: [
+                        {
+                            cmp: "BoolSetter",
+                            label: "启用文案",
+                            getPropsValue: (props, node) => node.__designPlaceholder?.default,
+                            applyPropsValue: (props, value, node, setter, blockInstance) => {
+                                if (value) {
+                                    blockInstance.opsForDesign.setPlaceholder(node.id, "default");
+                                    const item: ComponentSlotsItem = {
+                                        type: "div",
+                                        tpl: "文案",
+                                    };
+                                    blockInstance.opsById.appendItemById(node.id, item, { cancelRender: true });
+                                } else {
+                                    blockInstance.opsForDesign.removePlaceholder(node.id, "default");
+                                }
+                            },
+                        },
                         {
                             cmp: "SelectSetter",
                             cmpProps: {

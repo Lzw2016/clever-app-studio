@@ -133,7 +133,7 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any
     if (!propsName && !isFunction(applyPropsValue)) return res;
     for (let node of nodes) {
         if (applyPropsValue) {
-            res = applyPropsValue(node.props, value, node, setter) !== false;
+            res = applyPropsValue(node.props, value, node, setter, blockInstance) !== false;
         } else if (propsName && node.props) {
             res = res || node.props[propsName] !== value;
             node.props[propsName] = value;

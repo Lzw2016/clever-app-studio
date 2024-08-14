@@ -2,6 +2,7 @@ import { WatchCallback, WatchOptions } from "vue";
 import { AnyFunction, ComponentInstance, I18N, ModifierGuardsKeys, VueComponent, WrapperAnyFunction } from "@/draggable/types/Base";
 import { BaseDirectives, BlockMeta, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
 import { BlockOperation, BlockOperationById } from "@/draggable/types/BlockOperation";
+import { BlockDesignOperation } from "@/draggable/types/BlockDesignOperation";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
 
 /** 组件插槽类型(运行时) */
@@ -178,6 +179,8 @@ interface BlockInstance extends ComponentInstance {
     readonly ops: BlockOperation;
     /** Block支持的操作函数(基于id属性) */
     readonly opsById: BlockOperationById;
+    /** Block设计时支持的操作函数(基于id属性) */
+    readonly opsForDesign: BlockDesignOperation;
 }
 
 /**

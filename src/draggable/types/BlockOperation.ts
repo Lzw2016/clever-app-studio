@@ -8,6 +8,7 @@ interface OpsOptions {
     cancelRender?: boolean;
 }
 
+/** 动态绑定事件选项 */
 interface BindListenerOptions extends OpsOptions {
     /** 当事件监听器存在时是否强制覆盖 */
     override?: boolean;
@@ -17,6 +18,9 @@ interface BindListenerOptions extends OpsOptions {
  * Block支持的操作函数(基于id属性)
  */
 interface BlockOperationById {
+    /** 记录Block渲染节点变化的响应式变量 */
+    readonly nodeChange: Ref<number>;
+
     /**
      * 获取指定的节点对象(基于id属性)
      * @param id   节点id
@@ -327,11 +331,19 @@ interface BlockOperationById {
     removeById(id: string, options?: OpsOptions): RuntimeComponentSlotsItem | undefined;
 
     /**
-     * 移除指定节点的所有子节点
+     * 移除指定节点的所有子节点(基于id属性)
      * @param id        节点Id
      * @param options   操作选项
      */
     removeChildrenById(id: string, options?: OpsOptions): Array<RuntimeComponentSlotsItem>;
+
+    /**
+     * 移除指定节点的插槽(基于id属性)
+     * @param id       节点Id
+     * @param slotName  插槽名
+     * @param options   操作选项
+     */
+    removeSlotById(id: string, slotName: string, options?: OpsOptions): Array<RuntimeComponentSlotsItem>;
 }
 
 /**
@@ -340,6 +352,7 @@ interface BlockOperationById {
 interface BlockOperation {
     /** 记录Block渲染节点变化的响应式变量 */
     readonly nodeChange: Ref<number>;
+
     /**
      * 获取指定的节点对象(基于ref属性)
      * @param ref   节点ref
@@ -655,6 +668,14 @@ interface BlockOperation {
      * @param options   操作选项
      */
     removeChildren(ref: string, options?: OpsOptions): Array<RuntimeComponentSlotsItem>;
+
+    /**
+     * 移除指定节点的插槽
+     * @param ref       节点ref
+     * @param slotName  插槽名
+     * @param options   操作选项
+     */
+    removeSlot(ref: string, slotName: string, options?: OpsOptions): Array<RuntimeComponentSlotsItem>;
 
     /**
      * 更新节点的 ref 值，更新成功返回 true

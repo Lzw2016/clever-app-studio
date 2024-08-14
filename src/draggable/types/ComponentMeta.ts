@@ -47,13 +47,14 @@ interface SetterProps {
     defPropsValue?: any;
     /**
      * 应用属性值到组件节点
-     * @param props     渲染节点的 props
-     * @param value     设置器当前值
-     * @param node      渲染节点
-     * @param setter    当前设置器实例
+     * @param props         渲染节点的 props
+     * @param value         设置器当前值
+     * @param node          渲染节点
+     * @param setter        当前设置器实例
+     * @param blockInstance block实例对象
      * @return 返回 false 表示不需要重新渲染 Block
      */
-    applyPropsValue?: (props: any, value: any, node: MakeWritable<RuntimeNode>, setter: ComponentPublicInstance) => void | false;
+    applyPropsValue?: (props: any, value: any, node: MakeWritable<RuntimeNode>, setter: ComponentPublicInstance, blockInstance: BlockInstance) => void | false;
     /** 监听属性值变化逻辑 */
     watchProps?: Array<WatchPropsConfig>;
     /** 更新属性值后不重新渲染block */

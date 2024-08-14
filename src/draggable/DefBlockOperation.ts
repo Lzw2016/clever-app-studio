@@ -1,12 +1,13 @@
 import lodash from "lodash";
 import { Ref, ref, withModifiers } from "vue";
 import { hasValue, isArray, isObj, isStr, noValue } from "@/utils/Typeof";
-import { childSlotName } from "@/draggable/Constant";
+import { childSlotName, defPlaceholder } from "@/draggable/Constant";
 import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { ComponentInstance } from "@/draggable/types/Base";
-import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
+import { ComponentSlotsItem, DesignNode } from "@/draggable/types/DesignBlock";
 import { CreateConfig, RuntimeBlock, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { BindListenerOptions, BlockOperation, BlockOperationById, OpsOptions } from "@/draggable/types/BlockOperation";
+import { BlockDesignOperation, DesignOpsOptions } from "@/draggable/types/BlockDesignOperation";
 import { deepTraverseRuntimeNode } from "@/draggable/utils/DesignerUtils";
 import { blockDeepTransform } from "@/draggable/utils/BlockPropsTransform";
 import { toElementEventName, toPropsEventName } from "@/draggable/utils/HtmlTag";
@@ -39,15 +40,21 @@ const defOptions: OpsOptions = {
     cancelRender: false,
 };
 
+/** 动态绑定事件选项默认值 */
 const defBindListenerOptions: BindListenerOptions = {
     cancelRender: false,
     override: false,
 };
 
+/** 设计时操作选项默认值 */
+const defDesignOpsOptions: DesignOpsOptions = {
+    cancelRender: true,
+};
+
 /**
  * Block支持的操作函数
  */
-class AllBlockOperation implements BlockOperation, BlockOperationById {
+class AllBlockOperation implements BlockOperation, BlockOperationById, BlockDesignOperation {
     private readonly props: Readonly<AllBlockOperationProps>;
     readonly nodeChange: Ref<number> = ref<number>(0);
 
@@ -432,6 +439,33 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
     }
 
     /**
+     * 移除指定节点的插槽
+     * @param node      目标节点
+     * @param slotName  插槽名
+     * @param options   操作选项
+     */
+    protected removeSlotNode(node: RuntimeNode, slotName: string, options: OpsOptions): Array<RuntimeComponentSlotsItem> {
+        const removeNodes: Array<RuntimeComponentSlotsItem> = [];
+        const delAllIds: Array<string> = [];
+        const slot = node.slots[slotName];
+        for (let item of slot) {
+            removeNodes.push(item);
+            if (isObj(item)) {
+                const node = item as RuntimeNode;
+                delAllIds.push(node.id);
+            }
+        }
+        this.removeNodesById(delAllIds, { ...options, cancelRender: true });
+        delAllIds.length = 0;
+        slot.length = 0;
+        this.nodeChange.value++;
+        // 重新渲染组件
+        if (removeNodes.length > 0 && !options.cancelRender) this.props.instance.$forceUpdate();
+        // 返回删除的节点
+        return removeNodes;
+    }
+
+    /**
      * 动态增加事件监听
      * @param node      目标节点
      * @param event     事件名称
@@ -673,6 +707,10 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         return this.removeChildrenNode(this.getNodeById(id), options);
     }
 
+    removeSlotById(id: string, slotName: string, options: OpsOptions = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.removeSlotNode(this.getNodeById(id), slotName, options);
+    }
+
     bindListener(ref: string, event: string, listener: RuntimeListener, options: BindListenerOptions = defBindListenerOptions): boolean {
         const node = this.getRuntimeNode(ref);
         if (!node) return false;
@@ -851,6 +889,10 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         return this.removeChildrenNode(this.getNode(ref), options);
     }
 
+    removeSlot(ref: string, slotName: string, options: OpsOptions = defOptions): Array<RuntimeComponentSlotsItem> {
+        return this.removeSlotNode(this.getNode(ref), slotName, options);
+    }
+
     updateNodeRef(currRef: string, newRef: string, options: OpsOptions = defOptions): boolean {
         if (!newRef || lodash.trim(newRef).length <= 0) return false;
         // nodeRefVueRef nodeRefVueRef nodeRefVueRef
@@ -877,6 +919,40 @@ class AllBlockOperation implements BlockOperation, BlockOperationById {
         // 重新渲染组件
         if (!options.cancelRender) this.props.instance.$forceUpdate();
         return true;
+    }
+
+    removePlaceholder(id: string, slotName: string, options: DesignOpsOptions = defDesignOpsOptions): void {
+        if (!this.props.isDesigning) throw new Error("removePlaceholder 只能在设计时调用");
+        const node = this.props.allNode[id];
+        if (!node?.__designPlaceholder) return;
+        delete node.__designPlaceholder[slotName];
+        if (slotName === "default") {
+            this.removeChildrenById(id, { cancelRender: true });
+        } else {
+            this.removeSlotNode(node, slotName, { cancelRender: true });
+        }
+        // 重新渲染组件
+        if (!options.cancelRender) this.props.instance.$forceUpdate();
+    }
+
+    setPlaceholder(id: string, slotName: string, placeholder: ComponentSlotsItem = defPlaceholder, options: DesignOpsOptions = defDesignOpsOptions): void {
+        if (!this.props.isDesigning) throw new Error("setPlaceholder 只能在设计时调用");
+        if (!placeholder) return;
+        const node = this.props.allNode[id];
+        if (!node) return;
+        const writableNode = node as MakeWritable<RuntimeNode>;
+        const newPlaceholder = lodash.cloneDeep(placeholder) as DesignNode;
+        if (!newPlaceholder.props) newPlaceholder.props = {};
+        newPlaceholder.props[htmlExtAttr.placeholderName] = slotName;
+        if (!writableNode.__designPlaceholder) writableNode.__designPlaceholder = {};
+        writableNode.__designPlaceholder[slotName] = blockDeepTransform(
+            newPlaceholder,
+            { componentManage: this.props.componentManage, isDesigning: true },
+            this.props.runtimeBlock,
+            node,
+        );
+        // 重新渲染组件
+        if (!options.cancelRender) this.props.instance.$forceUpdate();
     }
 }
 
