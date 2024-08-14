@@ -29,7 +29,11 @@ export default defineComponentMeta({
         },
     },
     designDirectives: {
-        "disable-event": {},
+        "disable-event": {
+            value: {
+                disableEvents: ["onItemClick"],
+            },
+        },
     },
     slots: {},
     setter: {

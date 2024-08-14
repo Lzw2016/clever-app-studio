@@ -1,6 +1,6 @@
 import { Directive, DirectiveBinding, VNode } from "vue";
 import { isFun, isStr } from "@/utils/Typeof";
-import { isHtmlTag, toElementEventName, toPropsEventName } from "@/draggable/utils/HtmlTag";
+import { toElementEventName, toPropsEventName } from "@/draggable/utils/HtmlTag";
 import { deepTraverseVNode } from "@/draggable/utils/DesignerUtils";
 
 interface EmptyEventListenerConfig {
@@ -91,15 +91,15 @@ const defPreventDefaultEvents = fixEventNames([
 interface DirectiveValue {
     /** 递归的最大深度 */
     maxDepth?: number;
-    /** 禁用的事件名称，如果未设置就是用默认的事件集合(defDisableEvents)，优先级: enableEvents > disableEvents */
+    /** 禁用的事件名称(“onXxx”)，如果未设置就是用默认的事件集合(defDisableEvents)，优先级: enableEvents > disableEvents */
     disableEvents?: string | Array<string>;
-    /**启用的事件名称，优先级: enableEvents > disableEvents  */
+    /**启用的事件名称(“onXxx”)，优先级: enableEvents > disableEvents  */
     enableEvents?: string | Array<string>;
-    /** 阻止默认行为的事件集合 */
+    /** 阻止默认行为的事件集合(“onXxx”) */
     preventDefaultEvents?: Array<string>;
-    /** 阻止事件冒泡的事件集合 */
+    /** 阻止事件冒泡的事件集合(“onXxx”) */
     stopPropagationEvents?: Array<string>;
-    /** 自定义禁用事件的实现 Record<事件名, 事件函数> */
+    /** 自定义禁用事件的实现 Record<事件名(“onXxx”), 事件函数> */
     manualEvents?: Record<string, Function>;
 }
 
@@ -107,15 +107,19 @@ function doDisableEvent(binding: DirectiveBinding<DirectiveValue>, vnode: VNode)
     const value = binding.value ?? {};
     const maxDepth = value.maxDepth ?? 8;
     // 递归遍历 vnode 禁用事件
-    const disableEvents = fixEventNames(!value.disableEvents ? undefined : isStr(value.disableEvents) ? [value.disableEvents] : value.disableEvents) ?? defDisableEvents;
+    const disableEvents = fixEventNames(!value.disableEvents ? undefined : isStr(value.disableEvents) ? [value.disableEvents] : value.disableEvents) ?? [];
     const enableEvents = fixEventNames(!value.enableEvents ? undefined : isStr(value.enableEvents) ? [value.enableEvents] : value.enableEvents);
     const preventDefaultEvents = fixEventNames(value.preventDefaultEvents) ?? defPreventDefaultEvents;
     const stopPropagationEvents = fixEventNames(value.stopPropagationEvents);
     const manualEvents = value.manualEvents;
+    // 加入默认禁用的事件
+    disableEvents.push(...defDisableEvents);
+    // 递归处理 VNode
     deepTraverseVNode(vnode, current => {
         const props: any = current.props;
         if (!props) return;
-        if (!isStr(current.type) || !isHtmlTag(current.type)) return;
+        // 当前 VNode 不是简单节点(如：动态组件节点)
+        // if (!isStr(current.type) || !isHtmlTag(current.type)) return;
         const invokers = getEventInvokers(current.el);
         for (let event of disableEvents) {
             if (enableEvents && enableEvents.includes(event)) continue;
@@ -143,9 +147,9 @@ function doDisableEvent(binding: DirectiveBinding<DirectiveValue>, vnode: VNode)
 function replaceEventEventListener(props: any, invokers: EventInvokers | undefined, eventName: string, emptyEventListener: Function) {
     if (props[eventName]) {
         props[eventName] = emptyEventListener;
-        if (invokers?.[eventName]) {
-            invokers[eventName].value = emptyEventListener;
-        }
+    }
+    if (invokers?.[eventName]) {
+        invokers[eventName].value = emptyEventListener;
     }
 }
 

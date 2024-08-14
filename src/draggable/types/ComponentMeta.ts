@@ -319,15 +319,15 @@ interface DesignDirectives extends BaseDirectives {
         value?: {
             /** 递归的最大深度 */
             maxDepth?: number;
-            /** 禁用的事件名称，如果未设置就是用默认的事件集合(defDisableEvents)，优先级: enableEvents > disableEvents */
+            /** 禁用的事件名称(“onXxx”)，如果未设置就是用默认的事件集合(defDisableEvents)，优先级: enableEvents > disableEvents */
             disableEvents?: string | Array<string>;
-            /** 启用的事件名称，优先级: enableEvents > disableEvents  */
+            /** 启用的事件名称(“onXxx”)，优先级: enableEvents > disableEvents  */
             enableEvents?: string | Array<string>;
-            /** 阻止默认行为的事件集合 */
+            /** 阻止默认行为的事件集合(“onXxx”) */
             preventDefaultEvents?: Array<string>;
-            /** 阻止事件冒泡的事件集合 */
+            /** 阻止事件冒泡的事件集合(“onXxx”) */
             stopPropagationEvents?: Array<string>;
-            /** 自定义禁用事件的实现 Record<事件名, 事件函数> */
+            /** 自定义禁用事件的实现 Record<事件名(“onXxx”), 事件函数> */
             manualEvents?: Record<string, Function>;
         };
     };

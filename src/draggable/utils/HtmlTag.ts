@@ -46,7 +46,7 @@ function toPropsEventName(name: string) {
     if (!name.startsWith("on")) {
         if (name.length > 1) {
             name = `on${name[0].toUpperCase()}${name.substring(1)}`;
-        } else {
+        } else if (name.length > 0) {
             name = `on${name[0].toUpperCase()}`;
         }
     }
