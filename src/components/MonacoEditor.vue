@@ -5,7 +5,7 @@ import { editor } from "monaco-editor";
 import type * as Monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { loader, VueMonacoEditor } from "@guolao/vue-monaco-editor";
 import { hasValue, isFun, noValue } from "@/utils/Typeof";
-import { keyBinding, registerTheme } from "@/utils/MonacoEditorUtils";
+import { defOptions as defMonacoOptions, keyBinding, registerTheme } from "@/utils/MonacoEditorUtils";
 
 export type MonacoType = typeof Monaco;
 loader.config({
@@ -222,7 +222,7 @@ function createModelUri(monaco: MonacoType, path: string) {
         @update:value="updateValue"
         v-bind="{
             theme: props.theme,
-            options: lodash.defaultsDeep(props.options, defOptions),
+            options: lodash.defaultsDeep(props.options, defMonacoOptions),
             overrideServices: props.overrideServices,
             saveViewState: props.saveViewState,
             width: props.width,
