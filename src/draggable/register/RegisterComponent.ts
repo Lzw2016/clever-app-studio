@@ -39,6 +39,7 @@ function registerComponent(componentManage: ComponentManage) {
         Link: "Link",
         Divider: "Divider",
         ActionMenu: "ActionMenu",
+        Dropdown: "Dropdown",
         // 表单组件
         Form: "Form",
         FormItem: "FormItem",

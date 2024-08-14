@@ -93,6 +93,7 @@ export {
     Link,
     Divider,
     ActionMenu,
+    Dropdown,
     // 布局组件
     Container,
     Layout,
@@ -112,7 +113,6 @@ export {
     TabItem,
     TimeLine,
     TreeMenu,
-    Dropdown,
     DropdownMenu,
     DropdownItem,
     // 容器组件
