@@ -29,7 +29,6 @@ export default defineComponentMeta({
             },
         },
     },
-    slots: {},
     setter: {
         props: {
             groups: [

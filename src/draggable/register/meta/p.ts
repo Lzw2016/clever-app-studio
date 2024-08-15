@@ -13,7 +13,6 @@ export default defineComponentMeta({
         props: {},
         tpl: "文本段落",
     },
-    slots: {},
     setter: {
         props: {
             groups: [

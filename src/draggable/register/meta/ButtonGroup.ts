@@ -22,7 +22,6 @@ export default defineComponentMeta({
     designDirectives: {
         "disable-event": {},
     },
-    slots: {},
     setter: {
         props: {
             enableVModel: true,

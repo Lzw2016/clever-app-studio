@@ -14,7 +14,6 @@ export default defineComponentMeta({
             style: {},
         },
     },
-    slots: {},
     setter: {
         props: {
             groups: [],

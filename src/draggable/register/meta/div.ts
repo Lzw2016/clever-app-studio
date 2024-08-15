@@ -20,7 +20,6 @@ export default defineComponentMeta({
     designDirectives: {
         "disable-event": {},
     },
-    slots: {},
     setter: {
         events: {
             includeInnerEvents: true,

@@ -22,7 +22,6 @@ export default defineComponentMeta({
         "disable-event": {},
         "clear-draggable-html-attr": {},
     },
-    slots: {},
     setter: {
         props: {
             formProps: {

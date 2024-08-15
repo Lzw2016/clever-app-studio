@@ -20,7 +20,6 @@ export default defineComponentMeta({
             },
         },
     },
-    slots: {},
     setter: {
         events: {
             includeInnerEvents: true,
