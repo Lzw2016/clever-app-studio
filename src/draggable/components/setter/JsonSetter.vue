@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { getCurrentInstance, nextTick, reactive, ref } from "vue";
+import { computed, getCurrentInstance, nextTick, reactive, ref } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faCode } from "@fortawesome/free-solid-svg-icons";
 import type { JSONSchema7 } from "json-schema";
-import { Button, Modal } from "@opentiny/vue";
+import { Button, Input, Modal } from "@opentiny/vue";
 import { layer } from "@layui/layer-vue";
 import type { editor } from "monaco-editor";
 import { isFun } from "@/utils/Typeof";
@@ -53,6 +55,14 @@ const setter = ref<InstanceType<typeof MonacoEditor> | undefined>();
 const inputProps = getInputProps(state);
 // 监听 nodes 变化
 watchNodes(props, state, jsonStringify);
+
+const inputValue = computed<string>(() => {
+    const value = lodash.trim(state.value)
+    if (value) {
+        return `已配置(${value.length}字符)`;
+    }
+    return "未配置";
+});
 
 function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
     if (props.jsonSchema) {
@@ -119,10 +129,17 @@ defineExpose<SetterExpose>({
 </script>
 
 <template>
-    <div>
-        <div>
-            <div @click="showModal">显示</div>
-        </div>
+    <div style="width: 100%;">
+        <Input
+            style="width: 100%;"
+            :clearable="false"
+            :readonly="true"
+            :modelValue="inputValue"
+        >
+            <template #suffix>
+                <FontAwesomeIcon class="icons-button" title="编辑对象值" :icon="faCode" @click="showModal"/>
+            </template>
+        </Input>
         <Modal
             v-if="state.showModal"
             v-model="state.showModal"
@@ -156,5 +173,11 @@ defineExpose<SetterExpose>({
 </template>
 
 <style scoped>
+.icons-button:hover {
+    color: #666;
+}
 
+.icons-button:active {
+    color: #2e3243;
+}
 </style>
