@@ -143,13 +143,13 @@ defineExpose<SetterExpose>({
         <Modal
             v-if="state.showModal"
             v-model="state.showModal"
+            title="编辑对象属性值"
             width="35%"
             height="65%"
             min-height="350px"
             min-width="300px"
             max-width="500px"
             :esc-closable="true"
-            title="编辑节点内联样式"
             :show-footer="true"
         >
             <MonacoEditor
