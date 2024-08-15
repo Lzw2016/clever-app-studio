@@ -6,7 +6,7 @@ import { layer } from "@layui/layer-vue";
 import { hasValue, isStr, noValue } from "@/utils/Typeof";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { applyDirectivesValue, forceUpdateBlock } from "@/draggable/utils/SetterUtils";
-import { PropsPanel, Setter } from "@/draggable/types/ComponentMeta";
+import { PropsPanel, Setter, SetterProps } from "@/draggable/types/ComponentMeta";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
@@ -132,18 +132,17 @@ function getSetterProps(setter: Setter) {
         label,
         labelTips,
         enableBind,
-        listeners,
         ...otherCmpProps
     } = setter;
-    const obj: any = {
+    const obj: SetterProps = {
         ref,
         designerState: designerState,
-        blockInstance: designerState.blockInstance,
+        blockInstance: designerState.blockInstance!,
         nodes: designerState.selectNodes,
         ...cmpProps,
         ...otherCmpProps,
     };
-    return obj;
+    return obj as any;
 }
 
 function updateNodeRef(oldRef: string, newRef: string) {

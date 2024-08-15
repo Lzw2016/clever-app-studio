@@ -40,7 +40,6 @@ export default defineComponentMeta({
                     title: "常用",
                     items: [
                         {
-                            ref: "text",
                             cmp: "StringSetter",
                             label: "按钮文本",
                             propsName: "text",

@@ -1,6 +1,6 @@
 import { ComponentPublicInstance, VNode } from "vue";
 import { FunctionInfo, FunctionMeta, I18N, ModifierGuardsKeys, VueComponent } from "@/draggable/types/Base";
-import { BaseDirectives, BaseProps, ComponentListener, DesignNode } from "@/draggable/types/DesignBlock";
+import { BaseDirectives, BaseProps, DesignNode } from "@/draggable/types/DesignBlock";
 import { BlockInstance, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
 
@@ -25,6 +25,8 @@ type SetterInstance = ComponentPublicInstance & SetterExpose;
 
 /** 设置器基本props */
 interface SetterProps {
+    /** 组件引用 */
+    ref?: any;
     /** 设计器状态数据 */
     designerState: DesignerState;
     /** block实例对象 */
@@ -79,8 +81,6 @@ interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
     labelTips?: string;
     /** 启用数据绑定(v-model)，绑定 propsName 属性，仅当 propsName 存在时有效(默认启用) */
     enableBind?: boolean;
-    /** TODO 监听设置器的事件 */
-    listeners?: Record<keyof Event, ComponentListener>;
     /** 被设置的属性名称 */
     propsName?: SetterProps['propsName'];
     /** 从组件节点读取属性值 */
