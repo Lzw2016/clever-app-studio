@@ -63,6 +63,13 @@ export default defineComponentMeta({
                             propsName: "contentPosition",
                             defPropsValue: "center",
                         },
+                        {
+                            cmp: "ColorSetter",
+                            label: "文案颜色",
+                            isHideSetter: node => noValue(node.__designPlaceholder?.default),
+                            propsName: "contentColor",
+                            defPropsValue: "#252b3a",
+                        },
                     ],
                 },
                 {
@@ -78,12 +85,6 @@ export default defineComponentMeta({
                             },
                             label: "样式",
                             propsName: "borderStyle",
-                        },
-                        {
-                            cmp: "ColorSetter",
-                            label: "文案颜色",
-                            propsName: "contentColor",
-                            defPropsValue: "#252b3a",
                         },
                         {
                             cmp: "ColorSetter",
