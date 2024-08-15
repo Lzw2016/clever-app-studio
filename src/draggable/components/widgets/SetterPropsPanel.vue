@@ -296,7 +296,7 @@ defineExpose<PropsPanelExpose>({
                 <FormItem v-if="props.propsPanel.enableVModel && hasValue(props.designerState.blockInstance)" size="mini" labelPosition="left">
                     <template #label>
                         <Tooltip effect="dark" placement="left" content="数据双向绑定v-model">
-                            <span class="setter-label-tips">数据绑定</span>
+                            <span class="setter-label-tips">绑定变量</span>
                         </Tooltip>
                     </template>
                     <div class="flex-row-container" style="align-items: center;">
@@ -359,7 +359,7 @@ defineExpose<PropsPanelExpose>({
                                         'setter-button': true,
                                         'setter-button-active': isBound(item),
                                     }"
-                                    title="使用数据绑定"
+                                    title="绑定变量"
                                     @click="toggleBind(item, isBound(item))"
                                 >
                                 <Braces stroke-width="1.8" style="width: 16px; height: 16px;"/>

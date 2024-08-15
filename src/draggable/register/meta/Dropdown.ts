@@ -31,6 +31,7 @@ export default defineComponentMeta({
                 {
                     title: "常用",
                     items: [
+                        // TODO js对象输入框
                         {
                             cmp: "StringSetter",
                             label: "显示文本",
