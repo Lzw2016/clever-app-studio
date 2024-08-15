@@ -23,16 +23,25 @@ interface SetterExpose {
 /** 设置器实例 */
 type SetterInstance = ComponentPublicInstance & SetterExpose;
 
+/** 渲染节点属性面板暴露属性 */
+interface PropsPanelExpose {
+    /** 设置器引用 */
+    setterRefs: Record<string, SetterInstance>;
+}
+
+/** 渲染节点属性面板实例 */
+type PropsPanelInstance = ComponentPublicInstance & SetterExpose;
+
 /** 设置器基本props */
 interface SetterProps {
-    /** 组件引用 */
-    ref?: any;
     /** 设计器状态数据 */
     designerState: DesignerState;
     /** block实例对象 */
     blockInstance: BlockInstance;
     /** 当前设置的渲染节点集合 */
     nodes: Array<RuntimeNode>;
+    /** 是否监听当前设置器值，当设计器值变化时重新渲染SetterPropsPanel */
+    watchValue?: boolean;
     /** 被设置的属性名称 */
     propsName?: string;
     /**
@@ -57,6 +66,7 @@ interface SetterProps {
     disableReRender?: boolean;
     /** 更新属性后需要重新计算辅助工具的位置 */
     recalcAuxToolPosition?: boolean;
+
 }
 
 /** 设置器基本state */
@@ -69,7 +79,7 @@ interface SetterState<Value = any> {
 
 /** 设置器 */
 interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
-    /** 设置器组件实例的引用名称 */
+    /** 组件引用 */
     ref?: string;
     /** 设置器组件 */
     cmp: VueComponent | string;
@@ -81,6 +91,10 @@ interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
     labelTips?: string;
     /** 启用数据绑定(v-model)，绑定 propsName 属性，仅当 propsName 存在时有效(默认启用) */
     enableBind?: boolean;
+    /** 是否需要隐藏当前设置器(默认不隐藏)，返回“true”才表示隐藏 */
+    isHideSetter?: (node: RuntimeNode, nodes: Array<RuntimeNode>, propsPanel: PropsPanelInstance, setter?: SetterInstance) => boolean | void;
+    /** 是否监听当前设置器值，当设计器值变化时重新渲染SetterPropsPanel */
+    watchValue?: SetterProps['watchValue'];
     /** 被设置的属性名称 */
     propsName?: SetterProps['propsName'];
     /** 从组件节点读取属性值 */
@@ -347,7 +361,7 @@ interface ComponentMeta {
     defDesignNode: DefDesignNode;
     /** 设计时的组件指令 */
     designDirectives?: DesignDirectives;
-    /** TODO 组件函数 */
+    /** TODO 组件函数元信息 */
     // methods: Array<FunctionMeta>;
     // /** TODO 组件插槽元信息 */
     // slots: Record<string, Omit<ComponentSlotMeta, 'name'>>;
@@ -391,6 +405,8 @@ interface ComponentMetaTab extends MaterialMetaTab<ComponentMetaGroup> {
 type AsyncComponentMeta = (type: string) => Promise<ComponentMeta>;
 
 export type {
+    PropsPanelExpose,
+    PropsPanelInstance,
     SetterExpose,
     SetterInstance,
     SetterProps,

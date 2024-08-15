@@ -7,7 +7,7 @@
 [  ]  6.原生html属性支持.capture、.once、.passive 修饰符，重写函数名即可，如：onClickCapture、onClickOnce
 [  ]  7.Expression.ts中 getKeyPathValue 与 setKeyPathValue 可以利用动态函数的方式实现功能，就可以支持全功能js属性取值表达式，性能可能会更好
 [  ]  8.设计器删除节点后默认选择删除节点的父节点
-[  ]  9.
+[  ]  9.BindTreeNode可以显示数据的类型和值提高友好性
 [  ] 10.
 [  ] 11.
 [  ] 12.

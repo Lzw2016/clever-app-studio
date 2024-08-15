@@ -5,8 +5,8 @@ import { Collapse, CollapseItem, Form, FormItem, Input, Loading, Tooltip } from 
 import { layer } from "@layui/layer-vue";
 import { hasValue, isStr, noValue } from "@/utils/Typeof";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
-import { applyDirectivesValue, forceUpdateBlock } from "@/draggable/utils/SetterUtils";
-import { PropsPanel, Setter, SetterProps } from "@/draggable/types/ComponentMeta";
+import { applyDirectivesValue, forceUpdateBlock, forceUpdatePropsPanel } from "@/draggable/utils/SetterUtils";
+import { PropsPanel, PropsPanelExpose, Setter, SetterProps } from "@/draggable/types/ComponentMeta";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
@@ -53,7 +53,10 @@ const state = reactive<SetterPropsPanelState>({
     nodeRef: undefined,
 });
 // 内部数据
-// const data = {};
+const data = {
+    // 设置器引用
+    setterRefs: {},
+};
 const refInputRef = ref<any>();
 // 当前活动的设计器状态数据
 const setterState = computed(() => props.designerEngine.activeDesignerState?.setterShareState);
@@ -132,17 +135,19 @@ function getSetterProps(setter: Setter) {
         label,
         labelTips,
         enableBind,
+        isHideSetter,
         ...otherCmpProps
     } = setter;
-    const obj: SetterProps = {
-        ref,
+    const setterProps: SetterProps = {
         designerState: designerState,
         blockInstance: designerState.blockInstance!,
         nodes: designerState.selectNodes,
         ...cmpProps,
         ...otherCmpProps,
     };
-    return obj as any;
+    const result: any = setterProps;
+    // if (ref) result.ref = ref;
+    return result;
 }
 
 function updateNodeRef(oldRef: string, newRef: string) {
@@ -211,6 +216,42 @@ function toggleBind(setter: Setter, isBound: boolean) {
     if (!blockInstance) return;
     forceUpdateBlock(props.designerState, blockInstance, nodes, false, true);
 }
+
+/**
+ * 是否隐藏当前Setter组件
+ * @param setter Setter值
+ */
+function isHideSetter(setter: Setter) {
+    if (!setter.isHideSetter) return false;
+    const node = props.designerState.selectNode;
+    if (!node) return false;
+    const setterRef = data.setterRefs[setter.ref as any];
+    const hide = setter.isHideSetter(
+        node,
+        props.designerState.selectNodes,
+        instance?.proxy as any,
+        setterRef,
+    );
+    return hide === true;
+}
+
+// 强制更新当前组件
+watch(forceUpdatePropsPanel, () => instance?.proxy?.$forceUpdate());
+
+// 更新设置器引用
+function setSetterRef(setterRef: any, setter: Setter) {
+    if (!setter.ref) return;
+    if (setterRef) {
+        data.setterRefs[setter.ref] = setterRef;
+    } else {
+        delete data.setterRefs[setter.ref];
+    }
+}
+
+// 定义组件公开内容
+defineExpose<PropsPanelExpose>({
+    setterRefs: data.setterRefs,
+});
 </script>
 
 <template>
@@ -282,48 +323,57 @@ function toggleBind(setter: Setter, isBound: boolean) {
                 :title="group.title"
             >
                 <template v-for="item in group.items">
-                    <FormItem
-                        v-if="item.label"
-                        v-bind="getFormItemProps(item)"
-                    >
-                        <template #label v-if="item.labelTips">
-                            <Tooltip effect="dark" placement="left" :content="item.labelTips">
-                                <span class="setter-label-tips">{{ item.label }}</span>
-                            </Tooltip>
-                        </template>
-                        <div class="flex-row-container" style="align-items: center;">
-                            <div class="flex-item-fill flex-row-container" style="align-items: center;">
-                                <template v-if="!state.loading">
-                                    <BindSetter
-                                        v-if="isBound(item)"
-                                        v-bind="getSetterProps(item)"
-                                        :designer-state="props.designerState"
-                                        :block-instance="props.designerState.blockInstance"
-                                        :nodes="props.designerState.selectNodes"
-                                        :contain-braces="true"
-                                        :only-bind-data="false"
-                                    />
-                                    <component v-else :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
-                                </template>
-                            </div>
-                            <span
-                                v-if="item.enableBind !== false && hasValue(item.propsName)"
-                                :class="{
-                                    'flex-item-fixed': true,
-                                    'flex-row-container': true,
-                                    'flex-center': true,
-                                    'setter-button': true,
-                                    'setter-button-active': isBound(item),
-                                }"
-                                title="使用数据绑定"
-                                @click="toggleBind(item, isBound(item))"
-                            >
+                    <template v-if="!isHideSetter(item)">
+                        <FormItem
+                            v-if="item.label"
+                            v-bind="getFormItemProps(item)"
+                        >
+                            <template #label v-if="item.labelTips">
+                                <Tooltip effect="dark" placement="left" :content="item.labelTips">
+                                    <span class="setter-label-tips">{{ item.label }}</span>
+                                </Tooltip>
+                            </template>
+                            <div class="flex-row-container" style="align-items: center;">
+                                <div class="flex-item-fill flex-row-container" style="align-items: center;">
+                                    <template v-if="!state.loading">
+                                        <BindSetter
+                                            v-if="isBound(item)"
+                                            v-bind="getSetterProps(item)"
+                                            :ref="setterRef => setSetterRef(setterRef, item)"
+                                            :designer-state="props.designerState"
+                                            :block-instance="props.designerState.blockInstance"
+                                            :nodes="props.designerState.selectNodes"
+                                            :contain-braces="true"
+                                            :only-bind-data="false"
+                                        />
+                                        <component v-else :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"
+                                        />
+                                    </template>
+                                </div>
+                                <span
+                                    v-if="item.enableBind !== false && hasValue(item.propsName)"
+                                    :class="{
+                                        'flex-item-fixed': true,
+                                        'flex-row-container': true,
+                                        'flex-center': true,
+                                        'setter-button': true,
+                                        'setter-button-active': isBound(item),
+                                    }"
+                                    title="使用数据绑定"
+                                    @click="toggleBind(item, isBound(item))"
+                                >
                                 <Braces stroke-width="1.8" style="width: 16px; height: 16px;"/>
                             </span>
-                            <span v-else class="setter-button-placeholder"/>
-                        </div>
-                    </FormItem>
-                    <component v-else-if="!state.loading" :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
+                                <span v-else class="setter-button-placeholder"/>
+                            </div>
+                        </FormItem>
+                        <component
+                            v-else-if="!state.loading"
+                            :is="getComponent(item.cmp)"
+                            v-bind="getSetterProps(item)"
+                            :ref="setterRef => setSetterRef(setterRef, item)"
+                        />
+                    </template>
                 </template>
             </CollapseItem>
         </Collapse>

@@ -1,4 +1,5 @@
 import { createVNode } from "vue";
+import { noValue } from "@/utils/Typeof";
 import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 import HrSvg from "@/assets/images/hr.svg?component";
@@ -27,12 +28,13 @@ export default defineComponentMeta({
                     title: "常用",
                     items: [
                         {
+                            ref: "enableContent",
                             cmp: "BoolSetter",
                             label: "启用文案",
+                            watchValue: true,
                             getPropsValue: (props, node) => node.__designPlaceholder?.default,
                             applyPropsValue: (props, value, node, setter) => {
                                 const blockInstance = setter.blockInstance;
-                                console.log("setter", setter);
                                 if (value) {
                                     blockInstance.opsForDesign.setPlaceholder(node.id, "default");
                                     const item: ComponentSlotsItem = {
@@ -57,6 +59,7 @@ export default defineComponentMeta({
                                 ],
                             },
                             label: "文案位置",
+                            isHideSetter: node => noValue(node.__designPlaceholder?.default),
                             propsName: "contentPosition",
                             defPropsValue: "center",
                         },

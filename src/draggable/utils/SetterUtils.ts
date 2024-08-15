@@ -1,5 +1,5 @@
 import lodash from "lodash";
-import { computed, markRaw, useAttrs, watch } from "vue";
+import { computed, markRaw, ref, useAttrs, watch } from "vue";
 import { isFunction, isStr, noValue } from "@/utils/Typeof";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
@@ -7,6 +7,8 @@ import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 
 /** 当选中多个节点且节点的同一属性有不同值时的提示文本 */
 const multipleValuesText = "存在多个不同值";
+/** 强制更新SetterPropsPanel组件 */
+const forceUpdatePropsPanel = ref(0);
 
 /** setter值转换函数 */
 type ValueTransform<T = any> = (value: any) => T | undefined;
@@ -141,6 +143,7 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any
     }
     // 需要重新渲染 block
     if (res) {
+        if (props.watchValue) forceUpdatePropsPanel.value++;
         state.multipleValues = false;
         forceUpdateBlock(designerState, blockInstance, nodes, disableReRender, recalcAuxToolPosition);
     }
@@ -223,7 +226,6 @@ function getSetterExpose<T = any>(props: SetterProps, state: SetterState, setter
             state.value = value;
             applyValue(props, state, setter, value);
         },
-        // TODO 隐藏组件
     };
 }
 
@@ -255,6 +257,7 @@ export type {
 
 export {
     multipleValuesText,
+    forceUpdatePropsPanel,
     toObj,
     toStr,
     toBool,
