@@ -1,31 +1,27 @@
 import { ComponentPublicInstance, VNode } from "vue";
-import { ComponentSlotMeta, FunctionInfo, FunctionMeta, I18N, ModifierGuardsKeys, VueComponent } from "@/draggable/types/Base";
+import { FunctionInfo, FunctionMeta, I18N, ModifierGuardsKeys, VueComponent } from "@/draggable/types/Base";
 import { BaseDirectives, BaseProps, ComponentListener, DesignNode } from "@/draggable/types/DesignBlock";
 import { BlockInstance, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
 
-/** 监听属性值变化逻辑配置 */
-interface WatchPropsConfig<TargetProps = any> {
-    /** 监听的属性名 */
-    propsNames: Array<string>;
+/** 设置器暴露属性 */
+interface SetterExpose {
+    /** 设计器状态数据 */
+    designerState: DesignerState;
+    /** block实例对象 */
+    blockInstance: BlockInstance;
+    /** 当前设置的渲染节点集合 */
+    nodes: Array<RuntimeNode>;
 
-    /**
-     * 属性值变化时的回调
-     * @param props     目标组件节点的 props 对象
-     * @param value     当前属性值
-     * @param setter    当前设置器对象
-     */
-    onChange(props: TargetProps, value: any, setter: SetterInstance): void;
+    /** 获取当前setter值 */
+    getValue(): any;
 
-    /** 在侦听器创建时立即触发回调 */
-    immediate?: boolean;
-    /** 调整回调的刷新时机 */
-    flush?: 'pre' | 'post' | 'sync';
-    /** 如果源是对象或数组，则强制深度遍历源，以便在深度变更时触发回调 */
-    deep?: boolean;
-    /** 一次性侦听器 */
-    once?: boolean;
+    /** 设置当前setter值 */
+    setValue(value: any): void;
 }
+
+/** 设置器实例 */
+type SetterInstance = ComponentPublicInstance & SetterExpose;
 
 /** 设置器基本props */
 interface SetterProps {
@@ -54,9 +50,7 @@ interface SetterProps {
      * @param blockInstance block实例对象
      * @return 返回 false 表示不需要重新渲染 Block
      */
-    applyPropsValue?: (props: any, value: any, node: MakeWritable<RuntimeNode>, setter: ComponentPublicInstance, blockInstance: BlockInstance) => void | false;
-    /** 监听属性值变化逻辑 */
-    watchProps?: Array<WatchPropsConfig>;
+    applyPropsValue?: (props: any, value: any, node: MakeWritable<RuntimeNode>, setter: SetterInstance) => void | false;
     /** 更新属性值后不重新渲染block */
     disableReRender?: boolean;
     /** 更新属性后需要重新计算辅助工具的位置 */
@@ -70,25 +64,6 @@ interface SetterState<Value = any> {
     /** 设置器值 */
     value?: Value;
 }
-
-/** 设置器暴露属性 */
-interface SetterExpose {
-    /** 设计器状态数据 */
-    designerState: DesignerState;
-    /** block实例对象 */
-    blockInstance: BlockInstance;
-    /** 当前设置的渲染节点集合 */
-    nodes: Array<RuntimeNode>;
-
-    /** 获取当前setter值 */
-    getValue(): any;
-
-    /** 设置当前setter值 */
-    setValue(value: any): void;
-}
-
-/** 设置器实例 */
-type SetterInstance = ComponentPublicInstance & SetterExpose;
 
 /** 设置器 */
 interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
@@ -114,8 +89,6 @@ interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
     defPropsValue?: SetterProps['defPropsValue'];
     /** 应用属性值到组件节点 */
     applyPropsValue?: SetterProps['applyPropsValue'];
-    /** TODO 监听属性值变化逻辑 */
-    watchProps?: SetterProps['watchProps'];
     /** 更新属性值后不重新渲染block */
     disableReRender?: SetterProps['disableReRender'];
     /** 更新属性后需要重新计算辅助工具的位置 */
@@ -376,8 +349,8 @@ interface ComponentMeta {
     designDirectives?: DesignDirectives;
     /** TODO 组件函数 */
     // methods: Array<FunctionMeta>;
-    /** TODO 组件插槽元信息 */
-    slots: Record<string, Omit<ComponentSlotMeta, 'name'>>;
+    // /** TODO 组件插槽元信息 */
+    // slots: Record<string, Omit<ComponentSlotMeta, 'name'>>;
     /** 组件设计器 */
     setter: ComponentSetter;
     /** 设计时的占位组件，插槽名对应占位节点，items占位名为“default”，配置占位节点值为true表示使用默认的占位组件 */
@@ -418,11 +391,10 @@ interface ComponentMetaTab extends MaterialMetaTab<ComponentMetaGroup> {
 type AsyncComponentMeta = (type: string) => Promise<ComponentMeta>;
 
 export type {
-    SetterProps,
-    SetterState,
     SetterExpose,
     SetterInstance,
-    WatchPropsConfig,
+    SetterProps,
+    SetterState,
     Setter,
     FormProps,
     FormItemProps,

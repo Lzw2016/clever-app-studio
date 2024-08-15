@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ComponentPublicInstance, reactive, ref } from "vue";
+import { ComponentPublicInstance, getCurrentInstance, reactive, ref } from "vue";
 import { Checkbox, Switch } from "@opentiny/vue";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, multipleValuesText, toBool, watchNodes } from "@/draggable/utils/SetterUtils";
@@ -8,6 +8,9 @@ import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, mult
 defineOptions({
     name: 'BoolSetter',
 });
+
+// 当前组件对象
+const instance = getCurrentInstance();
 
 // 定义 Props 类型
 interface BoolSetterProps extends SetterProps {
@@ -40,7 +43,7 @@ watchNodes(props, state, toBool);
 
 // 定义组件公开内容
 defineExpose<SetterExpose>({
-    ...getSetterExpose<boolean>(props, state, setter.value, toBool),
+    ...getSetterExpose<boolean>(props, state, instance?.proxy, toBool),
 });
 </script>
 
@@ -52,14 +55,14 @@ defineExpose<SetterExpose>({
         v-bind="inputProps"
         ref="setter"
         v-model="state.value"
-        @change="value => applyValue(props, state, setter, value)"
+        @change="value => applyValue(props, state, instance?.proxy, value)"
     />
     <Checkbox
         v-else
         v-bind="inputProps"
         ref="setter"
         v-model="state.value"
-        @change="value => applyValue(props, state, setter, value)"
+        @change="value => applyValue(props, state, instance?.proxy, value)"
     />
     <span v-if="state.multipleValues" class="multiple-diff-values">
         {{ multipleValuesText }}

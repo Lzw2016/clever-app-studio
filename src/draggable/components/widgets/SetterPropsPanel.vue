@@ -133,7 +133,6 @@ function getSetterProps(setter: Setter) {
         labelTips,
         enableBind,
         listeners,
-        watchProps,
         ...otherCmpProps
     } = setter;
     const obj: any = {
@@ -144,9 +143,6 @@ function getSetterProps(setter: Setter) {
         ...cmpProps,
         ...otherCmpProps,
     };
-    // if (setter.watchProps) obj.watchProps = setter.watchProps;
-    // if (setter.listeners) obj.listeners = setter.listeners;
-    // TODO watchProps, listeners
     return obj;
 }
 
@@ -216,8 +212,6 @@ function toggleBind(setter: Setter, isBound: boolean) {
     if (!blockInstance) return;
     forceUpdateBlock(props.designerState, blockInstance, nodes, false, true);
 }
-
-// function
 </script>
 
 <template>

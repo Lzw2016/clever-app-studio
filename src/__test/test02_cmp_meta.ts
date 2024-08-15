@@ -22,35 +22,35 @@ const componentMeta = defineComponentMeta({
         slots: {},
         items: [],
     },
-    slots: {
-        icon: {
-            title: "标题插槽",
-            description: "面板的自定义标题模板。",
-            slotProps: {
-                value: {
-                    type: "object",
-                    note: "组件的值",
-                },
-                suggestions: {
-                    type: "object",
-                    note: "显示选项",
-                },
-            },
-            examples: [
-                {
-                    title: "简单使用",
-                    description: "自定义标题",
-                    code: [
-                        '<template v-slot:header="slotProps">',
-                        '    <div class="flex align-options-center">',
-                        '        当前值 {{ slotProps.value }}',
-                        '    </div>',
-                        '</template>',
-                    ],
-                },
-            ],
-        },
-    },
+    // slots: {
+    //     icon: {
+    //         title: "标题插槽",
+    //         description: "面板的自定义标题模板。",
+    //         slotProps: {
+    //             value: {
+    //                 type: "object",
+    //                 note: "组件的值",
+    //             },
+    //             suggestions: {
+    //                 type: "object",
+    //                 note: "显示选项",
+    //             },
+    //         },
+    //         examples: [
+    //             {
+    //                 title: "简单使用",
+    //                 description: "自定义标题",
+    //                 code: [
+    //                     '<template v-slot:header="slotProps">',
+    //                     '    <div class="flex align-options-center">',
+    //                     '        当前值 {{ slotProps.value }}',
+    //                     '    </div>',
+    //                     '</template>',
+    //                 ],
+    //             },
+    //         ],
+    //     },
+    // },
     // 组件配置设置器
     setter: {
         // 组件属性设置
@@ -77,15 +77,6 @@ const componentMeta = defineComponentMeta({
                             getPropsValue: function (props: any): any {
                                 return {};
                             },
-                            // 属性变化，更新当前组件
-                            watchProps: [
-                                {
-                                    propsNames: [],
-                                    onChange(a, b, c) {
-                                        // d.getValue()
-                                    },
-                                },
-                            ],
                         },
                         {
                             cmp: "TextSetter",

@@ -161,19 +161,19 @@ interface FunctionInfo {
     funName?: string;
 }
 
-/** 组件插槽元信息 */
-interface ComponentSlotMeta {
-    /** 简单说明 */
-    title: string;
-    /** 插槽描述 */
-    description?: string;
-    /** 插槽名称 */
-    name: string;
-    /** 插槽属性 */
-    slotProps?: Record<string, Omit<ParamMeta, 'name'>>;
-    /** 使用示例(代码片段) */
-    examples?: Array<CodeExample>;
-}
+// /** 组件插槽元信息 */
+// interface ComponentSlotMeta {
+//     /** 简单说明 */
+//     title: string;
+//     /** 插槽描述 */
+//     description?: string;
+//     /** 插槽名称 */
+//     name: string;
+//     /** 插槽属性 */
+//     slotProps?: Record<string, Omit<ParamMeta, 'name'>>;
+//     /** 使用示例(代码片段) */
+//     examples?: Array<CodeExample>;
+// }
 
 /** 组件参数对象(简单的组件参数) */
 interface ComponentParam {
@@ -214,7 +214,6 @@ export type {
     ParamMeta,
     FunctionMeta,
     FunctionInfo,
-    ComponentSlotMeta,
     ComponentParam,
     FunctionParam,
 }

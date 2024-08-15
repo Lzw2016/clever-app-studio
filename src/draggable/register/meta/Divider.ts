@@ -20,7 +20,6 @@ export default defineComponentMeta({
             },
         ],
     },
-    slots: {},
     setter: {
         props: {
             groups: [
@@ -31,7 +30,9 @@ export default defineComponentMeta({
                             cmp: "BoolSetter",
                             label: "启用文案",
                             getPropsValue: (props, node) => node.__designPlaceholder?.default,
-                            applyPropsValue: (props, value, node, setter, blockInstance) => {
+                            applyPropsValue: (props, value, node, setter) => {
+                                const blockInstance = setter.blockInstance;
+                                console.log("setter", setter);
                                 if (value) {
                                     blockInstance.opsForDesign.setPlaceholder(node.id, "default");
                                     const item: ComponentSlotsItem = {

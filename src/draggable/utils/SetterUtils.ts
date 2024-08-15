@@ -115,7 +115,7 @@ function _doGetValue(props: SetterProps, state: SetterState, transform?: ValueTr
  * 应用setter值到组件节点
  * @param props     设置器组件 props 属性
  * @param state     设置器组件 state 属性
- * @param setter    设置器内部组件实例(ComponentPublicInstance)
+ * @param setter    设置器组件实例(SetterInstance)
  * @param value     应用的setter值
  */
 function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any, value: T): boolean {
@@ -133,7 +133,7 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any
     if (!propsName && !isFunction(applyPropsValue)) return res;
     for (let node of nodes) {
         if (applyPropsValue) {
-            res = applyPropsValue(node.props, value, node, setter, blockInstance) !== false;
+            res = applyPropsValue(node.props, value, node, setter) !== false;
         } else if (propsName && node.props) {
             res = res || node.props[propsName] !== value;
             node.props[propsName] = value;
@@ -209,7 +209,7 @@ function watchNodes(props: SetterProps, state: SetterState, transform?: ValueTra
  * 定义设置器组件公开内容
  * @param props     设置器组件 props 属性
  * @param state     设置器组件 state 属性
- * @param setter    设置器内部组件实例(ComponentPublicInstance)
+ * @param setter    设置器组件实例(SetterInstance)
  * @param transform setter值转换函数
  */
 function getSetterExpose<T = any>(props: SetterProps, state: SetterState, setter: any, transform?: ValueTransform<T>): SetterExpose {

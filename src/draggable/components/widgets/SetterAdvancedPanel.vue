@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { computed, reactive } from "vue";
+import { computed, getCurrentInstance, reactive } from "vue";
 import { Collapse, CollapseItem, Form, FormItem, Input, Tooltip } from "@opentiny/vue";
 import { hasValue } from "@/utils/Typeof";
 import { applyDirectivesValue } from "@/draggable/utils/SetterUtils";
@@ -14,6 +14,9 @@ import BindSetter from "@/draggable/components/setter/BindSetter.vue";
 defineOptions({
     name: 'SetterAdvancedPanel',
 });
+
+// 当前组件对象
+const instance = getCurrentInstance();
 
 // 定义 Props 类型
 interface SetterAdvancedPanelProps {
