@@ -2,6 +2,7 @@ import { createVNode } from "vue";
 import { VarType } from "@/draggable/types/Base";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 import ButtonGroupSvg from "@/assets/images/button-group.svg?component";
+import { buttonGroupData } from "@/draggable/register/JsonSchema";
 
 export default defineComponentMeta({
     type: "ButtonGroup",
@@ -29,13 +30,15 @@ export default defineComponentMeta({
                 {
                     title: "常用",
                     items: [
-                        // TODO js对象输入框
-                        // {
-                        //     cmp: "",
-                        //     label: "按钮组数据",
-                        //     propsName: "disabled",
-                        //     recalcAuxToolPosition: true,
-                        // },
+                        {
+                            cmp: "JsonSetter",
+                            cmpProps: {
+                                jsonSchema: buttonGroupData,
+                            },
+                            label: "配置按钮",
+                            propsName: "data",
+                            recalcAuxToolPosition: true,
+                        },
                         {
                             cmp: "StringSetter",
                             label: "文本字段",

@@ -66,8 +66,8 @@
 [  ] 49.实现一个拖拽Tabs
 [  ] 50.实现一个拖拽表格
 [  ] 51.渲染节点支持 modelValue 数据单向绑定
-[  ] 52.setter 的 watchProps 实现
-[  ] 53.setter 的 listeners 实现
+[  ] 52.
+[  ] 53.
 [  ] 54.
 [  ] 55.
 [  ] 56.

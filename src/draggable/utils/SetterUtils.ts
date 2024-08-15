@@ -52,6 +52,12 @@ const toBindExpContent: ValueTransform<string> = value => {
     return "";
 };
 
+/** setter值使用JSON.stringify序列化成字符串 */
+const jsonStringify: ValueTransform<string> = value => {
+    if (!value) return "";
+    return JSON.stringify(value, null, 4);
+};
+
 /**
  * 获取 state 默认值
  */
@@ -263,6 +269,7 @@ export {
     toBool,
     toNumber,
     toBindExpContent,
+    jsonStringify,
     getDefState,
     getValue,
     applyValue,

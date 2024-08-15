@@ -84,6 +84,7 @@
         "@types/numeral": "^2.0.5",
         "@types/sortablejs": "^1.15.8",
         "@types/codemirror": "^5.60.15",
+        "@types/json-schema": "^7.0.15",
         "vue-tsc": "^2.0.29",
         "@vue/language-server": "^2.0.29",
         "vite": "^5.3.5",
