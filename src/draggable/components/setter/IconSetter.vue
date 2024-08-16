@@ -37,13 +37,9 @@ const props = withDefaults(defineProps<IconSetterProps>(), {
 });
 
 // 定义 State 类型
-interface IconSetterState extends SetterState<ComponentParam> {
+interface IconSetterState extends SetterState<Component> {
     /** 显示选择图标对话框 */
     showSelectIcon: boolean;
-    /** 选择的图标组件 */
-    iconComponent?: any;
-    /** 选择的图标组件属性 */
-    iconProps?: any;
 }
 
 // state 属性
@@ -51,7 +47,7 @@ const state = reactive<IconSetterState>({
     ...getDefState(),
     showSelectIcon: false,
 });
-state.value = getValue<ComponentParam>(props, state, toObj);
+state.value = getValue<Component>(props, state, toObj);
 // 内部数据
 // const data = {};
 // 选择的图标组件
@@ -84,28 +80,25 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
         type: iconInfo.componentName,
         props: { ...iconProps },
     });
+    // 处理 props
+    if (!componentParam.props) componentParam.props = {};
     if (iconInfo.componentName === "FontAwesomeIcon" && componentParam.props) {
         componentParam.props.icon = [iconInfo.icon['prefix'], iconInfo.icon['iconName']];
     }
-    if (!componentParam.props) componentParam.props = {};
+    // 处理 style
     if (!componentParam.props.style) componentParam.props.style = {};
     componentParam.props.style['margin-right'] = '2px';
+    // 加载组件
     const componentManage = props.designerState.designerEngine.componentManage;
     componentManage.loadAsyncComponent([componentParam.type]).finally(() => {
         const cmp = markRaw(createComponentParam(componentParam, componentManage));
-        cmp[configRawValueName] = componentParam;
-        state.value = componentParam;
-        state.iconComponent = cmp;
-        // state.iconProps = markRaw(iconProps);
-        // console.log(cmp, state.value);
+        state.value = cmp;
         applyValue(props, state, instance?.proxy, cmp);
     });
 }
 
 function clearValue() {
     state.value = undefined;
-    state.iconComponent = undefined;
-    state.iconProps = undefined;
     applyValue(props, state, setter, undefined);
 }
 </script>
@@ -120,8 +113,8 @@ function clearValue() {
             :modelValue="inputValue"
             @clear="clearValue"
         >
-            <template #prefix v-if="inputValue && state.iconComponent">
-                <component :is="state.iconComponent"/>
+            <template #prefix v-if="state.value">
+                <component :is="state.value"/>
             </template>
             <template #suffix>
                 <FontAwesomeIcon

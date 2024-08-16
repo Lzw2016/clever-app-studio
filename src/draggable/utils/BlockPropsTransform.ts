@@ -1,5 +1,5 @@
 import lodash from "lodash";
-import { createVNode, Fragment, withModifiers } from "vue";
+import { createVNode, Fragment, markRaw, withModifiers } from "vue";
 import { isArray, isFun, isObj, isStr, noValue } from "@/utils/Typeof";
 import { AsyncFunction } from "@/utils/UseType";
 import { calcExpression } from "@/utils/Expression";
@@ -33,9 +33,12 @@ function createComponentParam(param: ComponentParam, componentManage: ComponentM
         component = componentManage.getComponent(component)
     }
     if (!component) throw new Error(`组件未注册，组件：${param.type}`);
-    const vnode = createVNode(component, param.props, param.children);
-    if (!param.isFunction) return vnode;
-    return () => vnode;
+    let cmp: any = createVNode(component, param.props, param.children);
+    if (param.isFunction) {
+        cmp = () => cmp;
+    }
+    cmp[configRawValueName] = param;
+    return cmp;
 }
 
 /**
@@ -92,8 +95,7 @@ function propsPreTransform(props: DesignBlock['props'], componentManage: Compone
         // 组件类型参数
         const componentParam = value as ComponentParam;
         if (componentParam.__component_param) {
-            const component = createComponentParam(componentParam, componentManage);
-            component[configRawValueName] = value;
+            const component = markRaw(createComponentParam(componentParam, componentManage));
             props[name] = component;
             continue;
         }
