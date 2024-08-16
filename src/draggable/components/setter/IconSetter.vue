@@ -114,7 +114,7 @@ function clearValue() {
             @clear="clearValue"
         >
             <template #prefix v-if="state.value">
-                <component :is="state.value"/>
+                <component :is="state.value" width="18" height="18" style="font-size: 16px; width: 18px; height: 18px;"/>
             </template>
             <template #suffix>
                 <FontAwesomeIcon
@@ -148,6 +148,10 @@ function clearValue() {
     margin: 0 0 0 8px;
 }
 
+.icons-button {
+
+}
+
 .icons-button:hover {
     color: #666;
 }
@@ -160,5 +164,15 @@ function clearValue() {
 
 .icon-setter :deep(.tiny-input .tiny-input__suffix) {
     background-color: #fff;
+    height: 22px;
+}
+
+.icon-setter :deep(.tiny-input .tiny-input__prefix svg.tabler-icon) {
+    color: #3b4549;
+    fill: none;
+}
+
+.icon-setter :deep(.tiny-input .tiny-input__prefix svg.tabler-icon[class$="-filled"]) {
+    fill: currentcolor;
 }
 </style>
