@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { Component } from "vue";
-import { computed, isVNode, markRaw, reactive, ref } from "vue";
+import { Component, computed, getCurrentInstance, isVNode, markRaw, reactive, ref } from "vue";
 import { Input } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -15,6 +14,9 @@ import SelectIcon, { IconInfo } from "@/components/SelectIcon.vue";
 defineOptions({
     name: 'IconSetter',
 });
+
+// 当前组件对象
+const instance = getCurrentInstance();
 
 // 定义 Props 类型
 interface IconSetterProps extends SetterProps {
@@ -67,7 +69,7 @@ watchNodes(props, state, toObj);
 
 // 定义组件公开内容
 defineExpose<SetterExpose>({
-    ...getSetterExpose(props, state, setter.value, toObj),
+    ...getSetterExpose(props, state, instance?.proxy, toObj),
 });
 
 function selectedIcon(component: Component, iconProps: Record<string, any>, iconInfo: IconInfo) {
@@ -88,7 +90,7 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
         const cmp = markRaw(createComponentParam(componentParam, componentManage));
         cmp[configRawValueName] = componentParam;
         state.value = componentParam;
-        applyValue(props, state, setter, cmp);
+        applyValue(props, state, instance?.proxy, cmp);
     });
 }
 </script>

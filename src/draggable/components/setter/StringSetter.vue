@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { getCurrentInstance, reactive, ref } from "vue";
 import { Input } from "@opentiny/vue";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toStr, watchNodes } from "@/draggable/utils/SetterUtils";
@@ -8,6 +8,9 @@ import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toSt
 defineOptions({
     name: 'StringSetter',
 });
+
+// 当前组件对象
+const instance = getCurrentInstance();
 
 // 定义 Props 类型
 interface StringSetterProps extends SetterProps {
@@ -36,17 +39,17 @@ watchNodes(props, state, toStr);
 
 // 定义组件公开内容
 defineExpose<SetterExpose>({
-    ...getSetterExpose(props, state, setter.value, toStr),
+    ...getSetterExpose(props, state, instance?.proxy, toStr),
 });
 </script>
 
 <template>
     <Input
+        ref="setter"
         :clearable="true"
         v-bind="inputProps"
-        ref="setter"
         v-model="state.value"
-        @change="value => applyValue(props, state, setter, value)"
+        @change="value => applyValue(props, state, instance?.proxy, value)"
     />
 </template>
 

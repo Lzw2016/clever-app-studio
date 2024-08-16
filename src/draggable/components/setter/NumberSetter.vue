@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ComponentPublicInstance, reactive, ref } from "vue";
+import { ComponentPublicInstance, getCurrentInstance, reactive, ref } from "vue";
 import { Numeric } from "@opentiny/vue";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toNumber, watchNodes } from "@/draggable/utils/SetterUtils";
@@ -8,6 +8,9 @@ import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toNu
 defineOptions({
     name: 'NumberSetter',
 });
+
+// 当前组件对象
+const instance = getCurrentInstance();
 
 // 定义 Props 类型
 interface NumberSetterProps extends SetterProps {
@@ -36,20 +39,20 @@ watchNodes(props, state, toNumber);
 
 // 定义组件公开内容
 defineExpose<SetterExpose>({
-    ...getSetterExpose(props, state, setter.value, toNumber),
+    ...getSetterExpose(props, state, instance?.proxy, toNumber),
 });
 </script>
 
 <template>
     <Numeric
+        ref="setter"
         class="number-setter"
         :clearable="true"
         :allowEmpty="true"
         controlsPosition="right"
         v-bind="inputProps"
-        ref="setter"
         v-model="state.value"
-        @change="value => applyValue(props, state, setter, value)"
+        @change="value => applyValue(props, state, instance?.proxy, value)"
     />
 </template>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { getCurrentInstance, reactive, ref } from "vue";
 import { Input, Modal, Tree } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
@@ -12,6 +12,9 @@ import { BindTreeNode, getBindTreeNode, getVModelTreeNode } from "@/draggable/ut
 defineOptions({
     name: 'BindSetter',
 });
+
+// 当前组件对象
+const instance = getCurrentInstance();
 
 // 定义 Props 类型
 interface BindSetterProps extends SetterProps {
@@ -83,15 +86,15 @@ function selectBindNode(data: BindTreeNode) {
 function valueChange(value: any) {
     if (noValue(value)) value = "";
     if (props.containBraces) {
-        applyValue(props, state, setter, `{{ ${value} }}`);
+        applyValue(props, state, instance?.proxy, `{{ ${value} }}`);
     } else {
-        applyValue(props, state, setter, value);
+        applyValue(props, state, instance?.proxy, value);
     }
 }
 
 // 定义组件公开内容
 defineExpose<SetterExpose>({
-    ...getSetterExpose(props, state, setter.value, valueTransform),
+    ...getSetterExpose(props, state, instance?.proxy, valueTransform),
 });
 </script>
 

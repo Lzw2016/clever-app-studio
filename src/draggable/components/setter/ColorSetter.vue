@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ComponentPublicInstance, reactive, ref } from "vue";
+import { ComponentPublicInstance, getCurrentInstance, reactive, ref } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
@@ -9,6 +9,9 @@ import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toSt
 defineOptions({
     name: 'ColorSetter',
 });
+
+// 当前组件对象
+const instance = getCurrentInstance();
 
 // 定义 Props 类型
 interface ColorSetterProps extends SetterProps {
@@ -37,24 +40,25 @@ watchNodes(props, state, toStr);
 
 function clearValue() {
     state.value = undefined;
-    applyValue(props, state, setter, undefined);
+    applyValue(props, state, instance?.proxy, undefined);
 }
 
 // 定义组件公开内容
 defineExpose<SetterExpose>({
-    ...getSetterExpose(props, state, setter.value, toStr),
+    ...getSetterExpose(props, state, instance?.proxy, toStr),
 });
 </script>
 
 <template>
-    <div ref="setter" class="flex-row-container">
+    <div class="flex-row-container">
         <input
+            ref="setter"
             class="color-input"
             type="color"
             :value="state.value ?? '#000000'"
             @input="e => state.value = e.target?.['value']"
             v-bind="inputProps"
-            @change="event => applyValue(props, state, setter, event.target?.['value'])"
+            @change="event => applyValue(props, state, instance?.proxy, event.target?.['value'])"
         />
         <span style="margin-left: 8px;">{{ state.value }}</span>
         <FontAwesomeIcon

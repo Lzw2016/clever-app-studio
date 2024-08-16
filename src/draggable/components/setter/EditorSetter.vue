@@ -25,7 +25,7 @@ interface EditorSetterProps extends SetterProps {
     /** 对话框标题 */
     title?: string;
     /** 自定义“渲染节点属性值转换成编辑器字符串代码”逻辑 */
-    valueTransform?: (value: any) => string;
+    valueTransform?: (value: any) => string | undefined;
     /** 把编辑器代码字符串转换成渲染节点属性值 */
     convertValue?: (value: string) => any;
     /** 限制输入的 json-schema 验证 */
