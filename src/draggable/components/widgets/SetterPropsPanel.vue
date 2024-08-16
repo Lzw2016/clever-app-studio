@@ -364,7 +364,7 @@ defineExpose<PropsPanelExpose>({
                                 >
                                 <Braces stroke-width="1.8" style="width: 16px; height: 16px;"/>
                             </span>
-                                <span v-else class="setter-button-placeholder"/>
+                                <span v-else class="flex-item-fixed setter-button-placeholder"/>
                             </div>
                         </FormItem>
                         <component
@@ -439,7 +439,7 @@ defineExpose<PropsPanelExpose>({
 
 .setter-button-placeholder {
     margin-left: 4px;
-    width: 24px;
+    width: 16px;
     height: 24px;
     padding: 0 4px;
 }

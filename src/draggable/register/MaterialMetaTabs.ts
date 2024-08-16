@@ -2,34 +2,34 @@ import { MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 
 /** 默认的物料信息 */
 const materialMetaTabs: Array<MaterialMetaTab> = [
-    // {
-    //     title: "常用组件",
-    //     groups: [
-    //         {
-    //             title: "表格",
-    //             types: [
-    //                 "Button",
-    //             ],
-    //         },
-    //     ],
-    // },
-    // {
-    //     title: "业务组件",
-    //     groups: [
-    //         {
-    //             title: "表格",
-    //             types: [
-    //                 "Button",
-    //             ],
-    //         },
-    //         {
-    //             title: "表单",
-    //             types: [
-    //                 "Button",
-    //             ],
-    //         },
-    //     ],
-    // },
+    {
+        title: "常用组件",
+        groups: [
+            {
+                title: "表格",
+                types: [
+                    "Button",
+                ],
+            },
+        ],
+    },
+    {
+        title: "业务组件",
+        groups: [
+            {
+                title: "表格",
+                types: [
+                    "Button",
+                ],
+            },
+            {
+                title: "表单",
+                types: [
+                    "Button",
+                ],
+            },
+        ],
+    },
     {
         title: "原子组件",
         groups: [

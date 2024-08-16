@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Component, computed, getCurrentInstance, isVNode, markRaw, reactive, ref } from "vue";
+import type { Component } from "vue";
+import { computed, getCurrentInstance, isVNode, markRaw, reactive, ref } from "vue";
 import { Input } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -39,6 +40,10 @@ const props = withDefaults(defineProps<IconSetterProps>(), {
 interface IconSetterState extends SetterState<ComponentParam> {
     /** 显示选择图标对话框 */
     showSelectIcon: boolean;
+    /** 选择的图标组件 */
+    iconComponent?: any;
+    /** 选择的图标组件属性 */
+    iconProps?: any;
 }
 
 // state 属性
@@ -90,8 +95,18 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
         const cmp = markRaw(createComponentParam(componentParam, componentManage));
         cmp[configRawValueName] = componentParam;
         state.value = componentParam;
+        state.iconComponent = cmp;
+        // state.iconProps = markRaw(iconProps);
+        // console.log(cmp, state.value);
         applyValue(props, state, instance?.proxy, cmp);
     });
+}
+
+function clearValue() {
+    state.value = undefined;
+    state.iconComponent = undefined;
+    state.iconProps = undefined;
+    applyValue(props, state, setter, undefined);
 }
 </script>
 
@@ -103,20 +118,17 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
             v-bind="inputProps"
             ref="setter"
             :modelValue="inputValue"
-            @clear="() => {
-                state.value = undefined;
-                applyValue(props, state, setter, state.value);
-            }"
+            @clear="clearValue"
         >
+            <template #prefix v-if="inputValue && state.iconComponent">
+                <component :is="state.iconComponent"/>
+            </template>
             <template #suffix>
                 <FontAwesomeIcon
                     v-if="inputValue"
                     class="icons-button"
                     :icon="faXmark"
-                    @click="() => {
-                        state.value = undefined;
-                        applyValue(props, state, setter, undefined);
-                    }"
+                    @click="clearValue"
                 />
                 <FontAwesomeIcon
                     class="icons-button"

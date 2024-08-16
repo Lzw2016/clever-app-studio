@@ -30,6 +30,7 @@ function registerComponent(componentManage: ComponentManage) {
     componentManage.registerAsyncComponent("GoogleIcon", () => import("@/components/GoogleIcon.vue").then(module => module.default));
     // 注册自定义原子组件
     componentManage.registerAsyncComponent("Text", () => import("@/components/Text.vue").then(module => module.default));
+    componentManage.registerAsyncComponent("Icon", () => import("@/components/Icon.vue").then(module => module.default));
     // opentiny 组件注册
     // "CascaderPanel","DropTimes","Link","Popeditor","PopUpload","CheckboxButton","RadioButton", "ColorSelectPanel",
     const openTinyTypes: Record<string, string> = {
