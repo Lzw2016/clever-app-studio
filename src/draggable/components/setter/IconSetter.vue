@@ -4,12 +4,12 @@ import { computed, getCurrentInstance, isVNode, markRaw, reactive, ref } from "v
 import { Input } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
+import SelectIcon, { IconInfo } from "@/components/SelectIcon.vue";
 import { configRawValueName } from "@/draggable/Constant";
 import { ComponentParam } from "@/draggable/types/Base";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 import { createComponentParam } from "@/draggable/utils/BlockPropsTransform";
 import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toObj, watchNodes } from "@/draggable/utils/SetterUtils";
-import SelectIcon, { IconInfo } from "@/components/SelectIcon.vue";
 
 // 定义组件选项
 defineOptions({
