@@ -112,7 +112,7 @@ interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
 /** 设置器分组 */
 interface SetterGroup {
     /** 分组标题 */
-    title: "常用" | "风格" | "其它" | string;
+    title: "常用" | "风格" | "其它" | "html原生属性" | string;
     /** 是否展开状态(默认为true) */
     expand?: boolean;
     /** 设置器集合 */

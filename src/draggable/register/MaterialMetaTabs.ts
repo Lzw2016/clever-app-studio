@@ -46,9 +46,14 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
                 ],
             },
             {
-                title: "容器",
+                title: "容器(布局)",
                 types: [
                     "Layout", "Container", "Tabs", "Split", // "Form",
+                ],
+            },
+            {
+                title: "容器(功能)",
+                types: [
                     "Badge", "Watermark", "PopConfirm", "Popover", "Skeleton", "Tooltip",
                 ],
             },

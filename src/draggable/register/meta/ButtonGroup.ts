@@ -31,8 +31,9 @@ export default defineComponentMeta({
                     title: "常用",
                     items: [
                         {
-                            cmp: "JsonSetter",
+                            cmp: "EditorSetter",
                             cmpProps: {
+                                title: "配置按钮组",
                                 jsonSchema: buttonGroupData,
                             },
                             label: "配置按钮",
@@ -59,7 +60,6 @@ export default defineComponentMeta({
                             cmp: "BoolSetter",
                             label: "是否禁用",
                             propsName: "disabled",
-                            recalcAuxToolPosition: true,
                         },
                         // {
                         //     cmp: "NumberSetter",

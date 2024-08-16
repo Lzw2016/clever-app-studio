@@ -293,7 +293,7 @@ export default defineComponentMeta({
                         },
                         {
                             cmp: "StringSetter",
-                            label: "tabindex属性",
+                            label: "tabindex",
                             labelTips: "原生属性，输入框的 tabindex",
                             propsName: "tabindex",
                         },

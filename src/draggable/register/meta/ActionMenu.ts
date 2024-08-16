@@ -1,6 +1,7 @@
 import { createVNode } from "vue";
 import { VarType } from "@/draggable/types/Base";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
+import { actionMenuOptions } from "@/draggable/register/JsonSchema";
 import ActionMenuSvg from "@/assets/images/action-menu.svg?component";
 
 export default defineComponentMeta({
@@ -41,13 +42,16 @@ export default defineComponentMeta({
                 {
                     title: "常用",
                     items: [
-                        // TODO js对象输入框
-                        // {
-                        //     cmp: "",
-                        //     label: "按钮组数据",
-                        //     propsName: "options",
-                        //     recalcAuxToolPosition: true,
-                        // },
+                        {
+                            cmp: "EditorSetter",
+                            cmpProps: {
+                                title: "配置动作菜单",
+                                jsonSchema: actionMenuOptions,
+                            },
+                            label: "配置菜单",
+                            propsName: "options",
+                            recalcAuxToolPosition: true,
+                        },
                         {
                             cmp: "StringSetter",
                             label: "文本字段",
@@ -141,7 +145,7 @@ export default defineComponentMeta({
                             title: "点击菜单项",
                             name: "itemClick",
                             description: "监听菜单项的点击事件",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/action-menu#events",
+                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/action-menu",
                             params: [
                                 {
                                     name: "data",
@@ -155,7 +159,7 @@ export default defineComponentMeta({
                             title: "点击下拉按钮",
                             name: "moreClick",
                             description: "监听下拉按钮的点击事件",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/action-menu#events",
+                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/action-menu",
                             params: [],
                             return: VarType.Void,
                         },
@@ -163,7 +167,7 @@ export default defineComponentMeta({
                             title: "下拉菜单显示状态变化",
                             name: "visibleChange",
                             description: "监听下拉弹框的显示或隐藏状态变化",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/action-menu#events",
+                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/action-menu",
                             params: [],
                             return: VarType.Void,
                         },

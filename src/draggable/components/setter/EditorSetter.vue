@@ -14,38 +14,60 @@ import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, json
 
 // 定义组件选项
 defineOptions({
-    name: 'JsonSetter',
+    name: 'EditorSetter',
 });
 
 // 当前组件对象
 const instance = getCurrentInstance();
 
 // 定义 Props 类型
-interface JsonSetterProps extends SetterProps {
+interface EditorSetterProps extends SetterProps {
+    /** 对话框标题 */
+    title?: string;
+    /** 自定义“渲染节点属性值转换成编辑器字符串代码”逻辑 */
+    valueTransform?: (value: any) => string;
+    /** 把编辑器代码字符串转换成渲染节点属性值 */
+    convertValue?: (value: string) => any;
     /** 限制输入的 json-schema 验证 */
     jsonSchema?: JSONSchema7;
-    /** 应用属性值之前对属性值做转换 */
-    convertValue?: (value: any) => any;
+    /** 启用 json-schema 验证 */
+    jsonSchemaValidate?: boolean;
 }
 
 // 读取组件 props 属性
-const props = withDefaults(defineProps<JsonSetterProps>(), {});
+const props = withDefaults(defineProps<EditorSetterProps>(), {
+    title: "编辑对象属性值",
+    valueTransform: jsonStringify,
+    convertValue: value => {
+        let obj: any;
+        if (value) {
+            try {
+                obj = JSON.parse(value);
+            } catch (err) {
+                layer.msg("json语法错误", { time: 1500 });
+                return false;
+            }
+        }
+        return obj;
+    },
+    jsonSchemaValidate: true,
+});
 
 // 定义 State 类型
-interface JsonSetterState extends SetterState<string> {
+interface EditorSetterState extends SetterState<string> {
     /** 是否显示对话框 */
     showModal: boolean;
 }
 
 // state 属性
-const state = reactive<JsonSetterState>({
+const state = reactive<EditorSetterState>({
     showModal: false,
     ...getDefState(),
 });
-state.value = getValue<string>(props, state, jsonStringify);
+state.value = getValue<string>(props, state, props.valueTransform);
 // 内部数据
 const data = {
-    styleHasErr: false,
+    hasErr: false,
     monacoEditor: undefined as (editor.IStandaloneCodeEditor | undefined),
     setTimeoutClearId: undefined as any,
 };
@@ -54,7 +76,7 @@ const setter = ref<InstanceType<typeof MonacoEditor> | undefined>();
 // 设置器内部组件属性
 const inputProps = getInputProps(state);
 // 监听 nodes 变化
-watchNodes(props, state, jsonStringify);
+watchNodes(props, state, props.valueTransform);
 
 const inputValue = computed<string>(() => {
     const value = lodash.trim(state.value)
@@ -65,9 +87,11 @@ const inputValue = computed<string>(() => {
 });
 
 function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
+    // 配置 json-schema 验证规则
     if (props.jsonSchema) {
         monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-            validate: true,
+            validate: props.jsonSchemaValidate,
+            schemaValidation: "error",
             schemas: [
                 {
                     uri: "check-schema.json",
@@ -77,6 +101,7 @@ function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
             ],
         });
     }
+    // 初始化 editor
     data.monacoEditor = editor;
     editor.addAction({
         id: 'applyValue',
@@ -90,7 +115,7 @@ function initEditor(editor: editor.IStandaloneCodeEditor, monaco: MonacoType) {
 }
 
 function onValidate(markers: editor.IMarker[]) {
-    data.styleHasErr = markers.length > 0;
+    data.hasErr = markers.length > 0;
 }
 
 function showModal() {
@@ -102,18 +127,21 @@ function showModal() {
 }
 
 function setValue(): boolean {
-    let obj: any;
-    const value = lodash.trim(state.value);
-    if (value) {
+    if (data.hasErr) {
+        layer.msg("存在语法错误", { time: 1500 });
+        return false;
+    }
+    let value = lodash.trim(state.value);
+    if (isFun(props.convertValue)) {
         try {
-            obj = JSON.parse(value);
+            value = props.convertValue(value);
         } catch (err) {
-            layer.msg("json语法错误", { time: 1500 });
+            layer.msg("数据转换错误", { time: 1500 });
+            console.warn("数据转换错误", err);
             return false;
         }
     }
-    if (isFun(props.convertValue)) obj = props.convertValue(obj);
-    applyValue(props, state, instance?.proxy, obj);
+    applyValue(props, state, instance?.proxy, value);
     return true;
 }
 
@@ -124,7 +152,7 @@ function confirmValue() {
 
 // 定义组件公开内容
 defineExpose<SetterExpose>({
-    ...getSetterExpose(props, state, setter.value, jsonStringify),
+    ...getSetterExpose(props, state, instance?.proxy, props.valueTransform),
 });
 </script>
 
@@ -137,13 +165,13 @@ defineExpose<SetterExpose>({
             :modelValue="inputValue"
         >
             <template #suffix>
-                <FontAwesomeIcon class="icons-button" title="编辑对象值" :icon="faCode" @click="showModal"/>
+                <FontAwesomeIcon class="icons-button" title="配置属性值" :icon="faCode" @click="showModal"/>
             </template>
         </Input>
         <Modal
             v-if="state.showModal"
             v-model="state.showModal"
-            title="编辑对象属性值"
+            :title="props.title"
             width="35%"
             height="65%"
             min-height="350px"
@@ -153,6 +181,7 @@ defineExpose<SetterExpose>({
             :show-footer="true"
         >
             <MonacoEditor
+                ref="setter"
                 style="border: 1px solid #c2c2c2;"
                 width="100%"
                 height="100%"
