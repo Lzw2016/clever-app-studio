@@ -381,9 +381,9 @@ loadIcons().finally();
                         <FontAwesomeIcon :icon="faMagnifyingGlass"/>
                     </template>
                 </Input>
-                <div style="margin-left: 12px;">filled/outline</div>
-                <div style="margin-left: 12px;">Category Group</div>
-                <div v-if="officialWeb" style="margin-left: 12px;">
+                <div style="margin-left: 12px; display: none;">filled/outline</div>
+                <div style="margin-left: 12px; display: none;">Category Group</div>
+                <div v-if="officialWeb" style="margin-left: 12px; display: none;">
                     <a :href="officialWeb" target="_blank">官网</a>
                 </div>
             </div>

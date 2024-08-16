@@ -110,14 +110,6 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
         >
             <template #suffix>
                 <FontAwesomeIcon
-                    class="icons-button"
-                    :class="{
-                        'icons-button-margin': inputValue,
-                    }"
-                    :icon="faMagnifyingGlass"
-                    @click="() => state.showSelectIcon = true"
-                />
-                <FontAwesomeIcon
                     v-if="inputValue"
                     class="icons-button"
                     :icon="faXmark"
@@ -125,6 +117,14 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
                         state.value = undefined;
                         applyValue(props, state, setter, undefined);
                     }"
+                />
+                <FontAwesomeIcon
+                    class="icons-button"
+                    :class="{
+                        'icons-button-margin': inputValue,
+                    }"
+                    :icon="faMagnifyingGlass"
+                    @click="() => state.showSelectIcon = true"
                 />
             </template>
         </Input>
@@ -140,7 +140,7 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
 
 <style scoped>
 .icons-button-margin {
-    margin: 0 8px 0 4px;
+    margin: 0 0 0 8px;
 }
 
 .icons-button:hover {
