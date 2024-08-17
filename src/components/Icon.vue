@@ -73,7 +73,6 @@ function createIconComponent(useSvg: boolean, iconType?: string, iconProps?: Rec
     state.loading = true;
     componentManage.loadAsyncComponent([iconType]).finally(() => {
         const componentParam: ComponentParam = {
-            __component_param: true,
             type: iconType,
             props: iconProps,
         };

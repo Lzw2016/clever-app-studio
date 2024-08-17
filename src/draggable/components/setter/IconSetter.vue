@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import type { Component } from "vue";
-import { computed, getCurrentInstance, isVNode, markRaw, reactive, ref } from "vue";
+import { computed, getCurrentInstance, markRaw, reactive, ref, watch } from "vue";
 import { Input } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { isFun } from "@/utils/Typeof";
 import SelectIcon, { IconInfo } from "@/components/SelectIcon.vue";
-import { configRawValueName } from "@/draggable/Constant";
+import { iconDisplayName } from "@/draggable/Constant";
 import { ComponentParam } from "@/draggable/types/Base";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 import { createComponentParam } from "@/draggable/utils/BlockPropsTransform";
-import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toObj, watchNodes } from "@/draggable/utils/SetterUtils";
+import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toComponentParam, watchNodes } from "@/draggable/utils/SetterUtils";
 
 // 定义组件选项
 defineOptions({
@@ -27,6 +28,10 @@ interface IconSetterProps extends SetterProps {
     disableGoogleIcon?: boolean;
     /** 不使用 tabler 图标  */
     disableTabler?: boolean;
+    /** 自定义“渲染节点属性值转换成 ComponentParam 值”逻辑 */
+    valueTransform?: (value: any) => ComponentParam | undefined;
+    /** 把 ComponentParam 值转换成渲染节点属性值 */
+    convertValue?: (value: ComponentParam) => ComponentParam;
 }
 
 // 读取组件 props 属性
@@ -34,12 +39,15 @@ const props = withDefaults(defineProps<IconSetterProps>(), {
     disableFontawesome: globalConfig.useExternalLib.fontawesome !== true,
     disableGoogleIcon: globalConfig.useExternalLib.googleIcon !== true,
     disableTabler: globalConfig.useExternalLib.tablerIcon !== true,
+    valueTransform: toComponentParam,
 });
 
 // 定义 State 类型
-interface IconSetterState extends SetterState<Component> {
+interface IconSetterState extends SetterState<ComponentParam> {
     /** 显示选择图标对话框 */
     showSelectIcon: boolean;
+    /** 图标组件 */
+    iconComponent?: Component;
 }
 
 // state 属性
@@ -47,39 +55,47 @@ const state = reactive<IconSetterState>({
     ...getDefState(),
     showSelectIcon: false,
 });
-state.value = getValue<Component>(props, state, toObj);
+state.value = getValue<ComponentParam>(props, state, props.valueTransform);
 // 内部数据
 // const data = {};
 // 选择的图标组件
 const inputValue = computed(() => {
-    let valueObj: any = state.value;
-    if (!valueObj) return;
-    if (valueObj[configRawValueName]) {
-        valueObj = valueObj[configRawValueName];
-    }
-    if (isVNode(valueObj)) return;
-    if (valueObj.__icon_display_name) return valueObj.__icon_display_name;
-    return valueObj.type;
+    const componentParam = state.value;
+    return componentParam?.[iconDisplayName] ?? componentParam?.type;
 });
+// 图标组件对象
+watch(
+    () => state.value,
+    value => {
+        if (value) {
+            state.iconComponent = createComponentParam(value, props.designerState.designerEngine.componentManage);
+        } else {
+            state.iconComponent = undefined;
+        }
+    },
+    {
+        immediate: true,
+    },
+);
 // 设置器内部组件引用
 const setter = ref<InstanceType<typeof Input> | undefined>();
 // 设置器内部组件属性
 const inputProps = getInputProps(state);
 // 监听 nodes 变化
-watchNodes(props, state, toObj);
+watchNodes(props, state, props.valueTransform);
 
 // 定义组件公开内容
 defineExpose<SetterExpose>({
-    ...getSetterExpose(props, state, instance?.proxy, toObj),
+    ...getSetterExpose(props, state, instance?.proxy, props.valueTransform),
 });
 
 function selectedIcon(component: Component, iconProps: Record<string, any>, iconInfo: IconInfo) {
-    const componentParam: ComponentParam = markRaw({
-        __component_param: true,
-        __icon_display_name: iconInfo.displayName,
+    let componentParam: ComponentParam = {
         type: iconInfo.componentName,
         props: { ...iconProps },
-    });
+        __component_param: true,
+        [iconDisplayName]: iconInfo.displayName,
+    };
     // 处理 props
     if (!componentParam.props) componentParam.props = {};
     if (iconInfo.componentName === "FontAwesomeIcon" && componentParam.props) {
@@ -88,11 +104,19 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
     // 处理 style
     if (!componentParam.props.style) componentParam.props.style = {};
     componentParam.props.style['margin-right'] = '2px';
+    if (isFun(props.convertValue)) {
+        try {
+            componentParam = props.convertValue(componentParam);
+        } catch (err) {
+            console.warn("数据转换错误", err);
+            return;
+        }
+    }
     // 加载组件
     const componentManage = props.designerState.designerEngine.componentManage;
-    componentManage.loadAsyncComponent([componentParam.type]).finally(() => {
+    props.designerState.designerEngine.componentManage.loadAsyncComponent([componentParam.type]).finally(() => {
+        state.value = markRaw(componentParam);
         const cmp = createComponentParam(componentParam, componentManage);
-        state.value = cmp;
         applyValue(props, state, instance?.proxy, cmp);
     });
 }
@@ -113,8 +137,8 @@ function clearValue() {
             :modelValue="inputValue"
             @clear="clearValue"
         >
-            <template #prefix v-if="state.value">
-                <component :is="state.value" width="18" height="18" style="font-size: 16px; width: 18px; height: 18px;"/>
+            <template #prefix v-if="state.iconComponent">
+                <component :is="state.iconComponent" width="18" height="18" style="font-size: 16px; width: 18px; height: 18px;"/>
             </template>
             <template #suffix>
                 <FontAwesomeIcon

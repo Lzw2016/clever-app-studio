@@ -1,5 +1,6 @@
 import { createVNode } from "vue";
 import { noValue } from "@/utils/Typeof";
+import { childSlotName } from "@/draggable/Constant";
 import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 import HrSvg from "@/assets/images/hr.svg?component";
@@ -36,7 +37,7 @@ export default defineComponentMeta({
                             applyPropsValue: (props, value, node, setter) => {
                                 const blockInstance = setter.blockInstance;
                                 if (value) {
-                                    blockInstance.opsForDesign.setPlaceholder(node.id, "default");
+                                    blockInstance.opsForDesign.setPlaceholder(node.id, childSlotName);
                                     const item: ComponentSlotsItem = {
                                         type: "Text",
                                         props: {
@@ -45,7 +46,7 @@ export default defineComponentMeta({
                                     };
                                     blockInstance.opsById.appendItemById(node.id, item, { cancelRender: true });
                                 } else {
-                                    blockInstance.opsForDesign.removePlaceholder(node.id, "default");
+                                    blockInstance.opsForDesign.removePlaceholder(node.id, childSlotName);
                                 }
                             },
                         },

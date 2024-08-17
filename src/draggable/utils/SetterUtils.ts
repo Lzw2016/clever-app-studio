@@ -1,6 +1,8 @@
 import lodash from "lodash";
 import { computed, markRaw, ref, useAttrs, watch } from "vue";
 import { isFunction, isStr, noValue } from "@/utils/Typeof";
+import { configRawValueName } from "@/draggable/Constant";
+import { ComponentParam } from "@/draggable/types/Base";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 import { BlockInstance, RuntimeNode } from "@/draggable/types/RuntimeBlock";
@@ -39,6 +41,13 @@ const toNumber: ValueTransform<number> = value => {
         value = undefined;
     }
     return value;
+};
+
+/** setter值转换成ComponentParam */
+const toComponentParam: ValueTransform<ComponentParam> = value => {
+    const componentParam = value?.[configRawValueName];
+    if (componentParam) return markRaw(componentParam);
+    return componentParam;
 };
 
 /** setter值转换成props bind表达式(不包含“{{”和“}}”) */
@@ -268,6 +277,7 @@ export {
     toStr,
     toBool,
     toNumber,
+    toComponentParam,
     toBindExpContent,
     jsonStringify,
     getDefState,

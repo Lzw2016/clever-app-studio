@@ -926,7 +926,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById, BlockDesi
         const node = this.props.allNode[id];
         if (!node?.__designPlaceholder) return;
         delete node.__designPlaceholder[slotName];
-        if (slotName === "default") {
+        if (slotName === childSlotName) {
             this.removeChildrenById(id, { cancelRender: true });
         } else {
             this.removeSlotNode(node, slotName, { cancelRender: true });

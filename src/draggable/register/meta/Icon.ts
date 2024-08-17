@@ -24,9 +24,28 @@ export default defineComponentMeta({
     },
     setter: {
         props: {
-            groups: [],
+            groups: [
+                {
+                    title: "常用",
+                    items: [
+                        // {
+                        //     cmp: "IconSetter",
+                        //     cmpProps: {
+                        //         placeholder: "选择图标",
+                        //         readonly: true,
+                        //     },
+                        //     label: "按钮图标",
+                        //     // propsName: "icon",
+                        //     enableBind: false,
+                        //     recalcAuxToolPosition: true,
+                        // },
+                    ],
+                },
+            ],
         },
         events: {
+            includeInnerEvents: true,
+            excludeInnerEvents: ["表单事件"],
             groups: [],
         },
         style: {},

@@ -11,6 +11,9 @@ const innerDirectiveNames = {
 /** DesignNode/DesignBlock配置的原始值 */
 const configRawValueName = "__config_raw_value";
 
+/** 图标显示名称的属性名 */
+const iconDisplayName = "__icon_display_name";
+
 /** 逻辑上的空node id */
 const emptyNodeId = "__empty_node_id";
 
@@ -289,6 +292,7 @@ const innerEvents: Array<EventGroup> = [
 export {
     innerDirectiveNames,
     configRawValueName,
+    iconDisplayName,
     emptyNodeId,
     childSlotName,
     defPlaceholder,

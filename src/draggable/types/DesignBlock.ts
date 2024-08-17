@@ -19,7 +19,12 @@ interface BaseProps {
 /**
  * BaseProps特殊值: 表示有一个组件值的 props
  */
-type PropComponentValue = ComponentParam;
+interface PropComponentValue extends ComponentParam {
+    /** 组件参数对象标识 */
+    __component_param: true;
+
+    [name: string]: any;
+}
 
 /** 组件基础事件 */
 interface BaseEvent {
@@ -263,6 +268,7 @@ type LoadDesignPageMate = (params: RouteParams) => Promise<DesignPageMate | void
 
 export type {
     BaseProps,
+    PropComponentValue,
     BaseEvent,
     BaseDirectives,
     ListenerFunctionConfig,

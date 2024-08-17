@@ -3,10 +3,10 @@ import JSON5 from "json5";
 import { isVNode, markRaw, VNode, VNodeChild } from "vue";
 import { hasValue, isArray, isFun, isObj, isStr, noValue } from "@/utils/Typeof";
 import { childSlotName, configRawValueName } from "@/draggable/Constant";
-import { AnyFunction, ComponentParam } from "@/draggable/types/Base";
+import { AnyFunction } from "@/draggable/types/Base";
 import { RuntimeBlock, RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentMeta, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
-import { ComponentSlotsItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
+import { ComponentSlotsItem, DesignBlock, DesignNode, PropComponentValue } from "@/draggable/types/DesignBlock";
 import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { getComponentIcon } from "@/draggable/utils/ComponentMetaUtils";
 import { formatJavascript } from "@/draggable/utils/CodeFormat";
@@ -41,9 +41,9 @@ function getAllTypes(node: DesignNode, allType?: Set<string>): Array<string> {
             // 组件类型参数
             const value: any = node.props[name];
             if (!value) continue;
-            const componentParam = value as ComponentParam;
-            if (componentParam.__component_param) {
-                allType.add(componentParam.type);
+            const componentValue = value as PropComponentValue;
+            if (componentValue.__component_param) {
+                allType.add(componentValue.type);
             }
         }
     }

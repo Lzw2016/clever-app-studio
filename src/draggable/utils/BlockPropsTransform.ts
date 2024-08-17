@@ -11,7 +11,7 @@ import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { codeToString } from "@/draggable/utils/FunctionUtils";
 import { AnyFunction, ComponentParam, FunctionConfig, FunctionParam, WrapperAnyFunction } from "@/draggable/types/Base";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
-import { BlockWatchItem, DesignBlock, DesignNode } from "@/draggable/types/DesignBlock";
+import { BlockWatchItem, DesignBlock, DesignNode, PropComponentValue } from "@/draggable/types/DesignBlock";
 import { CreateConfig, RenderErrType, RuntimeBlock, RuntimeBlockWatchItem, RuntimeComponentSlotsItem, RuntimeListener, RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { ComponentMeta } from "@/draggable/types/ComponentMeta";
 
@@ -94,9 +94,9 @@ function propsPreTransform(props: DesignBlock['props'], componentManage: Compone
         const value: any = props[name];
         if (!value) continue;
         // 组件类型参数
-        const componentParam = value as ComponentParam;
-        if (componentParam.__component_param) {
-            const component = createComponentParam(componentParam, componentManage);
+        const componentValue = value as PropComponentValue;
+        if (componentValue.__component_param) {
+            const component = createComponentParam(componentValue, componentManage);
             props[name] = component;
             continue;
         }

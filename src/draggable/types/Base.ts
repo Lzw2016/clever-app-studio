@@ -177,8 +177,6 @@ interface FunctionInfo {
 
 /** 组件参数对象(简单的组件参数) */
 interface ComponentParam {
-    /** 组件参数对象标识 */
-    __component_param: true;
     /** 组件类型或html标签 */
     type: HtmlTag | string;
     /** 组件属性 */

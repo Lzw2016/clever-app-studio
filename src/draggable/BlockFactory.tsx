@@ -381,7 +381,7 @@ function doCreateChildVNode(runtimeNode: RuntimeNode, context: Context, globalCo
             const placeholders = runtimeNode.__designPlaceholder;
             if (placeholders) {
                 for (let name in placeholders) {
-                    // if (name === "default") continue;
+                    // if (name === childSlotName) continue;
                     if (slots[name]) continue;
                     const placeholder = placeholders[name];
                     slots[name] = withCtx((slotProps: any) => [createChildVNode(placeholder, { ...newContext, slotProps: slotProps }, globalContext)]);
