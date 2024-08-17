@@ -27,7 +27,7 @@ function createFunction(functionConfig: FunctionConfig): AnyFunction {
 /**
  * 根据 ComponentParam 动态创建vue组件
  */
-function createComponentParam(param: ComponentParam, componentManage: ComponentManage) {
+function createComponentParam(param: ComponentParam, componentManage: ComponentManage, useMarkRaw: boolean = true) {
     let component: any = lodash.trim(param.type);
     if (!isHtmlTag(component)) {
         component = componentManage.getComponent(component)
@@ -38,6 +38,7 @@ function createComponentParam(param: ComponentParam, componentManage: ComponentM
         cmp = () => cmp;
     }
     cmp[configRawValueName] = param;
+    if (useMarkRaw) cmp = markRaw(cmp);
     return cmp;
 }
 
@@ -95,7 +96,7 @@ function propsPreTransform(props: DesignBlock['props'], componentManage: Compone
         // 组件类型参数
         const componentParam = value as ComponentParam;
         if (componentParam.__component_param) {
-            const component = markRaw(createComponentParam(componentParam, componentManage));
+            const component = createComponentParam(componentParam, componentManage);
             props[name] = component;
             continue;
         }

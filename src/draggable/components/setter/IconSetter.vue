@@ -91,7 +91,7 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
     // 加载组件
     const componentManage = props.designerState.designerEngine.componentManage;
     componentManage.loadAsyncComponent([componentParam.type]).finally(() => {
-        const cmp = markRaw(createComponentParam(componentParam, componentManage));
+        const cmp = createComponentParam(componentParam, componentManage);
         state.value = cmp;
         applyValue(props, state, instance?.proxy, cmp);
     });

@@ -11,7 +11,15 @@ export default defineComponentMeta({
     icon: createVNode(IconSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
-            style: {},
+            iconType: "FontAwesomeIcon",
+            iconProps: {
+                size: "lg",
+                fixedWidth: true,
+                icon: [
+                    "far",
+                    "star",
+                ],
+            },
         },
     },
     setter: {
@@ -22,8 +30,7 @@ export default defineComponentMeta({
             groups: [],
         },
         style: {},
-        advanced: {
-        },
+        advanced: {},
     },
     placeholder: {},
     i18n: {},
