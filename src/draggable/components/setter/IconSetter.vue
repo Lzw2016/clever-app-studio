@@ -8,6 +8,7 @@ import { isFun } from "@/utils/Typeof";
 import SelectIcon, { IconInfo } from "@/components/SelectIcon.vue";
 import { iconDisplayName } from "@/draggable/Constant";
 import { ComponentParam } from "@/draggable/types/Base";
+import { PropComponentValue } from "@/draggable/types/DesignBlock";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 import { createComponentParam } from "@/draggable/utils/BlockPropsTransform";
 import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toComponentParam, watchNodes } from "@/draggable/utils/SetterUtils";
@@ -95,7 +96,7 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
         props: { ...iconProps },
         __component_param: true,
         [iconDisplayName]: iconInfo.displayName,
-    };
+    } as PropComponentValue;
     // 处理 props
     if (!componentParam.props) componentParam.props = {};
     if (iconInfo.componentName === "FontAwesomeIcon" && componentParam.props) {
