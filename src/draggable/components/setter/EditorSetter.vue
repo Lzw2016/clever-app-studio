@@ -28,6 +28,10 @@ interface EditorSetterProps extends SetterProps {
     valueTransform?: (value: any) => string | undefined;
     /** 把编辑器代码字符串转换成渲染节点属性值 */
     convertValue?: (value: string) => any;
+    /** 编辑器语言 */
+    language?: string;
+    /** 虚拟文件路径 */
+    virtualFilePath?: string;
     /** 限制输入的 json-schema 验证 */
     jsonSchema?: JSONSchema7;
     /** 启用 json-schema 验证 */
@@ -50,6 +54,8 @@ const props = withDefaults(defineProps<EditorSetterProps>(), {
         }
         return obj;
     },
+    language: "json",
+    virtualFilePath: "virtual-file.json",
     jsonSchemaValidate: true,
 });
 
@@ -188,8 +194,8 @@ defineExpose<SetterExpose>({
                 theme="idea-light"
                 v-bind="inputProps"
                 v-model="state.value"
-                path="test.json"
-                default-language="json"
+                :language="props.language"
+                :path="props.virtualFilePath"
                 :options="{ contextmenu: false }"
                 :onValidate="onValidate"
                 :onMount="initEditor"
