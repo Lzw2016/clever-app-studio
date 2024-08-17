@@ -53,7 +53,7 @@ export default defineComponentMeta({
                                     props.iconProps = {
                                         size: "lg",
                                         fixedWidth: true,
-                                        icon: ["far", "star"],
+                                        icon: ["fas", "star"],
                                         style: {
                                             color: "#3B4549",
                                         },
@@ -166,7 +166,7 @@ export default defineComponentMeta({
                             getPropsValue: props => props.iconProps?.rotation,
                             applyPropsValue: (props, value) => {
                                 if (!props.iconProps) props.iconProps = {};
-                                if (value !== 0) {
+                                if (value) {
                                     props.iconProps.rotation = value;
                                 } else {
                                     delete props.iconProps.rotation;
