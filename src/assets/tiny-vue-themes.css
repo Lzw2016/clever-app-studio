@@ -81,8 +81,7 @@
         --fa-animation-direction: reverse;
     }
 
-    body .fa-pulse,
-    body .fa-spin-pulse {
+    body .fa-pulse, body .fa-spin-pulse {
         animation-name: fa-spin;
         animation-direction: var(--fa-animation-direction, normal);
         animation-duration: var(--fa-animation-duration, 1s);
