@@ -1,5 +1,7 @@
 import { createVNode } from "vue";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
+import { ComponentParam } from "@/draggable/types/Base";
+import { toObj } from "@/draggable/utils/SetterUtils";
 import IconSvg from "@/assets/images/icon.svg?component";
 
 export default defineComponentMeta({
@@ -19,6 +21,9 @@ export default defineComponentMeta({
                     "far",
                     "star",
                 ],
+                style: {
+                    color: "#3B4549",
+                },
             },
         },
     },
@@ -28,17 +33,31 @@ export default defineComponentMeta({
                 {
                     title: "常用",
                     items: [
-                        // {
-                        //     cmp: "IconSetter",
-                        //     cmpProps: {
-                        //         placeholder: "选择图标",
-                        //         readonly: true,
-                        //     },
-                        //     label: "按钮图标",
-                        //     // propsName: "icon",
-                        //     enableBind: false,
-                        //     recalcAuxToolPosition: true,
-                        // },
+                        {
+                            cmp: "IconSetter",
+                            cmpProps: {
+                                placeholder: "选择图标",
+                                readonly: true,
+                                valueTransform: toObj,
+                                convertValue: (value: ComponentParam) => value,
+                            },
+                            label: "按钮图标",
+                            getPropsValue: props => {
+                                if (!props.iconType) return;
+                                const componentParam: ComponentParam = {
+                                    type: props.iconType,
+                                    props: props.iconProps,
+                                };
+                                return componentParam;
+                            },
+                            applyPropsValue: (props, value?: ComponentParam) => {
+                                props.iconType = value?.type;
+                                props.iconProps = value?.props;
+                            },
+                            enableBind: false,
+                            recalcAuxToolPosition: true,
+                            recalcAuxToolPositionDelay: 150,
+                        },
                     ],
                 },
             ],

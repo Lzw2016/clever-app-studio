@@ -242,6 +242,9 @@ body .tiny-button.is-loading .tiny-svg {
     fill: var(--ti-button-text-svg-fill-color);
 }
 
+body .tiny-button svg:not(.tiny-svg) {
+    margin-right: 2px;
+}
 
 /** tooltip文字提示 */
 body .tiny-tooltip {

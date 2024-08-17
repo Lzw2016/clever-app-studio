@@ -66,7 +66,8 @@ interface SetterProps {
     disableReRender?: boolean;
     /** 更新属性后需要重新计算辅助工具的位置 */
     recalcAuxToolPosition?: boolean;
-
+    /** 更新属性后需要重新计算辅助工具的位置的延时时间(默认不延时) */
+    recalcAuxToolPositionDelay?: number;
 }
 
 /** 设置器基本state */
@@ -101,12 +102,14 @@ interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
     getPropsValue?: SetterProps['getPropsValue'];
     /** 默认的属性值 */
     defPropsValue?: SetterProps['defPropsValue'];
-    /** 应用属性值到组件节点 */
+    /** 应用属性值到组件节点(返回 false 表示不需要重新渲染 Block) */
     applyPropsValue?: SetterProps['applyPropsValue'];
     /** 更新属性值后不重新渲染block */
     disableReRender?: SetterProps['disableReRender'];
     /** 更新属性后需要重新计算辅助工具的位置 */
     recalcAuxToolPosition?: SetterProps['recalcAuxToolPosition'];
+    /** 更新属性后需要重新计算辅助工具的位置的延时时间(默认不延时) */
+    recalcAuxToolPositionDelay?: SetterProps['recalcAuxToolPositionDelay'];
 }
 
 /** 设置器分组 */

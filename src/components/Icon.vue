@@ -46,9 +46,9 @@ const state = shallowReactive<IconState>({
 // 内部数据
 const data = {
     iconWrapperStyle: style({
-        display: "inline-block",
-        width: "24px",
-        height: "24px",
+        display: "inline-flex",
+        "align-items": "center",
+        "justify-content": "center",
     }),
 };
 
@@ -85,11 +85,11 @@ defineExpose({});
 </script>
 
 <template>
-    <span v-if="useSvg" v-html="props.svg"/>
+    <span v-if="useSvg" :style="data.iconWrapperStyle" v-html="props.svg"/>
     <span v-else-if="!state.loading && state.iconComponent" :style="data.iconWrapperStyle">
         <component :is="state.iconComponent"/>
     </span>
-    <span v-else :style="data.iconWrapperStyle">
+    <span v-else :style="{...data.iconWrapperStyle, width: '24px', height: '24px'}">
         <FontAwesomeIcon :icon="faStar" :fixed-width="true" size="lg"/>
     </span>
 </template>

@@ -144,6 +144,7 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any
         applyPropsValue,
         disableReRender,
         recalcAuxToolPosition,
+        recalcAuxToolPositionDelay,
     } = props;
     let res = false;
     if (!nodes) return res;
@@ -160,31 +161,39 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any
     if (res) {
         if (props.watchValue) forceUpdatePropsPanel.value++;
         state.multipleValues = false;
-        forceUpdateBlock(designerState, blockInstance, nodes, disableReRender, recalcAuxToolPosition);
+        forceUpdateBlock(designerState, blockInstance, nodes, disableReRender, recalcAuxToolPosition, recalcAuxToolPositionDelay);
     }
     return res;
 }
 
 /**
  * 强制重新渲染 Block 组件
- * @param designerState             设计器状态数据
- * @param blockInstance             block实例对象
- * @param nodes                     当前设置的渲染节点集合
- * @param disableReRender           更新属性值后不重新渲染block
- * @param recalcAuxToolPosition     更新属性后需要重新计算辅助工具的位置
+ * @param designerState                 设计器状态数据
+ * @param blockInstance                 block实例对象
+ * @param nodes                         当前设置的渲染节点集合
+ * @param disableReRender               更新属性值后不重新渲染block
+ * @param recalcAuxToolPosition         更新属性后需要重新计算辅助工具的位置
+ * @param recalcAuxToolPositionDelay    更新属性后需要重新计算辅助工具的位置的延时时间(默认不延时)
  */
-function forceUpdateBlock(designerState: DesignerState, blockInstance: BlockInstance, nodes: Array<RuntimeNode>, disableReRender?: boolean, recalcAuxToolPosition?: boolean) {
+function forceUpdateBlock(designerState: DesignerState, blockInstance: BlockInstance, nodes: Array<RuntimeNode>, disableReRender?: boolean, recalcAuxToolPosition?: boolean, recalcAuxToolPositionDelay?: number) {
     if (!disableReRender) {
         blockInstance.$forceUpdate();
         // console.log("blockInstance $forceUpdate");
         // 重新计算辅助工具的位置(更新属性有可能改变渲染节点的大小和位置)
         if (recalcAuxToolPosition) {
-            blockInstance.$nextTick(() => {
+            const recalcFun = () => {
                 const nodeIds = nodes.map(node => node.id);
                 for (let selection of designerState.selections) {
                     if (selection.nodeId && nodeIds.includes(selection.nodeId)) {
                         selection.recalcAuxToolPosition();
                     }
+                }
+            };
+            blockInstance.$nextTick(() => {
+                if ((recalcAuxToolPositionDelay ?? 0) > 0) {
+                    setTimeout(recalcFun, recalcAuxToolPositionDelay)
+                } else {
+                    recalcFun();
                 }
             }).finally();
         }

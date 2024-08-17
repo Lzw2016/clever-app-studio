@@ -92,10 +92,10 @@ defineExpose<SetterExpose>({
 
 function selectedIcon(component: Component, iconProps: Record<string, any>, iconInfo: IconInfo) {
     let componentParam: ComponentParam = {
-        type: iconInfo.componentName,
-        props: { ...iconProps },
         __component_param: true,
         [iconDisplayName]: iconInfo.displayName,
+        type: iconInfo.componentName,
+        props: { ...iconProps },
     } as PropComponentValue;
     // 处理 props
     if (!componentParam.props) componentParam.props = {};
@@ -103,22 +103,24 @@ function selectedIcon(component: Component, iconProps: Record<string, any>, icon
         componentParam.props.icon = [iconInfo.icon['prefix'], iconInfo.icon['iconName']];
     }
     // 处理 style
-    if (!componentParam.props.style) componentParam.props.style = {};
-    componentParam.props.style['margin-right'] = '2px';
-    if (isFun(props.convertValue)) {
-        try {
-            componentParam = props.convertValue(componentParam);
-        } catch (err) {
-            console.warn("数据转换错误", err);
-            return;
-        }
-    }
+    // if (!componentParam.props.style) componentParam.props.style = {};
+    // componentParam.props.style['margin-right'] = '2px';
     // 加载组件
     const componentManage = props.designerState.designerEngine.componentManage;
     props.designerState.designerEngine.componentManage.loadAsyncComponent([componentParam.type]).finally(() => {
         state.value = markRaw(componentParam);
-        const cmp = createComponentParam(componentParam, componentManage);
-        applyValue(props, state, instance?.proxy, cmp);
+        let value: any;
+        if (isFun(props.convertValue)) {
+            try {
+                value = props.convertValue(componentParam);
+            } catch (err) {
+                console.warn("数据转换错误", err);
+                return;
+            }
+        } else {
+            value = createComponentParam(componentParam, componentManage);
+        }
+        applyValue(props, state, instance?.proxy, value);
     });
 }
 
@@ -139,7 +141,7 @@ function clearValue() {
             @clear="clearValue"
         >
             <template #prefix v-if="state.iconComponent">
-                <component :is="state.iconComponent" width="18" height="18" style="font-size: 16px; width: 18px; height: 18px;"/>
+                <component :is="state.iconComponent" width="18" height="18" style="font-size: 16px;width: 18px;height: 18px;margin: 0;padding: 0;"/>
             </template>
             <template #suffix>
                 <FontAwesomeIcon
