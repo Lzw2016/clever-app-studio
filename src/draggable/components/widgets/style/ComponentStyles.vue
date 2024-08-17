@@ -91,7 +91,11 @@ function showStyleModal() {
 }
 
 function onValidate(markers: editor.IMarker[]) {
-    data.styleHasErr = markers.length > 0;
+    if (markers.length === 1 && markers[0].code === "emptyRules") {
+        data.styleHasErr = false;
+    } else {
+        data.styleHasErr = markers.length > 0;
+    }
 }
 
 function saveStyle() {

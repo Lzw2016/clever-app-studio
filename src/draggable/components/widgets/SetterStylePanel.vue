@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, reactive, ref } from "vue";
 import { Collapse, CollapseItem } from "@opentiny/vue";
+import { layer } from "@layui/layer-vue";
 import { batchApplyStyle } from "@/draggable/utils/StyleUtils";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { DesignerState } from "@/draggable/models/DesignerState";
@@ -120,6 +121,8 @@ function updateStyle(style: Record<string, any>) {
     fontStyleRef.value?.initState();
     borderStyleRef.value?.initState();
     effectStyleRef.value?.initState();
+    // 更新提示
+    layer.msg("已更新内联样式", { time: 1500 });
 }
 </script>
 

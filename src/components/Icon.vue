@@ -91,7 +91,7 @@ defineExpose({});
         <component :is="state.iconComponent"/>
     </span>
     <span v-else :style="data.iconWrapperStyle">
-        <FontAwesomeIcon :icon="faStar" size="lg"/>
+        <FontAwesomeIcon :icon="faStar" :fixed-width="true" size="lg"/>
     </span>
 </template>
 
