@@ -71,7 +71,6 @@ export default defineComponentMeta({
                                 convertValue: (value: string) => value,
                                 language: "html",
                                 virtualFilePath: "svg.html",
-                                jsonSchemaValidate: false,
                             },
                             label: "编辑SVG",
                             propsName: "svg",
