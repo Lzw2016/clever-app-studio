@@ -39,7 +39,7 @@ export default defineComponentMeta({
                     items: [
                         {
                             cmp: "BoolSetter",
-                            label: "SVG图标",
+                            label: "指定SVG",
                             watchValue: true,
                             getPropsValue: props => !!props.svg,
                             applyPropsValue: (props, value) => {
@@ -72,7 +72,7 @@ export default defineComponentMeta({
                                 language: "html",
                                 virtualFilePath: "svg.html",
                             },
-                            label: "编辑SVG",
+                            label: "SVG内容",
                             propsName: "svg",
                             enableBind: false,
                             recalcAuxToolPosition: true,
@@ -102,7 +102,7 @@ export default defineComponentMeta({
                             },
                             enableBind: false,
                             recalcAuxToolPosition: true,
-                            recalcAuxToolPositionDelay: 150,
+                            recalcAuxToolPositionDelay: 50,
                             isHideSetter: node => !!node.props.svg,
                         },
                     ],
@@ -130,7 +130,7 @@ export default defineComponentMeta({
                             },
                             enableBind: false,
                             recalcAuxToolPosition: true,
-                            recalcAuxToolPositionDelay: 150,
+                            // recalcAuxToolPositionDelay: 150,
                             isHideSetter: node => !!node.props.svg || node.props.iconType !== "FontAwesomeIcon",
                         },
                         {
@@ -147,7 +147,7 @@ export default defineComponentMeta({
                             },
                             enableBind: false,
                             recalcAuxToolPosition: true,
-                            recalcAuxToolPositionDelay: 150,
+                            // recalcAuxToolPositionDelay: 150,
                             isHideSetter: node => !!node.props.svg || node.props.iconType !== "FontAwesomeIcon",
                         },
                         {
@@ -174,7 +174,7 @@ export default defineComponentMeta({
                             defPropsValue: 0,
                             enableBind: false,
                             recalcAuxToolPosition: true,
-                            recalcAuxToolPositionDelay: 150,
+                            // recalcAuxToolPositionDelay: 150,
                             isHideSetter: node => !!node.props.svg || node.props.iconType !== "FontAwesomeIcon",
                         },
                         {
@@ -198,7 +198,7 @@ export default defineComponentMeta({
                             },
                             enableBind: false,
                             recalcAuxToolPosition: true,
-                            recalcAuxToolPositionDelay: 150,
+                            // recalcAuxToolPositionDelay: 150,
                             isHideSetter: node => !!node.props.svg || node.props.iconType !== "FontAwesomeIcon",
                         },
                         {
@@ -237,7 +237,7 @@ export default defineComponentMeta({
                             },
                             enableBind: false,
                             recalcAuxToolPosition: true,
-                            recalcAuxToolPositionDelay: 150,
+                            // recalcAuxToolPositionDelay: 150,
                             isHideSetter: node => !!node.props.svg || node.props.iconType !== "FontAwesomeIcon",
                         },
                     ],
@@ -262,7 +262,7 @@ export default defineComponentMeta({
                             },
                             enableBind: false,
                             recalcAuxToolPosition: true,
-                            recalcAuxToolPositionDelay: 150,
+                            // recalcAuxToolPositionDelay: 150,
                             isHideSetter: node => !!node.props.svg || node.props.iconType !== "GoogleIcon",
                         },
                         // {
@@ -290,7 +290,7 @@ export default defineComponentMeta({
                         //     },
                         //     enableBind: false,
                         //     recalcAuxToolPosition: true,
-                        //     recalcAuxToolPositionDelay: 150,
+                        //     // recalcAuxToolPositionDelay: 150,
                         //     isHideSetter: node => !!node.props.svg || node.props.iconType !== "GoogleIcon",
                         // },
                         {
@@ -308,7 +308,7 @@ export default defineComponentMeta({
                             },
                             enableBind: false,
                             recalcAuxToolPosition: true,
-                            recalcAuxToolPositionDelay: 150,
+                            // recalcAuxToolPositionDelay: 150,
                             isHideSetter: node => !!node.props.svg || node.props.iconType !== "GoogleIcon",
                         },
                     ],
@@ -333,7 +333,7 @@ export default defineComponentMeta({
                             },
                             enableBind: false,
                             recalcAuxToolPosition: true,
-                            recalcAuxToolPositionDelay: 150,
+                            // recalcAuxToolPositionDelay: 150,
                             isHideSetter: node => !!node.props.svg || !node.props.iconType?.startsWith("TablerIcon"),
                         },
                         {
@@ -357,7 +357,7 @@ export default defineComponentMeta({
                             },
                             enableBind: false,
                             recalcAuxToolPosition: true,
-                            recalcAuxToolPositionDelay: 150,
+                            // recalcAuxToolPositionDelay: 150,
                             isHideSetter: node => !!node.props.svg || !node.props.iconType?.startsWith("TablerIcon"),
                         },
                         {
@@ -375,7 +375,7 @@ export default defineComponentMeta({
                             },
                             enableBind: false,
                             recalcAuxToolPosition: true,
-                            recalcAuxToolPositionDelay: 150,
+                            // recalcAuxToolPositionDelay: 150,
                             isHideSetter: node => !!node.props.svg || !node.props.iconType?.startsWith("TablerIcon"),
                         },
                     ],

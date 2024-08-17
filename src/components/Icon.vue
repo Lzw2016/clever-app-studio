@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import lodash from "lodash";
-import { computed, shallowReactive, watch } from "vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { computed, createVNode, shallowReactive } from "vue";
 import { style } from "@/utils/UseType";
-import { ComponentParam } from "@/draggable/types/Base";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
-import { createComponentParam } from "@/draggable/utils/BlockPropsTransform";
 
 // 定义组件选项
 defineOptions({
@@ -20,7 +16,7 @@ interface IconProps {
     /** 图标类型(componentName) */
     iconType?: string;
     /** 图标的属性 */
-    iconProps?: Record<string, any>;
+    iconProps?: any;
     /** 使用svg代码图标(优先级最高) */
     svg?: string;
 }
@@ -28,20 +24,23 @@ interface IconProps {
 // 读取组件 props 属性
 const props = withDefaults(defineProps<IconProps>(), {
     componentManage: globalConfig.componentManage,
+    iconType: "FontAwesomeIcon",
+    iconProps: {
+        size: "lg",
+        fixedWidth: true,
+        icon: ["fas", "star"],
+        style: {
+            color: "#3B4549",
+        },
+    },
 });
 
 // 定义 State 类型
 interface IconState {
-    /** 加载图标状态 */
-    loading: boolean;
-    /** 图标组件 */
-    iconComponent?: any;
 }
 
 // state 属性
-const state = shallowReactive<IconState>({
-    loading: false,
-});
+const state = shallowReactive<IconState>({});
 
 // 内部数据
 const data = {
@@ -51,36 +50,14 @@ const data = {
         "justify-content": "center",
     }),
 };
-
 // 使用svg图标
 const useSvg = computed(() => lodash.trim(props.svg).length > 0);
 
-// 根据配置动态生成图标组件 componentManage: props.componentManage,
-watch(
-    () => ({ useSvg: useSvg.value, iconType: props.iconType, iconProps: props.iconProps }),
-    ({ useSvg, iconType, iconProps }) => createIconComponent(useSvg, iconType, iconProps),
-    {
-        immediate: true,
-        deep: true,
-    },
-);
-
-// 创建图标组件
-function createIconComponent(useSvg: boolean, iconType?: string, iconProps?: Record<string, any>) {
-    if (useSvg) return;
-    const { componentManage } = props;
-    if (!componentManage || !iconType || !iconProps) {
-        state.iconComponent = null;
-        return;
-    }
-    state.loading = true;
-    componentManage.loadAsyncComponent([iconType]).finally(() => {
-        const componentParam: ComponentParam = {
-            type: iconType,
-            props: iconProps,
-        };
-        state.iconComponent = createComponentParam(componentParam, componentManage);
-    }).finally(() => state.loading = false);
+function iconComponent(props: any) {
+    const { componentManage, iconType, ...otherProps } = props;
+    if (!componentManage || !iconType) return;
+    const component = componentManage.getComponent(iconType);
+    return createVNode(component, otherProps);
 }
 
 // 定义组件公开内容
@@ -89,11 +66,13 @@ defineExpose({});
 
 <template>
     <span v-if="useSvg" :style="data.iconWrapperStyle" v-html="props.svg"/>
-    <span v-else-if="!state.loading && state.iconComponent" :style="data.iconWrapperStyle">
-        <component :is="state.iconComponent"/>
-    </span>
-    <span v-else :style="{...data.iconWrapperStyle, width: '24px', height: '24px'}">
-        <FontAwesomeIcon :icon="faStar" :fixed-width="true" size="lg"/>
+    <span v-else :style="data.iconWrapperStyle">
+        <component
+            :is="iconComponent"
+            :componentManage="props.componentManage"
+            :iconType="props.iconType"
+            v-bind="props.iconProps"
+        />
     </span>
 </template>
 
