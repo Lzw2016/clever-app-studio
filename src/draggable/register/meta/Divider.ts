@@ -3,6 +3,7 @@ import { noValue } from "@/utils/Typeof";
 import { childSlotName } from "@/draggable/Constant";
 import { ComponentSlotsItem } from "@/draggable/types/DesignBlock";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
+import Divider from "@/draggable/register/components/Divider";
 import HrSvg from "@/assets/images/hr.svg?component";
 
 export default defineComponentMeta({
@@ -12,6 +13,7 @@ export default defineComponentMeta({
     version: "0.0.1",
     docLink: "",
     icon: createVNode(HrSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
+    designComponent: Divider,
     defDesignNode: {
         items: [
             {

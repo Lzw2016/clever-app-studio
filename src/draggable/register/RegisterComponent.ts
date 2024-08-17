@@ -29,8 +29,8 @@ function registerComponent(componentManage: ComponentManage) {
     // 注册 google 图标
     componentManage.registerAsyncComponent("GoogleIcon", () => import("@/components/GoogleIcon.vue").then(module => module.default));
     // 注册自定义原子组件
-    componentManage.registerAsyncComponent("Text", () => import("@/components/Text.vue").then(module => module.default));
-    componentManage.registerAsyncComponent("Icon", () => import("@/components/Icon.vue").then(module => module.default));
+    componentManage.registerAsyncComponent("Text", () => import("@/draggable/register/components/Text.vue").then(module => module.default));
+    componentManage.registerAsyncComponent("Icon", () => import("@/draggable/register/components/Icon.vue").then(module => module.default));
     // opentiny 组件注册
     // "CascaderPanel","DropTimes","Link","Popeditor","PopUpload","CheckboxButton","RadioButton", "ColorSelectPanel",
     const openTinyTypes: Record<string, string> = {
@@ -80,6 +80,7 @@ function registerComponent(componentManage: ComponentManage) {
             componentManage.registerComponent(componentName, component);
         }
     });
+    // componentManage.registerAsyncComponent("Divider", () => import("@/draggable/register/components/Divider").then(module => module.default));
     // primevue 组件注册
     // componentManage.registerAsyncComponent("Button", () => import("primevue/button").then(module => module.default));
     // componentManage.registerAsyncComponent("InputNumber", () => import("primevue/inputnumber").then(module => module.default));
