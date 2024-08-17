@@ -69,7 +69,10 @@ watch(
 function createIconComponent(useSvg: boolean, iconType?: string, iconProps?: Record<string, any>) {
     if (useSvg) return;
     const { componentManage } = props;
-    if (!componentManage || !iconType || !iconProps) return;
+    if (!componentManage || !iconType || !iconProps) {
+        state.iconComponent = null;
+        return;
+    }
     state.loading = true;
     componentManage.loadAsyncComponent([iconType]).finally(() => {
         const componentParam: ComponentParam = {

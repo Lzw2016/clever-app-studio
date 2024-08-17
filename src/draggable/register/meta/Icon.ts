@@ -24,7 +24,7 @@ export default defineComponentMeta({
             iconProps: {
                 size: "lg",
                 fixedWidth: true,
-                icon: ["far", "star"],
+                icon: ["fas", "star"],
                 style: {
                     color: "#3B4549",
                 },
