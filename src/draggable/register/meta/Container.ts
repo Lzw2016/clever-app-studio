@@ -14,6 +14,7 @@ export default defineComponentMeta({
             style: {
                 height: "300px",
                 position: "relative",
+                border: "1px solid #ccc",
             },
         },
     },
@@ -37,6 +38,36 @@ export default defineComponentMeta({
                             label: "布局类型",
                             propsName: "pattern",
                             defPropsValue: "default",
+                        },
+                        {
+                            cmp: "NumberSetter",
+                            cmpProps: {
+                                step: 8,
+                                unit: "px",
+                            },
+                            label: "左侧宽度",
+                            propsName: "asideWidth",
+                            defPropsValue: 200,
+                        },
+                        {
+                            cmp: "NumberSetter",
+                            cmpProps: {
+                                step: 4,
+                                unit: "px",
+                            },
+                            label: "头部高度",
+                            propsName: "headerHeight",
+                            defPropsValue: 60,
+                        },
+                        {
+                            cmp: "NumberSetter",
+                            cmpProps: {
+                                step: 4,
+                                unit: "px",
+                            },
+                            label: "底部高度",
+                            propsName: "footerHeight",
+                            defPropsValue: 60,
                         },
                     ],
                 },

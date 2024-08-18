@@ -226,6 +226,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById, BlockDesi
                 if (idx >= 0) {
                     removeNodes.push(...slot.splice(idx, 1));
                     nodeInSlot[id] = true;
+                    if (slot.length <= 0) delete parent.slots[name];
                     break;
                 }
             }
