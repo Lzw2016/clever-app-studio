@@ -120,7 +120,7 @@ export default defineComponentMeta({
                 style: {
                     height: "100%",
                     width: "100%",
-                    minHeight: "240px",
+                    minHeight: "180px",
                     minWidth: "104px",
                     fontSize: "12px",
                     backgroundColor: "#f0f0f0",

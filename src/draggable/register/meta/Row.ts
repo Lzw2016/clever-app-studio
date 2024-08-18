@@ -13,9 +13,6 @@ export default defineComponentMeta({
         props: {
             tag: "div",
             gutter: 8,
-            style: {
-                "min-height": "80px",
-            },
         },
     },
     setter: {
@@ -126,7 +123,7 @@ export default defineComponentMeta({
                 style: {
                     height: "100%",
                     width: "100%",
-                    minHeight: "80px",
+                    minHeight: "48px",
                     minWidth: "104px",
                     fontSize: "12px",
                     backgroundColor: "#f0f0f0",
