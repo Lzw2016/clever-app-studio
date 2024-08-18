@@ -6,9 +6,8 @@ import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 /**
  * 使用函数式组件包装 Divider
  * https://cn.vuejs.org/guide/extras/render-function.html#typing-functional-components
- * @param props
- * @param ctx
- * @constructor
+ * @param props 组件属性
+ * @param ctx   组件上下文
  */
 function DividerWrapper(props, ctx) {
     const { attrs, slots } = ctx;

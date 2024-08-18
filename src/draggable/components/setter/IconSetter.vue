@@ -175,10 +175,6 @@ function clearValue() {
     margin: 0 0 0 8px;
 }
 
-.icons-button {
-
-}
-
 .icons-button:hover {
     color: #666;
 }
