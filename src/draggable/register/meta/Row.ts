@@ -35,7 +35,7 @@ export default defineComponentMeta({
                             cmp: "BoolSetter",
                             label: "禁用间隔",
                             labelTips: "子项没有间隔，相当于强制gutter=0的情况",
-                            watchValue: true,
+                            // watchValue: true,
                             propsName: "noSpace",
                         },
                         {
@@ -48,7 +48,7 @@ export default defineComponentMeta({
                             labelTips: "子项的间隔的像素",
                             propsName: "gutter",
                             defPropsValue: 0,
-                            isHideSetter: node => node.props.noSpace,
+                            // isHideSetter: node => node.props.noSpace,
                         },
                         {
                             cmp: "BoolSetter",

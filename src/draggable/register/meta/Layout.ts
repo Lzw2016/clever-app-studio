@@ -22,7 +22,7 @@ export default defineComponentMeta({
                 type: "Row",
                 props: {
                     tag: "div",
-                    gutter: 8,
+                    // gutter: 8,
                     style: {
                         marginBottom: "4px",
                     },
@@ -48,7 +48,7 @@ export default defineComponentMeta({
                 type: "Row",
                 props: {
                     tag: "div",
-                    gutter: 8,
+                    // gutter: 8,
                     // style: {
                     //     marginBottom: "4px",
                     // },
