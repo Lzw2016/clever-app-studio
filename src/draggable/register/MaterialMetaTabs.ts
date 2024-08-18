@@ -48,7 +48,7 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
             {
                 title: "容器(布局)",
                 types: [
-                    "Layout", "Row", "Col", "Container", "Tabs", "Split", // "Form",
+                    "Layout", "Row", "Col", "Container", "Tabs", "TabItem", "Split", // "Form",
                 ],
             },
             {

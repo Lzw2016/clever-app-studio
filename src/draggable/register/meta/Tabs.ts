@@ -11,8 +11,34 @@ export default defineComponentMeta({
     icon: createVNode(TabsSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
-            style: {},
+            activeName: "tab_1",
+            style: {
+                height: "300px",
+            },
         },
+        items: [
+            {
+                type: "TabItem",
+                props: {
+                    name: "tab_1",
+                    title: "叶签1",
+                },
+            },
+            {
+                type: "TabItem",
+                props: {
+                    name: "tab_2",
+                    title: "叶签2",
+                },
+            },
+            {
+                type: "TabItem",
+                props: {
+                    name: "tab_3",
+                    title: "叶签3",
+                },
+            },
+        ],
     },
     setter: {
         props: {
@@ -22,9 +48,27 @@ export default defineComponentMeta({
             groups: [],
         },
         style: {},
-        advanced: {
+        advanced: {},
+    },
+    placeholder: {
+        default: {
+            type: "div",
+            props: {
+                style: {
+                    height: "100%",
+                    width: "100%",
+                    minHeight: "180px",
+                    minWidth: "104px",
+                    fontSize: "12px",
+                    backgroundColor: "#f0f0f0",
+                    color: "#a7b1bd",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                },
+            },
+            tpl: "拖拽“页签项”组件到这里",
         },
     },
-    placeholder: {},
     i18n: {},
 });

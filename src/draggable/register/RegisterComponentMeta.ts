@@ -26,6 +26,7 @@ function registerComponentMeta(componentManage: ComponentManage) {
     componentManage.registerAsyncComponentMeta("Col", () => import("@/draggable/register/meta/Col").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Container", () => import("@/draggable/register/meta/Container").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Tabs", () => import("@/draggable/register/meta/Tabs").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("TabItem", () => import("@/draggable/register/meta/TabItem").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Split", () => import("@/draggable/register/meta/Split").then(module => module.default));
     // 容器(功能)
     componentManage.registerAsyncComponentMeta("Badge", () => import("@/draggable/register/meta/Badge").then(module => module.default));

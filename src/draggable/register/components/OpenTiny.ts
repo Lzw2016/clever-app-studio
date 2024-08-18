@@ -99,6 +99,8 @@ export {
     Row,
     Col,
     Container,
+    Tabs,
+    TabItem,
 
     // 导航组件
     Anchor,
@@ -110,8 +112,6 @@ export {
     ToggleMenu,
     LinkMenu,
     NavMenu,
-    Tabs,
-    TabItem,
     TimeLine,
     TreeMenu,
     DropdownMenu,

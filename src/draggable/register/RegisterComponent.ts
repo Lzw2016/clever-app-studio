@@ -46,6 +46,8 @@ function registerComponent(componentManage: ComponentManage) {
         Row: "Row",
         Col: "Col",
         Container: "Container",
+        Tabs: "Tabs",
+        TabItem: "TabItem",
 
         // 表单组件
         Form: "Form",
