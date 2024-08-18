@@ -98,9 +98,8 @@ export {
     Layout,
     Row,
     Col,
-
-    // 布局组件
     Container,
+
     // 导航组件
     Anchor,
     Guide,
