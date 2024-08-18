@@ -27,8 +27,7 @@ const defPlaceholder: DesignNode = {
         style: {
             height: "100%",
             width: "100%",
-            minHeight: "32px",
-            minWidth: "104px",
+            overflow: "hidden",
             fontSize: "12px",
             backgroundColor: "#f0f0f0",
             color: "#a7b1bd",

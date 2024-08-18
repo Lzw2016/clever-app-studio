@@ -10,10 +10,7 @@ export default defineComponentMeta({
     defDesignNode: {
         props: {
             style: {
-                width: "auto",
-                height: "auto",
                 border: "1px solid #ccc",
-                margin: "4px",
             },
         },
     },

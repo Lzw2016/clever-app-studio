@@ -20,11 +20,14 @@ function registerComponentMeta(componentManage: ComponentManage) {
     componentManage.registerAsyncComponentMeta("Divider", () => import("@/draggable/register/meta/Divider").then(module => module.default));
     componentManage.registerAsyncComponentMeta("ActionMenu", () => import("@/draggable/register/meta/ActionMenu").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Dropdown", () => import("@/draggable/register/meta/Dropdown").then(module => module.default));
-    // 容器
+    // 容器(布局)
     componentManage.registerAsyncComponentMeta("Layout", () => import("@/draggable/register/meta/Layout").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Row", () => import("@/draggable/register/meta/Row").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("Col", () => import("@/draggable/register/meta/Col").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Container", () => import("@/draggable/register/meta/Container").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Tabs", () => import("@/draggable/register/meta/Tabs").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Split", () => import("@/draggable/register/meta/Split").then(module => module.default));
+    // 容器(功能)
     componentManage.registerAsyncComponentMeta("Badge", () => import("@/draggable/register/meta/Badge").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Watermark", () => import("@/draggable/register/meta/Watermark").then(module => module.default));
     componentManage.registerAsyncComponentMeta("PopConfirm", () => import("@/draggable/register/meta/PopConfirm").then(module => module.default));

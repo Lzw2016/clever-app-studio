@@ -41,6 +41,11 @@ function registerComponent(componentManage: ComponentManage) {
         Divider: "Divider",
         ActionMenu: "ActionMenu",
         Dropdown: "Dropdown",
+        // 容器(布局)
+        Layout: "Layout",
+        Row: "Row",
+        Col: "Col",
+
         // 表单组件
         Form: "Form",
         FormItem: "FormItem",
