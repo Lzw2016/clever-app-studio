@@ -105,6 +105,8 @@ export {
     // 容器(功能)
     Badge,
     Watermark,
+    Popconfirm,
+    Popover,
 
     // 导航组件
     Anchor,
@@ -165,8 +167,6 @@ export {
     Alert,
     Loading,
     Tooltip,
-    Popover,
-    Popconfirm,
     Modal,
     Notify,
     // 其他组件

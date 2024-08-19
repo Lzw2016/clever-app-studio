@@ -116,7 +116,7 @@ export default defineComponentMeta({
                     fontSize: "12px",
                     backgroundColor: "#f0f0f0",
                     color: "#a7b1bd",
-                    padding: "4px 0",
+                    padding: "6px 0",
                 },
             },
             tpl: "拖拽组件",

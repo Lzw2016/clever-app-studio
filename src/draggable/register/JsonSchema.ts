@@ -132,7 +132,7 @@ const dropdownMenuOptions: JSONSchema7 = {
 
 const watermarkFont: JSONSchema7 = {
     type: "object",
-    description: "下拉菜单配置",
+    description: "水印字体配置",
     properties: {
         color: {
             type: "string",
@@ -157,9 +157,45 @@ const watermarkFont: JSONSchema7 = {
     },
 };
 
+const popoverPopperOptions: JSONSchema7 = {
+    type: "object",
+    description: "弹出层参数",
+    properties: {
+        bubbling: {
+            type: "boolean",
+            description: "是否监听元素所有上级有滚动元素的scroll事件，监听到则更新popper的位置。用于解决某些弹出层位置在页面滚动时，位置不正确的场景，默认false",
+        },
+        followReferenceHide: {
+            type: "boolean",
+            description: "当触发源隐藏时，自动隐藏弹出层，默认true",
+        },
+        removeOnDestroy: {
+            type: "boolean",
+            description: "弹出层消失后，是否移除弹出层的DOM元素，默认false",
+        },
+        updateHiddenPopperOnScroll: {
+            type: "boolean",
+            description: "滚动过程中是否更新隐藏的弹出层位置",
+        },
+        boundariesElement: {
+            type: "string",
+            enum: ["viewport", "body"],
+            description: "滚动过程中,弹出层的碰撞边界。 默认值为：'viewport'",
+        },
+        ignoreBoundaries: {
+            type: "boolean",
+            description: "忽略边界判断，弹出的位置始终是设置的 placement 值",
+        },
+        scrollParent: {
+            description: "指定滚动的父节点，优化级最高。 默认为null",
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
     dropdownMenuOptions,
     watermarkFont,
+    popoverPopperOptions,
 }

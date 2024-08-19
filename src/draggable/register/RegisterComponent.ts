@@ -52,6 +52,8 @@ function registerComponent(componentManage: ComponentManage) {
         // 容器(功能)
         Badge: "Badge",
         Watermark: "Watermark",
+        PopConfirm: "Popconfirm",
+        Popover: "Popover",
 
         // 表单组件
         Form: "Form",

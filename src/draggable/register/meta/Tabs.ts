@@ -194,6 +194,7 @@ export default defineComponentMeta({
                     ],
                 },
             ],
+            // TODO 函数类型的参数
             // before-close     关闭页签前的回调函数，入参为页签名。如果函数返回false 或 拒绝的Promise，则不关闭页签
             // before-leave     切换页签项之前的钩子，若返回 false 或返回 Promise 且被 reject，则阻止切换； activeName: 即将切换的页签项名称, oldActiveName: 当前页签项名称
             // drop-config      启用页签拖拽功能，配置第三方排序插件，对页签项进行重新排序；需注意：不是通过 v-for 渲染的 tab-item，在拖拽排序后，无法在 tab-drag-end 事件中对其顺序进行保存
