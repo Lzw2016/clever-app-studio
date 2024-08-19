@@ -13,7 +13,7 @@ export default defineComponentMeta({
         props: {
             style: {},
             value: 66,
-            data: "AAA",
+            data: "徽标示例",
             offset: ["0", "-50%"],
         },
     },
