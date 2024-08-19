@@ -101,6 +101,8 @@ export {
     Container,
     Tabs,
     TabItem,
+    Split,
+    // 容器(功能)
 
     // 导航组件
     Anchor,
@@ -125,7 +127,6 @@ export {
     DialogSelect,
     Drawer,
     FilterPanel,
-    Split,
     // 表单组件
     Autocomplete,
     Cascader,

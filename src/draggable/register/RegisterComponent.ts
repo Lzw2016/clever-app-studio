@@ -48,6 +48,8 @@ function registerComponent(componentManage: ComponentManage) {
         Container: "Container",
         Tabs: "Tabs",
         TabItem: "TabItem",
+        Split: "Split",
+        // 容器(功能)
 
         // 表单组件
         Form: "Form",
