@@ -99,6 +99,8 @@ export default defineComponentMeta({
             ],
         },
         events: {
+            includeInnerEvents: true,
+            excludeInnerEvents: ["表单事件"],
             groups: [],
         },
         style: {},

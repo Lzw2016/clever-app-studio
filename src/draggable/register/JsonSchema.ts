@@ -130,8 +130,36 @@ const dropdownMenuOptions: JSONSchema7 = {
     },
 };
 
+const watermarkFont: JSONSchema7 = {
+    type: "object",
+    description: "下拉菜单配置",
+    properties: {
+        color: {
+            type: "string",
+            description: "字体颜色",
+        },
+        fontSize: {
+            type: "string",
+            description: "字体大小",
+        },
+        fontWeight: {
+            type: "string",
+            description: "字宽",
+        },
+        fontFamily: {
+            type: "string",
+            description: "字体名",
+        },
+        fontStyle: {
+            type: "string",
+            description: "字体样式",
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
     dropdownMenuOptions,
+    watermarkFont,
 }

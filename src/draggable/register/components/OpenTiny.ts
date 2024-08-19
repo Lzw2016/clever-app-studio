@@ -104,6 +104,7 @@ export {
     Split,
     // 容器(功能)
     Badge,
+    Watermark,
 
     // 导航组件
     Anchor,
@@ -181,5 +182,4 @@ export {
     Fullscreen,
     ConfigProvider,
     QrCode,
-    Watermark,
 }

@@ -51,6 +51,7 @@ function registerComponent(componentManage: ComponentManage) {
         Split: "Split",
         // 容器(功能)
         Badge: "Badge",
+        Watermark: "Watermark",
 
         // 表单组件
         Form: "Form",
