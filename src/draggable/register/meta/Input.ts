@@ -35,6 +35,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "text", label: "text(文本)" },
                                     { value: "textarea", label: "textarea(大文本)" },
@@ -127,6 +128,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "medium", label: "中等" },
                                     { value: "small", label: "小" },
@@ -192,6 +194,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "none", label: "不启用" },
                                     { value: "horizontal", label: "水平缩放" },
@@ -223,6 +226,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "off", label: "不自动完成输入" },
                                     { value: "on", label: "自动完成输入" },

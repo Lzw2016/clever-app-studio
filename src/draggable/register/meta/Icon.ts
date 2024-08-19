@@ -153,6 +153,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: 0, label: "0度" },
                                     { value: 90, label: "90度" },
@@ -180,6 +181,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "horizontal", label: "水平" },
                                     { value: "vertical", label: "垂直" },
@@ -204,6 +206,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { label: 'beat', value: 'beat' },
                                     { label: 'beat-fade', value: 'beatFade' },

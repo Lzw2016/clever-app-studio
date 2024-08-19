@@ -70,6 +70,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "primary", label: "主要按钮" },
                                     { value: "success", label: "成功按钮" },

@@ -14,8 +14,8 @@ function DividerWrapper(props, ctx) {
     const innerProps = { ...props, ...attrs };
     const divProps = {
         style: style({
-            "min-height": "16px",
-            display: "flow-root",
+            minHeight: "16px",
+            overflow: "auto",
         }),
     };
     for (let key of Object.values(htmlExtAttr)) {

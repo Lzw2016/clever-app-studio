@@ -83,6 +83,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "large", label: "大" },
                                     { value: "medium", label: "中等" },

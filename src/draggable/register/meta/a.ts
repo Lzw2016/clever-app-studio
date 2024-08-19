@@ -53,6 +53,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "_self", label: "当前页面(_self)" },
                                     { value: "_blank", label: "新标签页(_blank)" },

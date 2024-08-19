@@ -60,6 +60,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "start", label: "开始方向对齐(start)" },
                                     { value: "center", label: "居中对齐(center)" },
@@ -77,6 +78,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "top", label: "顶部对齐(top)" },
                                     { value: "middle", label: "居中对齐(middle)" },
@@ -92,7 +94,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
-                                clearable: false,
+                                clearable: true,
                                 options: [
                                     { value: "asc", label: "正序(asc)" },
                                     { value: "des", label: "倒序(des)" },

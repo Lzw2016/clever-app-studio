@@ -46,7 +46,7 @@ defineExpose<SetterExpose>({
 <template>
     <Select
         ref="setter"
-        :clearable="true"
+        :clearable="false"
         v-bind="inputProps"
         v-model="state.value"
         @change="value => applyValue(props, state, instance?.proxy, value)"

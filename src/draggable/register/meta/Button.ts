@@ -48,6 +48,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "text", label: "默认按钮" },
                                     { value: "primary", label: "主要按钮" },
@@ -92,6 +93,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "large", label: "大" },
                                     { value: "medium", label: "中等" },
@@ -139,6 +141,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "button", label: "button(按钮)" },
                                     { value: "submit", label: "submit(提交表单)" },

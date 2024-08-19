@@ -121,6 +121,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "medium", label: "中等" },
                                     { value: "small", label: "小" },
@@ -136,6 +137,7 @@ export default defineComponentMeta({
                         {
                             cmp: "SelectSetter",
                             cmpProps: {
+                                clearable: true,
                                 options: [
                                     { value: "primary", label: "主要菜单" },
                                     { value: "success", label: "成功菜单" },

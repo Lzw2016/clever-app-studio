@@ -14,6 +14,7 @@ export default defineComponentMeta({
             activeName: "tab_1",
             style: {
                 height: "300px",
+                border: "1px solid #ccc",
             },
         },
         items: [
