@@ -3,7 +3,7 @@ import { computed, reactive } from "vue";
 import { Collapse, CollapseItem, Loading, Notify, Search, TabItem, Tabs } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { ComponentMeta, ComponentMetaTab, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
+import { ComponentMeta, ComponentMetaTab, MaterialDependence, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { getComponentIcon } from "@/draggable/utils/ComponentMetaUtils";
@@ -28,6 +28,8 @@ interface ComponentPaneProps {
     designerEngine: DesignerEngine;
     /** 组件叶签信息 */
     tabs: Array<MaterialMetaTab>;
+    /** 物料的依赖关系 */
+    dependence: MaterialDependence;
     /** 默认的叶签 */
     defTab?: string;
 }
@@ -65,6 +67,8 @@ function getAllTypes() {
         for (let type of types) {
             if (allTypes.includes(type)) continue;
             allTypes.push(type);
+            const dependence = props.dependence[type];
+            if (dependence) allTypes.push(...dependence);
         }
     }
     return allTypes;

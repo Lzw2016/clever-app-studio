@@ -6,7 +6,7 @@ import { Notify } from "@opentiny/vue";
 import Format from "@/utils/Format";
 import { isFun } from "@/utils/Typeof";
 import { DefComponentManage } from "@/draggable/DefComponentManage";
-import { materialMetaTabs } from "@/draggable/register/MaterialMetaTabs";
+import { materialDependence, materialMetaTabs } from "@/draggable/register/MaterialMetaTabs";
 
 if (!window.globalConfig) window.globalConfig = {} as any;
 
@@ -57,6 +57,9 @@ if (!globalConfig.componentManage) {
 // 物料信息
 if (!globalConfig.materialMetaTabs) {
     globalConfig.materialMetaTabs = materialMetaTabs;
+}
+if (!globalConfig.materialDependence) {
+    globalConfig.materialDependence = materialDependence;
 }
 
 // 系统授权对象

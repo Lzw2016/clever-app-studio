@@ -1,6 +1,6 @@
 import { createVNode } from "vue";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
-import TabsSvg from "@/assets/images/tabs.svg?component";
+import TabItemSvg from "@/assets/images/tab-item.svg?component";
 
 export default defineComponentMeta({
     type: "TabItem",
@@ -8,7 +8,7 @@ export default defineComponentMeta({
     description: "",
     version: "0.0.1",
     docLink: "",
-    icon: createVNode(TabsSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
+    icon: createVNode(TabItemSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
             style: {},
@@ -22,8 +22,7 @@ export default defineComponentMeta({
             groups: [],
         },
         style: {},
-        advanced: {
-        },
+        advanced: {},
     },
     placeholder: {
         default: true,

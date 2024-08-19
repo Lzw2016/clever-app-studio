@@ -48,6 +48,8 @@ interface GlobalConfig {
     componentManage: any;
     /** 物料配置(Array<MaterialMetaTab>) */
     materialMetaTabs: any;
+    /** 物料的依赖关系(MaterialDependence) */
+    materialDependence: any;
     /** 系统授权对象 */
     security: UserPermission;
     /** 当前登录的用户信息 */

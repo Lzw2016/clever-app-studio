@@ -17,7 +17,7 @@ import { CursorEffect } from "@/draggable/effect/CursorEffect";
 import { DraggingEffect } from "@/draggable/effect/DraggingEffect";
 import { AuxToolEffect } from "@/draggable/effect/AuxToolEffect";
 import { ComponentManage } from "@/draggable/types/ComponentManage";
-import { MaterialMetaTab } from "@/draggable/types/ComponentMeta";
+import { MaterialDependence, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 import DragGhost from "@/draggable/components/widgets/DragGhost.vue";
 import PagePanel from "@/draggable/components/widgets/PagePanel.vue";
 import MaterialPanel from "@/draggable/components/widgets/MaterialPanel.vue";
@@ -54,6 +54,8 @@ interface StudioLayoutProps {
     componentManage: ComponentManage;
     /** 物料配置 */
     materialMetaTabs: Array<MaterialMetaTab>;
+    /** 物料的依赖关系 */
+    materialDependence: MaterialDependence;
     /** 顶部导航栏高度 */
     topNavHeight?: string;
     /** 顶部工具栏高度 */
@@ -353,6 +355,7 @@ function setRightTool(rightTool?: RightTools) {
                                 v-show="isMaterial"
                                 :designer-engine="designerEngine"
                                 :tabs="props.materialMetaTabs"
+                                :dependence="props.materialDependence"
                                 @closePanel="setLeftTool(LeftTools.Material)"
                             />
                             <DictPanel

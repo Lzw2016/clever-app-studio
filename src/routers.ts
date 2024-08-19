@@ -54,6 +54,7 @@ const staticRouters: RouteRecordRaw[] = [
         props: {
             componentManage: globalConfig.componentManage,
             materialMetaTabs: globalConfig.materialMetaTabs,
+            materialDependence: globalConfig.materialDependence,
         },
         children: [
             {

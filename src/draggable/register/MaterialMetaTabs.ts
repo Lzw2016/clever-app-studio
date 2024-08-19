@@ -1,4 +1,4 @@
-import { MaterialMetaTab } from "@/draggable/types/ComponentMeta";
+import { MaterialDependence, MaterialMetaTab } from "@/draggable/types/ComponentMeta";
 
 /** 默认的物料信息 */
 const materialMetaTabs: Array<MaterialMetaTab> = [
@@ -48,7 +48,7 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
             {
                 title: "容器(布局)",
                 types: [
-                    "Layout", "Row", "Col", "Container", "Tabs", "TabItem", "Split", // "Form",
+                    "Layout", "Row", "Col", "Container", "Tabs", "Split", // "Form",
                 ],
             },
             {
@@ -91,6 +91,13 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
     },
 ];
 
+/** 物料的依赖关系 */
+const materialDependence: MaterialDependence = {
+    Layout: ["Row", "Col"],
+    Tabs: ["TabItem"],
+};
+
 export {
     materialMetaTabs,
+    materialDependence,
 }

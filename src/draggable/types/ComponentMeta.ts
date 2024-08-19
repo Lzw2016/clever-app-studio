@@ -376,6 +376,11 @@ interface ComponentMeta {
     i18n?: I18N;
 }
 
+/** 物料的依赖关系 */
+interface MaterialDependence {
+    [type: string]: Array<string>;
+}
+
 /** 物料分组 */
 interface MaterialMetaGroup {
     /** 组件分组标题 */
@@ -432,6 +437,7 @@ export type {
     ComponentSetter,
     DefDesignNode,
     ComponentMeta,
+    MaterialDependence,
     MaterialMetaGroup,
     MaterialMetaTab,
     ComponentMetaGroup,
