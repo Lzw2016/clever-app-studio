@@ -2,7 +2,8 @@ import { Router, RouteRecordRaw } from "vue-router";
 import globalConfig from "@/GlobalConfig";
 import { sleep } from "@/utils/Utils";
 import { DesignPageMate, LoadDesignPageMate } from "@/draggable/types/DesignBlock";
-import { designerTest } from "@/views/DesignerTest";
+// import { designerTest } from "@/views/DesignerTest";
+import { designerEmpty } from "@/views/DesignerEmpty";
 
 function defineLoadDesignPageMate(fun: LoadDesignPageMate): LoadDesignPageMate {
     return fun;
@@ -85,7 +86,8 @@ const staticRouters: RouteRecordRaw[] = [
                         // if(params.pageId==='333') await sleep(100000000);
                         return {
                             title: params.pageId,
-                            designBlock: designerTest,
+                            // designBlock: designerTest,
+                            designBlock: designerEmpty,
                         } as DesignPageMate;
                     }),
                 },
