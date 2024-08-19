@@ -1,3 +1,4 @@
+import { layer } from "@layui/layer-vue";
 import { noValue } from "@/utils/Typeof";
 import { emptyNodeId, materialItem } from "@/draggable/Constant";
 import { calcDistance } from "@/draggable/utils/PositionCalc";
@@ -156,6 +157,13 @@ class DragDropDriver extends DesignerDriver {
      * 鼠标移动中 或者 拖拽中，触发开始拖拽事件
      */
     onStartDrag = (event: MouseEvent | DragEvent) => {
+        // 存在不允许拖拽的组件
+        for (let cmpMeta of this.componentMetas.values()) {
+            if (cmpMeta.disableDragDrop) {
+                layer.msg(`组件${cmpMeta.name}不允许拖拽!`, { time: 800 });
+                return;
+            }
+        }
         // 如果已经在拖拽中了，直接返回
         if (this.dragState.dragging) return;
         // 设置开始拖拽事件

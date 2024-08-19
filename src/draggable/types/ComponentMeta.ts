@@ -358,6 +358,8 @@ interface ComponentMeta {
     version?: string;
     /** 组件文档连接 */
     docLink?: string;
+    /** 是否禁止拖拽(默认启用) */
+    disableDragDrop?: boolean;
     /** 设计时的组件对象 */
     designComponent?: VueComponent | string;
     /** 默认的组件节点配置 */

@@ -9,6 +9,7 @@ export default defineComponentMeta({
     version: "0.0.1",
     docLink: "",
     icon: createVNode(TabItemSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
+    disableDragDrop: true,
     defDesignNode: {
         props: {
             style: {},
