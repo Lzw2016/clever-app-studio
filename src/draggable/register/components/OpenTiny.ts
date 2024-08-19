@@ -103,6 +103,7 @@ export {
     TabItem,
     Split,
     // 容器(功能)
+    Badge,
 
     // 导航组件
     Anchor,
@@ -161,7 +162,6 @@ export {
     Transfer,
     // 提示组件
     Alert,
-    Badge,
     Loading,
     Tooltip,
     Popover,

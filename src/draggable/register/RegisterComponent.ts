@@ -50,6 +50,7 @@ function registerComponent(componentManage: ComponentManage) {
         TabItem: "TabItem",
         Split: "Split",
         // 容器(功能)
+        Badge: "Badge",
 
         // 表单组件
         Form: "Form",

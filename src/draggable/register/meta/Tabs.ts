@@ -148,7 +148,7 @@ export default defineComponentMeta({
                         {
                             cmp: "EditorSetter",
                             cmpProps: {
-                                title: "配置按钮组",
+                                title: "配置溢出配置",
                                 // jsonSchema: buttonGroupData,
                             },
                             label: "溢出配置",
