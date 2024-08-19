@@ -219,7 +219,7 @@ function onUpdateListener(event?: UpdateListenerEvent) {
 
 <template>
     <div class="designer-layout flex-column-container">
-        <div class="flex-item-fixed flex-row-container designer-tool box-border-b">
+        <div class="flex-item-fixed flex-row-container designer-tool">
             <div class="flex-item-fixed designer-tool-button" title="保存">
                 <FontAwesomeIcon :icon="faFloppyDisk" :fixed-width="true"/>
             </div>
@@ -276,7 +276,7 @@ function onUpdateListener(event?: UpdateListenerEvent) {
                 <FontAwesomeIcon :icon="faLaptop" :fixed-width="true"/>
             </div>
             <div
-                class="flex-item-fixed designer-tool-button"
+                class="flex-item-fixed designer-tool-button designer-tool-button-last"
                 :class="{'designer-tool-button-active': isMobileLayout}"
                 title="移动端布局"
                 @click="state.layout=DesignerLayout.Mobile"
@@ -376,8 +376,8 @@ function onUpdateListener(event?: UpdateListenerEvent) {
 .designer-tool {
     height: 28px;
     align-items: center;
-    background-color: #eeeeee;
-    padding: 0 8px;
+    background-color: #fcfcfc;
+    padding: 5px 8px 0;
     box-sizing: border-box;
 }
 
