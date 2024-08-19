@@ -14,7 +14,7 @@ export default defineComponentMeta({
             style: {},
             value: 66,
             data: "徽标示例",
-            offset: ["0", "-50%"],
+            offset: ["-30%", "-50%"],
         },
     },
     setter: {
@@ -89,8 +89,6 @@ export default defineComponentMeta({
                             cmp: "EditorSetter",
                             cmpProps: {
                                 title: "配置偏移量",
-                                convertValue: (value: string) => value,
-                                // jsonSchema: dropdownMenuOptions,
                             },
                             label: "偏移量",
                             labelTips: "设置标记位置的偏移量",
