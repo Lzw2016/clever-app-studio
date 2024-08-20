@@ -230,7 +230,7 @@ function createChildVNode(child: RuntimeBlockNode, context: Context, globalConte
         ...props,
         ...(startRenderBlock ? { ...fromInstance.$attrs, ...fromInstance.$props } : {}),
         ...runtimeNode.__bindListeners,
-        key: runtimeNode.id,
+        key: runtimeNode.__design_key ?? runtimeNode.id,
         ref: runtimeNode.ref,
     };
     const directives: BaseDirectives = runtimeNode.__designDirectives ? lodash.defaults(runtimeNode.__designDirectives, runtimeNode.directives) : runtimeNode.directives;

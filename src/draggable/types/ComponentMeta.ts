@@ -64,6 +64,8 @@ interface SetterProps {
     applyPropsValue?: (props: any, value: any, node: MakeWritable<RuntimeNode>, setter: SetterInstance) => void | false;
     /** 更新属性值后不重新渲染block */
     disableReRender?: boolean;
+    /** 属性值更新后强制更新当前组件VNode的key值(解决某些组件props属性变化后无法生效问题) */
+    updateVNodeKey?: boolean;
     /** 更新属性后需要重新计算辅助工具的位置 */
     recalcAuxToolPosition?: boolean;
     /** 更新属性后需要重新计算辅助工具的位置的延时时间(默认不延时) */
@@ -106,6 +108,8 @@ interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
     applyPropsValue?: SetterProps['applyPropsValue'];
     /** 更新属性值后不重新渲染block */
     disableReRender?: SetterProps['disableReRender'];
+    /** 属性值更新后强制更新当前组件VNode的key值(解决某些组件props属性变化后无法生效问题) */
+    updateVNodeKey?: SetterProps['updateVNodeKey'];
     /** 更新属性后需要重新计算辅助工具的位置 */
     recalcAuxToolPosition?: SetterProps['recalcAuxToolPosition'];
     /** 更新属性后需要重新计算辅助工具的位置的延时时间(默认不延时) */

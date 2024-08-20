@@ -1,4 +1,5 @@
 import { createVNode } from "vue";
+import { VarType } from "@/draggable/types/Base";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 import { popoverPopperOptions } from "@/draggable/register/JsonSchema";
 import PopoverSvg from "@/assets/images/popover.svg?component";
@@ -12,6 +13,9 @@ export default defineComponentMeta({
     icon: createVNode(PopoverSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
+            style: {
+                display: "inline-block",
+            },
             title: "气泡卡片",
             content: "提示文本信息，文本内容可以很长很长很长...",
             trigger: "click",
@@ -191,10 +195,38 @@ export default defineComponentMeta({
                 {
                     title: "组件事件",
                     items: [
-                        // after-enter() =>void 进入的动画播放完毕后触发
-                        // after-leave() =>void 离开的动画播放完毕后触发
-                        // hide() =>void 隐藏时触发
-                        // show() =>void 显示时触发
+                        {
+                            title: "进入的动画播放完毕",
+                            description: "进入的动画播放完毕后触发",
+                            name: "afterEnter",
+                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/popover",
+                            params: [],
+                            return: VarType.Void,
+                        },
+                        {
+                            title: "离开的动画播放完毕",
+                            description: "离开的动画播放完毕后触发",
+                            name: "afterLeave",
+                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/popover",
+                            params: [],
+                            return: VarType.Void,
+                        },
+                        {
+                            title: "隐藏事件",
+                            description: "隐藏时触发",
+                            name: "hide",
+                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/popover",
+                            params: [],
+                            return: VarType.Void,
+                        },
+                        {
+                            title: "显示事件",
+                            description: "显示时触发",
+                            name: "show",
+                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/popover",
+                            params: [],
+                            return: VarType.Void,
+                        },
                     ],
                 },
             ],
@@ -207,6 +239,7 @@ export default defineComponentMeta({
             type: "span",
             props: {
                 style: {
+                    display: "inline-block",
                     overflow: "hidden",
                     fontSize: "12px",
                     backgroundColor: "#f0f0f0",

@@ -31,6 +31,8 @@ interface RuntimeNode {
     readonly __designPlaceholder?: Record<"default" | string, RuntimeNode>;
     /** 组件父组件id */
     readonly __parentId: string;
+    /** 设计时为了强制让节点重新渲染设置的VNode key值 */
+    __design_key?: string;
     /** 组件唯一id */
     readonly id: string;
     /** 组件类型(HtmlTag或vue组件名称，DesignNode配置) */

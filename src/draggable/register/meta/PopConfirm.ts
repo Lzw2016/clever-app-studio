@@ -1,7 +1,7 @@
 import { createVNode } from "vue";
+import { VarType } from "@/draggable/types/Base";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 import PopConfirmSvg from "@/assets/images/pop-confirm.svg?component";
-import { VarType } from "@/draggable/types/Base";
 
 export default defineComponentMeta({
     type: "PopConfirm",
@@ -77,6 +77,7 @@ export default defineComponentMeta({
                             labelTips: "气泡提示框显示位置",
                             propsName: "placement",
                             defPropsValue: "top",
+                            updateVNodeKey: true,
                         },
                         {
                             cmp: "SelectSetter",
@@ -170,6 +171,7 @@ export default defineComponentMeta({
             type: "span",
             props: {
                 style: {
+                    display: "inline-block",
                     overflow: "hidden",
                     fontSize: "12px",
                     backgroundColor: "#f0f0f0",

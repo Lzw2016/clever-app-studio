@@ -1,6 +1,7 @@
 import lodash from "lodash";
 import { computed, markRaw, ref, useAttrs, watch } from "vue";
 import { isFunction, isStr, noValue } from "@/utils/Typeof";
+import { randomUID } from "@/utils/IDCreate";
 import { configRawValueName } from "@/draggable/Constant";
 import { ComponentParam } from "@/draggable/types/Base";
 import { DesignerState } from "@/draggable/models/DesignerState";
@@ -156,6 +157,7 @@ function applyValue<T = any>(props: SetterProps, state: SetterState, setter: any
             res = res || node.props[propsName] !== value;
             node.props[propsName] = value;
         }
+        if (props.updateVNodeKey && res) node.__design_key = randomUID("__design_key_", 18);
     }
     // 需要重新渲染 block
     if (res) {
