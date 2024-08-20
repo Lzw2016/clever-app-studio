@@ -69,6 +69,12 @@ export default defineComponentMeta({
                             defPropsValue: 80,
                         },
                         {
+                            cmp: "StringSetter",
+                            label: "字段提示",
+                            labelTips: "表单项额外提示",
+                            propsName: "extra",
+                        },
+                        {
                             cmp: "SelectSetter",
                             cmpProps: {
                                 clearable: true,
@@ -165,6 +171,18 @@ export default defineComponentMeta({
                             label: "单行消息",
                             labelTips: "当 validate-type 设置为 text 时，配置文本类型错误类型，可配置行内或者块级，不设置则为 absolute 定位",
                             propsName: "messageType",
+                        },
+                        // {
+                        //     cmp: "BoolSetter",
+                        //     label: "行内消息",
+                        //     labelTips: "当 validate-type 设置为 text 时，是否以行内形式展示校验信息(推荐使用 message-type 设置)",
+                        //     propsName: "inlineMessage",
+                        // },
+                        {
+                            cmp: "StringSetter",
+                            label: "错误文本",
+                            labelTips: "表单项错误文本，设置该值会使表单验证状态变为 error",
+                            propsName: "error",
                         },
                         {
                             cmp: "EditorSetter",
