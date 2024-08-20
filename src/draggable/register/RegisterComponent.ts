@@ -60,8 +60,8 @@ function registerComponent(componentManage: ComponentManage) {
         Form: "Form",
         FormItem: "FormItem",
         Input: "Input",
-
         InputNumber: "Numeric",
+
         Checkbox: "Checkbox",
         CheckboxGroup: "CheckboxGroup",
         Radio: "Radio",

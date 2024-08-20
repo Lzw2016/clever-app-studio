@@ -1,4 +1,5 @@
 import { createVNode } from "vue";
+import { VarType } from "@/draggable/types/Base";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 import { inputAutosize } from "@/draggable/register/JsonSchema";
 import InputSvg from "@/assets/images/input.svg?component";
@@ -8,7 +9,7 @@ export default defineComponentMeta({
     name: "文本输入",
     description: "",
     version: "0.0.1",
-    docLink: "",
+    docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
     icon: createVNode(InputSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
@@ -344,6 +345,7 @@ export default defineComponentMeta({
                             title: "失去焦点",
                             description: "监听输入框失去焦点事件",
                             name: "blur",
+                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
                             params: [
                                 {
                                     name: "event",
@@ -369,48 +371,48 @@ export default defineComponentMeta({
                         },
                         {
                             title: "值变更",
+                            description: "在 Input 值改变时触发",
                             name: "change",
+                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
+                            params: [],
+                            return: VarType.Void,
                         },
                         {
                             title: "清除值",
+                            description: "在点击由 clearable 属性生成的清空按钮时触发",
                             name: "clear",
+                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
+                            params: [],
+                            return: VarType.Void,
                         },
                         {
                             title: "获取焦点",
+                            description: "在 Input 获得焦点时触发",
                             name: "focus",
+                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
+                            params: [],
+                            return: VarType.Void,
                         },
                         {
-                            title: "移除标签",
-                            description: "监听多选时移除标签事件",
-                            name: "remove-tag",
-                        },
-                        {
-                            title: "点击新增按钮",
-                            description: "监听顶部新增按钮点击事件，同 top-create 属性一起使用",
-                            name: "top-create-click",
-                        },
-                        {
-                            title: "下拉框显示状态变化",
-                            description: "监听下拉弹框的显示隐藏状态",
-                            name: "visible-change",
+                            title: "输入事件",
+                            description: "输入值时触发事件",
+                            name: "input",
+                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
+                            params: [],
+                            return: VarType.Void,
                         },
                     ],
                 },
             ],
         },
-        style: {
-            componentStyles: [
-                { name: "测试1", class: "test_1 compact" },
-                { name: "测试2", class: "test_3 gorgeous" },
-            ],
-            // disableFont: true,
-            // disableBorder: true,
-            // disableSpacing: true,
-        },
+        style: {},
         advanced: {},
     },
     placeholder: {
+        // append: true,
         // prefix: true,
+        // prepend: true,
+        // suffix: true,
     },
     i18n: {},
 });

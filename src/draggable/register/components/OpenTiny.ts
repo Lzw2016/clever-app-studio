@@ -114,6 +114,7 @@ export {
     Form,
     FormItem,
     Input,
+    Numeric,
 
     // 导航组件
     Anchor,
@@ -149,7 +150,6 @@ export {
     DropTimes,
     FileUpload,
     IpAddress,
-    Numeric,
     Popeditor,
     PopUpload,
     Radio,
