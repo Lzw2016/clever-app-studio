@@ -278,7 +278,6 @@ const formRules: JSONSchema7 = {
 };
 
 const formRule: JSONSchema7 = {
-    type: "object",
     description: "表单验证规则",
     oneOf: [
         {
@@ -294,6 +293,31 @@ const formRule: JSONSchema7 = {
     definitions: formRulesDefinitions,
 };
 
+const inputAutosize: JSONSchema7 = {
+    description: "自适应内容高度",
+    oneOf: [
+        {
+            type: "boolean",
+            description: "自适应高度",
+        },
+        {
+            type: "object",
+            properties: {
+                minRows: {
+                    type: "integer",
+                    description: "最小行数",
+                    minimum: 1,
+                },
+                maxRows: {
+                    type: "integer",
+                    description: "最大行数",
+                    minimum: 1,
+                },
+            }
+        },
+    ],
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -302,4 +326,5 @@ export {
     popoverPopperOptions,
     formRules,
     formRule,
+    inputAutosize,
 }

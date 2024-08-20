@@ -1,5 +1,6 @@
 import { createVNode } from "vue";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
+import { inputAutosize } from "@/draggable/register/JsonSchema";
 import InputSvg from "@/assets/images/input.svg?component";
 
 export default defineComponentMeta({
@@ -83,12 +84,12 @@ export default defineComponentMeta({
                             cmp: "StringSetter",
                             label: "只读内容",
                             labelTips: "设置只读态时的文本内容区，如果没有则会使用 modelVale 的值作为只读文本",
-                            propsName: "display-only-content",
+                            propsName: "displayOnlyContent",
                         },
                         {
                             cmp: "BoolSetter",
                             label: "显示模式",
-                            propsName: "display-only",
+                            propsName: "displayOnly",
                             recalcAuxToolPosition: true,
                         },
                         {
@@ -104,13 +105,13 @@ export default defineComponentMeta({
                             cmp: "BoolSetter",
                             label: "显示密码",
                             labelTips: "是否显示切换密码图标",
-                            propsName: "show-password",
+                            propsName: "showPassword",
                         },
                         {
                             cmp: "BoolSetter",
                             label: "输入校验",
                             labelTips: "输入时是否触发表单的校验",
-                            propsName: "validate-event",
+                            propsName: "validateEvent",
                         },
                         {
                             cmp: "BoolSetter",
@@ -144,7 +145,7 @@ export default defineComponentMeta({
                             },
                             label: "头部图标",
                             labelTips: "输入框头部图标",
-                            propsName: "prefix-icon",
+                            propsName: "prefixIcon",
                             enableBind: false,
                         },
                         {
@@ -155,7 +156,7 @@ export default defineComponentMeta({
                             },
                             label: "尾部图标",
                             labelTips: "输入框尾部图标",
-                            propsName: "suffix-icon",
+                            propsName: "suffixIcon",
                             enableBind: false,
                         },
                     ],
@@ -173,20 +174,28 @@ export default defineComponentMeta({
                             cmp: "BoolSetter",
                             label: "字数限制",
                             labelTips: "是否显示输入字数统计，只在 type='text' 或 type='textarea' 时有效",
-                            propsName: "show-word-limit",
+                            propsName: "showWordLimit",
                         },
                         {
                             cmp: "NumberSetter",
+                            cmpProps: {
+                                min: 1,
+                            },
                             label: "输入行数",
                             labelTips: "输入框行数，只对 type='textarea' 有效",
                             propsName: "rows",
+                            recalcAuxToolPosition: true,
                         },
                         {
-                            cmp: "BoolSetter",
+                            cmp: "EditorSetter",
+                            cmpProps: {
+                                title: "自适应内容高度",
+                                jsonSchema: inputAutosize,
+                            },
                             label: "自动高度",
-                            // TODO 可传入对象
                             labelTips: "自适应内容高度，只对 type='textarea' 有效。可传入对象，如，{ minRows: 2, maxRows: 6 }",
                             propsName: "autosize",
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "SelectSetter",
@@ -213,7 +222,7 @@ export default defineComponentMeta({
                             cmp: "BoolSetter",
                             label: "自动展开",
                             labelTips: "设置文本域鼠标悬浮展开/收起，只对 type='textarea' 有效，最好搭配 autosize 一起使用",
-                            propsName: "hover-expand",
+                            propsName: "hoverExpand",
                         },
                     ],
                 },
