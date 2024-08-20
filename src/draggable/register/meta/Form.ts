@@ -216,9 +216,10 @@ export default defineComponentMeta({
                             },
                             label: "标签宽度",
                             labelTips: "表单中标签占位宽度",
-                            // propsName: "labelWidth",
+                            propsName: "labelWidth",
                             getPropsValue: props => {
                                 let labelWidth = lodash.trim(props.labelWidth);
+                                if (!labelWidth) return;
                                 if (labelWidth.endsWith("px")) {
                                     labelWidth = labelWidth.substring(0, labelWidth.length - 2);
                                 }

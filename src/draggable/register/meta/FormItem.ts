@@ -40,6 +40,7 @@ export default defineComponentMeta({
                                     props.label = value;
                                     blockInstance.opsForDesign.removePlaceholder(node.id, "label");
                                 } else {
+                                    delete props.label;
                                     blockInstance.opsForDesign.setPlaceholder(node.id, "label");
                                 }
                             },
@@ -56,6 +57,7 @@ export default defineComponentMeta({
                             propsName: "labelWidth",
                             getPropsValue: props => {
                                 let labelWidth = lodash.trim(props.labelWidth);
+                                if (!labelWidth) return;
                                 if (labelWidth.endsWith("px")) {
                                     labelWidth = labelWidth.substring(0, labelWidth.length - 2);
                                 }
