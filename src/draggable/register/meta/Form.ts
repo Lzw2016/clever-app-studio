@@ -18,7 +18,7 @@ export default defineComponentMeta({
                 minHeight: "150px",
                 border: "1px solid #ccc",
             },
-            labelWidth: "60px",
+            labelWidth: "75px",
             rules: {
                 f1: [
                     { required: true, message: "字段1必填", trigger: "blur" },

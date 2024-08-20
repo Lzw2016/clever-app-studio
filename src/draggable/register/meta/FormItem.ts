@@ -73,6 +73,7 @@ export default defineComponentMeta({
                             label: "字段提示",
                             labelTips: "表单项额外提示",
                             propsName: "extra",
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "SelectSetter",

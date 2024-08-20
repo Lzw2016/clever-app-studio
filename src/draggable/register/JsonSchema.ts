@@ -261,7 +261,6 @@ const formRules: JSONSchema7 = {
     description: "表单验证规则",
     patternProperties: {
         "^.+$": {
-            type: "object",
             oneOf: [
                 {
                     $ref: "#/definitions/FormItemRules",
