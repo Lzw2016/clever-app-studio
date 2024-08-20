@@ -109,6 +109,7 @@ export {
     Popconfirm,
     Popover,
     Skeleton,
+    Tooltip,
 
     // 导航组件
     Anchor,
@@ -168,7 +169,6 @@ export {
     // 提示组件
     Alert,
     Loading,
-    Tooltip,
     Modal,
     Notify,
     // 其他组件

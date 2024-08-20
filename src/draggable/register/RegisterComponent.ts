@@ -55,6 +55,7 @@ function registerComponent(componentManage: ComponentManage) {
         PopConfirm: "Popconfirm",
         Popover: "Popover",
         Skeleton: "Skeleton",
+        Tooltip: "Tooltip",
 
         // 表单组件
         Form: "Form",

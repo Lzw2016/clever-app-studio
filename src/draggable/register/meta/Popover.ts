@@ -238,6 +238,7 @@ export default defineComponentMeta({
         advanced: {},
     },
     placeholder: {
+        // default: true,
         reference: {
             type: "span",
             props: {
