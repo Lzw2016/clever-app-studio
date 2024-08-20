@@ -13,9 +13,6 @@ export default defineComponentMeta({
         props: {
             placeholder: "请输入",
             type: "text",
-            style: {
-                maxWidth: "300px",
-            },
         },
     },
     designDirectives: {

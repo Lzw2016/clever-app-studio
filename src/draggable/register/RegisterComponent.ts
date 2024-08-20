@@ -56,11 +56,11 @@ function registerComponent(componentManage: ComponentManage) {
         Popover: "Popover",
         Skeleton: "Skeleton",
         Tooltip: "Tooltip",
-
-        // 表单组件
+        // 表单
         Form: "Form",
         FormItem: "FormItem",
         Input: "Input",
+
         InputNumber: "Numeric",
         Checkbox: "Checkbox",
         CheckboxGroup: "CheckboxGroup",

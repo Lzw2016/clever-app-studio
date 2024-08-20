@@ -52,15 +52,9 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
                 ],
             },
             {
-                title: "容器(功能)",
-                types: [
-                    "Badge", "Watermark", "PopConfirm", "Popover", "Skeleton", "Tooltip",
-                ],
-            },
-            {
                 title: "表单",
                 types: [
-                    "Form", "FormItem",
+                    "Form",
                     "Input", "InputNumber", "Select", "DatePicker", "TimePicker", "DropTimes", "TimeSelect",
                     "Switch", "Checkbox", "CheckboxGroup", "Radio", "RadioGroup", "Slider", "ColorPicker", "FileUpload",
                     "AutoComplete", "Cascader", "Search", "Rate", "Transfer", "TextPopup", "IpAddress",
@@ -73,6 +67,12 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
                     "Carousel", "Collapse", "UserHead", "Card", "Alert", "Progress",
                     "ScrollText", "Timeline", "CalendarView", "FloatBar", "FilterPanel",
                     "Guide", "Fullscreen", "Wizard", "Milestone", "BulletinBoard", "Crop",
+                ],
+            },
+            {
+                title: "容器(功能)",
+                types: [
+                    "Badge", "Watermark", "PopConfirm", "Popover", "Skeleton", "Tooltip",
                 ],
             },
             {
@@ -95,6 +95,7 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
 const materialDependence: MaterialDependence = {
     Layout: ["Row", "Col"],
     Tabs: ["TabItem"],
+    Form: ["FormItem", "Input", "Row", "Col"],
 };
 
 export {

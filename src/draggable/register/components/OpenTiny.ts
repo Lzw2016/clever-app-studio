@@ -110,6 +110,10 @@ export {
     Popover,
     Skeleton,
     Tooltip,
+    // 表单
+    Form,
+    FormItem,
+    Input,
 
     // 导航组件
     Anchor,
@@ -144,9 +148,6 @@ export {
     DatePicker,
     DropTimes,
     FileUpload,
-    Form,
-    FormItem,
-    Input,
     IpAddress,
     Numeric,
     Popeditor,

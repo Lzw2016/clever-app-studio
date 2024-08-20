@@ -449,6 +449,7 @@ class AllBlockOperation implements BlockOperation, BlockOperationById, BlockDesi
         const removeNodes: Array<RuntimeComponentSlotsItem> = [];
         const delAllIds: Array<string> = [];
         const slot = node.slots[slotName];
+        if (!slot) return removeNodes;
         for (let item of slot) {
             removeNodes.push(item);
             if (isObj(item)) {

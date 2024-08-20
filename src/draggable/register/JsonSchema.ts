@@ -192,10 +192,115 @@ const popoverPopperOptions: JSONSchema7 = {
     },
 };
 
+const formRulesDefinitions: JSONSchema7["definitions"] = {
+    FormTrigger: {
+        enum: ["change", "blur"],
+    },
+    FormItemRules: {
+        type: "object",
+        properties: {
+            required: {
+                type: "boolean",
+                description: "是否必填",
+            },
+            message: {
+                type: "string",
+                description: "校验错误的提示",
+            },
+            type: {
+                enum: [
+                    "date",
+                    "dateTime",
+                    "float",
+                    "array",
+                    "string",
+                    "number",
+                    "url",
+                    "time",
+                    "email",
+                    "object",
+                    "boolean",
+                    "enum",
+                ],
+                description: "内置的类型校验",
+            },
+            trigger: {
+                oneOf: [
+                    {
+                        $ref: "#/definitions/FormTrigger",
+                    },
+                    {
+                        type: "array",
+                        items: {
+                            $ref: "#/definitions/FormTrigger",
+                        }
+                    },
+                ],
+                description: "校验触发时机， 默认为 ['change', 'blur'] 两种场景都触发，如果仅在主动调用校验方式时触发，可设置为空数组 []",
+            },
+            validator: {
+                type: "array",
+                items: {
+                    type: "string",
+                },
+                description: "同步检验函数，调用回调传递错误信息。",
+            },
+            asyncValidator: {
+                type: "array",
+                items: {
+                    type: "string",
+                },
+                description: "异步校验函数，resolve则表示校验成功，reject表示校验失败。",
+            },
+        },
+    },
+};
+
+const formRules: JSONSchema7 = {
+    type: "object",
+    description: "表单验证规则",
+    patternProperties: {
+        "^.+$": {
+            type: "object",
+            oneOf: [
+                {
+                    $ref: "#/definitions/FormItemRules",
+                },
+                {
+                    type: "array",
+                    items: {
+                        $ref: "#/definitions/FormItemRules",
+                    },
+                },
+            ],
+        }
+    },
+    definitions: formRulesDefinitions,
+};
+
+const formRule: JSONSchema7 = {
+    type: "object",
+    description: "表单验证规则",
+    oneOf: [
+        {
+            $ref: "#/definitions/FormItemRules",
+        },
+        {
+            type: "array",
+            items: {
+                $ref: "#/definitions/FormItemRules",
+            },
+        },
+    ],
+    definitions: formRulesDefinitions,
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
     dropdownMenuOptions,
     watermarkFont,
     popoverPopperOptions,
+    formRules,
+    formRule,
 }

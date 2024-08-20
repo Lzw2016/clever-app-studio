@@ -35,7 +35,9 @@ function registerComponentMeta(componentManage: ComponentManage) {
     componentManage.registerAsyncComponentMeta("Popover", () => import("@/draggable/register/meta/Popover").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Skeleton", () => import("@/draggable/register/meta/Skeleton").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Tooltip", () => import("@/draggable/register/meta/Tooltip").then(module => module.default));
+    // 表单
     componentManage.registerAsyncComponentMeta("Form", () => import("@/draggable/register/meta/Form").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("FormItem", () => import("@/draggable/register/meta/FormItem").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Input", () => import("@/draggable/register/meta/Input").then(module => module.default));
     componentManage.registerAsyncComponentMeta("InputNumber", () => import("@/draggable/register/meta/InputNumber").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Select", () => import("@/draggable/register/meta/Select").then(module => module.default));
