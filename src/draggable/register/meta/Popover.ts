@@ -65,6 +65,7 @@ export default defineComponentMeta({
                             labelTips: "弹出层出现的位置",
                             propsName: "placement",
                             defPropsValue: "bottom",
+                            updateVNodeKey: true,
                         },
                         {
                             cmp: "SelectSetter",
@@ -81,6 +82,7 @@ export default defineComponentMeta({
                             watchValue: true,
                             propsName: "trigger",
                             defPropsValue: "hover",
+                            updateVNodeKey: true,
                         },
                         {
                             cmp: "NumberSetter",
@@ -137,6 +139,7 @@ export default defineComponentMeta({
                             labelTips: "是否显示弹出层的箭头",
                             propsName: "visibleArrow",
                             defPropsValue: true,
+                            updateVNodeKey: true,
                         },
                         {
                             cmp: "NumberSetter",

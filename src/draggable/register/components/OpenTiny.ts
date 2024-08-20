@@ -67,6 +67,7 @@ import {
     ScrollText,
     Search,
     Select,
+    Skeleton,
     Slider,
     Split,
     Switch,
@@ -107,6 +108,7 @@ export {
     Watermark,
     Popconfirm,
     Popover,
+    Skeleton,
 
     // 导航组件
     Anchor,

@@ -54,6 +54,7 @@ function registerComponent(componentManage: ComponentManage) {
         Watermark: "Watermark",
         PopConfirm: "Popconfirm",
         Popover: "Popover",
+        Skeleton: "Skeleton",
 
         // 表单组件
         Form: "Form",
