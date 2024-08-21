@@ -14,6 +14,13 @@ export default defineComponentMeta({
             style: {},
         },
     },
+    designDirectives: {
+        "disable-event": {
+            // value: {
+            //     maxDepth: 100,
+            // },
+        },
+    },
     setter: {
         props: {
             groups: [],
@@ -22,8 +29,7 @@ export default defineComponentMeta({
             groups: [],
         },
         style: {},
-        advanced: {
-        },
+        advanced: {},
     },
     placeholder: {},
     i18n: {},
