@@ -320,7 +320,7 @@ const inputAutosize: JSONSchema7 = {
 
 const numericFormat: JSONSchema7 = {
     type: "object",
-    description: "",
+    description: "数字格式化置项",
     properties: {
         fraction: {
             type: "integer",
@@ -367,6 +367,139 @@ const numericFormat: JSONSchema7 = {
     },
 };
 
+const selectCacheOp: JSONSchema7 = {
+    type: "object",
+    description: "选择器本地缓存配置",
+    properties: {
+        key: {
+            type: "string",
+            description: "本地缓存的唯一 key 值",
+        },
+        sortBy: {
+            enum: ["frequency", "time"],
+            description: "排序的字段，默认 frequency (频次)",
+        },
+        sort: {
+            enum: ["desc", "asc"],
+            description: "排序方式，默认 desc (降序)",
+        },
+        dataKey: {
+            type: "string",
+            description: "数据中的唯一标识的 key 名称,默认 value",
+        },
+        highlightClass: {
+            type: "string",
+            description: "个性化高亮 class 名称，默认：memorize-highlight",
+        },
+        highlightNum: {
+            type: "string",
+            description: "高亮个性化的条数,默认：Infinity",
+        },
+        cacheNum: {
+            type: "integer",
+            description: "存储个性化的条数,默认：Infinity",
+        },
+        serialize: {
+            type: "array",
+            description: "本地存储序列化方法,默认：JSON.stringify",
+            items: {
+                type: "string",
+            },
+        },
+        deserialize: {
+            type: "array",
+            description: "本地存储序反列化方法，默认：JSON.parse",
+            items: {
+                type: "string",
+            },
+        },
+    },
+};
+
+const selectTreeOp: JSONSchema7 = {
+    type: "object",
+    description: "下拉树配置",
+    properties: {
+        data: {
+            type: "array",
+            description: "树数据",
+            items: {
+                $ref: "#/definitions/TreeNode",
+            },
+        },
+    },
+    definitions: {
+        TreeNode: {
+            type: "object",
+            description: "下拉树节点",
+            properties: {
+                id: {
+                    type: ["string", "integer"],
+                    description: "树节点唯一标识",
+                },
+                label: {
+                    type: "string",
+                    description: "表格列配置",
+                },
+                children: {
+                    type: "array",
+                    items: {
+                        $ref: "#/definitions/TreeNode",
+                    },
+                },
+            },
+        },
+    },
+};
+
+const selectGridOp: JSONSchema7 = {
+    type: "object",
+    description: "下拉表格配置",
+    properties: {
+        columns: {
+            type: "array",
+            description: "表格列配置",
+            // items: {}, TODO 列配置，用法同 Grid
+        },
+        data: {
+            type: "array",
+            description: "表格数据配置",
+            // items: {}, TODO 表格数据，用法同 Grid
+        },
+    },
+};
+
+const selectOptions: JSONSchema7 = {
+    type: "array",
+    description: "选项列表配置",
+    items: {
+        type: "object",
+        description: "列表项配置",
+        properties: {
+            value: {
+                type: ["string", "integer"],
+                description: "选项值",
+            },
+            label: {
+                type: "string",
+                description: "选项文本",
+            },
+            disabled: {
+                type: "boolean",
+                description: "是否禁用",
+            },
+            icon: {
+                type: "object",
+                description: "选项图标",
+            },
+            required: {
+                type: "boolean",
+                description: "是否必须",
+            },
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -377,4 +510,8 @@ export {
     formRule,
     inputAutosize,
     numericFormat,
+    selectCacheOp,
+    selectTreeOp,
+    selectGridOp,
+    selectOptions,
 }
