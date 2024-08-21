@@ -318,6 +318,55 @@ const inputAutosize: JSONSchema7 = {
     ],
 };
 
+const numericFormat: JSONSchema7 = {
+    type: "object",
+    description: "",
+    properties: {
+        fraction: {
+            type: "integer",
+            description: "保留小数位数",
+        },
+        rounding: {
+            type: "integer",
+            minimum: 0,
+            maximum: 9,
+            description: "舍入点，0-9之间的数字，如配置为7时则为6舍7入，默认为5（四舍五入）;配置为0或>9将会进行截取",
+        },
+        prefix: {
+            type: "string",
+            description: "前置标识",
+        },
+        groupSize: {
+            type: "integer",
+            description: "整数部分分组间隔，即第一个分组位数",
+        },
+        secondaryGroupSize: {
+            type: "integer",
+            description: "整数部分第二级分组间隔，不设置或为0时 自动取groupSize",
+        },
+        groupSeparator: {
+            type: "string",
+            description: "整数部分分组分隔符",
+        },
+        decimalSeparator: {
+            type: "string",
+            description: "小数点符号",
+        },
+        fractionGroupSize: {
+            type: "integer",
+            description: "小数部分分组间隔",
+        },
+        fractionGroupSeparator: {
+            type: "string",
+            description: "小数分组分隔符",
+        },
+        suffix: {
+            type: "string",
+            description: "后置标识",
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -327,4 +376,5 @@ export {
     formRules,
     formRule,
     inputAutosize,
+    numericFormat,
 }

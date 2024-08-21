@@ -302,6 +302,18 @@ body .tiny-modal > .tiny-modal__box > .tiny-modal__body > .tiny-modal__content {
 }
 
 
+/* input 输入框 */
+body .tiny-input input[type="number"].tiny-input__inner {
+    padding-right: 0;
+}
+
+
+/* number 输入框 */
+body .tiny-numeric.is-controls-right .tiny-numeric__input.tiny-numeric__controls-position input.tiny-numeric__input-inner {
+    text-align: left;
+}
+
+
 /* select下拉选择 */
 body .tiny-select-dropdown.tiny-popper.unmax-height > .tiny-scrollbar {
     height: 100%;

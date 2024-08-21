@@ -337,21 +337,28 @@ export default defineComponentMeta({
         },
         events: {
             includeInnerEvents: true,
+            excludeInnerEvents: ["表单事件"],
             groups: [
                 {
                     title: "组件事件",
                     items: [
                         {
+                            title: "获取焦点",
+                            description: "在 Input 获得焦点时触发",
+                            name: "focus",
+                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
+                            params: [
+                                { name: "event", type: "FocusEvent", note: "事件对象" },
+                            ],
+                            return: VarType.Void,
+                        },
+                        {
                             title: "失去焦点",
-                            description: "监听输入框失去焦点事件",
+                            description: "在 Input 失去焦点时触发",
                             name: "blur",
                             docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
                             params: [
-                                {
-                                    name: "event",
-                                    type: "MouseEvent",
-                                    note: "事件对象",
-                                },
+                                { name: "event", type: "FocusEvent", note: "事件对象" },
                             ],
                             return: "void",
                             examples: [
@@ -370,33 +377,29 @@ export default defineComponentMeta({
                             ],
                         },
                         {
+                            title: "输入事件",
+                            description: "输入值时触发事件",
+                            name: "input",
+                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
+                            params: [
+                                { name: "event", type: "InputEvent", note: "事件对象" },
+                            ],
+                            return: VarType.Void,
+                        },
+                        {
                             title: "值变更",
                             description: "在 Input 值改变时触发",
                             name: "change",
                             docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
-                            params: [],
+                            params: [
+                                { name: "newVal", type: "number | string | undefined", note: "" },
+                            ],
                             return: VarType.Void,
                         },
                         {
                             title: "清除值",
                             description: "在点击由 clearable 属性生成的清空按钮时触发",
                             name: "clear",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
-                            params: [],
-                            return: VarType.Void,
-                        },
-                        {
-                            title: "获取焦点",
-                            description: "在 Input 获得焦点时触发",
-                            name: "focus",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
-                            params: [],
-                            return: VarType.Void,
-                        },
-                        {
-                            title: "输入事件",
-                            description: "输入值时触发事件",
-                            name: "input",
                             docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
                             params: [],
                             return: VarType.Void,
