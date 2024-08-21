@@ -116,6 +116,9 @@ interface Setter<Props extends BaseProps = BaseProps, TargetProps = any> {
     recalcAuxToolPositionDelay?: SetterProps['recalcAuxToolPositionDelay'];
 }
 
+/** modelValue属性设置器 */
+type ModelValueSetter = Omit<Setter, "isHideSetter" | "propsName">;
+
 /** 设置器分组 */
 interface SetterGroup {
     /** 分组标题 */
@@ -180,6 +183,10 @@ interface PropsPanel {
     formItemProps?: FormItemProps;
     /** 是否启用数据绑定(v-model) */
     enableVModel?: boolean;
+    /** 数据绑定说明 */
+    modelLabelTips?: string;
+    /** modelValue属性设置器配置 */
+    modelValueSetter?: Partial<ModelValueSetter>;
     /** 设置器分组集合 */
     groups: Array<SetterGroup>;
 }
@@ -426,6 +433,7 @@ export type {
     SetterProps,
     SetterState,
     Setter,
+    ModelValueSetter,
     FormProps,
     FormItemProps,
     SetterGroup,

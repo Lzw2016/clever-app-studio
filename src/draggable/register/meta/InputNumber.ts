@@ -24,6 +24,13 @@ export default defineComponentMeta({
     setter: {
         props: {
             enableVModel: true,
+            modelValueSetter: {
+                cmp: "StringSetter",
+                cmpProps: {
+                    type: "number",
+                    clearable: false,
+                },
+            },
             groups: [
                 {
                     title: "常用",

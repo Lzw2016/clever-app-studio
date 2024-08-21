@@ -1,18 +1,26 @@
 <script setup lang="ts">
 import lodash from "lodash";
 import { computed, getCurrentInstance, onBeforeMount, reactive, ref, watch } from "vue";
+import { createReusableTemplate } from '@vueuse/core'
 import { Collapse, CollapseItem, Form, FormItem, Input, Loading, Tooltip } from "@opentiny/vue";
 import { layer } from "@layui/layer-vue";
 import { hasValue, isStr, noValue } from "@/utils/Typeof";
 import { isHtmlTag } from "@/draggable/utils/HtmlTag";
 import { applyDirectivesValue, forceUpdateBlock, forceUpdatePropsPanel } from "@/draggable/utils/SetterUtils";
-import { PropsPanel, PropsPanelExpose, Setter, SetterGroup, SetterProps } from "@/draggable/types/ComponentMeta";
+import { ModelValueSetter, PropsPanel, PropsPanelExpose, Setter, SetterGroup, SetterProps } from "@/draggable/types/ComponentMeta";
 import { RuntimeNode } from "@/draggable/types/RuntimeBlock";
 import { DesignerState } from "@/draggable/models/DesignerState";
 import { DesignerEngine } from "@/draggable/DesignerEngine";
 import BindSetter from "@/draggable/components/setter/BindSetter.vue";
 import Braces from "@/assets/images/braces.svg?component";
 
+interface DefineSetterSlot {
+    setter: Setter;
+    isInnerProp: boolean;
+    forceUpdateForBind: number;
+}
+
+const [DefineSetter, ReuseSetter] = createReusableTemplate<DefineSetterSlot>();
 const vLoading = Loading.directive;
 
 // 定义组件选项
@@ -38,6 +46,8 @@ const props = withDefaults(defineProps<SetterPropsPanelProps>(), {});
 
 // 定义 State 类型
 interface SetterPropsPanelState {
+    /** 强制组件更新的响应式变量 */
+    forceUpdateForBind: number;
     /** 加载资源中 */
     loading: boolean;
     /** 加载错误对象 */
@@ -60,6 +70,7 @@ const data = {
 const refInputRef = ref<any>();
 // 当前活动的设计器状态数据
 const setterState = computed(() => props.designerEngine.activeDesignerState?.setterShareState);
+// 当只选择了一个节点时，选择的节点
 const selectNode = computed(() => {
     const selectNodes = props.designerState.selectNodes;
     if (selectNodes.length === 1) {
@@ -67,7 +78,6 @@ const selectNode = computed(() => {
     }
     return;
 });
-
 // 初始化设计器表单组件
 onBeforeMount(() => loadSetterComponent(props.propsPanel).finally());
 // 动态加载设计器表单组件
@@ -110,11 +120,15 @@ function formProps() {
     return obj;
 }
 
-function getFormItemProps(setter: Setter) {
+function getFormItemProps(setter: Setter, isInnerProp: boolean) {
     const obj: any = {
         ...props.propsPanel.formItemProps,
     };
     if (setter.label) obj.label = setter.label;
+    if (isInnerProp) {
+        obj.size = "mini";
+        obj.labelPosition = "left";
+    }
     return obj;
 }
 
@@ -211,6 +225,7 @@ function toggleBind(setter: Setter, isBound: boolean) {
             node.props[propsName] = node.__tmp_bind_props[propsName] ?? "{{  }}";
         }
     }
+    state.forceUpdateForBind++;
     instance?.proxy?.$forceUpdate();
     const blockInstance = props.designerState.blockInstance;
     if (!blockInstance) return;
@@ -268,6 +283,26 @@ function setSetterRef(setterRef: any, setter: Setter) {
     }
 }
 
+function getModelValueSetter(modelValueSetter?: Partial<ModelValueSetter>): Setter {
+    let setter: Setter = {
+        cmp: "EditorSetter",
+        cmpProps: {
+            title: "设置组件值",
+        },
+        label: "组件值",
+        labelTips: "数据单向绑定modelValue",
+        propsName: "modelValue",
+    };
+    if (modelValueSetter) {
+        const { cmpProps, ...other } = modelValueSetter;
+        if (cmpProps) {
+            setter.cmpProps = { ...(setter.cmpProps ?? {}), ...cmpProps };
+        }
+        setter = { ...setter, ...other };
+    }
+    return setter;
+}
+
 // 定义组件公开内容
 defineExpose<PropsPanelExpose>({
     setterRefs: data.setterRefs,
@@ -275,6 +310,56 @@ defineExpose<PropsPanelExpose>({
 </script>
 
 <template>
+    <DefineSetter v-slot="{ setter, isInnerProp, forceUpdateForBind }">
+        <FormItem
+            v-if="setter.label"
+            v-bind="getFormItemProps(setter, isInnerProp)"
+        >
+            <template #label v-if="setter.labelTips">
+                <Tooltip effect="dark" placement="left" :content="setter.labelTips">
+                    <span class="setter-label-tips">{{ setter.label }}</span>
+                </Tooltip>
+            </template>
+            <div class="flex-row-container" style="align-items: center;">
+                <div class="flex-item-fill flex-row-container" style="align-items: center;">
+                    <template v-if="!state.loading">
+                        <BindSetter
+                            v-if="isBound(setter)"
+                            v-bind="getSetterProps(setter)"
+                            :ref="setterRef => setSetterRef(setterRef, setter)"
+                            :designer-state="props.designerState"
+                            :block-instance="props.designerState.blockInstance"
+                            :nodes="props.designerState.selectNodes"
+                            :contain-braces="true"
+                            :only-bind-data="false"
+                        />
+                        <component v-else :is="getComponent(setter.cmp)" v-bind="getSetterProps(setter)"/>
+                    </template>
+                </div>
+                <span
+                    v-if="setter.enableBind !== false && hasValue(setter.propsName)"
+                    :class="{
+                        'flex-item-fixed': true,
+                        'flex-row-container': true,
+                        'flex-center': true,
+                        'setter-button': true,
+                        'setter-button-active': isBound(setter),
+                    }"
+                    title="绑定变量"
+                    @click="toggleBind(setter, isBound(setter))"
+                >
+                    <Braces stroke-width="1.8" style="width: 16px; height: 16px;"/>
+                </span>
+                <span v-else class="flex-item-fixed setter-button-placeholder"/>
+            </div>
+        </FormItem>
+        <component
+            v-else-if="!state.loading"
+            :is="getComponent(setter.cmp)"
+            v-bind="getSetterProps(setter)"
+            :ref="setterRef => setSetterRef(setterRef, setter)"
+        />
+    </DefineSetter>
     <Form
         v-loading="state.loading"
         tiny-loading__text="加载中..."
@@ -315,7 +400,7 @@ defineExpose<PropsPanelExpose>({
                 </FormItem>
                 <FormItem v-if="props.propsPanel.enableVModel && hasValue(props.designerState.blockInstance)" size="mini" labelPosition="left">
                     <template #label>
-                        <Tooltip effect="dark" placement="left" content="数据双向绑定v-model">
+                        <Tooltip effect="dark" placement="left" :content="props.propsPanel.modelLabelTips ?? '数据双向绑定v-model'">
                             <span class="setter-label-tips">绑定变量</span>
                         </Tooltip>
                     </template>
@@ -323,18 +408,28 @@ defineExpose<PropsPanelExpose>({
                         <div class="flex-item-fill flex-row-container" style="align-items: center;">
                             <BindSetter
                                 :designer-state="props.designerState"
-                                :block-instance="props.designerState.blockInstance"
+                                :block-instance="props.designerState.blockInstance!"
                                 :nodes="props.designerState.selectNodes"
                                 placeholder="输入绑定变量"
                                 :contain-braces="false"
                                 :only-bind-data="true"
                                 :get-props-value="(_, node) => node.directives.model"
-                                :apply-props-value="(_, value, node) => applyDirectivesValue('model', value, node)"
+                                :apply-props-value="(nodeProps, value, node) => {
+                                    delete nodeProps.modelValue;
+                                    applyDirectivesValue('model', value, node);
+                                    instance?.proxy?.$forceUpdate();
+                                }"
                             />
                         </div>
                         <span class="setter-button-placeholder"/>
                     </div>
                 </FormItem>
+                <ReuseSetter
+                    v-if="props.propsPanel.enableVModel && hasValue(props.designerState.blockInstance) && noValue(selectNode?.directives.model)"
+                    :setter="getModelValueSetter(props.propsPanel.modelValueSetter)"
+                    :isInnerProp="true"
+                    :forceUpdateForBind="state.forceUpdateForBind"
+                />
             </CollapseItem>
             <CollapseItem
                 class="settings-items"
@@ -342,54 +437,11 @@ defineExpose<PropsPanelExpose>({
                 :name="group.title"
                 :title="group.title"
             >
-                <template v-for="item in group.items">
-                    <FormItem
-                        v-if="item.label"
-                        v-bind="getFormItemProps(item)"
-                    >
-                        <template #label v-if="item.labelTips">
-                            <Tooltip effect="dark" placement="left" :content="item.labelTips">
-                                <span class="setter-label-tips">{{ item.label }}</span>
-                            </Tooltip>
-                        </template>
-                        <div class="flex-row-container" style="align-items: center;">
-                            <div class="flex-item-fill flex-row-container" style="align-items: center;">
-                                <template v-if="!state.loading">
-                                    <BindSetter
-                                        v-if="isBound(item)"
-                                        v-bind="getSetterProps(item)"
-                                        :ref="setterRef => setSetterRef(setterRef, item)"
-                                        :designer-state="props.designerState"
-                                        :block-instance="props.designerState.blockInstance"
-                                        :nodes="props.designerState.selectNodes"
-                                        :contain-braces="true"
-                                        :only-bind-data="false"
-                                    />
-                                    <component v-else :is="getComponent(item.cmp)" v-bind="getSetterProps(item)"/>
-                                </template>
-                            </div>
-                            <span
-                                v-if="item.enableBind !== false && hasValue(item.propsName)"
-                                :class="{
-                                    'flex-item-fixed': true,
-                                    'flex-row-container': true,
-                                    'flex-center': true,
-                                    'setter-button': true,
-                                    'setter-button-active': isBound(item),
-                                }"
-                                title="绑定变量"
-                                @click="toggleBind(item, isBound(item))"
-                            >
-                                <Braces stroke-width="1.8" style="width: 16px; height: 16px;"/>
-                            </span>
-                            <span v-else class="flex-item-fixed setter-button-placeholder"/>
-                        </div>
-                    </FormItem>
-                    <component
-                        v-else-if="!state.loading"
-                        :is="getComponent(item.cmp)"
-                        v-bind="getSetterProps(item)"
-                        :ref="setterRef => setSetterRef(setterRef, item)"
+                <template v-for="setter in group.items">
+                    <ReuseSetter
+                        :setter="setter"
+                        :isInnerProp="false"
+                        :forceUpdateForBind="state.forceUpdateForBind"
                     />
                 </template>
             </CollapseItem>

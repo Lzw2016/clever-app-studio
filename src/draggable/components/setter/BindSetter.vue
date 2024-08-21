@@ -11,6 +11,7 @@ import { BindTreeNode, getBindTreeNode, getVModelTreeNode } from "@/draggable/ut
 // 定义组件选项
 defineOptions({
     name: 'BindSetter',
+    inheritAttrs: false,
 });
 
 // 当前组件对象
@@ -107,6 +108,7 @@ defineExpose<SetterExpose>({
         :placeholder="props.placeholder"
         v-model="state.value"
         @change="valueChange"
+        type="text"
     >
         <template #suffix>
             <FontAwesomeIcon class="icons-button" :icon="faMagnifyingGlass" @click="showModal"/>

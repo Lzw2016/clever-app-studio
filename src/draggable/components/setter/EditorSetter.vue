@@ -166,6 +166,7 @@ defineExpose<SetterExpose>({
     <div style="width: 100%;">
         <Input
             style="width: 100%;"
+            size="mini"
             :clearable="false"
             :readonly="true"
             :modelValue="inputValue"
