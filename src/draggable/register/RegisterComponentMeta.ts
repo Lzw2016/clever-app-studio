@@ -47,6 +47,7 @@ function registerComponentMeta(componentManage: ComponentManage) {
     componentManage.registerAsyncComponentMeta("TimeSelect", () => import("@/draggable/register/meta/TimeSelect").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Switch", () => import("@/draggable/register/meta/Switch").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Checkbox", () => import("@/draggable/register/meta/Checkbox").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("CheckboxButton", () => import("@/draggable/register/meta/CheckboxButton").then(module => module.default));
     componentManage.registerAsyncComponentMeta("CheckboxGroup", () => import("@/draggable/register/meta/CheckboxGroup").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Radio", () => import("@/draggable/register/meta/Radio").then(module => module.default));
     componentManage.registerAsyncComponentMeta("RadioGroup", () => import("@/draggable/register/meta/RadioGroup").then(module => module.default));

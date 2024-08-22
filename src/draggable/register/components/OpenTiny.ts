@@ -120,6 +120,11 @@ export {
     DatePicker,
     TimePicker,
     DropTimes,
+    TimeSelect,
+    Switch,
+    Checkbox,
+    CheckboxButton,
+    CheckboxGroup,
 
     // 导航组件
     TextPopup,
@@ -149,9 +154,6 @@ export {
     Autocomplete,
     Cascader,
     CascaderPanel,
-    Checkbox,
-    CheckboxGroup,
-    CheckboxButton,
     FileUpload,
     IpAddress,
     Popeditor,
@@ -161,8 +163,6 @@ export {
     RadioButton,
     Search,
     Slider,
-    Switch,
-    TimeSelect,
     ColorPicker,
     ColorSelectPanel,
     // 数据组件

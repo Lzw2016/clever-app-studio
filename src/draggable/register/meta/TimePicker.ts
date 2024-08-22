@@ -70,6 +70,7 @@ export default defineComponentMeta({
                         {
                             cmp: "BoolSetter",
                             label: "追加body",
+                            labelTips: "弹出显示内容是否追加到html的body的末尾位置",
                             propsName: "popperAppendToBody",
                             defPropsValue: true,
                         },
@@ -166,7 +167,7 @@ export default defineComponentMeta({
                         {
                             cmp: "StringSetter",
                             label: "下拉样式",
-                            labelTips: "为 DatePicker 下拉弹框添加的 class 类名",
+                            labelTips: "为 TimePicker 下拉弹框添加的 class 类名",
                             propsName: "popperClass",
                         },
                     ],

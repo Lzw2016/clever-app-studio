@@ -591,6 +591,67 @@ const timePickerOptions: JSONSchema7 = {
     },
 };
 
+const checkboxDefinitions: JSONSchema7["definitions"] = {
+    CheckboxGroupOptions: {
+        type: "object",
+        description: "组件配置",
+        properties: {
+            label: {
+                type: "string",
+                description: "选中时对应的值",
+            },
+            text: {
+                type: "string",
+                description: "描述文本",
+            },
+            disabled: {
+                type: "boolean",
+                description: "是否禁用",
+            },
+            checked: {
+                type: "boolean",
+                description: "是否默认选中",
+            },
+            events: {
+                type: "object",
+                description: "事件",
+                properties: {
+                    click: {
+                        type: "array",
+                        description: "点击事件。(e: Event) => void",
+                        items: {
+                            type: "string",
+                        },
+                    },
+                    change: {
+                        type: "array",
+                        description: "change事件。(e: Event) => void",
+                        items: {
+                            type: "string",
+                        },
+                    },
+                },
+            },
+        },
+    },
+};
+
+const checkboxButtonEvents: JSONSchema7 = {
+    type: "object",
+    description: "组件配置",
+    $ref: "#/definitions/CheckboxGroupOptions",
+    definitions: checkboxDefinitions,
+};
+
+const checkboxGroupOptions: JSONSchema7 = {
+    type: "array",
+    description: "checkbox-group 子项配置列表",
+    items: {
+        $ref: "#/definitions/CheckboxGroupOptions",
+    },
+    definitions: checkboxDefinitions,
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -608,4 +669,6 @@ export {
     datePickerStep,
     datePickerOptions,
     timePickerOptions,
+    checkboxButtonEvents,
+    checkboxGroupOptions,
 }

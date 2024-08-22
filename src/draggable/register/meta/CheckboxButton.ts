@@ -1,31 +1,23 @@
 import lodash from "lodash";
 import { createVNode } from "vue";
 import { hasValue } from "@/utils/Typeof";
-import { childSlotName } from "@/draggable/Constant";
 import { VarType } from "@/draggable/types/Base";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
-import CheckboxSvg from "@/assets/images/checkbox.svg?component";
+import { checkboxButtonEvents } from "@/draggable/register/JsonSchema";
+import CheckboxButtonSvg from "@/assets/images/checkbox.svg?component";
 
-// noinspection DuplicatedCode
 function applyPropsValue(propName: string, props: any, value: any) {
     value = lodash.trim(value);
     if (value.length <= 0) {
         // undefined
         value = undefined;
     } else {
-        // boolean
-        if ("false" === value) {
-            value = false;
-        } else if ("true" === value) {
-            value = true;
+        const num = lodash.toNumber(value);
+        // number
+        if (!isNaN(num)) {
+            value = num;
         } else {
-            const num = lodash.toNumber(value);
-            // number
-            if (!isNaN(num)) {
-                value = num;
-            } else {
-                // string
-            }
+            // string
         }
     }
     if (hasValue(value)) {
@@ -36,15 +28,15 @@ function applyPropsValue(propName: string, props: any, value: any) {
 }
 
 export default defineComponentMeta({
-    type: "Checkbox",
-    name: "多选框",
+    type: "CheckboxButton",
+    name: "复选按钮",
     description: "",
     version: "0.0.1",
     docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/checkbox",
-    icon: createVNode(CheckboxSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
+    icon: createVNode(CheckboxButtonSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
-            text: "多选框",
+            text: "复选按钮",
         },
     },
     designDirectives: {
@@ -63,46 +55,26 @@ export default defineComponentMeta({
                     items: [
                         {
                             cmp: "BoolSetter",
-                            label: "样式模式",
-                            labelTips: "设置 indeterminate 状态，只负责样式控制",
-                            propsName: "indeterminate",
+                            label: "默认勾选",
+                            propsName: "checked",
                         },
                         {
                             cmp: "StringSetter",
-                            label: "显示文本",
-                            labelTips: "复选框显示的文本",
+                            label: "按钮文本",
                             propsName: "text",
-                            applyPropsValue: (props, value, node, setter) => {
-                                const blockInstance = setter.blockInstance;
-                                value = lodash.trim(value);
-                                if (value) {
-                                    props.text = value;
-                                    blockInstance.opsForDesign.removePlaceholder(node.id, childSlotName);
-                                } else {
-                                    delete props.text;
-                                    blockInstance.opsForDesign.setPlaceholder(node.id, childSlotName);
-                                }
-                            },
                             recalcAuxToolPosition: true,
-                        },
-                        {
-                            cmp: "BoolSetter",
-                            label: "默认勾选",
-                            propsName: "checked",
                         },
                         {
                             cmp: "StringSetter",
                             label: "未选时值",
                             propsName: "falseLabel",
                             applyPropsValue: (props, value) => applyPropsValue("falseLabel", props, value),
-                            defPropsValue: false,
                         },
                         {
                             cmp: "StringSetter",
                             label: "选中时值",
                             propsName: "trueLabel",
                             applyPropsValue: (props, value) => applyPropsValue("trueLabel", props, value),
-                            defPropsValue: true,
                         },
                         {
                             cmp: "StringSetter",
@@ -110,50 +82,20 @@ export default defineComponentMeta({
                             labelTips: "选中状态的值（只有在 checkbox-group 中或者绑定对象类型为 array 时有效）",
                             propsName: "label",
                             applyPropsValue: (props, value) => applyPropsValue("label", props, value),
-                            defPropsValue: true,
                         },
                         {
-                            cmp: "SelectSetter",
+                            cmp: "EditorSetter",
                             cmpProps: {
-                                clearable: true,
-                                options: [
-                                    { value: "filter", label: "过滤器模式(filter)" },
-                                ],
+                                title: "组件配置",
+                                jsonSchema: checkboxButtonEvents,
                             },
-                            label: "组件模式",
-                            labelTips: "设置输入的shape='filter',切换至过滤器模式",
-                            propsName: "shape",
-                            recalcAuxToolPosition: true,
+                            label: "组件配置",
+                            propsName: "events",
                         },
                         {
                             cmp: "BoolSetter",
                             label: "是否禁用",
                             propsName: "disabled",
-                        },
-                    ],
-                },
-                {
-                    title: "风格",
-                    items: [
-                        {
-                            cmp: "SelectSetter",
-                            cmpProps: {
-                                clearable: true,
-                                options: [
-                                    { value: "medium", label: "中等" },
-                                    { value: "small", label: "小" },
-                                    { value: "mini", label: "迷你" },
-                                ],
-                            },
-                            label: "组件大小",
-                            labelTips: "输入框尺寸",
-                            propsName: "size",
-                            recalcAuxToolPosition: true,
-                        },
-                        {
-                            cmp: "BoolSetter",
-                            label: "显示边框",
-                            propsName: "border",
                         },
                     ],
                 },
@@ -182,7 +124,7 @@ export default defineComponentMeta({
                             description: "组件的值变化时触发的回调函数",
                             name: "change",
                             params: [
-                                { name: "value", type: "boolean | string | number", note: "" },
+                                { name: "value", type: "string | number", note: "" },
                             ],
                             return: VarType.Void,
                         },
@@ -194,7 +136,7 @@ export default defineComponentMeta({
         advanced: {},
     },
     placeholder: {
-        // checkbox的内容
+        // checkbox-button 的内容
         // default
     },
     i18n: {},

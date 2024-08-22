@@ -214,6 +214,7 @@ export default defineComponentMeta({
                         {
                             cmp: "BoolSetter",
                             label: "追加body",
+                            labelTips: "弹出显示内容是否追加到html的body的末尾位置",
                             propsName: "popperAppendToBody",
                             defPropsValue: true,
                         },

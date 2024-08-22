@@ -197,8 +197,7 @@ export default defineComponentMeta({
                         },
                         {
                             cmp: "BoolSetter",
-                            label: "展示模式",
-                            labelTips: "是否开启仅展示模式",
+                            label: "显示模式",
                             propsName: "displayOnly",
                         },
                         // TODO 自定义快捷操作

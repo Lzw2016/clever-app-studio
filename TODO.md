@@ -30,7 +30,7 @@
 [NO] 14.ant-design-vue 国际化配置(删除了 ant-design-vue 依赖)
 [OK] 15.删除 opentiny?(暂时删除，因为打包体积太大)
 [NO] 16.把 DesignNode 的 props 属性直接平铺直接在最外层定义，类似extjs写法(优先级底，暂时不实现，意义不大)
-[  ] 17.给图标库图标名称定义类型
+[OK] 17.给图标库图标名称定义类型
 [OK] 18.组件库面板
 [OK] 19.实现组件设计器拖拽逻辑
 [OK] 20.实现AuxTool组件
@@ -45,14 +45,14 @@
 [OK] 29.组件属性配置支持配置：“组件类型”、“函数类型”
 [OK] 30.重新实现 SetterForm 全动态渲染一气呵成
 [OK] 31.基于 RuntimeBlock 生成代码，基于 RuntimeBlock 对象逆向生成 DesignBlock 的源代码
-[  ] 32.集成扩展图标库 lucide、Emoji(优先级底)
+[NO] 32.集成扩展图标库 lucide、Emoji(优先级底)
 [OK] 33.完成 FontawesomeSetting.vue、GoogleIconSetting.vue 参考 TablerIconSetting.vue
 [OK] 34.完成 IconSetter.vue 组件
 [OK] 35.在项目中只使用 fontawesome 图标库，需要替换 tabler-icons 图标库的使用(优先级底)
 [OK] 36.完成组件“样式”配置面板
 [OK] 37.完成组件“事件”配置面板
 [OK] 38.完成组件“高级”配置面板
-[  ] 39.注册 “@opentiny/vue” 的原子组件
+[50] 39.注册 “@opentiny/vue” 的原子组件
 [  ] 40.封装业务表单组件 & 注册到系统中
 [OK] 41.实现设计器“属性面板”的数据绑定功能
 [OK] 42.生成代码 lifeCycles 中的 errorCaptured 和 unmounted 处理
@@ -62,12 +62,12 @@
 [  ] 45.设计时支持查看指定 RuntimeNode 信息
 [  ] 46.运行时支持查看指定 RuntimeNode 信息
 [  ] 47.实现一个简单的拖拽后保存预览机制，方便后续调试
-[  ] 48.实现一个拖拽表单
-[  ] 49.实现一个拖拽Tabs
+[OK] 48.实现一个拖拽表单
+[OK] 49.实现一个拖拽Tabs
 [  ] 50.实现一个拖拽表格
 [OK] 51.渲染节点支持 modelValue 数据单向绑定
 [  ] 52.给ComponentManage新增batchRegisterComponentMeta函数支持注册正则表达式组件元数据
 [  ] 53.设计时删除渲染节点，需要删除渲染节点相关的函数等资源对象
-[  ] 54.
-[  ] 55.
+[  ] 54.setter支持配置函数属性 or 完整的js对象
+[  ] 55.setter的 cmpProps 属性能动态配置，基于其它属性的值动态返回
 [  ] 56.
