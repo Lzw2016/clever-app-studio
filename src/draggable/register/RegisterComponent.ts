@@ -70,9 +70,10 @@ function registerComponent(componentManage: ComponentManage) {
         Checkbox: "Checkbox",
         CheckboxButton: "CheckboxButton",
         CheckboxGroup: "CheckboxGroup",
-
         Radio: "Radio",
+        RadioButton: "RadioButton",
         RadioGroup: "RadioGroup",
+
         Cascader: "Cascader",
         TextPopup: "TextPopup",
         TreeSelect: "Select",

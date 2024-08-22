@@ -4,7 +4,7 @@ import { hasValue } from "@/utils/Typeof";
 import { childSlotName } from "@/draggable/Constant";
 import { VarType } from "@/draggable/types/Base";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
-import RadioSvg from "@/assets/images/radio.svg?component";
+import RadioButtonSvg from "@/assets/images/radio.svg?component";
 
 // noinspection DuplicatedCode
 function applyPropsValue(propName: string, props: any, value: any) {
@@ -36,16 +36,19 @@ function applyPropsValue(propName: string, props: any, value: any) {
 }
 
 export default defineComponentMeta({
-    type: "Radio",
-    name: "单选框",
+    type: "RadioButton",
+    name: "单选按钮",
     description: "",
     version: "0.0.1",
     docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/radio",
-    icon: createVNode(RadioSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
+    icon: createVNode(RadioButtonSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
-            text: "单选框",
+            text: "单选按钮",
         },
+    },
+    designDirectives: {
+        "disable-event": {},
     },
     setter: {
         props: {
@@ -77,17 +80,11 @@ export default defineComponentMeta({
                             recalcAuxToolPosition: true,
                         },
                         {
-                            cmp: "BoolSetter",
-                            label: "显示模式",
-                            propsName: "displayOnly",
-                        },
-                        {
                             cmp: "StringSetter",
                             label: "选中时值",
                             labelTips: "radio 选中时的值",
                             propsName: "label",
                             applyPropsValue: (props, value) => applyPropsValue("label", props, value),
-                            defPropsValue: true,
                         },
                         {
                             cmp: "BoolSetter",
@@ -99,21 +96,6 @@ export default defineComponentMeta({
                 {
                     title: "风格",
                     items: [
-                        {
-                            cmp: "SelectSetter",
-                            cmpProps: {
-                                clearable: true,
-                                options: [
-                                    { value: "medium", label: "中等" },
-                                    { value: "small", label: "小" },
-                                    { value: "mini", label: "迷你" },
-                                ],
-                            },
-                            label: "组件大小",
-                            labelTips: "输入框尺寸",
-                            propsName: "size",
-                            recalcAuxToolPosition: true,
-                        },
                         {
                             cmp: "BoolSetter",
                             label: "显示边框",
@@ -158,7 +140,7 @@ export default defineComponentMeta({
         advanced: {},
     },
     placeholder: {
-        // radio 的默认插槽
+        // 默认插槽
         // default
     },
     i18n: {},

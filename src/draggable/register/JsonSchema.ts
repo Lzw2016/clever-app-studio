@@ -652,6 +652,49 @@ const checkboxGroupOptions: JSONSchema7 = {
     definitions: checkboxDefinitions,
 };
 
+const radioGroupOptions: JSONSchema7 = {
+    type: "array",
+    description: "checkbox-group 子项配置列表",
+    items: {
+        $ref: "#/definitions/RadioGroupOptions",
+    },
+    definitions: {
+        RadioGroupOptions: {
+            type: "object",
+            properties: {
+                label: {
+                    type: "string",
+                    description: "选中时对应的值",
+                },
+                text: {
+                    type: "string",
+                    description: "描述文本",
+                },
+                events: {
+                    type: "object",
+                    description: "事件",
+                    properties: {
+                        click: {
+                            type: "array",
+                            description: "点击事件。(e: Event) => void",
+                            items: {
+                                type: "string",
+                            },
+                        },
+                        change: {
+                            type: "array",
+                            description: "change事件。(e: Event) => void",
+                            items: {
+                                type: "string",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -671,4 +714,5 @@ export {
     timePickerOptions,
     checkboxButtonEvents,
     checkboxGroupOptions,
+    radioGroupOptions,
 }

@@ -125,6 +125,9 @@ export {
     Checkbox,
     CheckboxButton,
     CheckboxGroup,
+    Radio,
+    RadioButton,
+    RadioGroup,
 
     // 导航组件
     TextPopup,
@@ -158,9 +161,6 @@ export {
     IpAddress,
     Popeditor,
     PopUpload,
-    Radio,
-    RadioGroup,
-    RadioButton,
     Search,
     Slider,
     ColorPicker,

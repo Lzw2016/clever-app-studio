@@ -2,13 +2,14 @@ import { createVNode } from "vue";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 import { checkboxGroupOptions } from "@/draggable/register/JsonSchema";
 import CheckboxGroupSvg from "@/assets/images/checkbox-group.svg?component";
+import { VarType } from "@/draggable/types/Base";
 
 export default defineComponentMeta({
     type: "CheckboxGroup",
     name: "多选组",
     description: "",
     version: "0.0.1",
-    docLink: "",
+    docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/checkbox",
     icon: createVNode(CheckboxGroupSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
@@ -41,7 +42,7 @@ export default defineComponentMeta({
                                     { value: "button", label: "复选按钮" },
                                 ],
                             },
-                            label: "组件模式",
+                            label: "多选类型",
                             labelTips: "复选框组子项组件类型，需配合 options 属性使用",
                             propsName: "type",
                             defPropsValue: "checkbox",
@@ -120,13 +121,13 @@ export default defineComponentMeta({
                         },
                         {
                             cmp: "ColorSetter",
-                            label: "边框颜色",
+                            label: "文本颜色",
                             labelTips: "按钮形式的 checkbox 激活时的文本颜色",
                             propsName: "textColor",
                         },
                         {
                             cmp: "ColorSetter",
-                            label: "边框颜色",
+                            label: "充色颜色",
                             labelTips: "按钮形式的 checkbox 激活时的填充色和边框色",
                             propsName: "fill",
                         },
@@ -139,7 +140,24 @@ export default defineComponentMeta({
             ],
         },
         events: {
-            groups: [],
+            includeInnerEvents: true,
+            excludeInnerEvents: ["表单事件"],
+            groups: [
+                {
+                    title: "组件事件",
+                    items: [
+                        {
+                            title: "值变更",
+                            description: "组件的值变化时触发的回调函数",
+                            name: "change",
+                            params: [
+                                { name: "value", type: "string[] | number[]", note: "" },
+                            ],
+                            return: VarType.Void,
+                        },
+                    ],
+                },
+            ],
         },
         style: {},
         advanced: {},

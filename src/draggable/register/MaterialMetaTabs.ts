@@ -48,7 +48,7 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
             {
                 title: "容器(布局)",
                 types: [
-                    "Layout", "Row", "Col", "Container", "Tabs", "Split", // "Form",
+                    "Layout", "Row", "Col", "Container", "Tabs", "Split",
                 ],
             },
             {
@@ -56,8 +56,8 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
                 types: [
                     "Form",
                     "Input", "InputNumber", "Select", "DatePicker", "TimePicker", "DropTimes", "TimeSelect",
-                    "Switch", "Checkbox", "CheckboxButton", "CheckboxGroup", "Radio", "RadioGroup", "Slider",
-                    "ColorPicker", "FileUpload", "AutoComplete", "Cascader", "Search", "Rate", "Transfer",
+                    "Switch", "Checkbox", "CheckboxGroup", "Radio", "RadioGroup",
+                    "Slider", "ColorPicker", "FileUpload", "AutoComplete", "Cascader", "Search", "Rate", "Transfer",
                     "TextPopup", "IpAddress",
                 ],
             },
