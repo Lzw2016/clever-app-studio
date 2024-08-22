@@ -22,7 +22,12 @@ export default defineComponentMeta({
     setter: {
         props: {
             enableVModel: true,
-            modelValueSetter: {},
+            modelValueSetter: {
+                cmp: "DateSetter",
+                cmpProps: {
+                    type: "datetime",
+                },
+            },
             groups: [
                 {
                     title: "常用",

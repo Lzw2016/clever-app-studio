@@ -175,8 +175,8 @@ function clearValue() {
     margin: 0 0 0 8px;
 }
 
-.icons-button:hover {
-    color: #666;
+.icons-button {
+    color: #575d6c;
 }
 
 .icons-button:active {

@@ -46,6 +46,7 @@ defineExpose<SetterExpose>({
 <template>
     <DatePicker
         ref="setter"
+        style="width: 100%;"
         :clearable="true"
         v-bind="inputProps"
         v-model="state.value"
