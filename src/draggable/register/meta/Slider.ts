@@ -13,9 +13,7 @@ export default defineComponentMeta({
     docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/slider",
     icon: createVNode(SliderSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
-        props: {
-            style: {},
-        },
+        props: {},
     },
     designDirectives: {
         "disable-event": {},
@@ -23,9 +21,7 @@ export default defineComponentMeta({
     setter: {
         props: {
             enableVModel: true,
-            modelValueSetter: {
-                defPropsValue: [],
-            },
+            modelValueSetter: {},
             groups: [
                 {
                     title: "常用",
@@ -90,10 +86,11 @@ export default defineComponentMeta({
                             propsName: "showInput",
                         },
                         {
-                            cmp: "BoolSetter",
+                            cmp: "StringSetter",
                             label: "显示单位",
-                            defPropsValue: "输入框后面显示的单位，仅在输入框模式下有效",
+                            labelTips: "输入框后面显示的单位，仅在输入框模式下有效",
                             propsName: "unit",
+                            defPropsValue: "%",
                         },
                         {
                             cmp: "BoolSetter",
@@ -111,6 +108,7 @@ export default defineComponentMeta({
                             cmp: "BoolSetter",
                             label: "竖向模式",
                             propsName: "vertical",
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "NumberSetter",

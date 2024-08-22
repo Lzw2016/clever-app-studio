@@ -129,6 +129,8 @@ export {
     RadioButton,
     RadioGroup,
     Slider,
+    ColorPicker,
+    ColorSelectPanel,
 
     // 导航组件
     TextPopup,
@@ -163,8 +165,6 @@ export {
     Popeditor,
     PopUpload,
     Search,
-    ColorPicker,
-    ColorSelectPanel,
     // 数据组件
     Progress,
     Tree,

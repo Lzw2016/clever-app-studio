@@ -18,7 +18,6 @@ export default defineComponentMeta({
                 { label: "v_2", text: "选项2" },
                 { label: "v_3", text: "选项3" },
             ],
-            modelValue: [],
         },
     },
     designDirectives: {
