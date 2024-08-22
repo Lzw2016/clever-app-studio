@@ -576,6 +576,21 @@ const datePickerOptions: JSONSchema7 = {
     },
 };
 
+const timePickerOptions: JSONSchema7 = {
+    type: "object",
+    description: "配置可选的时间范围、下拉框中显示的格式",
+    properties: {
+        selectableRange: {
+            type: "string",
+            description: "可选的时间范围",
+        },
+        format: {
+            type: "string",
+            description: "下拉框中显示的格式",
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -592,4 +607,5 @@ export {
     selectOptions,
     datePickerStep,
     datePickerOptions,
+    timePickerOptions,
 }

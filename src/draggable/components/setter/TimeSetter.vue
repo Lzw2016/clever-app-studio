@@ -1,30 +1,30 @@
 <script setup lang="ts">
 import { ComponentPublicInstance, getCurrentInstance, reactive, ref } from "vue";
-import { DatePicker } from "@opentiny/vue";
+import { TimePicker } from "@opentiny/vue";
 import { SetterExpose, SetterProps, SetterState } from "@/draggable/types/ComponentMeta";
 import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, toObj, watchNodes } from "@/draggable/utils/SetterUtils";
 
 // 定义组件选项
 defineOptions({
-    name: 'DateSetter',
+    name: 'TimeSetter',
 });
 
 // 当前组件对象
 const instance = getCurrentInstance();
 
 // 定义 Props 类型
-interface DateSetterProps extends SetterProps {
+interface TimeSetterProps extends SetterProps {
 }
 
 // 读取组件 props 属性
-const props = withDefaults(defineProps<DateSetterProps>(), {});
+const props = withDefaults(defineProps<TimeSetterProps>(), {});
 
 // 定义 State 类型
-interface DateSetterState extends SetterState {
+interface TimeSetterState extends SetterState {
 }
 
 // state 属性
-const state = reactive<DateSetterState>({
+const state = reactive<TimeSetterState>({
     ...getDefState(),
 });
 state.value = getValue<number>(props, state, toObj);
@@ -44,9 +44,8 @@ defineExpose<SetterExpose>({
 </script>
 
 <template>
-    <DatePicker
+    <TimePicker
         ref="setter"
-        style="width: 100%;"
         :clearable="true"
         v-bind="inputProps"
         v-model="state.value"

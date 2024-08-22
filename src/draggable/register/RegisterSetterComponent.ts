@@ -11,6 +11,7 @@ function registerSetterComponent(componentManage: ComponentManage) {
     componentManage.registerAsyncComponent("StringSetter", () => import("@/draggable/components/setter/StringSetter.vue").then(module => module.default));
     componentManage.registerAsyncComponent("NumberSetter", () => import("@/draggable/components/setter/NumberSetter.vue").then(module => module.default));
     componentManage.registerAsyncComponent("DateSetter", () => import("@/draggable/components/setter/DateSetter.vue").then(module => module.default));
+    componentManage.registerAsyncComponent("TimeSetter", () => import("@/draggable/components/setter/TimeSetter.vue").then(module => module.default));
     // 输入控件
     componentManage.registerAsyncComponent("SelectSetter", () => import("@/draggable/components/setter/SelectSetter.vue").then(module => module.default));
     componentManage.registerAsyncComponent("IconSetter", () => import("@/draggable/components/setter/IconSetter.vue").then(module => module.default));

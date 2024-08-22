@@ -220,7 +220,7 @@ export default defineComponentMeta({
                         {
                             cmp: "EditorSetter",
                             cmpProps: {
-                                title: "配置部分禁用、快捷选项等",
+                                title: "自定义时分秒步长",
                                 jsonSchema: datePickerStep,
                             },
                             label: "时间步长",
@@ -247,7 +247,7 @@ export default defineComponentMeta({
                     ],
                 },
                 {
-                    title: "时间范围",
+                    title: "日期范围",
                     items: [
                         {
                             cmp: "EditorSetter",
@@ -366,7 +366,7 @@ export default defineComponentMeta({
                             description: "组件的值变化时触发的回调函数",
                             name: "change",
                             params: [
-                                { name: "value", type: "string | Date | undefined", note: "" },
+                                { name: "value", type: "string | Date | Date[] | undefined", note: "" },
                             ],
                             return: VarType.Void,
                         },
