@@ -73,12 +73,12 @@ function registerComponent(componentManage: ComponentManage) {
         Radio: "Radio",
         RadioButton: "RadioButton",
         RadioGroup: "RadioGroup",
+        Slider: "Slider",
 
         Cascader: "Cascader",
         TextPopup: "TextPopup",
         TreeSelect: "Select",
         FileUpload: "FileUpload",
-        Slider: "Slider",
         Rate: "Rate",
         ColorPicker: "ColorPicker",
         AutoComplete: "Autocomplete",

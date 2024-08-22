@@ -209,7 +209,18 @@ export default defineComponentMeta({
     },
     setter: {
         props: {
-            groups: [],
+            groups: [
+                {
+                    title: "常用",
+                    items: [
+
+                    ],
+                },
+                {
+                    title: "风格",
+                    items: [],
+                },
+            ],
         },
         events: {
             groups: [],
