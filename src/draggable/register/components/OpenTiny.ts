@@ -131,6 +131,7 @@ export {
     Slider,
     ColorPicker,
     ColorSelectPanel,
+    Autocomplete,
 
     // 导航组件
     TextPopup,
@@ -157,7 +158,6 @@ export {
     Drawer,
     FilterPanel,
     // 表单组件
-    Autocomplete,
     Cascader,
     CascaderPanel,
     FileUpload,
