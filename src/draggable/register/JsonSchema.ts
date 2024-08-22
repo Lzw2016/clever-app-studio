@@ -695,6 +695,17 @@ const radioGroupOptions: JSONSchema7 = {
     },
 };
 
+const sliderMarks: JSONSchema7 = {
+    type: "object",
+    description: "设置滑杆的刻度值",
+    properties: {
+        "^[0-9]+$": {
+            type: "string",
+            description: "刻度名",
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -715,4 +726,5 @@ export {
     checkboxButtonEvents,
     checkboxGroupOptions,
     radioGroupOptions,
+    sliderMarks,
 }
