@@ -107,13 +107,15 @@ watch(
         immediate: true,
     },
 );
+// 组件元数据
+const componentMeta = computed(() => getNodeComponentMeta(props.designerEngine.componentManage, state.selectRuntimeNode));
 // 当前选择组件支持的事件分组
 const eventGroups = computed<Array<EventGroup>>(() => {
-    const componentMeta = getNodeComponentMeta(props.designerEngine.componentManage, state.selectRuntimeNode)
-    if (!componentMeta?.setter?.events) return [];
+    const cmpMeta = componentMeta.value;
+    if (!cmpMeta?.setter?.events) return [];
     // 读取“响应式变量”值
     state.forceUpdateForAllListener;
-    return getEventGroups(componentMeta.setter.events, state.selectRuntimeNode);
+    return getEventGroups(cmpMeta.setter.events, state.selectRuntimeNode);
 });
 // 所有的事件监听器
 const allListener = computed<Array<ListenerInfo>>(() => {
@@ -500,16 +502,16 @@ defineExpose<EventEditorExpose>({
                                 <tr>
                                     <td class="editor-tips-title">说明</td>
                                     <td>
-                                        <template v-if="hasValue(state.selectListener?.funMeta?.description) || hasValue(state.selectListener?.funMeta?.docLink)">
+                                        <template v-if="hasValue(state.selectListener?.funMeta?.description) || hasValue(state.selectListener?.funMeta?.docLink) || hasValue(componentMeta?.docLink)">
                                             <span v-if="hasValue(state.selectListener?.funMeta?.description)" style="margin-right: 4px;">
                                                 {{ state.selectListener?.funMeta?.description }}
                                             </span>
                                             <a
-                                                v-if="hasValue(state.selectListener?.funMeta?.docLink)"
+                                                v-if="hasValue(state.selectListener?.funMeta?.docLink) || hasValue(componentMeta?.docLink)"
                                                 class="editor-doc-link"
                                                 target="_blank"
                                                 title="查看文档"
-                                                :href="state.selectListener?.funMeta?.docLink"
+                                                :href="state.selectListener?.funMeta?.docLink ?? componentMeta?.docLink"
                                             >
                                                 <FontAwesomeIcon :icon="faUpRightFromSquare"/>
                                             </a>

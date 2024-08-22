@@ -8,7 +8,7 @@ export default defineComponentMeta({
     name: "页签项",
     description: "",
     version: "0.0.1",
-    docLink: "",
+    docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/tabs",
     icon: createVNode(TabItemSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     disableDragDrop: true,
     defDesignNode: {
@@ -65,7 +65,6 @@ export default defineComponentMeta({
                             title: "页签标题变化",
                             description: "当页签项的 title 值发生变化时触发",
                             name: "tabNavUpdate",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/tabs",
                             params: [],
                             return: VarType.Void,
                         },

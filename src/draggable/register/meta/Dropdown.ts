@@ -9,7 +9,7 @@ export default defineComponentMeta({
     name: "下拉菜单",
     description: "",
     version: "0.0.1",
-    docLink: "",
+    docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/dropdown",
     icon: createVNode(DropdownSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
@@ -199,7 +199,6 @@ export default defineComponentMeta({
                             title: "点击按钮事件",
                             name: "buttonClick",
                             description: "监听左侧按钮点击事件，仅 split-button 为 true 时生效",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/dropdown",
                             params: [],
                             return: VarType.Void,
                         },
@@ -207,7 +206,6 @@ export default defineComponentMeta({
                             title: "点击菜单项事件",
                             name: "itemClick",
                             description: "监听点击菜单项事件",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/dropdown",
                             params: [
                                 {
                                     name: "data",
@@ -221,7 +219,6 @@ export default defineComponentMeta({
                             title: "显示或隐藏状态变化",
                             name: "visibleChange",
                             description: "监听下拉框的显示或隐藏状态",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/dropdown",
                             params: [
                                 {
                                     name: "status",

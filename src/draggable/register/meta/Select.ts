@@ -467,7 +467,6 @@ export default defineComponentMeta({
                             title: "获取焦点",
                             description: "组件获得焦点时触发的回调函数",
                             name: "focus",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/select",
                             params: [
                                 { name: "event", type: "FocusEvent", note: "事件对象" },
                             ],
@@ -477,7 +476,6 @@ export default defineComponentMeta({
                             title: "失去焦点",
                             description: "组件失去焦点时触发的回调函数",
                             name: "blur",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/select",
                             params: [
                                 { name: "event", type: "FocusEvent", note: "事件对象" },
                             ],
@@ -487,7 +485,6 @@ export default defineComponentMeta({
                             title: "值变更",
                             description: "组件的值变化时触发的回调函数",
                             name: "change",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/select",
                             params: [
                                 { name: "value", type: "string | number | Array | undefined", note: "" },
                                 { name: "list", type: "IOption[] | ITreeNode[]", note: "" },
@@ -498,7 +495,6 @@ export default defineComponentMeta({
                             title: "清除值",
                             description: "在点击由 clearable 属性生成的清空按钮时触发",
                             name: "clear",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/select",
                             params: [],
                             return: VarType.Void,
                         },
@@ -506,7 +502,6 @@ export default defineComponentMeta({
                             title: "标签移除事件",
                             description: "监听多选时移除标签事件",
                             name: "removeTag",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/select",
                             params: [
                                 { name: "tag", type: "string | number", note: "" },
                             ],
@@ -516,7 +511,6 @@ export default defineComponentMeta({
                             title: "顶部新增按钮点击",
                             description: "监听顶部新增按钮点击事件，同 top-create 属性一起使用",
                             name: "topCreateClick",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/select",
                             params: [],
                             return: VarType.Void,
                         },
@@ -524,7 +518,6 @@ export default defineComponentMeta({
                             title: "下拉弹框显示状态变化",
                             description: "监听下拉弹框的显示隐藏状态",
                             name: "visibleChange",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/select",
                             params: [
                                 { name: "status", type: "boolean", note: "" },
                             ],

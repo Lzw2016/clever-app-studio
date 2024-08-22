@@ -346,7 +346,6 @@ export default defineComponentMeta({
                             title: "获取焦点",
                             description: "在 Input 获得焦点时触发",
                             name: "focus",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
                             params: [
                                 { name: "event", type: "FocusEvent", note: "事件对象" },
                             ],
@@ -356,7 +355,6 @@ export default defineComponentMeta({
                             title: "失去焦点",
                             description: "在 Input 失去焦点时触发",
                             name: "blur",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
                             params: [
                                 { name: "event", type: "FocusEvent", note: "事件对象" },
                             ],
@@ -380,7 +378,6 @@ export default defineComponentMeta({
                             title: "输入事件",
                             description: "输入值时触发事件",
                             name: "input",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
                             params: [
                                 { name: "event", type: "InputEvent", note: "事件对象" },
                             ],
@@ -390,7 +387,6 @@ export default defineComponentMeta({
                             title: "值变更",
                             description: "在 Input 值改变时触发",
                             name: "change",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
                             params: [
                                 { name: "newVal", type: "number | string | undefined", note: "" },
                             ],
@@ -400,7 +396,6 @@ export default defineComponentMeta({
                             title: "清除值",
                             description: "在点击由 clearable 属性生成的清空按钮时触发",
                             name: "clear",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/input",
                             params: [],
                             return: VarType.Void,
                         },

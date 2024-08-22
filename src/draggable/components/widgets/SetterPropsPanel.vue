@@ -58,6 +58,7 @@ interface SetterPropsPanelState {
 
 // state 属性
 const state = reactive<SetterPropsPanelState>({
+    forceUpdateForBind: 0,
     loading: false,
     loadErr: undefined,
     nodeRef: undefined,

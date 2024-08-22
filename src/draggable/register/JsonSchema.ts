@@ -500,6 +500,82 @@ const selectOptions: JSONSchema7 = {
     },
 };
 
+const datePickerStep: JSONSchema7 = {
+    type: "object",
+    description: "配置时、分、秒的步长",
+    properties: {
+        hour: {
+            type: "integer",
+            description: "配置小时的步长",
+        },
+        minute: {
+            type: "integer",
+            description: "配置分钟的步长",
+        },
+        second: {
+            type: "integer",
+            description: "配置秒钟的步长",
+        },
+    },
+};
+
+const datePickerOptions: JSONSchema7 = {
+    type: "object",
+    description: "配置部分禁用、快捷选项等",
+    properties: {
+        firstDayOfWeek: {
+            type: "integer",
+            description: "每周的第一天是星期几，默认值是7，也就是星期天",
+            minimum: 1,
+            maximum: 7,
+        },
+        disabledDate: {
+            type: "array",
+            description: "实现部分禁用，此时只能选择一部分日期。(time: Date) => boolean",
+            items: {
+                type: "string",
+            },
+        },
+        onPick: {
+            type: "array",
+            description: "选中日期后执行的回调，需要与 daterange 或 datetimerange 类型配合使用才生效。(range: { minDate: Date, maxDate: Date }) => void",
+            items: {
+                type: "string",
+            },
+        },
+        shortcuts: {
+            type: "array",
+            description: "快捷选项",
+            items: {
+                type: "object",
+                properties: {
+                    text: {
+                        type: "string",
+                    },
+                    onPick: {
+                        type: "array",
+                        description: "(picker: { $emit: (type: string, date: Date) => void }) => void",
+                        items: {
+                            type: "string",
+                        },
+                    },
+                    type: {
+                        enum: ["startFrom", "EndAt"],
+                    },
+                    startDate: {
+                        type: "string",
+                        description: "Date",
+                    },
+                    endDate: {
+                        type: "string",
+                        description: "Date",
+                    },
+                },
+            },
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -514,4 +590,6 @@ export {
     selectTreeOp,
     selectGridOp,
     selectOptions,
+    datePickerStep,
+    datePickerOptions,
 }

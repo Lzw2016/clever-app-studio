@@ -8,7 +8,7 @@ export default defineComponentMeta({
     name: "气泡确认",
     description: "",
     version: "0.0.1",
-    docLink: "",
+    docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/popconfirm",
     icon: createVNode(PopConfirmSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
@@ -133,7 +133,6 @@ export default defineComponentMeta({
                             title: "点击确认按钮",
                             description: "点击确认按钮时触发",
                             name: "confirm",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/popconfirm",
                             params: [
                                 { name: "state", type: "IPopconfirmState", note: "" },
                             ],
@@ -143,7 +142,6 @@ export default defineComponentMeta({
                             title: "气泡框关闭",
                             description: "气泡确认框关闭时触发",
                             name: "hide",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/popconfirm",
                             params: [
                                 { name: "state", type: "IPopconfirmState", note: "" },
                             ],
@@ -153,7 +151,6 @@ export default defineComponentMeta({
                             title: "气泡框显示",
                             description: "气泡确认框显示时触发",
                             name: "show",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/popconfirm",
                             params: [
                                 { name: "state", type: "IPopconfirmState", note: "" },
                             ],

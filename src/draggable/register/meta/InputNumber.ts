@@ -275,7 +275,6 @@ export default defineComponentMeta({
                             title: "获取焦点",
                             description: "组件获得焦点时触发的回调函数",
                             name: "focus",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/numeric",
                             params: [
                                 { name: "event", type: "FocusEvent", note: "事件对象" },
                             ],
@@ -285,7 +284,6 @@ export default defineComponentMeta({
                             title: "失去焦点",
                             description: "组件失去焦点时触发的回调函数",
                             name: "blur",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/numeric",
                             params: [
                                 { name: "event", type: "FocusEvent", note: "事件对象" },
                             ],
@@ -295,7 +293,6 @@ export default defineComponentMeta({
                             title: "值变更",
                             description: "组件的值变化时触发的回调函数",
                             name: "change",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/numeric",
                             params: [
                                 { name: "newVal", type: "number | string | undefined", note: "" },
                                 { name: "oldVal", type: "number | string | undefined", note: "" },
@@ -306,7 +303,6 @@ export default defineComponentMeta({
                             title: "过滤器面板值变更",
                             description: "选择过滤器面板值的回调函数",
                             name: "filterChange",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/numeric",
                             params: [
                                 { name: "label", type: "any", note: "" },
                             ],

@@ -8,7 +8,7 @@ export default defineComponentMeta({
     name: "多页签",
     description: "",
     version: "0.0.1",
-    docLink: "",
+    docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/tabs",
     icon: createVNode(TabsSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
@@ -210,7 +210,6 @@ export default defineComponentMeta({
                             title: "点击添加按钮",
                             description: "点击'添加'按钮后触发，用于编写增加页签项的逻辑",
                             name: "add",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/tabs",
                             params: [],
                             return: VarType.Void,
                         },
@@ -218,7 +217,6 @@ export default defineComponentMeta({
                             title: "点击页签项",
                             description: "点击页签项时触发，tab 被选中时触发； TabItem: 点中页签项的vueComponent对象信息",
                             name: "click",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/tabs",
                             params: [
                                 { name: "tabItem", type: "Component", note: "" },
                                 { name: "event", type: "Event", note: "" },
@@ -229,7 +227,6 @@ export default defineComponentMeta({
                             title: "点击页签项关闭按钮",
                             description: "点击页签项关闭按钮后触发，用于编写删除页签项的逻辑； name: 要删除的页签项name值",
                             name: "close",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/tabs",
                             params: [
                                 { name: "name", type: "string", note: "要删除的页签项name值" },
                             ],
@@ -239,7 +236,6 @@ export default defineComponentMeta({
                             title: "点击添加或关闭按钮",
                             description: "点击'添加'或'关闭'按钮触发； name：null或删除的tab名称, type：添加或删除字段",
                             name: "edit",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/tabs",
                             params: [
                                 { name: "name", type: "string", note: "页签项name值" },
                                 { name: "type", type: "'add' | 'remove'", note: "" },
@@ -250,7 +246,6 @@ export default defineComponentMeta({
                             title: "拖动开始",
                             description: "拖动开始时的事件",
                             name: "tabDragStart",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/tabs",
                             params: [
                                 { name: "event", type: "DragEvent", note: "" },
                             ],
@@ -260,7 +255,6 @@ export default defineComponentMeta({
                             title: "拖动中",
                             description: "拖动中的事件",
                             name: "tabDragOver",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/tabs",
                             params: [
                                 { name: "event", type: "DragEvent", note: "" },
                             ],
@@ -270,7 +264,6 @@ export default defineComponentMeta({
                             title: "拖动结束",
                             description: "拖动结束后的事件",
                             name: "tabDragEnd",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/tabs",
                             params: [
                                 { name: "event", type: "DragEvent", note: "" },
                             ],

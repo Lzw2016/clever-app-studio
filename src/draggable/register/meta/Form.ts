@@ -10,7 +10,7 @@ export default defineComponentMeta({
     name: "表单",
     description: "",
     version: "0.0.1",
-    docLink: "",
+    docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/form",
     icon: createVNode(FormSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
@@ -359,7 +359,6 @@ export default defineComponentMeta({
                             title: "表单项校验",
                             description: "任一表单项被校验后触发",
                             name: "validate",
-                            docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/form",
                             params: [
                                 { name: "prop", type: "string", note: "" },
                                 { name: "isValid", type: "boolean", note: "" },
