@@ -54,6 +54,7 @@ function registerComponentMeta(componentManage: ComponentManage) {
     componentManage.registerAsyncComponentMeta("RadioGroup", () => import("@/draggable/register/meta/RadioGroup").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Slider", () => import("@/draggable/register/meta/Slider").then(module => module.default));
     componentManage.registerAsyncComponentMeta("ColorPicker", () => import("@/draggable/register/meta/ColorPicker").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("ColorSelectPanel", () => import("@/draggable/register/meta/ColorSelectPanel").then(module => module.default));
     componentManage.registerAsyncComponentMeta("FileUpload", () => import("@/draggable/register/meta/FileUpload").then(module => module.default));
     componentManage.registerAsyncComponentMeta("AutoComplete", () => import("@/draggable/register/meta/AutoComplete").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Cascader", () => import("@/draggable/register/meta/Cascader").then(module => module.default));

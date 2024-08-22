@@ -75,6 +75,7 @@ function registerComponent(componentManage: ComponentManage) {
         RadioGroup: "RadioGroup",
         Slider: "Slider",
         ColorPicker: "ColorPicker",
+        ColorSelectPanel: "ColorSelectPanel",
 
         Cascader: "Cascader",
         TextPopup: "TextPopup",

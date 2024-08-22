@@ -1,17 +1,19 @@
 import { createVNode } from "vue";
 import { VarType } from "@/draggable/types/Base";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
-import ColorPickerSvg from "@/assets/images/color-picker.svg?component";
+import ColorSelectPanelSvg from "@/assets/images/color-select-panel.svg?component";
 
 export default defineComponentMeta({
-    type: "ColorPicker",
-    name: "颜色选择",
+    type: "ColorSelectPanel",
+    name: "颜色面板",
     description: "",
     version: "0.0.1",
-    docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/color-picker",
-    icon: createVNode(ColorPickerSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
+    docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/color-select-panel",
+    icon: createVNode(ColorSelectPanelSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
-        props: {},
+        props: {
+            visible: true,
+        },
     },
     designDirectives: {
         "disable-event": {},
@@ -50,29 +52,8 @@ export default defineComponentMeta({
                         },
                         {
                             cmp: "BoolSetter",
-                            label: "默认显示",
-                            labelTips: "默认显示颜色选择面板",
+                            label: "是否显示",
                             propsName: "visible",
-                        },
-                    ],
-                },
-                {
-                    title: "风格",
-                    items: [
-                        {
-                            cmp: "SelectSetter",
-                            cmpProps: {
-                                clearable: true,
-                                options: [
-                                    { value: "large ", label: "大" },
-                                    { value: "medium", label: "中等" },
-                                    { value: "small", label: "小" },
-                                    { value: "mini", label: "迷你" },
-                                ],
-                            },
-                            label: "组件大小",
-                            propsName: "size",
-                            recalcAuxToolPosition: true,
                         },
                     ],
                 },
@@ -98,6 +79,15 @@ export default defineComponentMeta({
                             name: "confirm",
                             params: [
                                 { name: "hex", type: "string", note: "" },
+                            ],
+                            return: VarType.Void,
+                        },
+                        {
+                            title: "color值更新",
+                            description: "color值更新",
+                            name: "colorUpdate",
+                            params: [
+                                { name: "color", type: "Color", note: "" },
                             ],
                             return: VarType.Void,
                         },
