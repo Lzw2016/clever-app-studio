@@ -40,6 +40,7 @@ function registerComponentMeta(componentManage: ComponentManage) {
     componentManage.registerAsyncComponentMeta("FormItem", () => import("@/draggable/register/meta/FormItem").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Input", () => import("@/draggable/register/meta/Input").then(module => module.default));
     componentManage.registerAsyncComponentMeta("InputNumber", () => import("@/draggable/register/meta/InputNumber").then(module => module.default));
+    componentManage.registerAsyncComponentMeta("BaseSelect", () => import("@/draggable/register/meta/BaseSelect").then(module => module.default));
     componentManage.registerAsyncComponentMeta("Select", () => import("@/draggable/register/meta/Select").then(module => module.default));
     componentManage.registerAsyncComponentMeta("DatePicker", () => import("@/draggable/register/meta/DatePicker").then(module => module.default));
     componentManage.registerAsyncComponentMeta("TimePicker", () => import("@/draggable/register/meta/TimePicker").then(module => module.default));

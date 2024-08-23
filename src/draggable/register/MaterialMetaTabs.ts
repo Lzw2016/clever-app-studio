@@ -55,7 +55,7 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
                 title: "表单",
                 types: [
                     "Form",
-                    "Input", "InputNumber", "Select", "DatePicker", "TimePicker", "DropTimes", "TimeSelect",
+                    "Input", "InputNumber", "BaseSelect", "Select", "DatePicker", "TimePicker", "DropTimes", "TimeSelect",
                     "Switch", "Checkbox", "CheckboxGroup", "Radio", "RadioGroup", "Slider", "ColorPicker",
                     "FileUpload", "AutoComplete", "Cascader", "Search", "Rate", "Transfer",
                     "TextPopup", "IpAddress",

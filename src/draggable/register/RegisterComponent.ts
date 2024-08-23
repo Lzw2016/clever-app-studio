@@ -62,6 +62,7 @@ function registerComponent(componentManage: ComponentManage) {
         Input: "Input",
         InputNumber: "Numeric",
         Select: "Select",
+        BaseSelect: "BaseSelect",
         DatePicker: "DatePicker",
         TimePicker: "TimePicker",
         DropTimes: "DropTimes",

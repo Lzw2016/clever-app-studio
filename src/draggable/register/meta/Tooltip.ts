@@ -1,7 +1,8 @@
 import { createVNode } from "vue";
+import { Tooltip } from "@opentiny/vue";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
+import { createBaseWrapper } from "@/draggable/utils/ComponentWrapper";
 import { popoverPopperOptions } from "@/draggable/register/JsonSchema";
-import Tooltip from "@/draggable/register/components/Tooltip";
 import TooltipSvg from "@/assets/images/tooltip.svg?component";
 
 export default defineComponentMeta({
@@ -11,7 +12,15 @@ export default defineComponentMeta({
     version: "0.0.1",
     docLink: "",
     icon: createVNode(TooltipSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
-    designComponent: Tooltip,
+    designComponent: createBaseWrapper(
+        "span",
+        {
+            style: {
+                display: "inline-block",
+            },
+        },
+        Tooltip,
+    ),
     defDesignNode: {
         props: {
             content: "文本提示信息...",

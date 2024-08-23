@@ -1,5 +1,6 @@
 import { createVNode } from "vue";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
+import { createBaseWrapper } from "@/draggable/utils/ComponentWrapper";
 import BrSvg from "@/assets/images/br.svg?component";
 
 export default defineComponentMeta({
@@ -9,12 +10,18 @@ export default defineComponentMeta({
     version: "0.0.1",
     docLink: "",
     icon: createVNode(BrSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
-    defDesignNode: {
-        props: {
+    designComponent: createBaseWrapper(
+        "div",
+        {
+            style: {},
         },
+        "br",
+    ),
+    defDesignNode: {
+        props: {},
     },
     setter: {
-         events: {
+        events: {
             includeInnerEvents: true,
             excludeInnerEvents: ["表单事件"],
             groups: [],
