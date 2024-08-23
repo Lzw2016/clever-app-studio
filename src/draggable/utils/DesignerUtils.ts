@@ -849,6 +849,32 @@ function getVModelTreeNode(block?: RuntimeBlock): Array<BindTreeNode> {
     return res;
 }
 
+/** 遍历 DOM 的回调函数 */
+type TraverseDOM = (current: Element, parent?: Element) => void;
+
+/**
+ * 深度递归遍历 DOM 节点
+ * @param dom       DOM节点
+ * @param callback  遍历DOM的回调函数
+ * @param maxDepth  递归的最大深度(默认：8)
+ * @param parent    当前DOM的父节点
+ * @param currDepth 当前递归的深度
+ */
+function deepTraverseDOM(dom: Element, callback: TraverseDOM, maxDepth: number = 8, parent?: Element, currDepth?: number) {
+    if (noValue(currDepth)) currDepth = 0;
+    if (currDepth > maxDepth) return;
+    currDepth++;
+    if (dom.nodeType !== Node.ELEMENT_NODE) return;
+    callback(dom, parent);
+    const children = dom.children;
+    if (!children) return;
+    for (let i = 0; i < children.length; i++) {
+        const child = children[i];
+        if (!child) continue;
+        deepTraverseDOM(child, callback, maxDepth, dom, currDepth);
+    }
+}
+
 export type  {
     NodePosition,
     TraverseVNode,
@@ -856,6 +882,7 @@ export type  {
     RuntimeNodeToDesignNodeOps,
     OutlineTreeNode,
     BindTreeNode,
+    TraverseDOM,
 }
 
 export {
@@ -878,4 +905,5 @@ export {
     runtimeNodeToJsCode,
     getBindTreeNode,
     getVModelTreeNode,
+    deepTraverseDOM,
 }

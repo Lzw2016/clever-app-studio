@@ -706,6 +706,89 @@ const sliderMarks: JSONSchema7 = {
     },
 };
 
+const fileUploadEncryptConfig: JSONSchema7 = {
+    type: "object",
+    description: "设置水印和加密弹窗",
+    properties: {
+        enabled: {
+            type: "boolean",
+            description: "是否开启设置，默认关闭",
+        },
+        encrypt: {
+            type: "boolean",
+            description: "是否加密，默认否",
+        },
+        watermark: {
+            type: "string",
+            description: "水印文字，默认为空",
+        },
+    },
+};
+
+const fileUploadFileList: JSONSchema7 = {
+    type: "array",
+    description: "设置水印和加密弹窗",
+    items: {
+        type: "object",
+        description: "文件信息",
+        properties: {
+            name: {
+                type: "string",
+                description: "文件名",
+            },
+            url: {
+                type: "string",
+                description: "文件url 例如：'https://xxx.cdn.com/xxx.jpg'",
+            },
+        },
+    },
+};
+
+const fileUploadThumbOption: JSONSchema7 = {
+    type: "object",
+    description: "文件列表的显示类型为 thumb 时的相关配置",
+    properties: {
+        width: {
+            type: "integer",
+            description: "弹窗宽度，默认270",
+        },
+        showDownload: {
+            type: "boolean",
+            description: "是否显示下载按钮，默认false",
+        },
+        showDel: {
+            type: "boolean",
+            description: "是否显示删除按钮，布尔false",
+        },
+        showTooltip: {
+            type: "boolean",
+            description: "文件名超出隐藏显示时是否启用tip，默认false",
+        },
+        popperClass: {
+            type: "string",
+            description: "弹窗列表自定义类名",
+        },
+        downloadFile: {
+            type: "array",
+            description: "点击下载按钮执行函数。(file) => void",
+            items: {
+                type: "string",
+            },
+        },
+        icon: {
+            oneOf: [
+                {
+                    type: "string",
+                },
+                {
+                    type: "object",
+                },
+            ],
+            description: "列表结果前 icon ，默认为 'icon-attachment'",
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -727,4 +810,7 @@ export {
     checkboxGroupOptions,
     radioGroupOptions,
     sliderMarks,
+    fileUploadEncryptConfig,
+    fileUploadFileList,
+    fileUploadThumbOption,
 }
