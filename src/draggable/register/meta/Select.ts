@@ -26,9 +26,7 @@ export default defineComponentMeta({
     setter: {
         props: {
             enableVModel: true,
-            modelValueSetter: {
-                cmp: "StringSetter",
-            },
+            modelValueSetter: {},
             groups: [
                 {
                     title: "常用",
@@ -37,6 +35,7 @@ export default defineComponentMeta({
                             cmp: "StringSetter",
                             label: "占位文本",
                             propsName: "placeholder",
+                            defPropsValue: "请选择",
                         },
                         {
                             cmp: "BoolSetter",
@@ -341,7 +340,6 @@ export default defineComponentMeta({
                             labelTips: "标签类型，仅多选适用。使用 aurora 主题时设置该属性为 info",
                             propsName: "tagType",
                         },
-
                     ],
                 },
                 {
