@@ -191,6 +191,9 @@ export default defineConfig(env => {
                         if (id.includes('/prettier/')) {
                             return 'prettier';
                         }
+                        if (id.includes('/draggable/register/meta/')) {
+                            return 'components-meta';
+                        }
                     },
                 },
             },

@@ -44,7 +44,7 @@ function getVeiKey(el?: any) {
     }
 }
 
-type EventInvokers = Record<string, { value: any }>;
+type EventInvokers = Record<string, { value: any, attached: any; }>;
 
 /**
  * 获取通过vue注册的dom事件的指针对象，
@@ -55,7 +55,7 @@ function getEventInvokers(el?: any): EventInvokers | undefined {
     if (!el) return;
     if (!veiKey) veiKey = getVeiKey(el);
     if (!veiKey) return;
-    return el[veiKey] as Record<string, { value: any }>;
+    return el[veiKey] as any;
 }
 
 function fixEventNames(names?: Array<string>) {

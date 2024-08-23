@@ -116,6 +116,24 @@ export default defineComponentMeta({
                         },
                         {
                             cmp: "BoolSetter",
+                            label: "自动聚焦",
+                            labelTips: "原生属性，页面加载时，自动获取焦点",
+                            propsName: "autofocus",
+                        },
+                        {
+                            cmp: "BoolSetter",
+                            label: "使用掩码",
+                            labelTips: "启用掩码功能，只在 disabled 和 display-only 状态下生效",
+                            propsName: "mask",
+                        },
+                        {
+                            cmp: "NumberSetter",
+                            label: "存储空间",
+                            labelTips: "设置 addMemory 方法中，最大能保存条目的数量",
+                            propsName: "memorySpace",
+                        },
+                        {
+                            cmp: "BoolSetter",
                             label: "是否禁用",
                             propsName: "disabled",
                         },
@@ -307,29 +325,6 @@ export default defineComponentMeta({
                             label: "tabindex",
                             labelTips: "原生属性，输入框的 tabindex",
                             propsName: "tabindex",
-                        },
-                    ],
-                },
-                {
-                    title: "其它",
-                    items: [
-                        {
-                            cmp: "BoolSetter",
-                            label: "自动聚焦",
-                            labelTips: "原生属性，页面加载时，自动获取焦点",
-                            propsName: "autofocus",
-                        },
-                        {
-                            cmp: "BoolSetter",
-                            label: "使用掩码",
-                            labelTips: "启用掩码功能，只在 disabled 和 display-only 状态下生效",
-                            propsName: "mask",
-                        },
-                        {
-                            cmp: "NumberSetter",
-                            label: "存储空间",
-                            labelTips: "设置 addMemory 方法中，最大能保存条目的数量",
-                            propsName: "memorySpace",
                         },
                     ],
                 },
