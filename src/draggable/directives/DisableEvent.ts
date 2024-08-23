@@ -1,5 +1,5 @@
 import { Directive, DirectiveBinding, VNode } from "vue";
-import { isFun, isStr } from "@/utils/Typeof";
+import { isFun, isStr, noValue } from "@/utils/Typeof";
 import { toElementEventName, toPropsEventName } from "@/draggable/utils/HtmlTag";
 import { deepTraverseDOM } from "@/draggable/utils/DesignerUtils";
 
@@ -167,18 +167,16 @@ function disableVNodeOrDOMEvent(event: string,
 }
 
 // 空函数标记
-const emptyFunction = Symbol('__empty_function');
+const emptyFunctionKey = Symbol('__empty_function');
 
 function replaceEventEventListener(props: any, invokers: EventInvokers | undefined, eventName: string, emptyEventListener: Function) {
     if (props?.[eventName]) {
         props[eventName] = emptyEventListener;
     }
-    if (invokers?.[eventName]) {
-        if (!invokers[eventName].value?.emptyFunction) {
-            emptyEventListener[emptyFunction] = true;
-            invokers[eventName].value = emptyEventListener;
-            invokers[eventName].attached = Date.now();
-        }
+    if (invokers?.[eventName] && noValue(invokers[eventName].value?.[emptyFunctionKey])) {
+        emptyEventListener[emptyFunctionKey] = true;
+        invokers[eventName].value = emptyEventListener;
+        invokers[eventName].attached = Date.now();
     }
 }
 
