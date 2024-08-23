@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import lodash from "lodash";
 import { reactive, watch } from "vue";
+
 // 定义组件选项
 defineOptions({
     name: 'Text',
