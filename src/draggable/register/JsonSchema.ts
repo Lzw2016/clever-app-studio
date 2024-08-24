@@ -789,6 +789,162 @@ const fileUploadThumbOption: JSONSchema7 = {
     },
 };
 
+const cascaderDefinitions: JSONSchema7["definitions"] = {
+    CascaderPanelNodeValue: {
+        type: ["string", "number"],
+    },
+    CascaderPanelData: {
+        type: "object",
+        description: "数据项",
+        properties: {
+            value: {
+                $ref: "#/definitions/CascaderPanelNodeValue",
+                description: "选项值",
+            },
+            label: {
+                type: "string",
+                description: "选项显示文本",
+            },
+            children: {
+                type: "array",
+                description: "子数据项",
+                items: {
+                    $ref: "#/definitions/CascaderPanelData",
+                },
+            },
+            leaf: {
+                type: "boolean",
+                description: "是否叶子节点",
+            },
+            "^.+$": {
+                description: "其它属性",
+            },
+        },
+    },
+    CascaderPanelConfig: {
+        type: "object",
+        properties: {
+            emitPath: {
+                type: "string",
+            },
+            expandTrigger: {
+                enum: ["click", "hover"],
+            },
+            hoverThreshold: {
+                type: "number",
+            },
+            checkStrictly: {
+                type: "boolean",
+            },
+            multiple: {
+                type: "boolean",
+            },
+            lazy: {
+                type: "boolean",
+            },
+            lazyLoad: {
+                type: "array",
+                items: {
+                    type: "string",
+                },
+                description: "(node: ICascaderPanelNode, resolve: (dataList: ICascaderPanelData[]) => void) => void",
+            },
+            value: {
+                type: "string",
+            },
+            label: {
+                type: "string",
+            },
+            children: {
+                type: "string",
+            },
+            disabled: {
+                type: "string",
+            },
+            leaf: {
+                type: "string",
+            },
+        },
+    },
+    CascaderPanelNode: {
+        type: "object",
+        properties: {
+            parent: {
+                $ref: "#/definitions/CascaderPanelNode",
+            },
+            level: {
+                type: "number",
+            },
+            data: {
+                $ref: "#/definitions/CascaderPanelData",
+            },
+            config: {
+                $ref: "#/definitions/CascaderPanelConfig",
+            },
+            uid: {
+                type: "number",
+            },
+            value: {
+                $ref: "#/definitions/CascaderPanelNodeValue",
+            },
+            label: {
+                type: "string",
+            },
+            pathNodes: {
+                type: "array",
+            },
+            path: {
+                type: "array",
+                items: {
+                    $ref: "#/definitions/CascaderPanelNodeValue",
+                },
+            },
+            pathLabels: {
+                type: "array",
+                items: {
+                    type: "string",
+                },
+            },
+            loaded: {
+                type: "boolean",
+            },
+            loading: {
+                type: "boolean",
+            },
+            hasChildren: {
+                type: "boolean",
+            },
+            children: {
+                type: "array",
+            },
+            checked: {
+                type: "boolean",
+            },
+            indeterminate: {
+                type: "boolean",
+            },
+            root: {
+                type: "boolean",
+            },
+        },
+    },
+};
+
+const cascaderOptions: JSONSchema7 = {
+    type: "array",
+    description: "可选项数据源",
+    items: {
+        $ref: "#/definitions/CascaderPanelData",
+    },
+    definitions: cascaderDefinitions,
+};
+
+const cascaderProps: JSONSchema7 = {
+    $ref: "#/definitions/CascaderPanelConfig",
+    description: "级联选择器选项配置",
+    definitions: cascaderDefinitions,
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -813,4 +969,6 @@ export {
     fileUploadEncryptConfig,
     fileUploadFileList,
     fileUploadThumbOption,
+    cascaderOptions,
+    cascaderProps,
 }

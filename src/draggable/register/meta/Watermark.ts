@@ -62,7 +62,6 @@ export default defineComponentMeta({
                             labelTips: "水印的高度, 最小高度64px",
                             propsName: "height",
                             defPropsValue: 64,
-                            disableReRender: true,
                         },
                         {
                             cmp: "NumberSetter",
@@ -73,7 +72,6 @@ export default defineComponentMeta({
                             labelTips: "水印的宽度, 最小宽度120px",
                             propsName: "width",
                             defPropsValue: 120,
-                            disableReRender: true,
                         },
                         {
                             cmp: "NumberSetter",
@@ -81,7 +79,6 @@ export default defineComponentMeta({
                             labelTips: "追加的水印元素的 'z-index'",
                             propsName: "zIndex",
                             defPropsValue: 9,
-                            disableReRender: true,
                         },
                         {
                             cmp: "StringSetter",
@@ -115,7 +112,6 @@ export default defineComponentMeta({
                             labelTips: "水印绘制时，旋转的角度，单位 °",
                             propsName: "rotate",
                             defPropsValue: -22,
-                            disableReRender: true,
                         },
                     ],
                 },

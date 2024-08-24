@@ -1,6 +1,7 @@
 import { Directive, DirectiveBinding, VNode } from "vue";
 import { isFun, isStr, noValue } from "@/utils/Typeof";
 import { toElementEventName, toPropsEventName } from "@/draggable/utils/HtmlTag";
+import { useHtmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { deepTraverseDOM } from "@/draggable/utils/DesignerUtils";
 
 interface EmptyEventListenerConfig {
@@ -85,7 +86,7 @@ const defPreventDefaultEvents = fixEventNames([
     // 鼠标事件
     // "click", "dblclick", "mousedown", "mouseup", "mouseenter", "mouseleave", "mouseover", "mouseout", "mousemove",
     // 键盘事件
-    "keydown", "keyup", "keypress",
+    // "keydown", "keyup", "keypress",
     // 表单事件
     // "input", "change", "focus", "blur", "submit", "reset", "paste",
     // 其他事件
@@ -130,7 +131,11 @@ function doDisableEvent(el: Element, binding: DirectiveBinding<DirectiveValue>, 
     //     }
     // }, maxDepth);
     // 递归处理 DOM
+    const nodeId = useHtmlExtAttr.nodeId(el);
+    if (!nodeId) return;
     deepTraverseDOM(el, current => {
+        const currentNodeId = useHtmlExtAttr.nodeId(current);
+        if (currentNodeId && currentNodeId !== nodeId) return true;
         const invokers = getEventInvokers(current);
         if (!invokers) return;
         for (let event of disableEvents) {

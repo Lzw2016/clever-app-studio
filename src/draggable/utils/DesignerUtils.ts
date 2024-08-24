@@ -849,8 +849,10 @@ function getVModelTreeNode(block?: RuntimeBlock): Array<BindTreeNode> {
     return res;
 }
 
-/** 遍历 DOM 的回调函数 */
-type TraverseDOM = (current: Element, parent?: Element) => void;
+/**
+ * 遍历 DOM 的回调函数，返回 true 中断递归
+ */
+type TraverseDOM = (current: Element, parent?: Element) => void | true;
 
 /**
  * 深度递归遍历 DOM 节点
@@ -865,7 +867,8 @@ function deepTraverseDOM(dom: Element, callback: TraverseDOM, maxDepth: number =
     if (currDepth > maxDepth) return;
     currDepth++;
     if (dom.nodeType !== Node.ELEMENT_NODE) return;
-    callback(dom, parent);
+    const interrupt = callback(dom, parent);
+    if (interrupt === true) return;
     const children = dom.children;
     if (!children) return;
     for (let i = 0; i < children.length; i++) {
