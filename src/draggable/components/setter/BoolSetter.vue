@@ -7,6 +7,7 @@ import { applyValue, getDefState, getInputProps, getSetterExpose, getValue, mult
 // 定义组件选项
 defineOptions({
     name: 'BoolSetter',
+    inheritAttrs: false,
 });
 
 // 当前组件对象

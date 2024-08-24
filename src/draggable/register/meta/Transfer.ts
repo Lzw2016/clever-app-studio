@@ -188,6 +188,9 @@ export default defineComponentMeta({
                         },
                         {
                             cmp: "BoolSetter",
+                            cmpProps: {
+                                // text: "智能禁用(左侧)",
+                            },
                             label: "智能禁用",
                             labelTips: "组件初始化状态下未选中时，默认按钮显示禁用状态(左侧)",
                             propsName: "toLeftDisable",
@@ -195,6 +198,9 @@ export default defineComponentMeta({
                         },
                         {
                             cmp: "BoolSetter",
+                            cmpProps: {
+                                // text: "智能禁用(右侧)",
+                            },
                             label: "智能禁用",
                             labelTips: "组件初始化状态下未选中时，默认按钮显示禁用状态(右侧)",
                             propsName: "toRightDisable",
