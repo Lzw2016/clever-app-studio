@@ -1,8 +1,8 @@
 import { createVNode } from "vue";
+import { VarType } from "@/draggable/types/Base";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 import { tagColor } from "@/draggable/register/JsonSchema";
 import TagSvg from "@/assets/images/tag.svg?component";
-import { VarType } from "@/draggable/types/Base";
 
 export default defineComponentMeta({
     type: "Tag",

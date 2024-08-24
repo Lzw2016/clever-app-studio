@@ -1056,6 +1056,24 @@ const tagColor: JSONSchema7 = {
     },
 };
 
+const tagGroupData: JSONSchema7 = {
+    type: "array",
+    description: "标签组数据",
+    items: {
+        type: "object",
+        properties: {
+            name: {
+                type: "string",
+                description: "标签文本",
+            },
+            type: {
+                enum: ["success", "info", "warning", "danger"],
+                description: "标签类型",
+            },
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -1092,4 +1110,5 @@ export {
     transferProps,
     statisticTitle,
     tagColor,
+    tagGroupData,
 }

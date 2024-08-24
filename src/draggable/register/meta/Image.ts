@@ -1,7 +1,7 @@
 import { createVNode } from "vue";
+import { VarType } from "@/draggable/types/Base";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 import ImageSvg from "@/assets/images/image.svg?component";
-import { VarType } from "@/draggable/types/Base";
 
 export default defineComponentMeta({
     type: "Image",

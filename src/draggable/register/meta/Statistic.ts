@@ -1,8 +1,8 @@
+import lodash from "lodash";
 import { createVNode } from "vue";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 import { statisticTitle } from "@/draggable/register/JsonSchema";
 import StatisticSvg from "@/assets/images/statistic.svg?component";
-import lodash from "lodash";
 
 export default defineComponentMeta({
     type: "Statistic",
