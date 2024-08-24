@@ -17,7 +17,7 @@ export default defineComponentMeta({
         },
     },
     designDirectives: {
-        "disable-event": {},
+        // "disable-event": {},
     },
     setter: {
         props: {

@@ -1020,6 +1020,42 @@ const statisticTitle: JSONSchema7 = {
     },
 };
 
+const tagColor: JSONSchema7 = {
+    description: "控制标签文本色和背景色",
+    anyOf: [
+        {
+            $ref: "#/definitions/EnumColor",
+        },
+        {
+            $ref: "#/definitions/Color",
+        },
+        {
+            type: "array",
+            description: "若为数组则第一个值设置背景色，第二个设置文本色",
+            items: {
+                anyOf: [
+                    {
+                        $ref: "#/definitions/EnumColor",
+                    },
+                    {
+                        $ref: "#/definitions/Color",
+                    },
+                ],
+            },
+        },
+    ],
+    definitions: {
+        EnumColor: {
+            enum: ["red", "orange", "green", "blue", "purple", "brown", "grey"],
+            description: "内置颜色",
+        },
+        Color: {
+            type: "string",
+            description: "css颜色",
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -1055,4 +1091,5 @@ export {
     transferPagerOp,
     transferProps,
     statisticTitle,
+    tagColor,
 }
