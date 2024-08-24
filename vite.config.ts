@@ -191,9 +191,13 @@ export default defineConfig(env => {
                         if (id.includes('/prettier/')) {
                             return 'prettier';
                         }
-                        if (id.includes('/draggable/register/meta/')) {
-                            return 'components-meta';
-                        }
+                        // 当前项目
+                        // if (id.includes("/clever-app-studio/src/") && !id.includes('/draggable/register/meta/')) {
+                        //     return 'dev-ease';
+                        // }
+                        // if (id.includes('/draggable/register/meta/')) {
+                        //     return 'components-meta';
+                        // }
                     },
                 },
             },

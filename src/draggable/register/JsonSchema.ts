@@ -977,6 +977,34 @@ const searchTypeValue: JSONSchema7 = {
     definitions: searchDefinitions,
 };
 
+const gridDefinitions: JSONSchema7["definitions"] = {
+    ColumnConfig: {},
+}
+
+const transferColumns: JSONSchema7 = {
+    // TODO transferColumns
+};
+
+const transferTreeOp: JSONSchema7 = {
+    // TODO transferTreeOp
+};
+
+const transferData: JSONSchema7 = {
+    // TODO transferData
+};
+
+const transferFormat: JSONSchema7 = {
+    // TODO transferData
+};
+
+const transferPagerOp: JSONSchema7 = {
+    // TODO transferPagerOp
+};
+
+const transferProps: JSONSchema7 = {
+    // TODO transferProps
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -1005,4 +1033,10 @@ export {
     cascaderProps,
     searchTypes,
     searchTypeValue,
+    transferColumns,
+    transferTreeOp,
+    transferData,
+    transferFormat,
+    transferPagerOp,
+    transferProps,
 }

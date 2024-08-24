@@ -4,7 +4,6 @@ import { ComponentManage } from "@/draggable/types/ComponentManage";
 let componentMetas: Record<string, ComponentMeta>;
 
 async function loadComponentMetas(): Promise<Record<string, ComponentMeta>> {
-    console.trace("loadComponentMetas")
     if (!componentMetas) componentMetas = await import("@/draggable/register/meta");
     return componentMetas;
 }
