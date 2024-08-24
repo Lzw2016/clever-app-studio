@@ -35,6 +35,11 @@ export default defineComponentMeta({
                     items: [
                         {
                             cmp: "StringSetter",
+                            cmpProps: {
+                                type: "textarea",
+                                resize: "none",
+                                rows: 6,
+                            },
                             label: "图片路径",
                             labelTips: "设置图片路径",
                             propsName: "src",
@@ -96,7 +101,6 @@ export default defineComponentMeta({
                             label: "适应容器",
                             labelTips: "确定图片如何适应容器大小",
                             propsName: "size",
-                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "BoolSetter",

@@ -1005,6 +1005,21 @@ const transferProps: JSONSchema7 = {
     // TODO transferProps
 };
 
+const statisticTitle: JSONSchema7 = {
+    type: "object",
+    description: "",
+    properties: {
+        value: {
+            type: "string",
+            description: "标题文本",
+        },
+        position: {
+            enum: ["top", "bottom"],
+            description: "标题位置，取值：top | bottom",
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -1039,4 +1054,5 @@ export {
     transferFormat,
     transferPagerOp,
     transferProps,
+    statisticTitle,
 }
