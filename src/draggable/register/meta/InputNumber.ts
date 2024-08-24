@@ -236,6 +236,7 @@ export default defineComponentMeta({
                             label: "组件模式",
                             labelTips: "设置输入的shape='filter',切换至过滤器模式",
                             propsName: "shape",
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "BoolSetter",

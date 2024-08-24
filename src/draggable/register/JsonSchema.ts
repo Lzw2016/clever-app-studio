@@ -945,6 +945,38 @@ const cascaderProps: JSONSchema7 = {
     definitions: cascaderDefinitions,
 };
 
+const searchDefinitions: JSONSchema7["definitions"] = {
+    TypeValue: {
+        type: "object",
+        description: "搜索类型项",
+        properties: {
+            text: {
+                type: "string",
+                description: "选项显示文本",
+            },
+            value: {
+                type: ["number", "string"],
+                description: "选项值",
+            },
+        },
+    },
+};
+
+const searchTypes: JSONSchema7 = {
+    type: "array",
+    description: "搜索类型的选项列表",
+    items: {
+        $ref: "#/definitions/TypeValue",
+    },
+    definitions: searchDefinitions,
+};
+
+const searchTypeValue: JSONSchema7 = {
+    $ref: "#/definitions/TypeValue",
+    description: "搜索类型项",
+    definitions: searchDefinitions,
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -971,4 +1003,6 @@ export {
     fileUploadThumbOption,
     cascaderOptions,
     cascaderProps,
+    searchTypes,
+    searchTypeValue,
 }
