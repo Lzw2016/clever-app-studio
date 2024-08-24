@@ -11,18 +11,31 @@ interface EmptyEventListenerConfig {
     stopPropagation?: boolean;
 }
 
-const emptyEventListenerCache: Record<string, Function> = {};
+function emptyFun() {
+}
 
-function getEmptyEventListener(config: EmptyEventListenerConfig) {
-    const key = [config.preventDefault, config.stopPropagation].join("|");
-    let emptyEventListener = emptyEventListenerCache[key];
-    if (emptyEventListener) return emptyEventListener;
-    emptyEventListener = function (event?: Event) {
-        if (config.preventDefault && event?.preventDefault) event.preventDefault();
-        if (config.stopPropagation && event?.stopPropagation) event.stopPropagation();
-    };
-    emptyEventListenerCache[key] = emptyEventListener;
-    return emptyEventListener;
+function preventDefaultFun(event?: Event) {
+    if (event?.preventDefault) event.preventDefault();
+}
+
+function stopPropagationFun(event?: Event) {
+    if (event?.stopPropagation) event.stopPropagation();
+}
+
+function preventDefaultAndStopPropagationFun(event?: Event) {
+    if (event?.stopPropagation) event.stopPropagation();
+    if (event?.stopPropagation) event.stopPropagation();
+}
+
+function getEmptyEventListener(config: EmptyEventListenerConfig): Function {
+    if (config.preventDefault && config.stopPropagation) {
+        return preventDefaultAndStopPropagationFun;
+    } else if (config.preventDefault) {
+        return preventDefaultFun;
+    } else if (config.stopPropagation) {
+        return stopPropagationFun;
+    }
+    return emptyFun;
 }
 
 let veiKey: symbol | undefined;
