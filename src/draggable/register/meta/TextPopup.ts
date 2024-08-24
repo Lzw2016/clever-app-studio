@@ -14,6 +14,9 @@ export default defineComponentMeta({
             placeholder: "请输入",
         },
     },
+    designDirectives: {
+        "disable-event": {},
+    },
     setter: {
         props: {
             enableVModel: true,
@@ -47,11 +50,13 @@ export default defineComponentMeta({
                         {
                             cmp: "NumberSetter",
                             cmpProps: {
-                                step: 1,
+                                step: 4,
                                 unit: "px",
                             },
                             label: "宽度",
                             propsName: "width",
+                            defPropsValue: 150,
+                            recalcAuxToolPosition: true,
                         },
                     ],
                 },

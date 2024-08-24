@@ -86,7 +86,7 @@ const defPreventDefaultEvents = fixEventNames([
     // 鼠标事件
     // "click", "dblclick", "mousedown", "mouseup", "mouseenter", "mouseleave", "mouseover", "mouseout", "mousemove",
     // 键盘事件
-    // "keydown", "keyup", "keypress",
+    "keydown", "keyup", "keypress",
     // 表单事件
     // "input", "change", "focus", "blur", "submit", "reset", "paste",
     // 其他事件

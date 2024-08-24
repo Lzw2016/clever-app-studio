@@ -19,9 +19,7 @@ export default defineComponentMeta({
             groups: [
                 {
                     title: "常用",
-                    items: [
-
-                    ],
+                    items: [],
                 },
                 {
                     title: "风格",
@@ -33,9 +31,21 @@ export default defineComponentMeta({
             groups: [],
         },
         style: {},
-        advanced: {
-        },
+        advanced: {},
     },
-    placeholder: {},
+    placeholder: {
+        // 穿梭按钮插槽
+        // button-panel
+        // 数据项的内容插槽，插槽数据上下文为： { option }
+        // default
+        // 左侧列表底部的内容插槽
+        // left-footer
+        // 左侧自定义内容插槽
+        // left-panel
+        // 右侧列表底部的内容插槽
+        // right-footer
+        // 右侧自定义内容插槽
+        // right-panel
+    },
     i18n: {},
 });
