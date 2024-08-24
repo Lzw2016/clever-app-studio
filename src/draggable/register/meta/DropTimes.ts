@@ -99,6 +99,7 @@ export default defineComponentMeta({
                             label: "下拉样式",
                             labelTips: "为 DropTimes 下拉弹框添加的 class 类名",
                             propsName: "popperClass",
+                            recalcAuxToolPosition: true,
                         },
                     ],
                 },

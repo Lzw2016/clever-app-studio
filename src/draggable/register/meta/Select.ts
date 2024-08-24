@@ -311,6 +311,7 @@ export default defineComponentMeta({
                             label: "折叠显示",
                             labelTips: "是否将多个标签折叠显示。仅适用多选",
                             propsName: "collapseTags",
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "BoolSetter",
@@ -358,6 +359,7 @@ export default defineComponentMeta({
                             label: "组件大小",
                             labelTips: "输入框尺寸",
                             propsName: "size",
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "BoolSetter",
@@ -402,6 +404,7 @@ export default defineComponentMeta({
                             label: "下拉样式",
                             labelTips: "自定义下拉框的类名，用于自定义样式",
                             propsName: "popperClass",
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "StringSetter",

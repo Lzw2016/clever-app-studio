@@ -189,6 +189,7 @@ export default defineComponentMeta({
                             label: "指定class",
                             labelTips: "为弹出层添加类名",
                             propsName: "popperClass",
+                            recalcAuxToolPosition: true,
                         },
                     ],
                 },

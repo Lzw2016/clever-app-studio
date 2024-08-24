@@ -155,6 +155,7 @@ export default defineComponentMeta({
                             label: "组件大小",
                             labelTips: "输入框尺寸，只在 type!='textarea' 时有效",
                             propsName: "size",
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "IconSetter",

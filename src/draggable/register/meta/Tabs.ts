@@ -190,6 +190,7 @@ export default defineComponentMeta({
                             label: "指定class",
                             labelTips: "为'更多'下拉页签框添加类名，可用于自定义下拉选项的样式",
                             propsName: "popperClass",
+                            recalcAuxToolPosition: true,
                         },
                     ],
                 },
