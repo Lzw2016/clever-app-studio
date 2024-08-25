@@ -83,7 +83,9 @@ function registerComponentMeta(componentManage: ComponentManage) {
     componentManage.registerAsyncComponentMeta("Tag", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("TagGroup", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("Carousel", loadComponentMeta);
+    componentManage.registerAsyncComponentMeta("CarouselItem", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("Collapse", loadComponentMeta);
+    componentManage.registerAsyncComponentMeta("CollapseItem", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("UserHead", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("Card", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("Alert", loadComponentMeta);

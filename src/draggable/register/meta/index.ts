@@ -61,7 +61,9 @@ import Statistic from "@/draggable/register/meta/Statistic";
 import Tag from "@/draggable/register/meta/Tag";
 import TagGroup from "@/draggable/register/meta/TagGroup";
 import Carousel from "@/draggable/register/meta/Carousel";
+import CarouselItem from "@/draggable/register/meta/CarouselItem";
 import Collapse from "@/draggable/register/meta/Collapse";
+import CollapseItem from "@/draggable/register/meta/CollapseItem";
 import UserHead from "@/draggable/register/meta/UserHead";
 import Card from "@/draggable/register/meta/Card";
 import Alert from "@/draggable/register/meta/Alert";
@@ -163,7 +165,9 @@ export {
     Tag,
     TagGroup,
     Carousel,
+    CarouselItem,
     Collapse,
+    CollapseItem,
     UserHead,
     Card,
     Alert,

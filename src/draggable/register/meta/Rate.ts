@@ -135,6 +135,7 @@ export default defineComponentMeta({
                                 props.size = `${(value ?? 80)}px`;
                             },
                             defPropsValue: 18,
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "NumberSetter",
@@ -157,6 +158,7 @@ export default defineComponentMeta({
                                 props.space = `${(value ?? 80)}px`;
                             },
                             defPropsValue: 24,
+                            recalcAuxToolPosition: true,
                         },
                         {
                             cmp: "ColorSetter",

@@ -132,6 +132,7 @@ export default defineComponentMeta({
                                 props.height = `${(value ?? 300)}px`;
                             },
                             defPropsValue: 300,
+                            recalcAuxToolPosition: true,
                         },
                     ],
                 },

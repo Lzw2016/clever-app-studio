@@ -16,7 +16,7 @@ export default defineComponentMeta({
         props: {
             style: {
                 minHeight: "150px",
-                border: "1px solid #ccc",
+                // border: "1px solid #ccc",
             },
             labelWidth: "75px",
             rules: {

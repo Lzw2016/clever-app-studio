@@ -97,6 +97,8 @@ const materialDependence: MaterialDependence = {
     Layout: ["Row", "Col"],
     Tabs: ["TabItem"],
     Form: ["FormItem", "Input", "Row", "Col"],
+    Carousel: ["CarouselItem"],
+    Collapse: ["CollapseItem"],
 };
 
 export {

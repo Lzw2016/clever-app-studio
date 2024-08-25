@@ -371,6 +371,8 @@ interface ComponentMeta {
     docLink?: string;
     /** 是否禁止拖拽(默认启用) */
     disableDragDrop?: boolean;
+    // TODO dragDropConfig | 白名单 | 黑名单
+    // TODO toDesignNode 转换渲染节点属性，实现设计时与运行时灵活自定义渲染节点属性
     /** 设计时的组件对象 */
     designComponent?: VueComponent | string;
     /** 默认的组件节点配置 */
