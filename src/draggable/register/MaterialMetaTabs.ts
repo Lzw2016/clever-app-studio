@@ -76,18 +76,18 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
                     "Badge", "Watermark", "PopConfirm", "Popover", "Skeleton", "Tooltip", "Guide", "Fullscreen",
                 ],
             },
-            {
-                title: "导航",
-                types: [
-                    "FallMenu", "NavMenu", "TreeMenu", "ToggleMenu", "Steps", "Pager", "Anchor", "Breadcrumb",
-                ],
-            },
-            {
-                title: "扩展",
-                types: [
-                    "Slot", "InfiniteScroll", "Loading", "DialogBox", "Drawer", "Modal", "Notify",
-                ],
-            },
+            // {
+            //     title: "导航",
+            //     types: [
+            //         "FallMenu", "NavMenu", "TreeMenu", "ToggleMenu", "Steps", "Pager", "Anchor", "Breadcrumb",
+            //     ],
+            // },
+            // {
+            //     title: "扩展",
+            //     types: [
+            //         "Slot", "InfiniteScroll", "Loading", "DialogBox", "Drawer", "Modal", "Notify",
+            //     ],
+            // },
             // "FloatBar", "FilterPanel",
         ],
     },
