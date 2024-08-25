@@ -1,10 +1,10 @@
 import lodash from "lodash";
 import { createVNode } from "vue";
 import { noValue } from "@/utils/Typeof";
+import { VarType } from "@/draggable/types/Base";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
 import { cardOptions } from "@/draggable/register/JsonSchema";
 import CardSvg from "@/assets/images/card.svg?component";
-import { VarType } from "@/draggable/types/Base";
 
 export default defineComponentMeta({
     type: "Card",
