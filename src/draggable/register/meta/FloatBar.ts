@@ -7,21 +7,17 @@ export default defineComponentMeta({
     name: "浮动块",
     description: "",
     version: "0.0.1",
-    docLink: "",
+    docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/floatbar",
     icon: createVNode(FloatBarSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
-        props: {
-            style: {},
-        },
+        props: {},
     },
     setter: {
         props: {
             groups: [
                 {
                     title: "常用",
-                    items: [
-
-                    ],
+                    items: [],
                 },
                 {
                     title: "风格",
@@ -30,12 +26,15 @@ export default defineComponentMeta({
             ],
         },
         events: {
+            includeInnerEvents: true,
+            excludeInnerEvents: ["表单事件"],
             groups: [],
         },
         style: {},
-        advanced: {
-        },
+        advanced: {},
     },
-    placeholder: {},
+    placeholder: {
+        default: true,
+    },
     i18n: {},
 });

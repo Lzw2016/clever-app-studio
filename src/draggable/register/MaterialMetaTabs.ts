@@ -66,8 +66,8 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
                 types: [
                     "Tree", "Grid", "Image", "QrCode", "Statistic", "Tag", "TagGroup",
                     "Carousel", "Collapse", "UserHead", "Card", "Alert", "Progress",
-                    "ScrollText", "Timeline", "CalendarView", "FloatBar", "FilterPanel",
-                    "Guide", "Fullscreen", "Wizard", "Milestone", "BulletinBoard", "Crop",
+                    "ScrollText", "Timeline", "CalendarView", "Guide",
+                    "Fullscreen", "Wizard", "Milestone", "BulletinBoard", "Crop",
                 ],
             },
             {
@@ -88,6 +88,7 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
                     "Slot", "InfiniteScroll", "Loading", "DialogBox", "Drawer", "Modal", "Notify",
                 ],
             },
+            // "FloatBar", "FilterPanel",
         ],
     },
 ];
