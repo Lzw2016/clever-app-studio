@@ -1115,6 +1115,43 @@ const progressColor: JSONSchema7 = {
     },
 };
 
+const timelineData: JSONSchema7 = {
+    type: "array",
+    description: "节点数据",
+    items: {
+        type: "object",
+        description: "节点数据项",
+        properties: {
+            time: {
+                type: "string",
+                description: "节点时间",
+            },
+            name: {
+                type: "string",
+                description: "节点名称",
+            },
+            activeColor: {
+                anyOf: [
+                    {
+                        enum: ["success", "warning", "error"],
+                    },
+                    {
+                        type: "string",
+                    },
+                ],
+                description: "活动节点颜色",
+            },
+            error: {
+                type: "boolean",
+                description: "是否异常状态",
+            },
+            type: {
+                description: "节点类型",
+            },
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -1154,4 +1191,5 @@ export {
     tagGroupData,
     cardOptions,
     progressColor,
+    timelineData,
 }
