@@ -15,6 +15,9 @@ export default defineComponentMeta({
             label: "过滤标题",
         },
     },
+    designDirectives: {
+        // "disable-event": {},
+    },
     setter: {
         props: {
             enableVModel: true,

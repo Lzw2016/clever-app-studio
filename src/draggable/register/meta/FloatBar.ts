@@ -12,6 +12,9 @@ export default defineComponentMeta({
     defDesignNode: {
         props: {},
     },
+    designDirectives: {
+        // "disable-event": {},
+    },
     setter: {
         props: {
             groups: [
