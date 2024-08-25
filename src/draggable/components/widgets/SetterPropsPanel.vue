@@ -89,6 +89,8 @@ watch(() => selectNode.value, node => resetNodeRef(node), { immediate: true });
 async function loadSetterComponent(setterPanel: PropsPanel) {
     // 获取所有需要加载的组件类型
     const types = new Set<string>();
+    const modelValueSetter = setterPanel.modelValueSetter?.cmp;
+    if (isStr(modelValueSetter) && !isHtmlTag(modelValueSetter)) types.add(modelValueSetter);
     for (let setterGroup of setterPanel.groups) {
         for (let item of setterGroup.items) {
             if (isStr(item.cmp) && !isHtmlTag(item.cmp)) types.add(item.cmp);
