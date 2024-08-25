@@ -11,7 +11,7 @@ export default defineComponentMeta({
     icon: createVNode(GuideSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     defDesignNode: {
         props: {
-            showStep: true,
+            showStep: false,
             domData: [
                 {
                     title: '新手引导标题1',
