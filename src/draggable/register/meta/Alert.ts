@@ -51,9 +51,8 @@ export default defineComponentMeta({
                             cmp: "StringSetter",
                             label: "关闭文本",
                             labelTips: "关闭按钮自定义文本",
-                            propsName: "close-text",
+                            propsName: "closeText",
                         },
-
                     ],
                 },
                 {
