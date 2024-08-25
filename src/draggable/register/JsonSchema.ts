@@ -1152,6 +1152,37 @@ const timelineData: JSONSchema7 = {
     },
 };
 
+const timelineEvents: JSONSchema7 = {
+    type: "array",
+    description: "日程事件",
+    items: {
+        type: "object",
+        description: "日程项",
+        properties: {
+            title: {
+                type: "string",
+                description: "日程标题",
+            },
+            content: {
+                type: "string",
+                description: "日程内容",
+            },
+            start: {
+                type: "string",
+                description: "日程开始时间",
+            },
+            end: {
+                type: "string",
+                description: "日程结束时间",
+            },
+            theme: {
+                type: "string",
+                description: "日程主题",
+            },
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -1192,4 +1223,5 @@ export {
     cardOptions,
     progressColor,
     timelineData,
+    timelineEvents,
 }

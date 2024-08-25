@@ -21,6 +21,9 @@ export default defineComponentMeta({
             active: 1,
         },
     },
+    designDirectives: {
+        // "disable-event": {},
+    },
     setter: {
         props: {
             groups: [
@@ -53,7 +56,6 @@ export default defineComponentMeta({
                             },
                             label: "节点数据",
                             propsName: "data",
-                            defPropsValue: true,
                             recalcAuxToolPosition: true,
                         },
                         {

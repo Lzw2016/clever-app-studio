@@ -15,6 +15,9 @@ export default defineComponentMeta({
             description: "这是一个警告提示信息!",
         },
     },
+    designDirectives: {
+        // "disable-event": {},
+    },
     setter: {
         props: {
             groups: [
