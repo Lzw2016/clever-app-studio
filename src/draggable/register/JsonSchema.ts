@@ -1183,6 +1183,10 @@ const timelineEvents: JSONSchema7 = {
     },
 };
 
+const wizardData: JSONSchema7 = {
+    // TODO wizardData
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -1224,4 +1228,5 @@ export {
     progressColor,
     timelineData,
     timelineEvents,
+    wizardData,
 }
