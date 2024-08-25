@@ -1096,6 +1096,25 @@ const cardOptions: JSONSchema7 = {
     },
 };
 
+const progressColor: JSONSchema7 = {
+    type: "array",
+    description: "进度条背景色",
+    items: {
+        type: "object",
+        description: "进度颜色",
+        properties: {
+            color: {
+                type: "string",
+                description: "当前进度的颜色",
+            },
+            percentage: {
+                type: "number",
+                description: "进度条进度",
+            },
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -1134,4 +1153,5 @@ export {
     tagColor,
     tagGroupData,
     cardOptions,
+    progressColor,
 }
