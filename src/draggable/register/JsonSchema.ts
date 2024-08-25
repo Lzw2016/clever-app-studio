@@ -1074,6 +1074,28 @@ const tagGroupData: JSONSchema7 = {
     },
 };
 
+const cardOptions: JSONSchema7 = {
+    type: "array",
+    description: "操作按钮配置",
+    items: {
+        type: "object",
+        description: "按钮配置",
+        properties: {
+            text: {
+                type: "string",
+                description: "按钮文本",
+            },
+            icon: {
+                description: "按钮图标",
+            },
+            disabled: {
+                type: "boolean",
+                description: "是否禁用",
+            },
+        },
+    },
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -1111,4 +1133,5 @@ export {
     statisticTitle,
     tagColor,
     tagGroupData,
+    cardOptions,
 }

@@ -370,7 +370,7 @@ export default defineComponentMeta({
                         },
                         {
                             cmp: "StringSetter",
-                            label: "下拉样式",
+                            label: "下拉class",
                             labelTips: "自定义下拉框的类名，用于自定义样式",
                             propsName: "popperClass",
                             recalcAuxToolPosition: true,

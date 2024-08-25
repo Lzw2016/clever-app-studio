@@ -166,7 +166,7 @@ export default defineComponentMeta({
                         },
                         {
                             cmp: "StringSetter",
-                            label: "下拉样式",
+                            label: "下拉class",
                             labelTips: "为 TimePicker 下拉弹框添加的 class 类名",
                             propsName: "popperClass",
                             recalcAuxToolPosition: true,
