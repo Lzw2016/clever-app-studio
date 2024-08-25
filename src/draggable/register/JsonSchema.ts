@@ -1187,6 +1187,18 @@ const wizardData: JSONSchema7 = {
     // TODO wizardData
 };
 
+const milestoneData: JSONSchema7 = {
+    // TODO milestoneData
+};
+
+const milestonesStatus: JSONSchema7 = {
+    // TODO milestonesStatus
+};
+
+const bulletinBoardData: JSONSchema7 = {
+    // TODO bulletinBoardData
+};
+
 export {
     buttonGroupData,
     actionMenuOptions,
@@ -1229,4 +1241,7 @@ export {
     timelineData,
     timelineEvents,
     wizardData,
+    milestoneData,
+    milestonesStatus,
+    bulletinBoardData,
 }

@@ -55,9 +55,9 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
                 title: "表单",
                 types: [
                     "Form",
-                    "Input", "InputNumber", "BaseSelect", "Select", "DatePicker", "TimePicker", "DropTimes", "TimeSelect",
-                    "Switch", "Checkbox", "CheckboxGroup", "Radio", "RadioGroup", "Slider", "ColorPicker",
-                    "FileUpload", "AutoComplete", "Cascader", "Search", "Rate", "Transfer",
+                    "Input", "InputNumber", "BaseSelect", "Select", "DatePicker", "TimePicker", "DropTimes",
+                    "TimeSelect", "Switch", "Checkbox", "CheckboxGroup", "Radio", "RadioGroup", "Slider",
+                    "ColorPicker", "FileUpload", "AutoComplete", "Cascader", "Search", "Rate", "Transfer",
                     "TextPopup", "IpAddress",
                 ],
             },
@@ -66,14 +66,14 @@ const materialMetaTabs: Array<MaterialMetaTab> = [
                 types: [
                     "Tree", "Grid", "Image", "QrCode", "Statistic", "Tag", "TagGroup",
                     "Carousel", "Collapse", "UserHead", "Card", "Alert", "Progress",
-                    "ScrollText", "Timeline", "CalendarView", "Guide",
-                    "Fullscreen", "Wizard", "Milestone", "BulletinBoard", "Crop",
+                    "ScrollText", "Timeline", "CalendarView", "Wizard", "Milestone",
+                    "BulletinBoard", "Crop",
                 ],
             },
             {
                 title: "容器(功能)",
                 types: [
-                    "Badge", "Watermark", "PopConfirm", "Popover", "Skeleton", "Tooltip",
+                    "Badge", "Watermark", "PopConfirm", "Popover", "Skeleton", "Tooltip", "Guide", "Fullscreen",
                 ],
             },
             {
