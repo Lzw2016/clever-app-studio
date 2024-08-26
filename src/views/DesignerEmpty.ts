@@ -18,21 +18,7 @@ const designerEmpty = defineDesignBlock({
             width: '100%',
         },
     },
-    items: [
-        {
-            type: "div",
-            props: {
-                style: {
-                    border: "1px solid #ccc",
-                    height: "300px",
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
-                },
-            },
-        },
-    ],
+    items: [],
     methods: {},
 });
 
