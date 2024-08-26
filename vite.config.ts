@@ -139,7 +139,7 @@ export default defineConfig(env => {
             // target: 'es2015',
             outDir: 'dist',
             assetsInlineLimit: 4096,
-            sourcemap: true,
+            sourcemap: envConfig.sourcemap ?? false,
             minify: 'esbuild',
             reportCompressedSize: true,
             chunkSizeWarningLimit: 512,

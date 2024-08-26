@@ -5,14 +5,17 @@ const defEnv: EnvConfig = {
     serverPort: 3000,
     apiTarget: 'http://127.0.0.0:8080',
     htmlTitle: 'vue3',
+    sourcemap: false,
 };
 
 const allEnv: Record<string, Partial<EnvConfig>> = {
     development: {
         htmlTitle: 'dev',
+        sourcemap: true,
     },
     production: {
         htmlTitle: 'prod',
+        sourcemap: false,
     },
 };
 

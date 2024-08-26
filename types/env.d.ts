@@ -1,5 +1,5 @@
 declare module '*.vue' {
-    import type {DefineComponent} from 'vue';
+    import type { DefineComponent } from 'vue';
     const vueComponent: DefineComponent<{}, {}, any>;
     export default vueComponent;
 }
@@ -14,6 +14,8 @@ interface EnvConfig {
     apiTarget: string;
     /** html页面标题 */
     htmlTitle: string;
+    /** 是否生成源码map文件，默认: false */
+    sourcemap: boolean;
 
     [key: string]: any;
 }
