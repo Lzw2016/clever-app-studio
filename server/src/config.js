@@ -8,6 +8,7 @@ const staticConfig = [
     {
         path: "/",
         location: "../../dist/",
+        gzFirst: true,
         options: {
             index: ['index.html'],
             maxAge: 0,
@@ -16,6 +17,7 @@ const staticConfig = [
     {
         path: "/assets",
         location: "../../dist/assets/",
+        gzFirst: true,
         options: {
             maxAge: 31536000,
         },
@@ -23,6 +25,7 @@ const staticConfig = [
     {
         path: "/font",
         location: "../../dist/font/",
+        gzFirst: true,
         options: {
             maxAge: 31536000,
         },

@@ -36,6 +36,7 @@ app.setMaxListeners(300);
 app.use(utils.logHandler);
 // 启用压缩
 if (options.compression) {
+    console.log("启用Gzip压缩");
     app.use(compression({}));
 }
 // 静态文件映射配置

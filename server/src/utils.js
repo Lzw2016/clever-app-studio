@@ -9,6 +9,7 @@ const config = {
     cmdOptions: {},
     cacheContentType: ['', 'javascript', 'json', 'css', 'html'],
 };
+let cacheGzipExists = {};
 
 /**
  * 静态资源映射
@@ -16,16 +17,42 @@ const config = {
 const applyStatic = (app, mapping) => {
     let absPath = mapping.location;
     if (!path.isAbsolute(absPath)) {
-        absPath = path.join(__dirname, mapping.location)
+        absPath = path.join(__dirname, mapping.location);
     }
-    const absGzipPath = absPath + '.gz';
-    if (fs.existsSync(absGzipPath)) absPath = absGzipPath;
-    console.log('静态文件: ', mapping.path, '->', absPath);
-    app.use(mapping.path, express.static(absPath, {
-        index: ['index.html'],
+    const options = {
         maxAge: 1000 * 60 * 60 * 24 * 30,
         ...(mapping.options || {}),
-    }));
+    };
+    const staticCallback = express.static(absPath, {
+        index: ['index.html'],
+        ...options,
+    });
+    if (mapping.gzFirst === true) {
+        console.log('静态文件(gz优先): ', mapping.path, '->', absPath);
+        app.use(mapping.path, (req, res, next) => {
+            const type = path.extname(req.originalUrl);
+            const absGzipPath = path.join(absPath, req.originalUrl + '.gz');
+            let exists = cacheGzipExists[absGzipPath];
+            if (exists !== true && fs.existsSync(absGzipPath)) {
+                cacheGzipExists[absGzipPath] = true;
+                exists = true;
+            }
+            if (exists === true) {
+                try {
+                    res.setHeader('Content-Encoding', 'gzip');
+                    res.sendFile(absGzipPath, options);
+                    res.type(type || 'gzip');
+                    return;
+                } catch (err) {
+                    console.error('静态文件(gz优先)异常', err);
+                }
+            }
+            return staticCallback(req, res, next);
+        });
+    } else {
+        console.log('静态文件: ', mapping.path, '->', absPath);
+        app.use(mapping.path, staticCallback);
+    }
 };
 
 /**
