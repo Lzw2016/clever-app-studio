@@ -100,9 +100,6 @@ const isHTMLElement = (obj: any): obj is HTMLElement => {
     return typeStr.startsWith('[object html') && typeStr.endsWith('element]');
 };
 
-// /** 变量是否是 ReactNode */
-// export const isReactNode = isType<boolean>('');
-
 export {
     isStr,
     isNum,
