@@ -69,6 +69,8 @@ const applyProxy = (app, proxy) => {
             errorHandler(err, req, res, null);
         },
         onProxyReq: (proxyReq, req, res) => {
+            const rawIp = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket.remoteAddress;
+            proxyReq.setHeader('x-real-ip', rawIp);
             if (config.cmdOptions.debug) {
                 console.log(
                     `代理请求 ${req.protocol}://${req.headers.host}${req.originalUrl ?? ''}`,
