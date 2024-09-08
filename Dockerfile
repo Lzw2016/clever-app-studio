@@ -3,5 +3,6 @@ COPY dist/ /app/dist/
 COPY server/ /app/server/
 
 WORKDIR /app
+SHELL ["/bin/sh", "-c"]
 ENTRYPOINT exec node server/src/server.js -P 8080 ${CMD_PARAMS}
 EXPOSE 8080
