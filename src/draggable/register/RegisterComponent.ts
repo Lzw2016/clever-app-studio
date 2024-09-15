@@ -49,13 +49,6 @@ function registerComponent(componentManage: ComponentManage) {
         Tabs: "Tabs",
         TabItem: "TabItem",
         Split: "Split",
-        // 容器(功能)
-        Badge: "Badge",
-        Watermark: "Watermark",
-        PopConfirm: "Popconfirm",
-        Popover: "Popover",
-        Skeleton: "Skeleton",
-        Tooltip: "Tooltip",
         // 表单
         Form: "Form",
         FormItem: "FormItem",
@@ -105,14 +98,19 @@ function registerComponent(componentManage: ComponentManage) {
         ScrollText: "ScrollText",
         Timeline: "TimeLine",
         CalendarView: "CalendarView",
-        FloatBar: "Floatbar",
-        FilterPanel: "FilterPanel",
-        Guide: "Guide",
-        Fullscreen: "Fullscreen",
         Wizard: "Wizard",
         Milestone: "Milestone",
         BulletinBoard: "BulletinBoard",
         Crop: "Crop",
+        // 容器(功能)
+        Badge: "Badge",
+        Watermark: "Watermark",
+        PopConfirm: "Popconfirm",
+        Popover: "Popover",
+        Skeleton: "Skeleton",
+        Tooltip: "Tooltip",
+        Guide: "Guide",
+        Fullscreen: "Fullscreen",
         // 导航
         FallMenu: "FallMenu",
         NavMenu: "NavMenu",
@@ -129,8 +127,9 @@ function registerComponent(componentManage: ComponentManage) {
         Drawer: "Drawer",
         Modal: "Modal",
         Notify: "Notify",
-
-        // Captcha: "Captcha",
+        //
+        FloatBar: "Floatbar",
+        FilterPanel: "FilterPanel",
     };
     componentManage.batchRegisterComponent(new RegExp(Object.keys(openTinyTypes).join("|")), async () => {
         const openTiny = await import("@/draggable/register/components/OpenTiny");

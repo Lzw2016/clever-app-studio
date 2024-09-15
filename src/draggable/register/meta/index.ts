@@ -120,13 +120,6 @@ export {
     Tabs,
     TabItem,
     Split,
-    // 容器(功能)
-    Badge,
-    Watermark,
-    PopConfirm,
-    Popover,
-    Skeleton,
-    Tooltip,
     // 表单
     Form,
     FormItem,
@@ -175,14 +168,19 @@ export {
     ScrollText,
     Timeline,
     CalendarView,
-    FloatBar,
-    FilterPanel,
-    Guide,
-    Fullscreen,
     Wizard,
     Milestone,
     BulletinBoard,
     Crop,
+    // 容器(功能)
+    Badge,
+    Watermark,
+    PopConfirm,
+    Popover,
+    Skeleton,
+    Tooltip,
+    Guide,
+    Fullscreen,
     // 导航
     FallMenu,
     NavMenu,
@@ -200,4 +198,7 @@ export {
     Drawer,
     Modal,
     Notify,
+    //
+    FloatBar,
+    FilterPanel,
 }

@@ -38,13 +38,6 @@ function registerComponentMeta(componentManage: ComponentManage) {
     componentManage.registerAsyncComponentMeta("Tabs", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("TabItem", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("Split", loadComponentMeta);
-    // 容器(功能)
-    componentManage.registerAsyncComponentMeta("Badge", loadComponentMeta);
-    componentManage.registerAsyncComponentMeta("Watermark", loadComponentMeta);
-    componentManage.registerAsyncComponentMeta("PopConfirm", loadComponentMeta);
-    componentManage.registerAsyncComponentMeta("Popover", loadComponentMeta);
-    componentManage.registerAsyncComponentMeta("Skeleton", loadComponentMeta);
-    componentManage.registerAsyncComponentMeta("Tooltip", loadComponentMeta);
     // 表单
     componentManage.registerAsyncComponentMeta("Form", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("FormItem", loadComponentMeta);
@@ -93,14 +86,19 @@ function registerComponentMeta(componentManage: ComponentManage) {
     componentManage.registerAsyncComponentMeta("ScrollText", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("Timeline", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("CalendarView", loadComponentMeta);
-    componentManage.registerAsyncComponentMeta("FloatBar", loadComponentMeta);
-    componentManage.registerAsyncComponentMeta("FilterPanel", loadComponentMeta);
-    componentManage.registerAsyncComponentMeta("Guide", loadComponentMeta);
-    componentManage.registerAsyncComponentMeta("Fullscreen", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("Wizard", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("Milestone", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("BulletinBoard", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("Crop", loadComponentMeta);
+    // 容器(功能)
+    componentManage.registerAsyncComponentMeta("Badge", loadComponentMeta);
+    componentManage.registerAsyncComponentMeta("Watermark", loadComponentMeta);
+    componentManage.registerAsyncComponentMeta("PopConfirm", loadComponentMeta);
+    componentManage.registerAsyncComponentMeta("Popover", loadComponentMeta);
+    componentManage.registerAsyncComponentMeta("Skeleton", loadComponentMeta);
+    componentManage.registerAsyncComponentMeta("Tooltip", loadComponentMeta);
+    componentManage.registerAsyncComponentMeta("Guide", loadComponentMeta);
+    componentManage.registerAsyncComponentMeta("Fullscreen", loadComponentMeta);
     // 导航
     componentManage.registerAsyncComponentMeta("FallMenu", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("NavMenu", loadComponentMeta);
@@ -118,6 +116,9 @@ function registerComponentMeta(componentManage: ComponentManage) {
     componentManage.registerAsyncComponentMeta("Drawer", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("Modal", loadComponentMeta);
     componentManage.registerAsyncComponentMeta("Notify", loadComponentMeta);
+    //
+    componentManage.registerAsyncComponentMeta("FloatBar", loadComponentMeta);
+    componentManage.registerAsyncComponentMeta("FilterPanel", loadComponentMeta);
 }
 
 export {

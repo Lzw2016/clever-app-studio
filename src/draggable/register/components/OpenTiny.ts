@@ -105,6 +105,7 @@ export {
     Divider,
     ActionMenu,
     Dropdown,
+    DropdownItem,
     // 容器(布局)
     Layout,
     Row,
@@ -113,13 +114,6 @@ export {
     Tabs,
     TabItem,
     Split,
-    // 容器(功能)
-    Badge,
-    Watermark,
-    Popconfirm,
-    Popover,
-    Skeleton,
-    Tooltip,
     // 表单
     Form,
     FormItem,
@@ -169,14 +163,19 @@ export {
     ScrollText,
     TimeLine,
     CalendarView,
-    Floatbar,
-    FilterPanel,
-    Guide,
-    Fullscreen,
     Wizard,
     Milestone,
     BulletinBoard,
     Crop,
+    // 容器(功能)
+    Badge,
+    Watermark,
+    Popconfirm,
+    Popover,
+    Skeleton,
+    Tooltip,
+    Guide,
+    Fullscreen,
     // 导航
     FallMenu,
     NavMenu,
@@ -193,11 +192,12 @@ export {
     Drawer,
     Modal,
     Notify,
-
-
+    //
+    Floatbar,
+    FilterPanel,
+    // 内部组件
     LinkMenu,
     DropdownMenu,
-    DropdownItem,
     DialogSelect,
     Popeditor,
     PopUpload,
