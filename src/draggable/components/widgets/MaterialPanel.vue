@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import lodash from "lodash";
 import { computed, reactive } from "vue";
 import { Collapse, CollapseItem, Loading, Notify, Search, TabItem, Tabs } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -36,14 +37,25 @@ interface ComponentPaneProps {
 
 // 读取组件 props 属性
 const props = withDefaults(defineProps<ComponentPaneProps>(), {});
-// state 属性
-const state = reactive({
+
+// 定义 State 类型
+interface ComponentPaneState {
     /** 所有的组件及其元数据是否已经加载 */
+    allTypesLoaded: boolean;
+    /** 活动的叶签 */
+    activeTab?: string;
+    /** 展开的组件分组 */
+    expandGroups: Record<string, Array<string>>;
+    /** 组件过滤关键字 */
+    searchKey?: string;
+}
+
+// state 属性
+const state = reactive<ComponentPaneState>({
     allTypesLoaded: false,
-    // 活动的叶签
     activeTab: props.defTab ?? props.tabs[0]?.title,
-    // 展开的组件分组
     expandGroups: getAllExpandTitles(props.tabs),
+    searchKey: "",
 });
 // 内部数据
 const data = {
@@ -52,7 +64,7 @@ const data = {
 // 组件元信息
 const componentMetaTabs = computed<Array<ComponentMetaTab>>(() => {
     if (state.allTypesLoaded) {
-        return filterEmptyTabs(props.tabs);
+        return filterEmptyTabs(props.tabs, state.searchKey);
     }
     return [];
 });
@@ -100,7 +112,8 @@ function getAllExpandTitles(tabs: Array<MaterialMetaTab>): Record<string, Array<
 }
 
 // 过滤所有空 groups 和 items
-function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> {
+function filterEmptyTabs(tabs: Array<MaterialMetaTab>, searchKey?: string): Array<ComponentMetaTab> {
+    searchKey = lodash.trim(searchKey).toLowerCase();
     const componentManage = props.designerEngine.componentManage;
     const newTabs: Array<ComponentMetaTab> = [];
     for (let tab of tabs) {
@@ -109,7 +122,10 @@ function filterEmptyTabs(tabs: Array<MaterialMetaTab>): Array<ComponentMetaTab> 
         for (let group of tab.groups) {
             const metas: Array<ComponentMeta> = [];
             group.types.map(type => componentManage.getComponentMeta(type)).forEach(meta => {
-                if (meta) metas.push(meta);
+                if (!meta) return;
+                if (!searchKey || meta.type.toLowerCase().includes(searchKey) || meta.name.toLowerCase().includes(searchKey)) {
+                    metas.push(meta);
+                }
             });
             const types = metas.map(meta => meta.type);
             if (types.length > 0) newTab.groups.push({ ...group, types: types, metas: metas });
@@ -139,6 +155,7 @@ function closePanel() {
                 style="min-width: 130px;max-width: 240px;margin: 0 16px;"
                 placeholder="搜索组件"
                 :clearable="true"
+                v-model="state.searchKey"
             />
         </div>
         <Tabs
