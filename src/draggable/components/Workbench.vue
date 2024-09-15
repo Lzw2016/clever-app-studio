@@ -106,6 +106,8 @@ enum LeftTools {
     Page = "Page",
     /** 物料 */
     Material = "Material",
+    /** 大纲 */
+    Outline = "Outline",
     /** 字典 */
     Dict = "Dict",
     /** 接口 */
@@ -147,12 +149,13 @@ const innerLeftRightSplitPaneRef = ref<InstanceType<typeof SplitPane> | undefine
 // 左侧工具栏显示状态
 const isPage = computed(() => state.leftTool === LeftTools.Page);
 const isMaterial = computed(() => state.leftTool === LeftTools.Material);
+const isLeftOutline = computed(() => state.leftTool === LeftTools.Outline);
 const isDict = computed(() => state.leftTool === LeftTools.Dict);
 const isAPI = computed(() => state.leftTool === LeftTools.API);
 const isDatabase = computed(() => state.leftTool === LeftTools.Database);
 // 右侧工具栏显示状态
 const isProps = computed(() => !designerEngine.forceShowOutline && state.rightTool === RightTools.Props);
-const isOutline = computed(() => designerEngine.forceShowOutline || state.rightTool === RightTools.Outline);
+const isRightOutline = computed(() => designerEngine.forceShowOutline || state.rightTool === RightTools.Outline);
 const isHistory = computed(() => !designerEngine.forceShowOutline && state.rightTool === RightTools.History);
 
 // 设计器引擎
@@ -287,6 +290,14 @@ function setRightTool(rightTool?: RightTools) {
                 </div>
                 <div
                     class="flex-item-fixed left-tools-button"
+                    title="大纲"
+                    :class="{'left-tools-button-active': isLeftOutline}"
+                    @click="setLeftTool(LeftTools.Outline)"
+                >
+                    <ListTree/>
+                </div>
+                <div
+                    class="flex-item-fixed left-tools-button"
                     title="字典"
                     :class="{'left-tools-button-active': isDict}"
                     @click="setLeftTool(LeftTools.Dict)"
@@ -358,6 +369,11 @@ function setRightTool(rightTool?: RightTools) {
                                 :dependence="props.materialDependence"
                                 @closePanel="setLeftTool(LeftTools.Material)"
                             />
+                            <OutlinePanel
+                                v-show="isLeftOutline"
+                                :designer-engine="designerEngine"
+                                @closePanel="setLeftTool(LeftTools.Outline)"
+                            />
                             <DictPanel
                                 v-show="isDict"
                                 :designer-engine="designerEngine"
@@ -397,7 +413,7 @@ function setRightTool(rightTool?: RightTools) {
                                         @closePanel="setRightTool(RightTools.Props)"
                                     />
                                     <OutlinePanel
-                                        v-show="isOutline"
+                                        v-show="isRightOutline"
                                         :designer-engine="designerEngine"
                                         @closePanel="setRightTool(RightTools.Outline)"
                                     />
@@ -427,7 +443,7 @@ function setRightTool(rightTool?: RightTools) {
                 <div
                     class="flex-item-fixed right-tools-button"
                     title="大纲"
-                    :class="{'right-tools-button-active': isOutline}"
+                    :class="{'right-tools-button-active': isRightOutline}"
                     @click="setRightTool(RightTools.Outline)"
                 >
                     <ListTree/>
