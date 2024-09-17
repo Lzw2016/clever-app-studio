@@ -14,7 +14,7 @@ export default defineComponentMeta({
     docLink: "",
     icon: createVNode(FormItemSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
     dragDropConfig: {
-        // whiteList: ["Form", "Col"],
+        whiteList: ["Form", "Col"],
         isAllow: (cmpMeta, parentCmpMeta, slotName, element) => {
             const form = element.closest(`[${htmlExtAttr.componentType}=Form]`);
             return hasValue(form);
