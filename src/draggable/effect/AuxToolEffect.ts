@@ -73,7 +73,7 @@ class AuxToolEffect extends DesignerEffect {
             slotName = placeholder;
         } else {
             nodeId = useHtmlExtAttr.nodeId(distance.element)!;
-            slotName = useHtmlExtAttr.slotName(distance.element);
+            slotName = useHtmlExtAttr.slotName(distance.element)!;
         }
         if (this.nodeIsSelfOrInside(nodeId, this.designerEngine.draggingCmpMetas.nodeIds)) {
             return;
