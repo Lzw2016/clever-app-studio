@@ -21,6 +21,8 @@ class Insertion {
     protected readonly _nodeId: Ref<string | undefined> = ref<string | undefined>();
     /** 当前 node 属于占位组件 */
     protected readonly _placeholder: Ref<boolean | undefined> = ref<boolean | undefined>();
+    /** 是否允许拖拽 */
+    private readonly _allowDrag: Ref<boolean> = ref<boolean>(false);
 
     constructor(designerEngine: DesignerEngine) {
         this.designerEngine = designerEngine;
@@ -86,6 +88,16 @@ class Insertion {
         this._placeholder.value = value;
     }
 
+    /** 是否允许拖拽 */
+    get allowDrag(): boolean {
+        return this._allowDrag.value;
+    }
+
+    /** 是否允许拖拽 */
+    set allowDrag(value: boolean) {
+        this._allowDrag.value = value;
+    }
+
     /** 插入的方向 */
     get direction() {
         return this._distance.value?.direction;
@@ -118,6 +130,7 @@ class Insertion {
             slotName: this.slotName!,
             nodeId: this.nodeId!,
             placeholder: this.placeholder!,
+            allowDrag: this.allowDrag,
             before: this.isBefore(),
         };
     }
@@ -129,6 +142,7 @@ class Insertion {
         this._slotName.value = undefined;
         this._nodeId.value = undefined;
         this._placeholder.value = undefined;
+        this._allowDrag.value = false;
     }
 }
 

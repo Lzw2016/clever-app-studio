@@ -10,7 +10,9 @@ export default defineComponentMeta({
     version: "0.0.1",
     docLink: "https://opentiny.design/tiny-vue/zh-CN/os-theme/components/tabs",
     icon: createVNode(TabItemSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
-    disableDragDrop: true,
+    dragDropConfig: {
+        whiteList: ["Tabs"],
+    },
     defDesignNode: {
         props: {
             style: {},

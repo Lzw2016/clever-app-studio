@@ -1,7 +1,7 @@
 import lodash from "lodash";
 import JSON5 from "json5";
 import { isVNode, markRaw, VNode, VNodeChild } from "vue";
-import { hasValue, isArray, isFun, isObj, isStr, noValue } from "@/utils/Typeof";
+import { hasValue, isArray, isFun, isFunction, isObj, isStr, noValue } from "@/utils/Typeof";
 import { childSlotName, configRawValueName } from "@/draggable/Constant";
 import { AnyFunction } from "@/draggable/types/Base";
 import { RuntimeBlock, RuntimeComponentSlotsItem, RuntimeNode } from "@/draggable/types/RuntimeBlock";
@@ -128,6 +128,33 @@ function getMaterialMetaTabAllTypes(materialMetaTab: MaterialMetaTab): Array<str
         }
     }
     return types;
+}
+
+/** 是否允许拖拽 */
+function isAllowDrag(cmpMeta: ComponentMeta, parentCmpMeta: ComponentMeta, slotName: string, element: Element): boolean {
+    if (!cmpMeta.dragDropConfig) return true;
+    const parentType = parentCmpMeta.type;
+    const {
+        whiteList,
+        blacklist,
+        isAllow,
+    } = cmpMeta.dragDropConfig;
+    if (hasValue(whiteList)) {
+        if (!whiteList.includes(parentType)) {
+            return false;
+        }
+    }
+    if (hasValue(blacklist)) {
+        if (blacklist.includes(parentType)) {
+            return false;
+        }
+    }
+    if (isFunction(isAllow)) {
+        if (!isAllow(cmpMeta, parentCmpMeta, slotName, element)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 /** 遍历 VNode 的回调函数 */
@@ -894,6 +921,7 @@ export {
     getAllTypes,
     getChildNodePosition,
     getMaterialMetaTabAllTypes,
+    isAllowDrag,
     deepTraverseVNode,
     deepTraverseRuntimeNode,
     deepTraverseDesignNode,

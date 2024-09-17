@@ -5,7 +5,7 @@ import { designerContent } from "@/draggable/Constant";
 import { htmlExtAttr, useHtmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { calcAuxToolPosition, calcNodeToCursorDistance } from "@/draggable/utils/PositionCalc";
 import { existsPlaceholder } from "@/draggable/utils/ComponentMetaUtils";
-import { deepTraverseRuntimeNode } from "@/draggable/utils/DesignerUtils";
+import { deepTraverseRuntimeNode, isAllowDrag } from "@/draggable/utils/DesignerUtils";
 import { NodeToCursorDistance, PointDirection } from "@/draggable/types/Designer";
 import { MouseMoveEvent } from "@/draggable/events/cursor/MouseMoveEvent";
 import { MouseClickEvent } from "@/draggable/events/cursor/MouseClickEvent";
@@ -67,26 +67,35 @@ class AuxToolEffect extends DesignerEffect {
         this.designerEngine.insertion.clear();
         const isPlaceholder = lodash.trim(placeholder).length > 0;
         let nodeId: string;
+        let slotName: string;
         if (isPlaceholder) {
             nodeId = containerId;
+            slotName = placeholder;
         } else {
             nodeId = useHtmlExtAttr.nodeId(distance.element)!;
+            slotName = useHtmlExtAttr.slotName(distance.element);
         }
         if (this.nodeIsSelfOrInside(nodeId, this.designerEngine.draggingCmpMetas.nodeIds)) {
             return;
         }
+        const container = distance.element.closest(`[${htmlExtAttr.nodeId}=${containerId}]`);
+        if (!container) {
+            return;
+        }
+        const parentCmpMeta = useHtmlExtAttr.componentMeta(container, this.componentManage);
+        if (!parentCmpMeta) {
+            return;
+        }
+        const cmpMetas = this.designerEngine.draggingCmpMetas.cmpMetas;
+        const notAllowDrag = cmpMetas.some(cmpMeta => !isAllowDrag(cmpMeta, parentCmpMeta, slotName, container));
+        if (notAllowDrag) return;
         this.designerEngine.insertion.distance = distance;
         this.designerEngine.insertion.position = calcAuxToolPosition(designerContainer, distance.element);
         this.designerEngine.insertion.nodeId = nodeId
         this.designerEngine.insertion.containerId = containerId;
-        if (isPlaceholder) {
-            // 占位节点
-            this.designerEngine.insertion.slotName = placeholder;
-            this.designerEngine.insertion.placeholder = true;
-        } else {
-            // 正常节点
-            this.designerEngine.insertion.slotName = useHtmlExtAttr.slotName(distance.element);
-        }
+        this.designerEngine.insertion.slotName = slotName;
+        this.designerEngine.insertion.placeholder = isPlaceholder;
+        this.designerEngine.insertion.allowDrag = !notAllowDrag;
     }
 
     protected nodeIsSelfOrInside(nodeId: string, ids: Array<string>) {

@@ -45,7 +45,7 @@ const insertionStyle = computed(() => {
             style.left = `${insertion.position.left}px`;
             style.width = `${insertion.position.width}px`;
             style.height = `${insertion.position.height}px`;
-            style.backgroundColor = 'rgba(24, 144, 255, 0.34)';
+            style.backgroundColor = insertion.allowDrag ? 'rgba(24, 144, 255, 0.34)' : '#DE504E';
         } else {
             if ([Direction.left, Direction.top].includes(insertion.direction)) {
                 style.top = `${insertion.position.top}px`;

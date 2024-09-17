@@ -177,17 +177,19 @@ interface NodeToCursorDistance {
  */
 interface InsertionData {
     /** 渲染节点与光标的距离信息 */
-    distance: NodeToCursorDistance,
+    distance: NodeToCursorDistance;
     /** 插入区域位置 */
-    position: AuxToolPosition,
+    position: AuxToolPosition;
     /** 容器组件节点id(值是：RuntimeNode.id) */
-    containerId: string,
+    containerId: string;
     /** 插入容器节点的插槽名称(子节点是一种特殊的插槽，名为：default) */
-    slotName: string,
+    slotName: string;
     /** 离插入位置最近的组件节点id(值是：RuntimeNode.id) */
-    nodeId: string,
+    nodeId: string;
     /** 当期 node 属于占位组件 */
-    placeholder: boolean,
+    placeholder: boolean;
+    /** 是否允许拖拽 */
+    allowDrag: boolean;
     /** 是否在 nodeId 之前插入 */
     before: boolean;
 }

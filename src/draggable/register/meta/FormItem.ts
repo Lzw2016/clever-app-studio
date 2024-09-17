@@ -1,6 +1,8 @@
 import lodash from "lodash";
 import { createVNode } from "vue";
+import { hasValue } from "@/utils/Typeof";
 import { defineComponentMeta } from "@/draggable/utils/DesignerUtils";
+import { htmlExtAttr } from "@/draggable/utils/HtmlExtAttrs";
 import { formRule } from "@/draggable/register/JsonSchema";
 import FormItemSvg from "@/assets/images/form-item.svg?component";
 
@@ -11,7 +13,13 @@ export default defineComponentMeta({
     version: "0.0.1",
     docLink: "",
     icon: createVNode(FormItemSvg, { 'stroke-width': "2", style: { width: "20px", height: "20px" } }),
-    disableDragDrop: true,
+    dragDropConfig: {
+        // whiteList: ["Form", "Col"],
+        isAllow: (cmpMeta, parentCmpMeta, slotName, element) => {
+            const form = element.closest(`[${htmlExtAttr.componentType}=Form]`);
+            return hasValue(form);
+        },
+    },
     defDesignNode: {
         props: {},
     },

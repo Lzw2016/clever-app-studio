@@ -355,6 +355,22 @@ interface DesignDirectives extends BaseDirectives {
     };
 }
 
+/** 组件拖拽配置 */
+interface DragDropConfig {
+    /** 父组件白名单列表(空白名单表示禁止组件拖拽) */
+    whiteList?: Array<string>;
+    /** 父组件黑名单列表 */
+    blacklist?: Array<string>;
+    /**
+     * 自定义配置函数配置
+     * @param cmpMeta       被拖拽组件元数据
+     * @param parentCmpMeta 父级组件元数据
+     * @param slotName      被拖拽到父组件的插槽位置
+     * @param element       父级组件 Element 对象
+     */
+    isAllow?: (cmpMeta: ComponentMeta, parentCmpMeta: ComponentMeta, slotName: string, element: Element) => boolean;
+}
+
 /** 组件元信息 */
 interface ComponentMeta {
     /** 组件类型(唯一值) */
@@ -369,9 +385,8 @@ interface ComponentMeta {
     version?: string;
     /** 组件文档连接 */
     docLink?: string;
-    /** 是否禁止拖拽(默认启用) */
-    disableDragDrop?: boolean;
-    // TODO dragDropConfig | 白名单 | 黑名单
+    /** 组件拖拽配置 */
+    dragDropConfig?: DragDropConfig;
     // TODO toDesignNode 转换渲染节点属性，实现设计时与运行时灵活自定义渲染节点属性
     /** 设计时的组件对象 */
     designComponent?: VueComponent | string;
@@ -452,6 +467,7 @@ export type {
     AdvancedPanel,
     ComponentSetter,
     DefDesignNode,
+    DragDropConfig,
     ComponentMeta,
     MaterialDependence,
     MaterialMetaGroup,

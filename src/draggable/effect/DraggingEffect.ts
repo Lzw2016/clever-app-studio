@@ -51,7 +51,7 @@ class DraggingEffect extends DesignerEffect {
             const designerState = this.designerEngine.activeDesignerState;
             const insertion = draggingCmpMetas.insertion;
             const blockInstance = designerState?.blockInstance;
-            if (!insertion || !draggingCmpMetas.existsCmpMeta || !blockInstance) return;
+            if (!insertion || !insertion.allowDrag || !draggingCmpMetas.existsCmpMeta || !blockInstance) return;
             // 更新设计器渲染节点
             const { placeholder, slotName, nodeId, before } = insertion;
             let selectionNodes: Array<RuntimeComponentSlotsItem>;
