@@ -219,7 +219,7 @@ function onUpdateListener(event?: UpdateListenerEvent) {
 
 <template>
     <div class="designer-layout flex-column-container">
-        <div class="flex-item-fixed flex-row-container designer-tool">
+        <div class="flex-item-fixed flex-row-container designer-tool" style="display: none;">
             <div class="flex-item-fixed designer-tool-button" title="保存">
                 <FontAwesomeIcon :icon="faFloppyDisk" :fixed-width="true"/>
             </div>

@@ -99,6 +99,7 @@ export default defineComponentMeta({
                             labelTips: "二维码颜色, 仅支持十六进制",
                             propsName: "color",
                             defPropsValue: "#000",
+                            updateVNodeKey: true,
                         },
                     ],
                 },

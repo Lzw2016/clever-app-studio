@@ -126,7 +126,7 @@ defineExpose<SetterExpose>({
         <div class="bind-tree-container">
             <Tree
                 node-key="id"
-                :data="state.bindTree "
+                :data="state.bindTree"
                 :show-line="false"
                 :default-expand-all="true"
                 :highlight-current="true"

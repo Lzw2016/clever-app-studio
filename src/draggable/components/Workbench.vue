@@ -135,7 +135,7 @@ interface WorkbenchState {
 
 // state 属性
 const state = reactive<WorkbenchState>({
-    leftTool: LeftTools.Material,
+    leftTool: LeftTools.Page,
     rightTool: RightTools.Props,
 });
 // 内部数据
