@@ -3,6 +3,7 @@ import { computed, markRaw, onMounted, onUnmounted, reactive, ref } from "vue";
 import { Dropdown, DropdownItem, DropdownMenu, Modal, UserHead } from "@opentiny/vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faArrowRightFromBracket, faLanguage, faUserLarge } from "@fortawesome/free-solid-svg-icons";
+import { faSquareGithub } from "@fortawesome/free-brands-svg-icons";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { globalThisPolyfill } from "@/utils/GlobalThisPolyfill";
 import { style } from "@/utils/UseType";
@@ -222,6 +223,9 @@ function setRightTool(rightTool?: RightTools) {
             <div class="flex-item-fill"></div>
             <!-- <div class="flex-item-fixed">关于</div> -->
             <div class="flex-item-fixed" style="width: 16px;"></div>
+            <a class="flex-item-fixed" style="margin-right: 12px;" href="https://github.com/Lzw2016/clever-app-studio" target="_blank" title="查看源码">
+                <FontAwesomeIcon :icon="faSquareGithub" :fixed-width="true" style="font-size: 24px; color: #183153;position: relative;top: 1px;"/>
+            </a>
             <Dropdown class="flex-item-fixed" :show-icon="true" trigger="hover">
                 <div class="flex-row-container" style="align-items: center;">
                     <FontAwesomeIcon :icon="faLanguage" :fixed-width="true" style="font-size: 18px; color: #183153"/>
